@@ -1,0 +1,75 @@
+.staff-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.staff-main-content {
+    flex: 1;
+    width: 100%;
+    padding-top: 60px;
+    /* Space for mobile header */
+    transition: all 0.4s;
+    min-height: 100vh;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+.content-container {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.staff-header-container {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 1024px) {
+    .staff-main-content {
+        padding-left: 280px;
+        /* Make room for the fixed sidebar */
+        padding-top: 0;
+    }
+
+    .staff-header-container {
+        padding: 2.5rem 2.5rem 0 2.5rem;
+    }
+
+    .content-container {
+        padding: 0 2.5rem 2.5rem 2.5rem;
+    }
+}
+
+/* Custom Scrollbar for staff panel */
+.staff-main-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.staff-main-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.staff-main-content::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.staff-main-content::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
