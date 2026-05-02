@@ -109,27 +109,12 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
             {isOpen && <div className="staff-sidebar-overlay" onClick={toggleSidebar}></div>}
 
             <div className={`staff-sidebar ${isOpen ? 'open' : ''}`}>
-                <div className="sidebar-header" style={department === 'Sales' ? { display: 'flex', alignItems: 'center', gap: '12px' } : {}}>
-                    {department === 'Sales' ? (
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                            borderRadius: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            flexShrink: 0,
-                            boxShadow: '0 3px 10px rgba(99, 102, 241, 0.28)'
-                        }}>
-                            <TrendingUp size={22} strokeWidth={2.5} />
-                        </div>
-                    ) : (
-                        <div className="brand-logo">Interior Design</div>
-                    )}
-                    <div className="brand-suffix" style={department === 'Sales' ? { margin: 0, marginTop: '2px' } : {}}>
-                        {department} Portal
+                <div className="sidebar-header">
+                    <div className="brand-logo-container">
+                        <TrendingUp size={22} strokeWidth={2.5} />
+                    </div>
+                    <div className="brand-suffix" style={{ textAlign: 'right', marginRight: '4px' }}>
+                        {department ? department.toUpperCase() : 'STAFF'} PORTAL
                     </div>
                 </div>
 
