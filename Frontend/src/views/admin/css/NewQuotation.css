@@ -4,8 +4,16 @@
     min-height: 100vh;
 }
 
+/* Remove double padding when inside Staff Portal */
+.staff-layout .new-quote-wrapper {
+    padding: 0;
+    background-color: transparent;
+    min-height: auto;
+}
+
 .form-container {
-    max-width: 1000px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -102,21 +110,45 @@
 .select-styled,
 .textarea-styled {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+    color: #0f172a;
     background-color: #ffffff;
-    transition: all 0.2s;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
 .input-styled:focus,
 .select-styled:focus,
 .textarea-styled:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #0f172a;
+    box-shadow: 0 0 0 1px #0f172a;
+}
+
+input[type="date"].input-styled {
+    position: relative;
+}
+
+input[type="date"].input-styled::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.75rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    filter: invert(0.2) sepia(0) saturate(0) hue-rotate(0deg);
+}
+
+input[type="date"].input-styled::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+input[type="date"].input-styled::-webkit-datetime-edit {
+    padding-right: 1.5rem;
 }
 
 .textarea-styled {

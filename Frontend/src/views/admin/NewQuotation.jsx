@@ -32,6 +32,9 @@ import {
     ChevronUp
 } from 'lucide-react';
 import { quotationAPI, clientAPI, inventoryAPI, uploadAPI, aiAPI } from '../../models/api';
+import AISuggestButton from '../common/AISuggestButton';
+import CustomSelect from '../common/CustomSelect';
+import DatePicker from '../common/DatePicker';
 import './css/NewQuotation.css';
 
 const NewQuotation = ({ isEdit, isStaff }) => {
@@ -609,12 +612,17 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label>Document Type</label>
-                                <select name="documentType" className="select-styled" value={formData.documentType} onChange={handleInputChange}>
-                                    <option value="Quotation">Quotation</option>
-                                    <option value="Estimate">Estimate</option>
-                                    <option value="Proposal">Proposal</option>
-                                </select>
+                                <CustomSelect 
+                                    label="Document Type"
+                                    name="documentType" 
+                                    value={formData.documentType} 
+                                    onChange={handleInputChange} 
+                                    options={[
+                                        { value: 'Quotation', label: 'Quotation' },
+                                        { value: 'Estimate', label: 'Estimate' },
+                                        { value: 'Proposal', label: 'Proposal' }
+                                    ]} 
+                                />
                             </div>
                         </div>
                         <div className="form-group" style={{ marginTop: '1.25rem' }}>
@@ -642,11 +650,17 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
                             <div className="form-group">
                                 <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project Start</label>
-                                <input type="date" name="projectStart" className="input-styled" value={formData.projectStart} onChange={handleInputChange} />
+                                <DatePicker 
+                                    value={formData.projectStart} 
+                                    onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val }})} 
+                                />
                             </div>
                             <div className="form-group">
                                 <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project End</label>
-                                <input type="date" name="projectEnd" className="input-styled" value={formData.projectEnd} onChange={handleInputChange} />
+                                <DatePicker 
+                                    value={formData.projectEnd} 
+                                    onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val }})} 
+                                />
                             </div>
                         </div>
                         <div className="form-group" style={{ marginTop: '1.25rem' }}>
@@ -760,7 +774,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                             {lineItems.map((item, index) => (
                                 <div key={item.id} className="line-item-card" style={{ padding: '0.75rem 1rem' }}>
                                     {/* Compact Header */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: '30px 1fr 70px 90px 100px 120px 70px', gap: '1rem', alignItems: 'center' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '30px 1fr 70px 120px 100px 120px 70px', gap: '1rem', alignItems: 'center' }}>
                                         <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 700 }}>#{index + 1}</span>
                                         <div style={{ position: 'relative' }}>
                                             <input
@@ -792,18 +806,17 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                                             value={item.quantity}
                                             onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                                         />
-                                        <select
-                                            className="select-styled"
-                                            style={{ padding: '0.5rem', fontSize: '0.9rem' }}
+                                        <CustomSelect
                                             value={item.unit}
                                             onChange={(e) => updateLineItem(item.id, 'unit', e.target.value)}
-                                        >
-                                            <option value="SCM">SCM</option>
-                                            <option value="SFT">SFT</option>
-                                            <option value="RFT">RFT</option>
-                                            <option value="Nos">Nos</option>
-                                            <option value="Lumpsum">Lumpsum</option>
-                                        </select>
+                                            options={[
+                                                { value: 'SCM', label: 'SCM' },
+                                                { value: 'SFT', label: 'SFT' },
+                                                { value: 'RFT', label: 'RFT' },
+                                                { value: 'Nos', label: 'Nos' },
+                                                { value: 'Lumpsum', label: 'Lumpsum' }
+                                            ]}
+                                        />
                                         <input
                                             type="number"
                                             className="input-styled"
