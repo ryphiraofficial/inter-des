@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../models/context/ToastContext';
 import { clientAPI, uploadAPI, siteVisitAPI, taskAPI } from '../../models/api';
 import CustomSelect from '../common/CustomSelect';
+import DatePicker from '../common/DatePicker';
 import './css/SiteVisit.css';
 
 const SiteVisit = () => {
@@ -189,15 +190,11 @@ const SiteVisit = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            <label>Visit Date</label>
-                            <div className="input-with-icon">
-                                <Calendar size={18} />
-                                <input
-                                    type="date"
-                                    value={visitData.visitDate}
-                                    onChange={(e) => setVisitData({ ...visitData, visitDate: e.target.value })}
-                                />
-                            </div>
+                            <label><Calendar size={14} style={{ marginRight: '4px' }} /> Visit Date</label>
+                            <DatePicker
+                                value={visitData.visitDate}
+                                onChange={(val) => setVisitData({ ...visitData, visitDate: val })}
+                            />
                         </div>
                     </div>
 
