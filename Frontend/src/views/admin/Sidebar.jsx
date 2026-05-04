@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     FileText,
@@ -30,6 +30,7 @@ import './css/Sidebar.css';
 const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
     const department = getRoleDepartment(user?.role);
     const dashboardType = useRoleDashboard(user?.role);
+    const location = useLocation();
 
     const getNavGroups = () => {
         const mainItems = [
@@ -79,8 +80,14 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
             ];
         } else if (dashboardType === 'accounts_manager') {
             roleSpecificItems = [
-                { name: 'Expenses', icon: DollarSign, path: '/expenses' },
-                { name: 'Payments', icon: Receipt, path: '/payments' },
+                { name: 'Accounts Overview', icon: LayoutDashboard, path: '/?tab=overview' },
+                { name: 'Invoices', icon: Receipt, path: '/?tab=invoices' },
+                { name: 'Expenses', icon: DollarSign, path: '/?tab=expenses' },
+                { name: 'Payments', icon: Receipt, path: '/?tab=payments' },
+                { name: 'Clients', icon: Users, path: '/?tab=clients' },
+                { name: 'Vendors', icon: Building2, path: '/?tab=vendors' },
+                { name: 'Projects', icon: Target, path: '/?tab=projects' },
+                { name: 'Reports', icon: BarChart, path: '/?tab=reports' },
             ];
         }
 
@@ -114,6 +121,10 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
             const filteredItems = group.items.filter(item => {
                 const path = item.path.toLowerCase();
 
+                if (roleLower.includes('accounts')) {
+                    return path.startsWith('/?tab=') || path === '/';
+                }
+
                 // Dashboard is for everyone
                 if (path === '/' || path === '/projects') return true;
 
@@ -126,9 +137,6 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
                 }
                 if (roleLower.includes('production')) {
                     return ['/tasks', '/inventory', '/projects'].includes(path);
-                }
-                if (roleLower.includes('accounts')) {
-                    return ['/invoice', '/reports', '/clients', '/projects'].includes(path);
                 }
                 if (roleLower === 'manager') {
                     return ['/quotations', '/clients', '/tasks', '/projects', '/reports'].includes(path);
@@ -172,15 +180,21 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
             <nav className="sidebar-nav">
                 {navGroups.map((group) => (
                     <div key={group.title} className="nav-group">
-                        <h3 className="nav-group-title">{group.title}</h3>
+                        {group.title !== 'Main' && <h3 className="nav-group-title">{group.title}</h3>}
                         <ul className="nav-list">
                             {group.items.map((item) => (
                                 <li key={item.name} className="nav-item">
                                     <NavLink
                                         to={item.path}
-                                        className={({ isActive }) =>
-                                            `nav-link ${isActive ? 'active' : ''}`
-                                        }
+                                        className={({ isActive }) => {
+                                            if (item.path.includes('?tab=')) {
+                                                const currentTab = new URLSearchParams(location.search).get('tab');
+                                                const itemTab = new URLSearchParams(item.path.split('?')[1]).get('tab');
+                                                const isTabActive = currentTab === itemTab || (!currentTab && itemTab === 'overview') || (!currentTab && itemTab === 'dashboard') || (!currentTab && itemTab === 'pipeline');
+                                                return `nav-link ${isTabActive ? 'active' : ''}`;
+                                            }
+                                            return `nav-link ${isActive ? 'active' : ''}`;
+                                        }}
                                     >
                                         <item.icon size={18} className="nav-icon" />
                                         <span>{item.name}</span>

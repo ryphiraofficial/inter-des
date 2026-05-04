@@ -29,7 +29,8 @@ import {
     Sparkles,
     Loader2,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    AlertTriangle
 } from 'lucide-react';
 import { quotationAPI, clientAPI, inventoryAPI, uploadAPI, aiAPI } from '../../models/api';
 import AISuggestButton from '../common/AISuggestButton';
@@ -59,6 +60,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
     const [showQuickAddModal, setShowQuickAddModal] = useState(false);
     const [quickAddData, setQuickAddData] = useState({ name: '', email: '', phone: '' });
     const [expandedItems, setExpandedItems] = useState({});
+    const [showExitDialog, setShowExitDialog] = useState(false);
 
     // Form States
     const [lineItems, setLineItems] = useState([]);
@@ -278,6 +280,57 @@ const NewQuotation = ({ isEdit, isStaff }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleExit = () => {
+        // Only show dialog if form has been touched
+        const hasData = formData.client || formData.projectName || lineItems.length > 0;
+        if (hasData) {
+            setShowExitDialog(true);
+        } else {
+            navigate(isStaff ? '/staff/quotations' : '/quotations');
+        }
+    };
+
+    const handleSaveDraft = async () => {
+        try {
+            setIsSaving(true);
+            const quotationData = {
+                ...formData,
+                quotationNumber: formData.quoteNumber,
+                status: 'Draft',
+                taxRate,
+                discount: includeDiscount ? discount : 0,
+                items: lineItems.map(item => ({
+                    itemName: item.name,
+                    description: item.description,
+                    section: item.section,
+                    finish: item.finishBrand,
+                    material: item.materialOrigin,
+                    size: item.size,
+                    unit: item.unit,
+                    quantity: item.quantity,
+                    rate: item.rate,
+                    amount: item.amount,
+                    image: item.image
+                }))
+            };
+            let response;
+            if (isEdit) {
+                response = await quotationAPI.update(id, { ...quotationData, status: 'Draft' });
+            } else {
+                response = await quotationAPI.create(quotationData);
+            }
+            if (response.success) {
+                setShowExitDialog(false);
+                navigate(isStaff ? '/staff/quotations' : '/quotations');
+            }
+        } catch (err) {
+            setError('Failed to save draft: ' + err.message);
+            setShowExitDialog(false);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleClientSearch = (query) => {
@@ -530,34 +583,6 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                 pointerEvents: showBillPreview ? 'none' : 'auto',
                 transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
-                <div className="back-navigation" style={{ marginBottom: '1.5rem' }}>
-                    <button
-                        type="button"
-                        onClick={() => navigate(isStaff ? '/staff/quotations' : '/quotations')}
-                        style={{
-                            background: '#ffffff',
-                            border: '1px solid #e2e8f0',
-                            padding: '10px',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.background = '#f8fafc';
-                            e.currentTarget.style.transform = 'translateX(-3px)';
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.background = '#ffffff';
-                            e.currentTarget.style.transform = 'translateX(0)';
-                        }}
-                    >
-                        <ArrowLeft size={20} color="#1e293b" />
-                    </button>
-                </div>
 
                 {error && <div className="error-banner" style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem' }}>{error}</div>}
 
@@ -969,11 +994,14 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                     </div>
 
                     <div className="form-footer-actions">
+                        <button type="button" className="btn-save-draft" onClick={handleExit} style={{ color: '#ef4444', borderColor: '#fecaca' }}>
+                            <X size={18} /> Exit
+                        </button>
                         <button type="button" className="btn-save-draft" onClick={(e) => handlePreview(e, 'Draft')}>
                             <Save size={18} /> Review Draft
                         </button>
                         <button type="submit" className="btn-send-quote">
-                            <Send size={18} /> Review & Save
+                            <Send size={18} /> Review &amp; Save
                         </button>
                     </div>
                 </form>
@@ -1199,6 +1227,80 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* Exit Confirmation Dialog */}
+            {showExitDialog && (
+                <div style={{
+                    position: 'fixed', inset: 0,
+                    background: 'rgba(15, 23, 42, 0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 9999, backdropFilter: 'blur(4px)'
+                }}>
+                    <div style={{
+                        background: '#fff', borderRadius: '20px', padding: '2rem',
+                        width: '420px', maxWidth: '90vw',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                        animation: 'slideDown 0.2s ease-out'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                            <div style={{
+                                width: '48px', height: '48px', borderRadius: '12px',
+                                background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                            }}>
+                                <AlertTriangle size={24} color="#f59e0b" />
+                            </div>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Unsaved Changes</h3>
+                                <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#64748b' }}>You have unsaved work. What would you like to do?</p>
+                            </div>
+                        </div>
+
+                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem', fontSize: '0.85rem', color: '#475569' }}>
+                            Leaving without saving will permanently discard all the data you've entered in this quotation.
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <button
+                                onClick={handleSaveDraft}
+                                disabled={isSaving}
+                                style={{
+                                    width: '100%', padding: '0.875rem',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: '#fff', border: 'none', borderRadius: '10px',
+                                    fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                    boxShadow: '0 4px 12px rgba(102,126,234,0.3)'
+                                }}
+                            >
+                                {isSaving ? <Loader size={18} className="spinner" /> : <Save size={18} />}
+                                Save as Draft & Exit
+                            </button>
+                            <button
+                                onClick={() => { setShowExitDialog(false); navigate(isStaff ? '/staff/quotations' : '/quotations'); }}
+                                style={{
+                                    width: '100%', padding: '0.875rem',
+                                    background: '#fee2e2', color: '#ef4444',
+                                    border: '1px solid #fecaca', borderRadius: '10px',
+                                    fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                                }}
+                            >
+                                <Trash2 size={18} /> Discard & Exit
+                            </button>
+                            <button
+                                onClick={() => setShowExitDialog(false)}
+                                style={{
+                                    width: '100%', padding: '0.75rem',
+                                    background: 'transparent', color: '#64748b',
+                                    border: '1px solid #e2e8f0', borderRadius: '10px',
+                                    fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer'
+                                }}
+                            >
+                                Continue Editing
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -7,6 +7,8 @@ import ProcurementManagerDashboard from '../../views/procurement/manager/Procure
 import ProcurementStaffDashboard from '../../views/procurement/staff/ProcurementStaffDashboard';
 import AdminDashboard from '../../views/admin/Dashboard';
 import StaffDashboard from '../../views/staff/StaffDashboard';
+import AccountsManagerDashboard from '../../views/Accounts/AccountsManagerDashboard';
+import AccountsStaffDashboard from '../../views/Accounts/AccountsStaffDashboard';
 
 const RoleDashboard = ({ user, onLogout }) => {
     const dashboardType = useRoleDashboard(user?.role);
@@ -29,6 +31,10 @@ const RoleDashboard = ({ user, onLogout }) => {
             return <Navigate to="/site/dashboard" replace />;
         case 'staff':
             return <StaffDashboard user={user} onLogout={onLogout} />;
+        case 'accounts_manager':
+            return <AccountsManagerDashboard user={user} />;
+        case 'accounts_staff':
+            return <AccountsStaffDashboard user={user} />;
         case 'admin':
         default:
             return <AdminDashboard user={user} onLogout={onLogout} />;

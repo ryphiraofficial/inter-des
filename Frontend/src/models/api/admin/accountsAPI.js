@@ -29,5 +29,8 @@ export const accountsAPI = {
 
     getProjectFinancials: (projectId) => apiCall(`/accounts/project/${projectId}/financials`),
 
-    getStats: () => apiCall('/accounts/stats')
+    getStats: (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        return apiCall(`/accounts/stats?${query}`);
+    }
 };

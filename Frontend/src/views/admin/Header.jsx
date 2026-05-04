@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Bell, X, Plus, Check, CheckCheck, Trash2, FileText, Package, ShoppingCart, Users, ClipboardList, Receipt, AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
+import { Bell, X, Plus, Check, CheckCheck, Trash2, FileText, Package, ShoppingCart, Users, ClipboardList, Receipt, AlertTriangle, Info, CheckCircle, XCircle, Download } from 'lucide-react';
 import { notificationAPI } from '../../models/api';
 import './css/Header.css';
 
@@ -129,10 +129,27 @@ const Header = ({ user }) => {
         }
     };
 
+    const searchParams = new URLSearchParams(location.search);
+    const tab = searchParams.get('tab');
+
     // Determine Title and Subtitle based on Route
     const getPageDetails = () => {
         const path = location.pathname;
-        if (path === '/') return { title: 'Dashboard', subtitle: "Welcome back! Here's your business overview." };
+
+        if (path === '/') {
+            if (tab === 'invoices') return { title: 'Invoices', subtitle: 'Manage your client invoices.' };
+            if (tab === 'expenses') return { title: 'Expenses', subtitle: 'Track your business spending.' };
+            if (tab === 'payments') return { title: 'Payments', subtitle: 'Manage your incoming payments.' };
+            if (tab === 'clients') return { title: 'Clients', subtitle: 'Manage your client database and contact details.' };
+            if (tab === 'vendors') return { title: 'Vendors', subtitle: 'Manage your vendors and suppliers.' };
+            if (tab === 'projects') return { title: 'Projects', subtitle: 'Manage your ongoing projects.' };
+            if (tab === 'reports') return { title: 'Analytics Reports', subtitle: 'Detailed overview of your business performance.' };
+            if (tab === 'pipeline') return { title: 'Design Pipeline', subtitle: 'Manage your studio workflow.' };
+            if (tab === 'dashboard') return { title: 'Studio Dashboard', subtitle: 'Overview of your studio operations.' };
+            if (tab === 'requests') return { title: 'Material Requests', subtitle: 'Manage pending material requests.' };
+            return { title: 'Dashboard', subtitle: "Welcome back! Here's your business overview." };
+        }
+
         if (path === '/quotations') return { title: 'Quotations', subtitle: 'Detailed overview of your project estimates and proposals.' };
         if (path === '/quotations/new') return { title: 'New Quotation', subtitle: 'Craft a professional estimate for your client.' };
         if (path === '/inventory') return { title: 'Global Inventory', subtitle: 'Track your primary design materials and stock levels.' };
@@ -186,13 +203,69 @@ const Header = ({ user }) => {
 
             <div className="header-actions">
                 {/* Dashboard Specific Action: New Quotation Button */}
-                {(location.pathname === '/' && user?.role?.toLowerCase() !== 'design manager') && (
+                {(location.pathname === '/' && (!tab || tab === 'overview' || tab === 'dashboard') && user?.role?.toLowerCase() !== 'design manager') && (
                     <Link to="/quotations/new" style={{ textDecoration: 'none' }}>
                         <button className="btn-primary">
                             <Plus size={20} />
                             <span>New Quotation</span>
                         </button>
                     </Link>
+                )}
+
+                {/* Invoices Specific Action: Create Invoice Button */}
+                {(location.pathname === '/' && tab === 'invoices') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-invoice-modal'))}>
+                        <Plus size={20} />
+                        <span>Create Invoice</span>
+                    </button>
+                )}
+
+                {/* Expenses Specific Action: Add Expense Button */}
+                {(location.pathname === '/' && tab === 'expenses') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))}>
+                        <Plus size={20} />
+                        <span>Add Expense</span>
+                    </button>
+                )}
+
+                {/* Payments Specific Action: Record Payment Button */}
+                {(location.pathname === '/' && tab === 'payments') && (
+                    <button className="btn-primary" style={{ background: '#10b981', boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)' }} onClick={() => window.dispatchEvent(new CustomEvent('open-create-payment-modal'))}>
+                        <Plus size={20} />
+                        <span>Record Payment</span>
+                    </button>
+                )}
+
+                {/* Clients Specific Action: Add Client Button */}
+                {(location.pathname === '/' && tab === 'clients') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))}>
+                        <Plus size={20} />
+                        <span>Add Client</span>
+                    </button>
+                )}
+
+                {/* Vendors Specific Action: Add Vendor Button */}
+                {(location.pathname === '/' && tab === 'vendors') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-vendor-modal'))}>
+                        <Plus size={20} />
+                        <span>Add Vendor</span>
+                    </button>
+                )}
+
+                {/* Projects Specific Action: New Project Button */}
+                {(location.pathname === '/' && tab === 'projects') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-project-modal'))}>
+                        <Plus size={20} />
+                        <span>New Project</span>
+                    </button>
+                )}
+
+                {/* Reports Specific Action: Export PDF Button */}
+                {(location.pathname === '/' && tab === 'reports') && (
+                    <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('export-reports-pdf'))}>
+                        <Download size={20} />
+                        <span>Export PDF</span>
+                    </button>
                 )}
 
                 {location.pathname === '/po-inventory' && (

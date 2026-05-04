@@ -89,7 +89,7 @@
 /* Navigation */
 .sidebar-nav {
     flex: 1;
-    padding: 1rem 0;
+    padding: 1.5rem 0 1rem 0;
     overflow-y: auto;
     transition: padding 0.3s;
 }
@@ -340,8 +340,8 @@
 }
 
 .footer-name {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     color: #0f172a;
     margin: 0;
     white-space: nowrap;
@@ -350,7 +350,8 @@
 }
 
 .footer-role {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 500;
     color: #64748b;
     margin: 0;
     text-transform: capitalize;

@@ -23,6 +23,9 @@ const Reports = () => {
 
     useEffect(() => {
         fetchReportData();
+        const handleExport = () => window.print();
+        window.addEventListener('export-reports-pdf', handleExport);
+        return () => window.removeEventListener('export-reports-pdf', handleExport);
     }, []);
 
     const fetchReportData = async () => {
@@ -51,14 +54,14 @@ const Reports = () => {
             label: 'Total Revenue',
             value: `₹${stats?.revenue?.approved?.toLocaleString() || '0'}`,
             icon: <DollarSign size={20} />,
-            variant: 'solid-green',
+            iconClass: 'cyan',
             id: 'rev-total'
         },
         {
             label: 'Pending Revenue',
             value: `₹${stats?.revenue?.potential?.toLocaleString() || '0'}`,
             icon: <TrendingUp size={20} />,
-            variant: 'solid-blue',
+            iconClass: 'orange',
             id: 'rev-pending'
         },
         {
@@ -86,7 +89,7 @@ const Reports = () => {
             label: 'Total Quotations',
             value: stats?.quotations?.total || '0',
             icon: <FileText size={20} />,
-            variant: 'solid-purple',
+            iconClass: 'pink',
             id: 'quotes-total'
         },
         {
@@ -108,16 +111,6 @@ const Reports = () => {
     return (
         <div className="reports-container">
             <div className="reports-wrapper">
-                <div className="reports-header">
-                    <div className="reports-title">
-                        <h2>Analytics Reports</h2>
-                        <p>Detailed overview of your business performance and conversion metrics.</p>
-                    </div>
-                    <button className="btn-export">
-                        <Download size={18} />
-                        <span>Export PDF</span>
-                    </button>
-                </div>
 
                 {error && <div className="error-banner">{error}</div>}
 

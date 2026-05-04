@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Search, Plus, MoreVertical, Eye, Edit, Trash2, 
     ChevronDown, Filter, ArrowRight, CheckCircle, Clock,
-    Play, Pause, XCircle, Target, Building2, Users, Calendar
+    Play, Pause, XCircle, Target, Building2, Users, Calendar, SlidersHorizontal
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { projectAPI } from '../../models/api';
@@ -16,6 +16,8 @@ const Projects = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [stageFilter, setStageFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+    const [showStageDropdown, setShowStageDropdown] = useState(false);
+    const [showStatusDropdown, setShowStatusDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
 
@@ -29,6 +31,9 @@ const Projects = () => {
 
     useEffect(() => {
         fetchProjects();
+        const handleOpenModal = () => setShowModal(true);
+        window.addEventListener('open-create-project-modal', handleOpenModal);
+        return () => window.removeEventListener('open-create-project-modal', handleOpenModal);
     }, [stageFilter, statusFilter]);
 
     useEffect(() => {
@@ -98,7 +103,7 @@ const Projects = () => {
     // Special View for Direct Project Review (Focused View)
     if (urlProjectId && selectedProject) {
         return (
-            <div className="projects-page focused-view">
+            <div className="projects-page focused-view" style={{ padding: '2rem 2.5rem', background: '#ffffff', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
                 <div className="page-header" style={{ marginBottom: '2rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                         <button 
@@ -166,18 +171,8 @@ const Projects = () => {
     }
 
     return (
-        <div className="projects-page">
-            <div className="page-header">
-                <div className="header-left">
-                    <h1><Target size={24} /> Projects</h1>
-                    <p>Manage and track all interior design projects</p>
-                </div>
-                <button className="btn-primary" onClick={() => setShowModal(true)}>
-                    <Plus size={18} /> New Project
-                </button>
-            </div>
-
-            <div className="filters-bar">
+        <div className="projects-page" style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
+            <div className="filters-bar" style={{ marginTop: '10px' }}>
                 <div className="search-box">
                     <Search size={18} />
                     <input 
@@ -189,21 +184,129 @@ const Projects = () => {
                 </div>
                 
                 <div className="filter-group">
-                    <select value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
-                        <option value="">All Stages</option>
-                        <option value="Design">Design</option>
-                        <option value="Procurement">Procurement</option>
-                        <option value="Production">Production</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                    
-                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                        <option value="">All Status</option>
-                        <option value="Not Started">Not Started</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="On Hold">On Hold</option>
-                        <option value="Completed">Completed</option>
-                    </select>
+
+                    {/* Stages Dropdown */}
+                    <div style={{ position: 'relative' }}>
+                        <button
+                            onClick={() => { setShowStageDropdown(p => !p); setShowStatusDropdown(false); }}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                padding: '9px 14px', borderRadius: '8px', height: '42px',
+                                border: '1px solid #e2e8f0',
+                                background: stageFilter ? '#eef2ff' : '#fff',
+                                color: stageFilter ? '#4f46e5' : '#64748b',
+                                fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer',
+                                transition: 'all 0.15s', whiteSpace: 'nowrap',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}
+                        >
+                            <SlidersHorizontal size={15} />
+                            {stageFilter || 'All Stages'}
+                            <ChevronDown size={14} style={{ opacity: 0.6, transform: showStageDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                        </button>
+
+                        {showStageDropdown && (
+                            <>
+                                <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setShowStageDropdown(false)} />
+                                <div style={{
+                                    position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                                    background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0',
+                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 50,
+                                    minWidth: '160px', padding: '4px'
+                                }}>
+                                    <p style={{ padding: '6px 10px 4px', fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Stage</p>
+                                    {[
+                                        { value: '',            label: 'All Stages',   dot: '#94a3b8' },
+                                        { value: 'Design',      label: 'Design',       dot: '#6366f1' },
+                                        { value: 'Procurement', label: 'Procurement',  dot: '#f59e0b' },
+                                        { value: 'Production',  label: 'Production',   dot: '#3b82f6' },
+                                        { value: 'Completed',   label: 'Completed',    dot: '#10b981' },
+                                    ].map(opt => (
+                                        <button key={opt.value}
+                                            onClick={() => { setStageFilter(opt.value); setShowStageDropdown(false); }}
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '10px',
+                                                width: '100%', padding: '8px 10px', borderRadius: '7px',
+                                                border: 'none',
+                                                background: stageFilter === opt.value ? '#f1f5f9' : 'transparent',
+                                                color: stageFilter === opt.value ? '#0f172a' : '#475569',
+                                                fontWeight: stageFilter === opt.value ? 700 : 500,
+                                                fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left'
+                                            }}
+                                            onMouseEnter={e => { if (stageFilter !== opt.value) e.currentTarget.style.background = '#f8fafc'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = stageFilter === opt.value ? '#f1f5f9' : 'transparent'; }}
+                                        >
+                                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: opt.dot, flexShrink: 0 }} />
+                                            {opt.label}
+                                            {stageFilter === opt.value && <CheckCircle size={14} style={{ marginLeft: 'auto', color: '#4f46e5' }} />}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Status Dropdown */}
+                    <div style={{ position: 'relative' }}>
+                        <button
+                            onClick={() => { setShowStatusDropdown(p => !p); setShowStageDropdown(false); }}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                padding: '9px 14px', borderRadius: '8px', height: '42px',
+                                border: '1px solid #e2e8f0',
+                                background: statusFilter ? '#eef2ff' : '#fff',
+                                color: statusFilter ? '#4f46e5' : '#64748b',
+                                fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer',
+                                transition: 'all 0.15s', whiteSpace: 'nowrap',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}
+                        >
+                            <SlidersHorizontal size={15} />
+                            {statusFilter || 'All Status'}
+                            <ChevronDown size={14} style={{ opacity: 0.6, transform: showStatusDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                        </button>
+
+                        {showStatusDropdown && (
+                            <>
+                                <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setShowStatusDropdown(false)} />
+                                <div style={{
+                                    position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                                    background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0',
+                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 50,
+                                    minWidth: '160px', padding: '4px'
+                                }}>
+                                    <p style={{ padding: '6px 10px 4px', fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Status</p>
+                                    {[
+                                        { value: '',            label: 'All Status',  dot: '#94a3b8' },
+                                        { value: 'Not Started', label: 'Not Started', dot: '#64748b' },
+                                        { value: 'In Progress', label: 'In Progress', dot: '#3b82f6' },
+                                        { value: 'On Hold',     label: 'On Hold',     dot: '#f59e0b' },
+                                        { value: 'Completed',   label: 'Completed',   dot: '#10b981' },
+                                    ].map(opt => (
+                                        <button key={opt.value}
+                                            onClick={() => { setStatusFilter(opt.value); setShowStatusDropdown(false); }}
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '10px',
+                                                width: '100%', padding: '8px 10px', borderRadius: '7px',
+                                                border: 'none',
+                                                background: statusFilter === opt.value ? '#f1f5f9' : 'transparent',
+                                                color: statusFilter === opt.value ? '#0f172a' : '#475569',
+                                                fontWeight: statusFilter === opt.value ? 700 : 500,
+                                                fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left'
+                                            }}
+                                            onMouseEnter={e => { if (statusFilter !== opt.value) e.currentTarget.style.background = '#f8fafc'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = statusFilter === opt.value ? '#f1f5f9' : 'transparent'; }}
+                                        >
+                                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: opt.dot, flexShrink: 0 }} />
+                                            {opt.label}
+                                            {statusFilter === opt.value && <CheckCircle size={14} style={{ marginLeft: 'auto', color: '#4f46e5' }} />}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+
                 </div>
             </div>
 
