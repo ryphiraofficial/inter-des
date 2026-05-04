@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Trash2, Edit, X, Building2 } from 'lucide-react';
-import { vendorAPI } from '../../models/api';
+import { vendorAPI } from '../../../models/api';
 
-const AccountsManagerVendors = ({ user }) => {
+const ManagerVendors = ({ user }) => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -173,4 +173,4 @@ const AccountsManagerVendors = ({ user }) => {
     );
 };
 
-export default AccountsManagerVendors;
+export default ManagerVendors;

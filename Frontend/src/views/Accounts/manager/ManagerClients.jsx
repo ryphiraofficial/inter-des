@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Trash2, Edit, X, Users, Phone, Mail, MapPin, FileText, User } from 'lucide-react';
-import { clientAPI } from '../../models/api';
+import { clientAPI } from '../../../models/api';
 
 const inputBase = {
     width: '100%', padding: '10px 12px 10px 38px',
@@ -10,7 +10,7 @@ const inputBase = {
 };
 const iconStyle = { position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: '#a0aec0', pointerEvents: 'none' };
 
-const AccountsManagerClients = ({ user }) => {
+const ManagerClients = ({ user }) => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -256,4 +256,4 @@ const AccountsManagerClients = ({ user }) => {
     );
 };
 
-export default AccountsManagerClients;
+export default ManagerClients;

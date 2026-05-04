@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, X, CreditCard, Trash2, ChevronDown, CheckCircle, Calendar, ChevronLeft, ChevronRight, User, Banknote } from 'lucide-react';
-import { accountsAPI, clientAPI } from '../../models/api';
+import { accountsAPI, clientAPI } from '../../../models/api';
 
 /* ─── Mini custom DatePicker ─── */
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -190,7 +190,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon }) => 
 };
 
 /* ─── Main Component ─── */
-const AccountsManagerPayments = ({ user }) => {
+const ManagerPayments = ({ user }) => {
     const [payments, setPayments] = useState([]);
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -408,4 +408,4 @@ const AccountsManagerPayments = ({ user }) => {
     );
 };
 
-export default AccountsManagerPayments;
+export default ManagerPayments;

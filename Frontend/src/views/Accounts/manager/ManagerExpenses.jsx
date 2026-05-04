@@ -8,13 +8,13 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
     PieChart, Pie, Cell
 } from 'recharts';
-import { accountsAPI } from '../../models/api';
-import './css/Expenses.css';
+import { accountsAPI } from '../../../models/api';
+import '../css/Expenses.css';
 
 const CATEGORIES = ['Materials', 'Labour', 'Transport', 'Tools & Equipment', 'Office', 'Utilities', 'Miscellaneous'];
 const STATUSES = ['Paid', 'Pending', 'Overdue'];
 
-const AccountsManagerExpenses = ({ user }) => {
+const ManagerExpenses = ({ user }) => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -464,4 +464,4 @@ const AccountsManagerExpenses = ({ user }) => {
     );
 };
 
-export default AccountsManagerExpenses;
+export default ManagerExpenses;

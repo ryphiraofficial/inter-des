@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Loader, Mail, Phone, MapPin, User, Plus, X } from 'lucide-react';
 import { clientAPI } from '../../models/api';
 import './css/StaffClients.css';
@@ -154,7 +155,7 @@ const StaffClients = () => {
                 </div>
             </div>
 
-            {showModal && (
+            {showModal && createPortal(
                 <div className="sc-modal-overlay">
                     <div className="sc-modal-card">
                         <div className="sc-modal-header">
@@ -200,7 +201,8 @@ const StaffClients = () => {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

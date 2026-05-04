@@ -7,8 +7,8 @@ import ProcurementManagerDashboard from '../../views/procurement/manager/Procure
 import ProcurementStaffDashboard from '../../views/procurement/staff/ProcurementStaffDashboard';
 import AdminDashboard from '../../views/admin/Dashboard';
 import StaffDashboard from '../../views/staff/StaffDashboard';
-import AccountsManagerDashboard from '../../views/Accounts/AccountsManagerDashboard';
-import AccountsStaffDashboard from '../../views/Accounts/AccountsStaffDashboard';
+import AccountsManagerDashboard from '../../views/Accounts/manager/ManagerDashboard';
+import AccountsStaffDashboard from '../../views/Accounts/staff/StaffDashboard';
 
 const RoleDashboard = ({ user, onLogout }) => {
     const dashboardType = useRoleDashboard(user?.role);

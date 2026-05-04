@@ -10,8 +10,8 @@ import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
     XAxis, YAxis, CartesianGrid, AreaChart, Area
 } from 'recharts';
-import { accountsAPI, invoiceAPI } from '../../models/api';
-import './css/ManagerDashboard.css';
+import { accountsAPI, invoiceAPI } from '../../../models/api';
+import '../css/ManagerDashboard.css';
 
 const StatCardV3 = ({ title, value, subValue, icon: Icon, type, trendValue, onClick, iconColor, iconBg }) => {
     const isUp = trendValue > 0;
@@ -37,7 +37,7 @@ const StatCardV3 = ({ title, value, subValue, icon: Icon, type, trendValue, onCl
     );
 };
 
-const AccountsOverview = ({ user }) => {
+const Overview = ({ user }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [showCustomRange, setShowCustomRange] = useState(false);
@@ -421,4 +421,4 @@ const AccountsOverview = ({ user }) => {
     );
 };
 
-export default AccountsOverview;
+export default Overview;

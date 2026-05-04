@@ -21,7 +21,13 @@ import {
     DollarSign,
     Building2,
     Palette,
-    ClipboardCheck
+    ClipboardCheck,
+    Calendar,
+    FolderOpen,
+    Bell,
+    MessageSquare,
+    Award,
+    Clock
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../models/api';
 import { getRoleDepartment, useRoleDashboard } from '../../controllers/hooks/useRoleDashboard';
@@ -88,6 +94,12 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
                 { name: 'Vendors', icon: Building2, path: '/?tab=vendors' },
                 { name: 'Projects', icon: Target, path: '/?tab=projects' },
                 { name: 'Reports', icon: BarChart, path: '/?tab=reports' },
+                { name: 'Calendar', icon: Calendar, path: '/?tab=calendar' },
+                { name: 'Documents', icon: FolderOpen, path: '/?tab=documents' },
+                { name: 'Notifications', icon: Bell, path: '/?tab=notifications' },
+                { name: 'Internal Notes', icon: MessageSquare, path: '/?tab=notes' },
+                { name: 'Performance', icon: Award, path: '/?tab=performance' },
+                { name: 'Attendance', icon: Clock, path: '/?tab=attendance' },
             ];
         }
 
