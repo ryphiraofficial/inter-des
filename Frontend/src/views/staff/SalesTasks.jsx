@@ -53,6 +53,7 @@ const SalesTasks = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy]         = useState('deadline');
     const [updatingId, setUpdatingId] = useState(null);
+    const [selectedTask, setSelectedTask] = useState(null);
     const navigate = useNavigate();
 
     const isSalesManager = user?.role?.toLowerCase().includes('manager');
@@ -311,13 +312,15 @@ const SalesTasks = ({ user }) => {
                                     style={{ 
                                         '--stage-color': stage.color, 
                                         '--stage-bg': stage.bg,
-                                        cursor: (task.project?._id || task.quotation?._id) ? 'pointer' : 'default'
+                                        cursor: 'pointer'
                                     }}
                                     onClick={() => {
                                         if (task.project?._id) {
                                             navigate(`/staff/projects/${task.project._id}`);
                                         } else if (task.quotation?._id) {
                                             navigate(`/staff/quotations/view/${task.quotation._id}`);
+                                        } else {
+                                            setSelectedTask(task);
                                         }
                                     }}
                                 >
@@ -410,8 +413,52 @@ const SalesTasks = ({ user }) => {
                         })}
                     </div>
                 )}
-
             </div>
+
+            {selectedTask && (
+                <div className="st-sales-modal-overlay" onClick={() => setSelectedTask(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="st-sales-modal-content" onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '16px', padding: '2rem', width: '90%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>Task Details</h2>
+                            <button onClick={() => setSelectedTask(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#64748b' }}>&times;</button>
+                        </div>
+                        <div style={{ display: 'grid', gap: '1rem' }}>
+                            <div>
+                                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Title</label>
+                                <p style={{ margin: '4px 0 0 0', fontWeight: 500, color: '#1e293b' }}>{selectedTask.title}</p>
+                            </div>
+                            {selectedTask.description && (
+                                <div>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Description</label>
+                                    <p style={{ margin: '4px 0 0 0', color: '#334155', fontSize: '0.95rem' }}>{selectedTask.description}</p>
+                                </div>
+                            )}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Status</label>
+                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.status}</p>
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Priority</label>
+                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.priority}</p>
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Deadline</label>
+                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Progress</label>
+                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.progress || 0}%</p>
+                                </div>
+                            </div>
+                            <div style={{ marginTop: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', fontSize: '0.9rem', color: '#64748b' }}>
+                                <AlertTriangle size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
+                                This is a general task not linked to any specific Project or Quotation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
