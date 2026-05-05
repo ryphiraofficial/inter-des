@@ -136,6 +136,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="quotations/new" element={<NewQuotation isStaff={true} user={user} />} />
                     <Route path="quotations/edit/:id" element={<NewQuotation isStaff={true} isEdit={true} user={user} />} />
                     <Route path="quotations/view/:id" element={<QuotationView isStaff={true} />} />
+                    <Route path="projects/:id" element={<Projects />} />
                     <Route path="material-review" element={<MaterialReviewHub user={user} />} />
                     <Route path="*" element={<Navigate to="/staff/dashboard" replace />} />
                 </Route>

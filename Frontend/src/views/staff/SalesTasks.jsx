@@ -311,10 +311,12 @@ const SalesTasks = ({ user }) => {
                                     style={{ 
                                         '--stage-color': stage.color, 
                                         '--stage-bg': stage.bg,
-                                        cursor: task.quotation?._id ? 'pointer' : 'default'
+                                        cursor: (task.project?._id || task.quotation?._id) ? 'pointer' : 'default'
                                     }}
                                     onClick={() => {
-                                        if (task.quotation?._id) {
+                                        if (task.project?._id) {
+                                            navigate(`/staff/projects/${task.project._id}`);
+                                        } else if (task.quotation?._id) {
                                             navigate(`/staff/quotations/view/${task.quotation._id}`);
                                         }
                                     }}
