@@ -11,7 +11,7 @@ import {
     ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area
 } from 'recharts';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { projectAPI, procurementAPI, notificationAPI, vendorAPI, taskAPI, purchaseOrderAPI } from '../../../models/api';
+import { projectAPI, procurementAPI, notificationAPI, vendorAPI, taskAPI, purchaseOrderAPI, productionAPI } from '../../../models/api';
 import '../css/ManagerDashboard.css';
 import Overview from './Overview';
 import DesignHandoffs from './DesignHandoffs';
