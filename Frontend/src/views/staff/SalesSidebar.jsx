@@ -16,15 +16,10 @@ const SALES_STAFF_NAV = [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '12', badgeStyle: 'indigo' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
-        ],
-    },
-    {
-        group: 'CRM',
-        items: [
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
             { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients',    badge: 'New', badgeStyle: 'new' },
         ],
-    },
+    }
 ];
 
 const SALES_MANAGER_NAV = [
@@ -34,11 +29,6 @@ const SALES_MANAGER_NAV = [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '14', badgeStyle: 'indigo' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
-        ],
-    },
-    {
-        group: 'CRM',
-        items: [
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
             { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients' },
             { name: 'Approvals',      icon: CheckCircle,     path: '/staff/tasks',      badge: '3',  badgeStyle: 'green' },
