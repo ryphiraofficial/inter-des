@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import StaffHomeSidebar from '../../views/staff/StaffSidebar';
 import AccountsStaffSidebar from '../../views/Accounts/staff/AccountsStaffSidebar';
+import SalesSidebar from '../../views/staff/SalesSidebar';
 import DeptSidebar from '../../views/common/DeptSidebar';
 import StaffHeader from '../../views/staff/StaffHeader';
 import { getRoleDepartment } from '../hooks/useRoleDashboard';
@@ -38,6 +39,9 @@ const StaffLayout = ({ user, onLogout }) => {
         }
         if (department === 'Accounts') {
             return <AccountsStaffSidebar {...props} />;
+        }
+        if (department === 'Sales') {
+            return <SalesSidebar {...props} />;
         }
         return <StaffHomeSidebar {...props} />;
     };
