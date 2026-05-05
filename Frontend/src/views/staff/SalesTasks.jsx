@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
     Target, Search, Loader, Calendar, Briefcase,
     Plus, Phone, FileText, RefreshCw, Users,
-    TrendingUp, AlertTriangle, Clock, CheckCircle, Zap
+    TrendingUp, AlertTriangle, Clock, CheckCircle, Zap,
+    Building2, ArrowRight, Layers
 } from 'lucide-react';
 import { taskAPI } from '../../models/api';
 import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
@@ -75,6 +76,20 @@ const SalesTasks = ({ user }) => {
     /* ── Derived data ── */
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    // Extract unique projects from tasks
+    const myProjects = Object.values(
+        tasks.reduce((acc, t) => {
+            if (t.project?._id && !acc[t.project._id]) {
+                acc[t.project._id] = {
+                    ...t.project,
+                    clientName: t.quotation?.client?.name || t.client?.name || 'N/A',
+                    quotationName: t.quotation?.projectName || t.project?.name || '',
+                };
+            }
+            return acc;
+        }, {})
+    );
 
     const isOverdue   = (t) => t.dueDate && new Date(t.dueDate) < today && t.status !== 'Completed';
     const isDueToday  = (t) => { const d = new Date(t.dueDate); d.setHours(0,0,0,0); return t.dueDate && d.getTime() === today.getTime(); };
@@ -218,6 +233,69 @@ const SalesTasks = ({ user }) => {
                     ))}
                 </div>
 
+                {/* My Projects Section */}
+                {myProjects.length > 0 && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                            <Layers size={17} style={{ color: '#6366f1' }} />
+                            <span style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>My Projects</span>
+                            <span style={{ marginLeft: '4px', background: '#eef2ff', color: '#6366f1', borderRadius: '100px', padding: '2px 10px', fontSize: '0.8rem', fontWeight: 700 }}>{myProjects.length}</span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                            {myProjects.map(proj => {
+                                const stageColors = { Design: '#8b5cf6', Procurement: '#f59e0b', Production: '#3b82f6', Completed: '#10b981' };
+                                const stageColor = stageColors[proj.stage] || '#64748b';
+                                return (
+                                    <div
+                                        key={proj._id}
+                                        onClick={() => navigate(`/staff/projects/${proj._id}`)}
+                                        style={{
+                                            background: 'white',
+                                            border: '1px solid #e2e8f0',
+                                            borderRadius: '14px',
+                                            padding: '1.25rem',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            borderLeft: `4px solid ${stageColor}`,
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+                                        }}
+                                        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; }}
+                                    >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                                            <div>
+                                                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>{proj.quotationName || proj.name}</p>
+                                                <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>{proj.projectNumber}</p>
+                                            </div>
+                                            <span style={{ background: stageColor + '18', color: stageColor, borderRadius: '100px', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                                {proj.stage}
+                                            </span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.9rem', fontSize: '0.85rem', color: '#475569' }}>
+                                            <Building2 size={13} />
+                                            <span>{proj.clientName}</span>
+                                        </div>
+                                        <div style={{ marginBottom: '0.5rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#94a3b8', marginBottom: '4px' }}>
+                                                <span>Progress</span>
+                                                <span style={{ fontWeight: 700, color: stageColor }}>{proj.progress || 0}%</span>
+                                            </div>
+                                            <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', width: `${proj.progress || 0}%`, background: stageColor, borderRadius: '3px', transition: 'width 0.4s' }} />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
+                                            <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                                                {proj.status || 'In Progress'}
+                                            </span>
+                                            <ArrowRight size={14} style={{ color: stageColor }} />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
                 {/* Manager team strip */}
                 {isSalesManager && (
                     <div className="st-sales-team-strip">
