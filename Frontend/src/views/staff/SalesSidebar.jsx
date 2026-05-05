@@ -5,6 +5,7 @@ import {
     Users, Briefcase, BarChart2, TrendingUp, DollarSign,
     CheckCircle, LogOut, Zap
 } from 'lucide-react';
+import { BASE_IMAGE_URL } from '../../models/api';
 import './css/SalesSidebar.css';
 
 /* ─── Nav config ──────────────────────────────────────────────────────────── */
@@ -66,6 +67,13 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
         ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
         : 'SA';
 
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    };
+    const avatarSrc = getImageUrl(user?.avatar);
+
     // Mock KPI data — replace with real API data when available
     const kpiItems = isManager
         ? [{ val: '₹8.4L', lbl: 'Revenue' }, { val: '23', lbl: 'Leads' }, { val: '68%', lbl: 'Conv.' }]
@@ -89,7 +97,12 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                 <div className="sales-profile-block">
                     <div className="sales-profile-card">
                         <div className="sales-profile-top">
-                            <div className="sales-avatar">{userInitials}</div>
+                            <div className="sales-avatar">
+                                {avatarSrc
+                                    ? <img src={avatarSrc} alt={user?.fullName} className="sales-avatar-img" />
+                                    : userInitials
+                                }
+                            </div>
                             <div className="sales-profile-info">
                                 <span className="sales-profile-name">
                                     {user?.fullName || 'Sales User'}
