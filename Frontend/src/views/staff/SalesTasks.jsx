@@ -63,7 +63,7 @@ const SalesTasks = ({ user }) => {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const res = await taskAPI.getAll();
+            const res = await taskAPI.getAll({ includeSalesReview: 'true' });
             if (res.success) setTasks(res.data);
         } catch (err) {
             console.error('Failed to load tasks:', err);

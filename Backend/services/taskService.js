@@ -41,17 +41,18 @@ exports.getTasks = async (reqData) => {
             const Staff = require('../models/Staff');
             const staffMember = await Staff.findOne({ email: reqData.user.email });
             if (staffMember) {
-                if (isSales) {
-                    // Sales can see tasks assigned to them OR tasks pending sales review
+                if (isSales && reqData.query.includeSalesReview === 'true') {
+                    // Action Center: show tasks assigned to them AND tasks pending sales review
                     query.$or = [
                         { assignedTo: staffMember._id },
                         { status: 'Pending Sales Review' }
                     ];
                 } else {
+                    // Regular Tasks view: only show tasks directly assigned to this staff member
                     query.assignedTo = staffMember._id;
                 }
-            } else if (!isSales) {
-                // If not found in staff model and not sales, return empty
+            } else {
+                // Staff member not found — return empty
                 return { status: 200, success: true, count: 0, data: [] };
             }
         }
