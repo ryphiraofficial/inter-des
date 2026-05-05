@@ -54,21 +54,45 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                 { name: 'My Tasks',      icon: CheckSquare,     path: '/staff/tasks' },
                 { name: 'Clients',       icon: Users,           path: '/staff/clients' },
             ],
-            Sales: [
-                { name: 'Dashboard',    icon: LayoutDashboard, path: '/staff/dashboard' },
-                { name: 'My Tasks',     icon: CheckSquare,     path: '/staff/tasks' },
-                { name: 'Site Visits',  icon: Camera,          path: '/staff/site-visits' },
-                { name: 'Clients',      icon: Users,           path: '/staff/clients' },
-                { name: 'Quotations',   icon: FileText,        path: '/staff/quotations' },
-            ],
-            'Sales Manager': [
-                { name: 'Dashboard',    icon: LayoutDashboard, path: '/staff/dashboard' },
-                { name: 'My Tasks',     icon: CheckSquare,     path: '/staff/tasks' },
-                { name: 'Site Visits',  icon: Camera,          path: '/staff/site-visits' },
-                { name: 'Clients',      icon: Users,           path: '/staff/clients' },
-                { name: 'Quotations',   icon: FileText,        path: '/staff/quotations' },
-                { name: 'Reports',      icon: BarChart2,       path: '/staff/reports' },
-            ],
+            Sales: {
+                groups: [
+                    {
+                        title: 'Sales Operations',
+                        items: [
+                            { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
+                            { name: 'Action Center',  icon: Target,          path: '/staff/tasks', badge: null },
+                            { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
+                            { name: 'Quotations',     icon: FileText,        path: '/staff/quotations' },
+                        ]
+                    },
+                    {
+                        title: 'CRM',
+                        items: [
+                            { name: 'Clients',        icon: Users,           path: '/staff/clients' },
+                        ]
+                    },
+                ]
+            },
+            'Sales Manager': {
+                groups: [
+                    {
+                        title: 'Sales Operations',
+                        items: [
+                            { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
+                            { name: 'Action Center',  icon: Target,          path: '/staff/tasks', badge: null },
+                            { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
+                            { name: 'Quotations',     icon: FileText,        path: '/staff/quotations' },
+                        ]
+                    },
+                    {
+                        title: 'CRM',
+                        items: [
+                            { name: 'Clients',        icon: Users,           path: '/staff/clients' },
+                            { name: 'Reports',        icon: BarChart2,       path: '/staff/reports' },
+                        ]
+                    },
+                ]
+            },
             Admin: [
                 { name: 'Dashboard',     icon: LayoutDashboard, path: '/staff/dashboard' },
                 { name: 'My Tasks',      icon: CheckSquare,     path: '/staff/tasks' },
@@ -78,10 +102,12 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
             ]
         };
 
-        return departmentItems[department] || departmentItems[user?.role] || departmentItems.Admin;
+        return departmentItems[department] || departmentItems[user?.role] || { groups: null, items: departmentItems.Admin };
     };
 
-    const menuItems = getMenuItems();
+    const menuConfig = getMenuItems();
+    const isSalesGrouped = menuConfig?.groups !== undefined;
+    const menuItems = isSalesGrouped ? null : (menuConfig.items || menuConfig);
 
     const userInitials = user?.fullName
         ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
@@ -114,20 +140,67 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                 </div>
 
                 <nav className="sidebar-nav">
-                    <ul>
-                        {menuItems.map((item) => (
-                            <li key={item.name}>
-                                <NavLink
-                                    to={item.path}
-                                    className={({ isActive }) => isActive ? 'active' : ''}
-                                    onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-                                >
-                                    <item.icon size={20} />
-                                    <span>{item.name}</span>
-                                </NavLink>
-                            </li>
-                        ))}
-                    </ul>
+                    {isSalesGrouped ? (
+                        // Grouped CRM nav for Sales roles
+                        menuConfig.groups.map(group => (
+                            <div key={group.title}>
+                                <div style={{
+                                    fontSize: '0.6rem',
+                                    fontWeight: 800,
+                                    color: '#94a3b8',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.09em',
+                                    padding: '12px 14px 4px',
+                                }}>
+                                    {group.title}
+                                </div>
+                                <ul>
+                                    {group.items.map(item => (
+                                        <li key={item.name}>
+                                            <NavLink
+                                                to={item.path}
+                                                className={({ isActive }) => isActive ? 'active' : ''}
+                                                onClick={() => window.innerWidth < 1024 && toggleSidebar()}
+                                            >
+                                                <item.icon size={20} />
+                                                <span style={{ flex: 1 }}>{item.name}</span>
+                                                {item.badge !== undefined && (
+                                                    <span style={{
+                                                        background: '#4f46e5',
+                                                        color: 'white',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 800,
+                                                        padding: '2px 7px',
+                                                        borderRadius: '20px',
+                                                        minWidth: '20px',
+                                                        textAlign: 'center',
+                                                    }}>
+                                                        •
+                                                    </span>
+                                                )}
+                                            </NavLink>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
+                    ) : (
+                        // Flat nav for all other departments
+                        <ul>
+                            {menuItems.map((item) => (
+                                <li key={item.name}>
+                                    <NavLink
+                                        to={item.path}
+                                        className={({ isActive }) => isActive ? 'active' : ''}
+                                        onClick={() => window.innerWidth < 1024 && toggleSidebar()}
+                                    >
+                                        <item.icon size={20} />
+                                        <span>{item.name}</span>
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </nav>
 
                 <div className="sidebar-footer">

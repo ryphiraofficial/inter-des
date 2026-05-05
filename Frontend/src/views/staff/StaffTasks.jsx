@@ -10,9 +10,13 @@ import {
     List as ListIcon
 } from 'lucide-react';
 import { taskAPI } from '../../models/api';
+import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
+import SalesTasks from './SalesTasks';
 import './css/StaffTasks.css';
 
-const StaffTasks = () => {
+const StaffTasks = ({ user }) => {
+    const department = getRoleDepartment(user?.role);
+    if (department === 'Sales') return <SalesTasks user={user} />;
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
