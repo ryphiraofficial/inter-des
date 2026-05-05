@@ -10,13 +10,14 @@ import './css/SalesTasks.css';
 
 /* ─── Pipeline stage config ──────────────────────────────────────────────── */
 const STAGES = [
-    { key: 'All',          label: 'All Tasks',      color: '#6366f1', bg: '#eef2ff' },
-    { key: 'New Leads',    label: 'New Leads',       color: '#8b5cf6', bg: '#f5f3ff' },
-    { key: 'Follow-Up',    label: 'Follow-Ups',      color: '#0ea5e9', bg: '#f0f9ff' },
-    { key: 'Site Visits',  label: 'Site Visits',     color: '#f59e0b', bg: '#fffbeb' },
-    { key: 'Quotations',   label: 'Quotations',      color: '#10b981', bg: '#ecfdf5' },
-    { key: 'Negotiations', label: 'Negotiations',    color: '#ef4444', bg: '#fef2f2' },
-    { key: 'Closed',       label: 'Closed Deals',    color: '#64748b', bg: '#f8fafc' },
+    { key: 'All',              label: 'All Tasks',        color: '#6366f1', bg: '#eef2ff' },
+    { key: 'New Leads',        label: 'New Leads',         color: '#8b5cf6', bg: '#f5f3ff' },
+    { key: 'Design Approvals', label: 'Design Approvals',  color: '#d946ef', bg: '#fdf4ff' },
+    { key: 'Follow-Up',        label: 'Follow-Ups',        color: '#0ea5e9', bg: '#f0f9ff' },
+    { key: 'Site Visits',      label: 'Site Visits',       color: '#f59e0b', bg: '#fffbeb' },
+    { key: 'Quotations',       label: 'Quotations',        color: '#10b981', bg: '#ecfdf5' },
+    { key: 'Negotiations',     label: 'Negotiations',      color: '#ef4444', bg: '#fef2f2' },
+    { key: 'Closed',           label: 'Closed Deals',      color: '#64748b', bg: '#f8fafc' },
 ];
 
 const mapStatusToStage = (status) => {
@@ -26,6 +27,7 @@ const mapStatusToStage = (status) => {
     if (s.includes('visit'))       return 'Site Visits';
     if (s.includes('quot'))        return 'Quotations';
     if (s.includes('negotiat'))    return 'Negotiations';
+    if (s.includes('sales review') || s.includes('client approval') || s.includes('admin approved')) return 'Design Approvals';
     if (s === 'completed' || s.includes('closed')) return 'Closed';
     return 'Follow-Up';
 };
@@ -362,8 +364,8 @@ const SalesTasks = ({ user }) => {
                                         <span className="st-card-prog-pct">{task.progress || 0}%</span>
                                     </div>
 
-                                    {/* Manager review actions */}
-                                    {isSalesManager && isPendingReview && (
+                                    {/* Sales review actions (Client & Sales Approval) */}
+                                    {isPendingReview && (
                                         <div className="st-card-actions">
                                             <button
                                                 className="st-action-btn approve"
@@ -372,7 +374,7 @@ const SalesTasks = ({ user }) => {
                                             >
                                                 {updatingId === task._id
                                                     ? <Loader size={12} className="spinner" />
-                                                    : <><CheckCircle size={12} /> Approve</>
+                                                    : <><CheckCircle size={12} /> Approve Design</>
                                                 }
                                             </button>
                                             <button
