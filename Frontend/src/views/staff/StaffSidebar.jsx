@@ -83,16 +83,9 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
     const menuItems = getMenuItems();
 
-    const getDepartmentIcon = () => {
-        switch (department) {
-            case 'Design':       return <Palette size={20} />;
-            case 'Procurement':  return <Truck size={20} />;
-            case 'Production':   return <Wrench size={20} />;
-            case 'Accounts':     return <DollarSign size={20} />;
-            case 'Sales':        return <TrendingUp size={20} />;
-            default:             return <Building2 size={20} />;
-        }
-    };
+    const userInitials = user?.fullName
+        ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+        : department ? department[0].toUpperCase() : 'U';
 
     return (
         <>
@@ -109,18 +102,10 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
             {isOpen && <div className="staff-sidebar-overlay" onClick={toggleSidebar}></div>}
 
             <div className={`staff-sidebar ${isOpen ? 'open' : ''}`}>
-                <div className="sidebar-header">
-                    <div className="brand-logo-container">
-                        <TrendingUp size={22} strokeWidth={2.5} />
-                    </div>
-                    <div className="brand-suffix" style={{ textAlign: 'right', marginRight: '4px' }}>
-                        {department ? department.toUpperCase() : 'STAFF'} PORTAL
-                    </div>
-                </div>
 
                 <div className="user-profile">
-                    <div className="avatar">
-                        {getDepartmentIcon()}
+                    <div className="avatar" style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                        {userInitials}
                     </div>
                     <div className="user-info">
                         <span className="name">{user?.fullName}</span>
