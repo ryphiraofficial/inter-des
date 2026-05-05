@@ -14,9 +14,9 @@ import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
 import SalesTasks from './SalesTasks';
 import './css/StaffTasks.css';
 
-const StaffTasks = ({ user }) => {
+const StaffTasks = ({ user, forceTable = false }) => {
     const department = getRoleDepartment(user?.role);
-    if (department === 'Sales') return <SalesTasks user={user} />;
+    if (department === 'Sales' && !forceTable) return <SalesTasks user={user} />;
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');

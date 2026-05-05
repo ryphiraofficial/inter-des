@@ -129,6 +129,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route index element={<Navigate to="/staff/dashboard" replace />} />
                     <Route path="dashboard" element={<RoleDashboard user={user} onLogout={onLogout} />} />
                     <Route path="tasks" element={<StaffTasks user={user} />} />
+                    <Route path="all-tasks" element={<StaffTasks user={user} forceTable={true} />} />
                     <Route path="site-visits" element={<SiteVisit user={user} />} />
                     <Route path="clients" element={<StaffClients user={user} />} />
                     <Route path="quotations" element={<StaffQuotations user={user} />} />

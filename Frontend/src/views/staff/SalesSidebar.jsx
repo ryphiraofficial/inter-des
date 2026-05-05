@@ -15,7 +15,7 @@ const SALES_STAFF_NAV = [
         items: [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '12', badgeStyle: 'indigo' },
-            { name: 'Tasks',          icon: CheckCircle,     path: '/staff/tasks' },
+            { name: 'Tasks',          icon: CheckCircle,     path: '/staff/all-tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
         ],
     },
@@ -34,7 +34,7 @@ const SALES_MANAGER_NAV = [
         items: [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '14', badgeStyle: 'indigo' },
-            { name: 'Tasks',          icon: CheckCircle,     path: '/staff/tasks' },
+            { name: 'Tasks',          icon: CheckCircle,     path: '/staff/all-tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
         ],
     },
