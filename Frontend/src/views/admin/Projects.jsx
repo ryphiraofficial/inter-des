@@ -37,13 +37,20 @@ const Projects = () => {
     }, [stageFilter, statusFilter]);
 
     useEffect(() => {
-        if (urlProjectId && projects.length > 0) {
-            const project = projects.find(p => p._id === urlProjectId);
-            if (project) {
-                setSelectedProject(project);
-            }
+        if (urlProjectId) {
+            const fetchSingleProject = async () => {
+                try {
+                    const res = await projectAPI.getById(urlProjectId);
+                    if (res.success) {
+                        setSelectedProject(res.data);
+                    }
+                } catch (err) {
+                    console.error('Error fetching project details:', err);
+                }
+            };
+            fetchSingleProject();
         }
-    }, [urlProjectId, projects]);
+    }, [urlProjectId]);
 
     const fetchProjects = async () => {
         try {
@@ -147,7 +154,7 @@ const Projects = () => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
                         <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
                             <h4 style={{ marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Building2 size={18} /> Client Information</h4>
                             <div style={{ display: 'grid', gap: '12px' }}>
@@ -162,6 +169,15 @@ const Projects = () => {
                                 <div><span style={{ color: '#64748b' }}>Created On:</span> {new Date(selectedProject.createdAt).toLocaleDateString()}</div>
                                 <div><span style={{ color: '#64748b' }}>Last Updated:</span> {new Date(selectedProject.updatedAt).toLocaleDateString()}</div>
                                 <div><span style={{ color: '#64748b' }}>Current Stage:</span> <strong>{selectedProject.stage}</strong></div>
+                            </div>
+                        </div>
+                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+                            <h4 style={{ marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Users size={18} /> Project Team</h4>
+                            <div style={{ display: 'grid', gap: '12px', fontSize: '0.95rem' }}>
+                                <div><span style={{ color: '#64748b', display: 'inline-block', width: '120px' }}>Design Mgr:</span> <strong>{selectedProject.assignedDesignManager?.fullName || 'Unassigned'}</strong></div>
+                                <div><span style={{ color: '#64748b', display: 'inline-block', width: '120px' }}>Procurement:</span> <strong>{selectedProject.assignedProcurementManager?.fullName || 'Unassigned'}</strong></div>
+                                <div><span style={{ color: '#64748b', display: 'inline-block', width: '120px' }}>Production:</span> <strong>{selectedProject.assignedProductionManager?.fullName || 'Unassigned'}</strong></div>
+                                <div><span style={{ color: '#64748b', display: 'inline-block', width: '120px' }}>Created By:</span> {selectedProject.createdBy?.fullName || 'N/A'}</div>
                             </div>
                         </div>
                     </div>
