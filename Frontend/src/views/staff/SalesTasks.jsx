@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Target, Search, Loader, Calendar, Briefcase,
     Plus, Phone, FileText, RefreshCw, Users,
@@ -52,6 +53,7 @@ const SalesTasks = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy]         = useState('deadline');
     const [updatingId, setUpdatingId] = useState(null);
+    const navigate = useNavigate();
 
     const isSalesManager = user?.role?.toLowerCase().includes('manager');
 
@@ -306,7 +308,16 @@ const SalesTasks = ({ user }) => {
                                 <div
                                     key={task._id}
                                     className="st-sales-task-card"
-                                    style={{ '--stage-color': stage.color, '--stage-bg': stage.bg }}
+                                    style={{ 
+                                        '--stage-color': stage.color, 
+                                        '--stage-bg': stage.bg,
+                                        cursor: task.quotation?._id ? 'pointer' : 'default'
+                                    }}
+                                    onClick={() => {
+                                        if (task.quotation?._id) {
+                                            navigate(`/staff/quotations/view/${task.quotation._id}`);
+                                        }
+                                    }}
                                 >
                                     {/* Top badges row */}
                                     <div className="st-card-top">
@@ -369,7 +380,10 @@ const SalesTasks = ({ user }) => {
                                         <div className="st-card-actions">
                                             <button
                                                 className="st-action-btn approve"
-                                                onClick={() => handleSalesReview(task._id, true)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleSalesReview(task._id, true);
+                                                }}
                                                 disabled={updatingId === task._id}
                                             >
                                                 {updatingId === task._id
@@ -379,7 +393,10 @@ const SalesTasks = ({ user }) => {
                                             </button>
                                             <button
                                                 className="st-action-btn reject"
-                                                onClick={() => handleSalesReview(task._id, false)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleSalesReview(task._id, false);
+                                                }}
                                                 disabled={updatingId === task._id}
                                             >
                                                 Revise
