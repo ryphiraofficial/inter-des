@@ -7,6 +7,8 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { projectAPI } from '../../models/api';
 import './css/Projects.css';
+import Skeleton from '../common/Skeleton';
+
 
 const Projects = () => {
     const navigate = useNavigate();
@@ -104,7 +106,38 @@ const Projects = () => {
     };
 
     if (urlProjectId && loading) {
-        return <div className="loading-state">Loading Project Profile...</div>;
+        return (
+            <div className="projects-page focused-view" style={{ padding: '2rem 2.5rem', background: '#ffffff', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
+                <div className="page-header" style={{ marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <Skeleton width="40px" height="40px" borderRadius="50%" />
+                        <div>
+                            <Skeleton width="240px" height="32px" />
+                            <div style={{ marginTop: '8px' }}>
+                                <Skeleton width="180px" height="16px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ background: 'white', borderRadius: '24px', padding: '2.5rem', border: '1px solid #f1f5f9' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+                        {[1, 2, 3].map(i => (
+                            <div key={i}>
+                                <Skeleton width="100px" height="12px" />
+                                <div style={{ marginTop: '12px' }}>
+                                    <Skeleton width="100%" height="32px" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+                        {[1, 2, 3].map(i => (
+                            <Skeleton key={i} width="100%" height="160px" borderRadius="16px" />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     // Special View for Direct Project Review (Focused View)
@@ -335,11 +368,28 @@ const Projects = () => {
                         <div className="stage-header" style={{ borderColor: getStageColor(stage) }}>
                             <span className="stage-name">{stage}</span>
                             <span className="stage-count">
-                                {projects.filter(p => p.stage === stage).length}
+                                {loading ? '...' : projects.filter(p => p.stage === stage).length}
                             </span>
                         </div>
                         <div className="stage-projects">
-                            {projects
+                            {loading ? (
+                                [1, 2].map(i => (
+                                    <div key={i} className="project-card skeleton" style={{ background: 'white', cursor: 'default' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                            <Skeleton width="120px" height="18px" />
+                                            <Skeleton width="80px" height="14px" />
+                                        </div>
+                                        <Skeleton width="100px" height="14px" />
+                                        <div style={{ margin: '15px 0' }}>
+                                            <Skeleton width="100%" height="8px" />
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Skeleton width="60px" height="16px" />
+                                            <Skeleton width="80px" height="16px" />
+                                        </div>
+                                    </div>
+                                ))
+                            ) : projects
                                 .filter(p => p.stage === stage)
                                 .map(project => (
                                     <div key={project._id} className="project-card" onClick={() => setSelectedProject(project)}>

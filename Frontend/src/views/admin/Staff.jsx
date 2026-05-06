@@ -20,6 +20,8 @@ import { staffAPI } from '../../models/api';
 import { useToast } from '../../models/context/ToastContext';
 import CustomSelect from '../common/CustomSelect';
 import './css/Staff.css';
+import Skeleton from '../common/Skeleton';
+
 
 const Staff = () => {
     const { showToast } = useToast();
@@ -215,9 +217,46 @@ const Staff = () => {
                 </div>
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Loading staff details...</p>
+                    <div className="staff-loading-skeleton">
+                        <div className="desktop-only">
+                            <div style={{ background: 'white', borderRadius: '16px', padding: '1rem', border: '1px solid #e2e8f0' }}>
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} style={{ display: 'flex', gap: '2rem', padding: '1.25rem', borderBottom: i < 5 ? '1px solid #f1f5f9' : 'none' }}>
+                                        <Skeleton width="40px" height="40px" borderRadius="50%" />
+                                        <Skeleton width="200px" height="20px" />
+                                        <Skeleton width="150px" height="20px" />
+                                        <Skeleton width="150px" height="20px" />
+                                        <Skeleton width="100px" height="20px" />
+                                        <Skeleton width="80px" height="20px" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mobile-only">
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} style={{ background: 'white', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                                            <Skeleton width="48px" height="48px" borderRadius="50%" />
+                                            <div style={{ flex: 1 }}>
+                                                <Skeleton width="140px" height="18px" />
+                                                <div style={{ marginTop: '8px' }}>
+                                                    <Skeleton width="80px" height="12px" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Skeleton width="100%" height="40px" />
+                                        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                                            <Skeleton width="100px" height="16px" />
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <Skeleton width="36px" height="36px" borderRadius="8px" />
+                                                <Skeleton width="36px" height="36px" borderRadius="8px" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 ) : filteredStaff.length === 0 ? (
                     <div className="empty-state">

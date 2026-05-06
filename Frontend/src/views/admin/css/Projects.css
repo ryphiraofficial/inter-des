@@ -164,6 +164,12 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
+.project-card.skeleton:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    cursor: default;
+}
+
 .project-card .card-header {
     display: flex;
     justify-content: space-between;

@@ -347,22 +347,48 @@
     letter-spacing: -0.04em;
 }
 
-/* Loading skeleton for text */
-.loading-text {
-    color: #cbd5e1;
-    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Shimmer Loading Skeleton */
+.skeleton-shimmer {
+    background: #f1f5f9;
+    background-image: linear-gradient(
+        to right,
+        #f1f5f9 0%,
+        #e2e8f0 20%,
+        #f1f5f9 40%,
+        #f1f5f9 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 800px 100%;
+    display: inline-block;
+    position: relative;
+    animation: shimmer 1.5s infinite linear;
 }
 
-@keyframes pulse {
-
-    0%,
+@keyframes shimmer {
+    0% {
+        background-position: -468px 0;
+    }
     100% {
-        opacity: 1;
+        background-position: 468px 0;
     }
+}
 
-    50% {
-        opacity: .5;
-    }
+.kpi-card.loading, .revenue-card.loading, .analysis-card.skeleton {
+    cursor: default;
+    pointer-events: none;
+}
+
+.kpi-card.loading:hover {
+    transform: none;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
+}
+
+.approval-alert-card.skeleton {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #e2e8f0;
+    box-shadow: none;
+    cursor: default;
 }
 
 
