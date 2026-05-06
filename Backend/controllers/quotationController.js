@@ -301,9 +301,23 @@ exports.approveQuotation = async (req, res) => {
             amount: item.amount
         }));
 
+        const project = await Project.create({
+            client: quotation.client,
+            quotation: quotation._id,
+            name: quotation.projectName,
+            description: `Project created from quotation ${quotation.quotationNumber}`,
+            budget: quotation.totalAmount,
+            stage: 'Accounts',
+            status: 'Not Started',
+            paymentStatus: 'Pending Advance',
+            advanceAmount: quotation.totalAmount * 0.5,
+            createdBy: req.user.id
+        });
+
         await Invoice.create({
             client: quotation.client,
             quotation: quotation._id,
+            project: project._id,
             invoiceDate: new Date(),
             dueDate: dueDate,
             items: invoiceItems,
@@ -314,17 +328,6 @@ exports.approveQuotation = async (req, res) => {
             createdBy: req.user.id,
             notes: quotation.notes,
             termsAndConditions: quotation.termsAndConditions
-        });
-
-        const project = await Project.create({
-            client: quotation.client,
-            quotation: quotation._id,
-            name: quotation.projectName,
-            description: `Project created from quotation ${quotation.quotationNumber}`,
-            budget: quotation.totalAmount,
-            stage: 'Design',
-            status: 'Not Started',
-            createdBy: req.user.id
         });
 
         const defaultSteps = [
@@ -342,16 +345,16 @@ exports.approveQuotation = async (req, res) => {
 
         await createNotification({
             title: 'Quotation Approved - Project Created',
-            description: `Quotation "${quotation.projectName || quotation.quotationNumber}" approved. Project "${project.name}" (${project.projectNumber}) created and moved to Design stage.`,
+            description: `Quotation "${quotation.projectName || quotation.quotationNumber}" approved. Project "${project.name}" (${project.projectNumber}) created and moved to Accounts stage for Payment Clearance.`,
             type: 'Quote',
             relatedModel: 'Project',
             relatedId: project._id,
             createdBy: req.user.id
         });
 
-        await notifyByRole('Design Manager', {
-            title: 'New Project Ready for Design',
-            description: `Project "${project.name}" requires design work. Please review and assign designers.`,
+        await notifyByRole('Accounts Manager', {
+            title: 'New Project Pending Payment Clearance',
+            description: `Project "${project.name}" requires advance payment collection. Please review and assign to Accounts Staff.`,
             type: 'Info',
             relatedModel: 'Project',
             relatedId: project._id

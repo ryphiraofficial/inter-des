@@ -317,7 +317,7 @@ const Dashboard = ({ user }) => {
                             </div>
                         </div>
                         <div className="pie-container">
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     {/* Background Track Ring */}
                                     <Pie
@@ -370,7 +370,7 @@ const Dashboard = ({ user }) => {
                             </div>
                         </div>
                         <div className="pie-container">
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     {/* Background Track Ring */}
                                     <Pie
@@ -423,7 +423,7 @@ const Dashboard = ({ user }) => {
                             </div>
                         </div>
                         <div className="pie-container">
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     {/* Background Track Ring */}
                                     <Pie
@@ -483,7 +483,7 @@ const Dashboard = ({ user }) => {
                                 </select>
                             </div>
                         </div>
-                        <div style={{ height: '320px', width: '100%' }}>
+                        <div className="area-chart-wrapper" style={{ width: '100%' }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={revenueData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                     <defs>
@@ -532,7 +532,7 @@ const Dashboard = ({ user }) => {
                                 <Activity className="chart-icon-accent" size={20} color="#8b5cf6" />
                             </div>
                         </div>
-                        <div style={{ height: '280px', width: '100%', marginTop: 'auto' }}>
+                        <div className="bar-chart-wrapper" style={{ width: '100%', marginTop: 'auto' }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={quotationData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
                                     <CartesianGrid vertical={false} stroke="#e2e8f0" strokeDasharray="3 3" />

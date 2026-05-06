@@ -28,8 +28,8 @@ const ProjectSchema = new mongoose.Schema({
     },
     stage: {
         type: String,
-        enum: ['Design', 'Procurement', 'Production', 'Completed'],
-        default: 'Design'
+        enum: ['Accounts', 'Design', 'Pending Payment', 'Procurement', 'Production', 'Completed'],
+        default: 'Accounts'
     },
     status: {
         type: String,
@@ -78,6 +78,41 @@ const ProjectSchema = new mongoose.Schema({
     assignedProductionManager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    assignedAccountsStaff: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending Advance', 'Invoice Sent', 'Partial Payment', 'Cleared', 'Overdue'],
+        default: 'Pending Advance'
+    },
+    advancePercentage: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    advanceAmount: {
+        type: Number,
+        default: 0
+    },
+    collectedAmount: {
+        type: Number,
+        default: 0
+    },
+    paymentDueDate: {
+        type: Date
+    },
+    adminPaymentNotes: {
+        type: String,
+        trim: true
+    },
+    paymentCollectionStatus: {
+        type: String,
+        enum: ['Not Required', 'Pending Assignment', 'Assigned', 'Collected', 'Verified'],
+        default: 'Not Required'
     },
     notes: {
         type: String,
@@ -136,9 +171,11 @@ ProjectSchema.pre('save', function (next) {
         this.stage = 'Production';
     } else if (this.materialsReady) {
         this.stage = 'Procurement';
-    } else {
-        this.stage = 'Design';
+    } else if (this.designComplete) {
+        this.stage = 'Procurement'; // Or Design if workflow dictates
     }
+    // We shouldn't auto-downgrade to Design/Accounts just based on booleans unless we want to,
+    // so let's only auto-advance if it reaches the end states.
     
     next();
 });

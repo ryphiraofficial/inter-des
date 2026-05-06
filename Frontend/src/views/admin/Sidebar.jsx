@@ -87,6 +87,7 @@ const Sidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
         } else if (dashboardType === 'accounts_manager') {
             roleSpecificItems = [
                 { name: 'Accounts Overview', icon: LayoutDashboard, path: '/?tab=overview' },
+                { name: 'Payment Clearance', icon: Shield, path: '/?tab=clearance' },
                 { name: 'Invoices', icon: Receipt, path: '/?tab=invoices' },
                 { name: 'Expenses', icon: DollarSign, path: '/?tab=expenses' },
                 { name: 'Payments', icon: Receipt, path: '/?tab=payments' },

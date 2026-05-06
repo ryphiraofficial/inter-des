@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard, Target, Phone, Camera, FileText,
     Users, Briefcase, BarChart2, TrendingUp, DollarSign,
-    CheckCircle, LogOut, Zap
+    CheckCircle, LogOut, Zap, Layers
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../models/api';
 import './css/SalesSidebar.css';
@@ -14,7 +14,7 @@ const SALES_STAFF_NAV = [
         group: 'Sales Operations',
         items: [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
-            { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '12', badgeStyle: 'indigo' },
+            { name: 'My Projects',    icon: Layers,          path: '/staff/tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
             { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients',    badge: 'New', badgeStyle: 'new' },
@@ -27,11 +27,10 @@ const SALES_MANAGER_NAV = [
         group: 'Sales Operations',
         items: [
             { name: 'Dashboard',      icon: LayoutDashboard, path: '/staff/dashboard' },
-            { name: 'Action Center',  icon: Target,          path: '/staff/tasks',      badge: '14', badgeStyle: 'indigo' },
+            { name: 'Team Projects',  icon: Layers,          path: '/staff/tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
             { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients' },
-            { name: 'Approvals',      icon: CheckCircle,     path: '/staff/tasks',      badge: '3',  badgeStyle: 'green' },
         ],
     },
     {

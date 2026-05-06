@@ -1,191 +1,107 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Target, Search, Loader, Calendar, Briefcase,
-    Plus, Phone, FileText, RefreshCw, Users,
-    TrendingUp, AlertTriangle, Clock, CheckCircle, Zap,
-    Building2, ArrowRight, Layers
-} from 'lucide-react';
-import { taskAPI } from '../../models/api';
-import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
+import { Target, Search, Loader, Plus, Layers, ArrowRight, Building2, AlertTriangle } from 'lucide-react';
+import { taskAPI, projectAPI } from '../../models/api';
 import './css/SalesTasks.css';
 
-/* ─── Pipeline stage config ──────────────────────────────────────────────── */
-const STAGES = [
-    { key: 'All',              label: 'All Tasks',        color: '#6366f1', bg: '#eef2ff' },
-    { key: 'New Leads',        label: 'New Leads',         color: '#8b5cf6', bg: '#f5f3ff' },
-    { key: 'Design Approvals', label: 'Design Approvals',  color: '#d946ef', bg: '#fdf4ff' },
-    { key: 'Follow-Up',        label: 'Follow-Ups',        color: '#0ea5e9', bg: '#f0f9ff' },
-    { key: 'Site Visits',      label: 'Site Visits',       color: '#f59e0b', bg: '#fffbeb' },
-    { key: 'Quotations',       label: 'Quotations',        color: '#10b981', bg: '#ecfdf5' },
-    { key: 'Negotiations',     label: 'Negotiations',      color: '#ef4444', bg: '#fef2f2' },
-    { key: 'Closed',           label: 'Closed Deals',      color: '#64748b', bg: '#f8fafc' },
-];
-
-const mapStatusToStage = (status) => {
-    if (!status) return 'Follow-Up';
-    const s = status.toLowerCase();
-    if (s.includes('lead'))        return 'New Leads';
-    if (s.includes('visit'))       return 'Site Visits';
-    if (s.includes('quot'))        return 'Quotations';
-    if (s.includes('negotiat'))    return 'Negotiations';
-    if (s.includes('sales review') || s.includes('client approval') || s.includes('admin approved')) return 'Design Approvals';
-    if (s === 'completed' || s.includes('closed')) return 'Closed';
-    return 'Follow-Up';
-};
-
-const getDeadlineChip = (dueDate) => {
-    if (!dueDate) return null;
-    const due = new Date(dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    due.setHours(0, 0, 0, 0);
-    const diff = Math.floor((due - today) / 86400000);
-    if (diff < 0)  return { cls: 'overdue',  label: `${Math.abs(diff)}d overdue` };
-    if (diff === 0) return { cls: 'today',   label: 'Due today' };
-    return { cls: 'upcoming', label: due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) };
-};
-
-/* ─── SalesTasks Component ───────────────────────────────────────────────── */
 const SalesTasks = ({ user }) => {
-    const [tasks, setTasks]           = useState([]);
-    const [loading, setLoading]       = useState(true);
-    const [activeStage, setActiveStage] = useState('All');
+    const [projects, setProjects] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy]         = useState('deadline');
-    const [updatingId, setUpdatingId] = useState(null);
-    const [selectedTask, setSelectedTask] = useState(null);
     const navigate = useNavigate();
 
     const isSalesManager = user?.role?.toLowerCase().includes('manager');
 
-    useEffect(() => { fetchTasks(); }, []);
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    const fetchTasks = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
-            const res = await taskAPI.getAll({ includeSalesReview: 'true' });
-            if (res.success) setTasks(res.data);
+            const [projRes, taskRes] = await Promise.all([
+                projectAPI.getAll({ limit: 100 }),
+                taskAPI.getAll({ includeSalesReview: 'true', limit: 100 })
+            ]);
+            
+            const allProjects = projRes.success ? (projRes.data || []) : [];
+            const allTasks = taskRes.success ? (taskRes.data || []) : [];
+            
+            setTasks(allTasks);
+
+            // Filter to only show projects where this user created the quotation, unless they are a manager
+            let myProjects = isSalesManager ? allProjects : allProjects.filter(p => {
+                const creatorId = p.quotation?.createdBy;
+                return creatorId === user._id || creatorId?._id === user._id;
+            });
+            
+            // Map projects by ID for easy access
+            const projMap = new Map(myProjects.map(p => [p._id, p]));
+            
+            // Add any projects from tasks that are assigned to this user or pending their review
+            allTasks.forEach(t => {
+                if (t.project && !projMap.has(t.project._id)) {
+                    // Inject project from task if not already in list
+                    const taskProj = {
+                        ...t.project,
+                        quotation: t.quotation || {},
+                        client: t.client || t.project.client || {}
+                    };
+                    myProjects.push(taskProj);
+                    projMap.set(t.project._id, taskProj);
+                }
+                
+                // If there's a pending review task, attach it to the project
+                if (t.status === 'Pending Sales Review' && t.project) {
+                    const p = projMap.get(t.project._id);
+                    if (p) p.pendingReviewTask = t;
+                }
+            });
+
+            setProjects(myProjects);
         } catch (err) {
-            console.error('Failed to load tasks:', err);
+            console.error('Failed to load data:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    /* ── Derived data ── */
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Extract unique projects from tasks
-    const myProjects = Object.values(
-        tasks.reduce((acc, t) => {
-            if (t.project?._id && !acc[t.project._id]) {
-                acc[t.project._id] = {
-                    ...t.project,
-                    clientName: t.quotation?.client?.name || t.client?.name || 'N/A',
-                    quotationName: t.quotation?.projectName || t.project?.name || '',
-                };
-            }
-            return acc;
-        }, {})
-    );
-
-    const isOverdue   = (t) => t.dueDate && new Date(t.dueDate) < today && t.status !== 'Completed';
-    const isDueToday  = (t) => { const d = new Date(t.dueDate); d.setHours(0,0,0,0); return t.dueDate && d.getTime() === today.getTime(); };
-    const isHighPrio  = (t) => ['High','Critical'].includes(t.priority);
-
-    const kpiData = [
-        {
-            label: 'Total Tasks',
-            value: tasks.length,
-            icon: Target,
-            accent: '#6366f1',
-            trend: null,
-        },
-        {
-            label: 'Overdue',
-            value: tasks.filter(isOverdue).length,
-            icon: AlertTriangle,
-            accent: '#ef4444',
-            trend: 'down',
-            trendLabel: 'Needs action',
-        },
-        {
-            label: 'Due Today',
-            value: tasks.filter(isDueToday).length,
-            icon: Clock,
-            accent: '#f59e0b',
-            trend: 'warn',
-            trendLabel: "Today's focus",
-        },
-        {
-            label: 'High Priority',
-            value: tasks.filter(isHighPrio).length,
-            icon: Zap,
-            accent: '#8b5cf6',
-            trend: null,
-        },
-    ];
-
-    const stageCountMap = STAGES.reduce((acc, s) => {
-        acc[s.key] = s.key === 'All'
-            ? tasks.length
-            : tasks.filter(t => mapStatusToStage(t.status) === s.key).length;
-        return acc;
-    }, {});
-
-    /* ── Filtering + sorting ── */
-    const filtered = tasks
-        .filter(t => {
-            const stage = mapStatusToStage(t.status);
-            const matchStage = activeStage === 'All' || stage === activeStage;
-            const q = searchTerm.toLowerCase();
-            const matchSearch = !q ||
-                t.title?.toLowerCase().includes(q) ||
-                t.description?.toLowerCase().includes(q) ||
-                t.quotation?.projectName?.toLowerCase().includes(q);
-            return matchStage && matchSearch;
-        })
-        .sort((a, b) => {
-            if (sortBy === 'deadline') {
-                if (!a.dueDate) return 1;
-                if (!b.dueDate) return -1;
-                return new Date(a.dueDate) - new Date(b.dueDate);
-            }
-            if (sortBy === 'priority') {
-                const order = { Critical: 0, High: 1, Medium: 2, Low: 3 };
-                return (order[a.priority] ?? 4) - (order[b.priority] ?? 4);
-            }
-            if (sortBy === 'progress') return (a.progress || 0) - (b.progress || 0);
-            return 0;
-        });
-
-    /* ── Handlers ── */
-    const handleSalesReview = async (taskId, approved) => {
+    const handleSalesReview = async (e, taskId, approved) => {
+        e.stopPropagation();
         try {
-            const notes = window.prompt(approved ? 'Approval notes (optional):' : 'Rejection reason:');
-            if (!approved && !notes) { alert('Rejection reason is required'); return; }
-            setUpdatingId(taskId);
-            const res = await taskAPI.salesApprove(taskId, { approved, salesNotes: notes });
-            if (res.success) {
-                alert(approved ? 'Approved!' : 'Sent back for revision');
-                fetchTasks();
+            const notes = prompt(approved ? 'Add approval notes (optional):' : 'Reason for rejection:');
+            if (!approved && !notes) {
+                alert('Rejection reason is required');
+                return;
+            }
+            
+            const response = await taskAPI.salesApprove(taskId, { approved, salesNotes: notes });
+            if (response.success) {
+                alert(approved ? 'Design approved successfully!' : 'Design sent back for revision');
+                fetchData();
             }
         } catch (err) {
+            console.error('Failed to review:', err);
             alert('Action failed: ' + err.message);
-        } finally {
-            setUpdatingId(null);
         }
     };
 
-    /* ── Render ── */
+    const filtered = projects.filter(p => {
+        const q = searchTerm.toLowerCase();
+        return !q ||
+            p.name?.toLowerCase().includes(q) ||
+            p.projectNumber?.toLowerCase().includes(q) ||
+            p.client?.name?.toLowerCase().includes(q) ||
+            p.quotation?.projectName?.toLowerCase().includes(q);
+    });
+
     if (loading) {
         return (
             <div className="st-sales-container">
                 <div className="st-sales-loading">
                     <Loader size={36} className="spinner" color="#6366f1" />
-                    <span>Loading your Action Center…</span>
+                    <span>Loading your Projects…</span>
                 </div>
             </div>
         );
@@ -194,296 +110,133 @@ const SalesTasks = ({ user }) => {
     return (
         <div className="st-sales-container">
             <div className="st-sales-wrapper">
-
-                {/* Quick actions */}
-                <div className="st-sales-quick-bar">
-                    <button className="st-sales-quick-btn primary">
-                        <Plus size={14} /> Add Lead
-                    </button>
-                    <button className="st-sales-quick-btn secondary">
-                        <Phone size={14} /> Schedule Call
-                    </button>
-                    <button className="st-sales-quick-btn secondary">
-                        <FileText size={14} /> Send Quote
-                    </button>
-                    <button className="st-sales-quick-btn secondary" onClick={fetchTasks}>
-                        <RefreshCw size={14} /> Refresh
-                    </button>
-                </div>
-
-                {/* KPI Cards */}
-                <div className="st-sales-kpi-grid">
-                    {kpiData.map(kpi => (
-                        <div
-                            key={kpi.label}
-                            className="st-sales-kpi-card"
-                            style={{ '--kpi-accent': kpi.accent }}
-                        >
-                            <div className="st-kpi-top">
-                                <div className="st-kpi-icon">
-                                    <kpi.icon size={17} />
-                                </div>
-                                {kpi.trendLabel && (
-                                    <span className={`st-kpi-trend ${kpi.trend}`}>{kpi.trendLabel}</span>
-                                )}
-                            </div>
-                            <div className="st-kpi-value">{kpi.value}</div>
-                            <div className="st-kpi-label">{kpi.label}</div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* My Projects Section */}
-                {myProjects.length > 0 && (
-                    <div style={{ marginBottom: '1.5rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                            <Layers size={17} style={{ color: '#6366f1' }} />
-                            <span style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>My Projects</span>
-                            <span style={{ marginLeft: '4px', background: '#eef2ff', color: '#6366f1', borderRadius: '100px', padding: '2px 10px', fontSize: '0.8rem', fontWeight: 700 }}>{myProjects.length}</span>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-                            {myProjects.map(proj => {
-                                const stageColors = { Design: '#8b5cf6', Procurement: '#f59e0b', Production: '#3b82f6', Completed: '#10b981' };
-                                const stageColor = stageColors[proj.stage] || '#64748b';
-                                return (
-                                    <div
-                                        key={proj._id}
-                                        onClick={() => navigate(`/staff/projects/${proj._id}`)}
-                                        style={{
-                                            background: 'white',
-                                            border: '1px solid #e2e8f0',
-                                            borderRadius: '14px',
-                                            padding: '1.25rem',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            borderLeft: `4px solid ${stageColor}`,
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
-                                        }}
-                                        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; }}
-                                    >
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                                            <div>
-                                                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>{proj.quotationName || proj.name}</p>
-                                                <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>{proj.projectNumber}</p>
-                                            </div>
-                                            <span style={{ background: stageColor + '18', color: stageColor, borderRadius: '100px', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                                                {proj.stage}
-                                            </span>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.9rem', fontSize: '0.85rem', color: '#475569' }}>
-                                            <Building2 size={13} />
-                                            <span>{proj.clientName}</span>
-                                        </div>
-                                        <div style={{ marginBottom: '0.5rem' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#94a3b8', marginBottom: '4px' }}>
-                                                <span>Progress</span>
-                                                <span style={{ fontWeight: 700, color: stageColor }}>{proj.progress || 0}%</span>
-                                            </div>
-                                            <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-                                                <div style={{ height: '100%', width: `${proj.progress || 0}%`, background: stageColor, borderRadius: '3px', transition: 'width 0.4s' }} />
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
-                                            <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-                                                {proj.status || 'In Progress'}
-                                            </span>
-                                            <ArrowRight size={14} style={{ color: stageColor }} />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>My Projects</h2>
+                        <p style={{ margin: '4px 0 0', color: '#64748b' }}>Track and manage your active sales projects and their pipeline progress.</p>
                     </div>
-                )}
-                {/* Manager team strip */}
-                {isSalesManager && (
-                    <div className="st-sales-team-strip">
-                        <div className="st-team-strip-stat">
-                            <div className="st-team-strip-title">Team Tasks</div>
-                            <div className="st-team-strip-val">{tasks.length}</div>
-                        </div>
-                        <div className="st-team-strip-divider" />
-                        <div className="st-team-strip-stat">
-                            <div className="st-team-strip-title">Pending Review</div>
-                            <div className="st-team-strip-val">
-                                {tasks.filter(t => t.status === 'Pending Sales Review').length}
-                            </div>
-                        </div>
-                        <div className="st-team-strip-divider" />
-                        <div className="st-team-strip-stat">
-                            <div className="st-team-strip-title">Closed This Month</div>
-                            <div className="st-team-strip-val">
-                                {tasks.filter(t => t.status === 'Completed').length}
-                            </div>
-                        </div>
-                        <div className="st-team-strip-divider" />
-                        <div className="st-team-strip-stat">
-                            <div className="st-team-strip-title">Hot Leads</div>
-                            <div className="st-team-strip-val">
-                                {tasks.filter(isHighPrio).length}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Stage tabs */}
-                <div className="st-sales-tabs-bar">
-                    {STAGES.map(stage => (
-                        <button
-                            key={stage.key}
-                            className={`st-sales-tab ${activeStage === stage.key ? 'active' : ''}`}
-                            onClick={() => setActiveStage(stage.key)}
-                        >
-                            {stage.label}
-                            <span className="st-sales-tab-count">
-                                {stageCountMap[stage.key] ?? 0}
-                            </span>
-                        </button>
-                    ))}
+                    <button className="st-sales-quick-btn primary" onClick={() => navigate('/staff/quotations/new')}>
+                        <Plus size={16} /> New Quotation
+                    </button>
                 </div>
 
-                {/* Controls */}
-                <div className="st-sales-controls">
-                    <div className="st-sales-search-wrap">
+                <div className="st-sales-controls" style={{ marginBottom: '24px' }}>
+                    <div className="st-sales-search-wrap" style={{ flex: 1, maxWidth: '400px' }}>
                         <Search size={15} className="st-sales-search-icon" />
                         <input
                             type="text"
                             className="st-sales-search"
-                            placeholder="Search tasks, clients, projects…"
+                            placeholder="Search projects by name, ID, or client…"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <select
-                        className="st-sales-sort-select"
-                        value={sortBy}
-                        onChange={e => setSortBy(e.target.value)}
-                    >
-                        <option value="deadline">Sort: Deadline</option>
-                        <option value="priority">Sort: Priority</option>
-                        <option value="progress">Sort: Progress</option>
-                    </select>
                 </div>
 
-                {/* Task Cards */}
                 {filtered.length === 0 ? (
                     <div className="st-sales-empty">
                         <div className="st-sales-empty-icon">
                             <Target size={26} />
                         </div>
-                        <h3>No tasks found</h3>
-                        <p>Try a different stage or search term.</p>
+                        <h3>No projects found</h3>
+                        <p>Create a new quotation to get started.</p>
                     </div>
                 ) : (
-                    <div className="st-sales-cards-grid">
-                        {filtered.map(task => {
-                            const stage = STAGES.find(s => s.key === mapStatusToStage(task.status)) || STAGES[0];
-                            const deadline = getDeadlineChip(task.dueDate);
-                            const prio = task.priority?.toLowerCase() || 'low';
-                            const isPendingReview = task.status === 'Pending Sales Review';
-
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+                        {filtered.map(proj => {
+                            const stageColors = { Accounts: '#f59e0b', Design: '#8b5cf6', Procurement: '#f59e0b', Production: '#3b82f6', Completed: '#10b981' };
+                            const stageColor = stageColors[proj.stage] || '#64748b';
+                            
                             return (
                                 <div
-                                    key={task._id}
-                                    className="st-sales-task-card"
-                                    style={{ 
-                                        '--stage-color': stage.color, 
-                                        '--stage-bg': stage.bg,
-                                        cursor: 'pointer'
+                                    key={proj._id}
+                                    style={{
+                                        background: 'white',
+                                        border: '1px solid',
+                                        borderColor: proj.pendingReviewTask ? '#f87171' : '#e2e8f0',
+                                        borderRadius: '16px',
+                                        padding: '24px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        borderTop: `4px solid ${proj.pendingReviewTask ? '#ef4444' : stageColor}`,
+                                        boxShadow: proj.pendingReviewTask ? '0 4px 12px rgba(239,68,68,0.1)' : '0 2px 4px rgba(0,0,0,0.02)',
+                                        position: 'relative'
                                     }}
-                                    onClick={() => {
-                                        if (task.project?._id) {
-                                            navigate(`/staff/projects/${task.project._id}`);
-                                        } else if (task.quotation?._id) {
-                                            navigate(`/staff/quotations/view/${task.quotation._id}`);
-                                        } else {
-                                            setSelectedTask(task);
-                                        }
-                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.boxShadow = proj.pendingReviewTask ? '0 12px 24px rgba(239,68,68,0.15)' : '0 12px 24px rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.boxShadow = proj.pendingReviewTask ? '0 4px 12px rgba(239,68,68,0.1)' : '0 2px 4px rgba(0,0,0,0.02)'; e.currentTarget.style.transform = 'none'; }}
                                 >
-                                    {/* Top badges row */}
-                                    <div className="st-card-top">
-                                        <div className="st-card-badges">
-                                            <span
-                                                className="st-stage-badge"
-                                                style={{ '--stage-color': stage.color, '--stage-bg': stage.bg }}
-                                            >
-                                                {stage.label}
-                                            </span>
-                                            <span className={`st-priority-pill ${prio}`}>
-                                                {task.priority}
+                                    {proj.pendingReviewTask && (
+                                        <div style={{ position: 'absolute', top: '-12px', right: '16px', background: '#ef4444', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 4px rgba(239,68,68,0.3)' }}>
+                                            <AlertTriangle size={12} />
+                                            Action Required
+                                        </div>
+                                    )}
+                                    <div onClick={() => navigate(`/staff/projects/${proj._id}`)}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                            <div>
+                                                <h3 style={{ margin: 0, fontWeight: 700, fontSize: '18px', color: '#0f172a' }}>{proj.quotation?.projectName || proj.name}</h3>
+                                                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b', fontWeight: 500 }}>{proj.projectNumber}</p>
+                                            </div>
+                                            <span style={{ background: stageColor + '15', color: stageColor, borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 700 }}>
+                                                {proj.stage}
                                             </span>
                                         </div>
-                                        {deadline && (
-                                            <span className={`st-deadline-chip ${deadline.cls}`}>
-                                                <Calendar size={11} />
-                                                {deadline.label}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Title + desc */}
-                                    <div>
-                                        <p className="st-card-title">{task.title}</p>
-                                        {task.description && (
-                                            <p className="st-card-desc">{task.description}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Meta */}
-                                    <div className="st-card-meta">
-                                        {task.quotation?.projectName && (
-                                            <span className="st-card-meta-item">
-                                                <Briefcase size={12} />
-                                                {task.quotation.projectName}
-                                            </span>
-                                        )}
-                                        {isSalesManager && task.assignedTo && (
-                                            <span className="st-card-meta-item">
-                                                <Users size={12} />
-                                                {task.assignedTo?.fullName || 'Unassigned'}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Progress bar */}
-                                    <div className="st-card-progress-row">
-                                        <div className="st-card-prog-bar">
-                                            <div
-                                                className="st-card-prog-fill"
-                                                style={{ width: `${task.progress || 0}%` }}
-                                            />
+                                        
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '14px', color: '#475569', fontWeight: 500 }}>
+                                            <Building2 size={16} color="#94a3b8" />
+                                            <span>{proj.client?.name || 'Unknown Client'}</span>
                                         </div>
-                                        <span className="st-card-prog-pct">{task.progress || 0}%</span>
-                                    </div>
+                                        
+                                        <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                                            <div>
+                                                <p style={{ margin: 0, fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Value</p>
+                                                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>₹{(proj.budget || proj.quotation?.totalAmount || 0).toLocaleString('en-IN')}</p>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <p style={{ margin: 0, fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Payment</p>
+                                                <p style={{ margin: 0, fontWeight: 600, color: proj.paymentStatus === 'Cleared' ? '#10b981' : '#f59e0b' }}>{proj.paymentStatus || 'Pending'}</p>
+                                            </div>
+                                        </div>
 
-                                    {/* Sales review actions (Client & Sales Approval) */}
-                                    {isPendingReview && (
-                                        <div className="st-card-actions">
-                                            <button
-                                                className="st-action-btn approve"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSalesReview(task._id, true);
-                                                }}
-                                                disabled={updatingId === task._id}
-                                            >
-                                                {updatingId === task._id
-                                                    ? <Loader size={12} className="spinner" />
-                                                    : <><CheckCircle size={12} /> Approve Design</>
-                                                }
-                                            </button>
-                                            <button
-                                                className="st-action-btn reject"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSalesReview(task._id, false);
-                                                }}
-                                                disabled={updatingId === task._id}
-                                            >
-                                                Revise
-                                            </button>
+                                        <div style={{ marginBottom: '16px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>
+                                                <span>Overall Progress</span>
+                                                <span style={{ color: stageColor }}>{proj.progress || 0}%</span>
+                                            </div>
+                                            <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', width: `${proj.progress || 0}%`, background: stageColor, borderRadius: '3px', transition: 'width 0.4s ease' }} />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+                                            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>
+                                                Status: <span style={{ color: '#0f172a' }}>{proj.status || 'In Progress'}</span>
+                                            </span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#6366f1', fontSize: '13px', fontWeight: 600 }}>
+                                                View Details <ArrowRight size={14} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {proj.pendingReviewTask && (
+                                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #cbd5e1' }}>
+                                            <p style={{ fontSize: '13px', color: '#475569', margin: '0 0 12px 0', fontWeight: 600 }}>
+                                                <span style={{ color: '#ef4444' }}>Pending Review:</span> {proj.pendingReviewTask.title}
+                                            </p>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button 
+                                                    onClick={(e) => handleSalesReview(e, proj.pendingReviewTask._id, true)}
+                                                    style={{ flex: 1, background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', padding: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => handleSalesReview(e, proj.pendingReviewTask._id, false)}
+                                                    style={{ flex: 1, background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', padding: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -492,51 +245,6 @@ const SalesTasks = ({ user }) => {
                     </div>
                 )}
             </div>
-
-            {selectedTask && (
-                <div className="st-sales-modal-overlay" onClick={() => setSelectedTask(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div className="st-sales-modal-content" onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '16px', padding: '2rem', width: '90%', maxWidth: '500px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>Task Details</h2>
-                            <button onClick={() => setSelectedTask(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: '#64748b' }}>&times;</button>
-                        </div>
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            <div>
-                                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Title</label>
-                                <p style={{ margin: '4px 0 0 0', fontWeight: 500, color: '#1e293b' }}>{selectedTask.title}</p>
-                            </div>
-                            {selectedTask.description && (
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Description</label>
-                                    <p style={{ margin: '4px 0 0 0', color: '#334155', fontSize: '0.95rem' }}>{selectedTask.description}</p>
-                                </div>
-                            )}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Status</label>
-                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.status}</p>
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Priority</label>
-                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.priority}</p>
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Deadline</label>
-                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Progress</label>
-                                    <p style={{ margin: '4px 0 0 0', fontWeight: 500 }}>{selectedTask.progress || 0}%</p>
-                                </div>
-                            </div>
-                            <div style={{ marginTop: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', fontSize: '0.9rem', color: '#64748b' }}>
-                                <AlertTriangle size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
-                                This is a general task not linked to any specific Project or Quotation.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

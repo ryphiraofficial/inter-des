@@ -4,6 +4,7 @@ import '../css/ManagerDashboard.css';
 
 // Import Sub-components
 import Overview from '../common/Overview';
+import PaymentClearanceHub from './PaymentClearanceHub';
 import ManagerClients from './ManagerClients';
 import ManagerPayments from './ManagerPayments';
 import ManagerExpenses from './ManagerExpenses';
@@ -20,6 +21,8 @@ const ManagerDashboard = ({ user }) => {
         switch (activeTab) {
             case 'overview':
                 return <Overview user={user} />;
+            case 'clearance':
+                return <PaymentClearanceHub user={user} />;
             case 'clients':
                 return <ManagerClients user={user} />;
             case 'invoices':

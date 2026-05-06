@@ -10,7 +10,7 @@ import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
     XAxis, YAxis, CartesianGrid, AreaChart, Area
 } from 'recharts';
-import { accountsAPI, invoiceAPI } from '../../../models/api';
+import { accountsAPI, invoiceAPI, staffAPI } from '../../../models/api';
 import '../css/ManagerDashboard.css';
 
 const StatCardV3 = ({ title, value, subValue, icon: Icon, type, trendValue, onClick, iconColor, iconBg }) => {
@@ -115,6 +115,12 @@ const Overview = ({ user }) => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const [globalFilter, setGlobalFilter] = useState(calculateDateRange('This Month'));
     const [stats, setStats] = useState(null);
+    const [pendingCollections, setPendingCollections] = useState([]);
+    const [accountsStaff, setAccountsStaff] = useState([]);
+    const [selectedStaff, setSelectedStaff] = useState({});  // { [projectId]: staffId }
+    const [assigningStaff, setAssigningStaff] = useState({});
+    const [verifyingPayment, setVerifyingPayment] = useState({});
+    const [collectedAmounts, setCollectedAmounts] = useState({});
     const datePickerRef = useRef(null);
 
     useEffect(() => {
@@ -135,6 +141,18 @@ const Overview = ({ user }) => {
             }
         };
         fetchDashboardData();
+
+        // Fetch payment collection queue and staff list
+        accountsAPI.getPendingCollections().then(res => {
+            if (res?.success) {
+                const pending = (res.data || []).filter(p => p.stage === 'Pending Payment');
+                setPendingCollections(pending);
+            }
+        }).catch(() => {});
+
+        staffAPI?.getAll?.({ role: 'Accounts Staff', status: 'Active' }).then(res => {
+            setAccountsStaff(res?.data || []);
+        }).catch(() => {});
 
         const handleClickOutside = (event) => {
             if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
@@ -234,6 +252,36 @@ const Overview = ({ user }) => {
         return 'normal';
     };
 
+    const handleAssignStaff = async (projectId) => {
+        const staffId = selectedStaff[projectId];
+        if (!staffId) return;
+        try {
+            setAssigningStaff(prev => ({ ...prev, [projectId]: true }));
+            const res = await accountsAPI.assignStaff({ projectId, staffId });
+            if (res?.success) {
+                setPendingCollections(prev => prev.map(p => p._id === projectId
+                    ? { ...p, paymentCollectionStatus: 'Assigned', assignedAccountsStaff: accountsStaff.find(s => s._id === staffId) }
+                    : p
+                ));
+            }
+        } catch (e) { console.error(e); }
+        finally { setAssigningStaff(prev => ({ ...prev, [projectId]: false })); }
+    };
+
+    const handleVerifyPayment = async (projectId) => {
+        const amt = collectedAmounts[projectId];
+        if (!amt) { alert('Please enter collected amount'); return; }
+        try {
+            setVerifyingPayment(prev => ({ ...prev, [projectId]: true }));
+            const res = await accountsAPI.verifyPayment({ projectId, collectedAmount: amt });
+            if (res?.success) {
+                setPendingCollections(prev => prev.filter(p => p._id !== projectId));
+                alert('Payment verified! Project released to Procurement.');
+            }
+        } catch (e) { console.error(e); }
+        finally { setVerifyingPayment(prev => ({ ...prev, [projectId]: false })); }
+    };
+
     return (
         <div className={`accounts-overview-tab ${loading ? 'is-loading' : ''}`}>            {loading && (
                 <div className="loading-overlay">
@@ -242,6 +290,109 @@ const Overview = ({ user }) => {
                             <div className="loader-ring-inner" />
                         </div>
                         <p className="loader-label">Loading dashboard<span className="loader-dots"><span>.</span><span>.</span><span>.</span></span></p>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Payment Collection Queue ── */}
+            {pendingCollections.length > 0 && (
+                <div style={{ marginBottom: '28px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ background: 'linear-gradient(135deg,#f59e0b,#d97706)', color: 'white', padding: '8px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <AlertTriangle size={15} /> {pendingCollections.length} Pending Collection{pendingCollections.length > 1 ? 's' : ''}
+                            </div>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Payment Collection Queue</h3>
+                                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Admin-approved projects awaiting advance collection before procurement starts</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' }}>
+                        {pendingCollections.map(proj => {
+                            const isAssigned = proj.paymentCollectionStatus === 'Assigned';
+                            const isDueSoon = proj.paymentDueDate && (new Date(proj.paymentDueDate) - new Date()) / 86400000 <= 3;
+                            return (
+                                <div key={proj._id} style={{ background: 'white', borderRadius: '20px', border: `1px solid ${isDueSoon ? '#fca5a5' : '#e2e8f0'}`, borderTop: `4px solid ${isDueSoon ? '#ef4444' : '#f59e0b'}`, padding: '24px', boxShadow: isDueSoon ? '0 4px 12px rgba(239,68,68,0.08)' : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                    {/* Header */}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                        <div>
+                                            <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>{proj.name}</h4>
+                                            <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontWeight: 500 }}>{proj.client?.name || 'Unknown Client'}</p>
+                                        </div>
+                                        <span style={{ background: isAssigned ? '#dcfce7' : '#fef3c7', color: isAssigned ? '#166534' : '#92400e', padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
+                                            {proj.paymentCollectionStatus || 'Pending'}
+                                        </span>
+                                    </div>
+
+                                    {/* Info Grid */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
+                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Quotation Total</p>
+                                            <p style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#4f46e5' }}>₹{(proj.quotation?.totalAmount || 0).toLocaleString('en-IN')}</p>
+                                        </div>
+                                        <div style={{ background: '#f0fdf4', borderRadius: '10px', padding: '10px 14px' }}>
+                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Advance to Collect ({proj.advancePercentage || 0}%)</p>
+                                            <p style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#10b981' }}>₹{(proj.advanceAmount || 0).toLocaleString('en-IN')}</p>
+                                        </div>
+                                        <div style={{ background: isDueSoon ? '#fef2f2' : '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
+                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Due Date</p>
+                                            <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: isDueSoon ? '#ef4444' : '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                {isDueSoon && <AlertTriangle size={13} />}
+                                                {proj.paymentDueDate ? new Date(proj.paymentDueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not set'}
+                                            </p>
+                                        </div>
+                                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
+                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Assigned To</p>
+                                            <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{proj.assignedAccountsStaff?.fullName || '—'}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Admin Notes */}
+                                    {proj.adminPaymentNotes && (
+                                        <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '10px', padding: '10px 14px', marginBottom: '14px', fontSize: '13px', color: '#92400e' }}>
+                                            <strong>Admin Note:</strong> {proj.adminPaymentNotes}
+                                        </div>
+                                    )}
+
+                                    {/* Assign Staff */}
+                                    {!isAssigned && (
+                                        <div style={{ marginBottom: '12px' }}>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>Assign Accounts Staff</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <select value={selectedStaff[proj._id] || ''} onChange={e => setSelectedStaff(prev => ({ ...prev, [proj._id]: e.target.value }))}
+                                                    style={{ flex: 1, padding: '9px 12px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '13px', fontWeight: 600, color: '#0f172a', background: 'white', outline: 'none' }}>
+                                                    <option value=''>Select staff...</option>
+                                                    {accountsStaff.map(s => <option key={s._id} value={s._id}>{s.fullName}</option>)}
+                                                </select>
+                                                <button onClick={() => handleAssignStaff(proj._id)} disabled={!selectedStaff[proj._id] || assigningStaff[proj._id]}
+                                                    style={{ padding: '9px 16px', borderRadius: '10px', border: 'none', background: selectedStaff[proj._id] ? '#4f46e5' : '#cbd5e1', color: 'white', fontWeight: 700, fontSize: '13px', cursor: selectedStaff[proj._id] ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap' }}>
+                                                    {assigningStaff[proj._id] ? '...' : 'Assign'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Verify Payment */}
+                                    {isAssigned && (
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>Amount Collected (₹)</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <input type='number' placeholder={`e.g. ${proj.advanceAmount || 0}`}
+                                                    value={collectedAmounts[proj._id] || ''}
+                                                    onChange={e => setCollectedAmounts(prev => ({ ...prev, [proj._id]: e.target.value }))}
+                                                    style={{ flex: 1, padding: '9px 12px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '13px', fontWeight: 600, outline: 'none' }} />
+                                                <button onClick={() => handleVerifyPayment(proj._id)} disabled={verifyingPayment[proj._id]}
+                                                    style={{ padding: '9px 16px', borderRadius: '10px', border: 'none', background: '#10b981', color: 'white', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                                                    {verifyingPayment[proj._id] ? '...' : <><CheckCircle size={14} /> Verify & Release</>}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             )}

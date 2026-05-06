@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    CheckCircle, 
-    X, 
-    Eye, 
-    Clock, 
-    Calendar, 
-    User, 
-    Image as ImageIcon, 
-    FileText, 
-    Package, 
-    ExternalLink,
-    AlertCircle,
-    ArrowRight,
-    Sparkles,
-    Send,
-    UserPlus,
-    DollarSign,
-    BadgeCheck
+    CheckCircle, X, Eye, Clock, Calendar, User, Image as ImageIcon, 
+    FileText, Package, ExternalLink, AlertCircle, ArrowRight, Sparkles,
+    Send, UserPlus, DollarSign, BadgeCheck, Percent, AlertTriangle
 } from 'lucide-react';
 import { taskAPI, procurementAPI, notificationAPI, BASE_IMAGE_URL } from '../../models/api';
 import { useToast } from '../../models/context/ToastContext';
-import './css/Tasks.css'; // Reusing some base styles
+import './css/Tasks.css';
+
+const ADVANCE_OPTIONS = [10, 20, 25, 30, 40, 50];
 
 const DesignApprovals = () => {
     const { showToast } = useToast();
@@ -31,9 +19,17 @@ const DesignApprovals = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [showDesignModal, setShowDesignModal] = useState(false);
     const [productionManagers, setProductionManagers] = useState([]);
-    const [selectedPM, setSelectedPM] = useState({});  // { [itemId]: managerId }
-    const [sentToAccounts, setSentToAccounts] = useState({});  // { [itemId]: true/false }
-    const [approving, setApproving] = useState({});  // { [itemId]: true/false }
+    const [selectedPM, setSelectedPM] = useState({});
+    const [sentToAccounts, setSentToAccounts] = useState({});
+    const [approving, setApproving] = useState({});
+
+    // Payment collection modal state
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentTask, setPaymentTask] = useState(null);
+    const [advancePct, setAdvancePct] = useState(30);
+    const [paymentDueDate, setPaymentDueDate] = useState('');
+    const [paymentNotes, setPaymentNotes] = useState('');
+    const [submittingApproval, setSubmittingApproval] = useState(false);
 
     useEffect(() => {
         fetchPendingApprovals();
@@ -75,39 +71,59 @@ const DesignApprovals = () => {
         }
     };
 
-    const handleAdminReview = async (taskId, approved) => {
-        let note = null;
-        let budget = 0;
-        
-        if (approved) {
-            const confirmPayment = window.confirm('Have you verified that the client has made the necessary initial payments? Click OK to proceed to Procurement.');
-            if (!confirmPayment) return;
-            
-            const budgetPrompt = window.prompt('Enter an Approved Budget limit in ₹ (or leave blank for no limit):');
-            if (budgetPrompt === null) return; // User clicked Cancel
-            budget = Number(budgetPrompt) || 0;
-            
-            const optionalNote = window.prompt('Add an optional approval note (e.g., "Ready for procurement"):');
-            if (optionalNote) note = optionalNote;
-        } else {
-            note = window.prompt('Enter the reason for rejection (this will be sent to the designer):');
-            if (!note) return; // Rejection requires a reason
-        }
+    // Opens payment modal instead of browser prompts
+    const openApproveModal = (task) => {
+        setPaymentTask(task);
+        setAdvancePct(30);
+        setPaymentDueDate('');
+        setPaymentNotes('');
+        setShowPaymentModal(true);
+        setShowDesignModal(false);
+    };
 
+    const submitApproval = async () => {
+        if (!paymentDueDate) {
+            showToast('Please set a payment due date', 'error');
+            return;
+        }
         try {
-            const response = await taskAPI.adminReview(taskId, { approved, rejectionReason: note, approvedBudget: budget });
+            setSubmittingApproval(true);
+            const response = await taskAPI.adminReview(paymentTask._id, {
+                approved: true,
+                advancePercentage: advancePct,
+                paymentDueDate,
+                adminPaymentNotes: paymentNotes
+            });
             if (response.success) {
-                setTasks(prev => prev.filter(t => t._id !== taskId));
-                showToast(approved ? 'Design approved and pushed to procurement' : 'Design sent back for revisions');
+                setTasks(prev => prev.filter(t => t._id !== paymentTask._id));
+                setShowPaymentModal(false);
+                setPaymentTask(null);
+                const quotTotal = paymentTask.quotation?.totalAmount || 0;
+                const amt = Math.round((quotTotal * advancePct) / 100);
+                showToast(`Design approved! ₹${amt.toLocaleString('en-IN')} collection request sent to Accounts Manager.`);
+            } else {
+                showToast(response.message || 'Approval failed', 'error');
             }
         } catch (err) {
-            showToast('Action failed', 'error');
+            showToast('Approval failed: ' + err.message, 'error');
+        } finally {
+            setSubmittingApproval(false);
         }
     };
 
-    const handleSendToAccounts = (itemId) => {
-        setSentToAccounts(prev => ({ ...prev, [itemId]: true }));
-        showToast('Quotation marked to send to Accounts');
+    const handleReject = async (taskId) => {
+        const note = window.prompt('Enter the reason for rejection (will be sent to the designer):');
+        if (!note) return;
+        try {
+            const response = await taskAPI.adminReview(taskId, { approved: false, rejectionReason: note });
+            if (response.success) {
+                setTasks(prev => prev.filter(t => t._id !== taskId));
+                setShowDesignModal(false);
+                showToast('Design rejected and sent back for revisions');
+            }
+        } catch (err) {
+            showToast('Rejection failed', 'error');
+        }
     };
 
     const handleProcurementApprove = async (item) => {
@@ -261,7 +277,7 @@ const DesignApprovals = () => {
                                             <Eye size={18} /> Review Assets
                                         </button>
                                         <button 
-                                            onClick={() => handleAdminReview(task._id, true)}
+                                            onClick={() => openApproveModal(task)}
                                             style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', background: '#4f46e5', color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(79, 70, 229, 0.2)' }}
                                         >
                                             <CheckCircle size={18} /> Approve
@@ -468,13 +484,103 @@ const DesignApprovals = () => {
 
                         <div className="modal-footer" style={{ padding: '1.5rem 3rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                             <button className="btn-cancel" onClick={() => setShowDesignModal(false)} style={{ padding: '12px 24px', borderRadius: '12px', border: '1px solid #cbd5e1', background: 'white', fontWeight: 700 }}>Close Preview</button>
-                            <button className="btn-submit" onClick={() => { handleAdminReview(selectedTask._id, false); setShowDesignModal(false); }} style={{ background: '#ef4444', padding: '12px 24px', borderRadius: '12px', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Reject Design</button>
-                            <button className="btn-submit" onClick={() => { handleAdminReview(selectedTask._id, true); setShowDesignModal(false); }} style={{ background: '#10b981', padding: '12px 24px', borderRadius: '12px', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Approve for Procurement</button>
+                            <button className="btn-submit" onClick={() => handleReject(selectedTask._id)} style={{ background: '#ef4444', padding: '12px 24px', borderRadius: '12px', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Reject Design</button>
+                            <button className="btn-submit" onClick={() => openApproveModal(selectedTask)} style={{ background: '#10b981', padding: '12px 24px', borderRadius: '12px', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Approve for Procurement</button>
                         </div>
                     </div>
                 </div>
             )}
-            
+
+            {/* Payment Collection Modal */}
+            {showPaymentModal && paymentTask && (() => {
+                const quotTotal = paymentTask.quotation?.totalAmount || 0;
+                const calcAmt = Math.round((quotTotal * advancePct) / 100);
+                return (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                        <div style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
+                            {/* Header */}
+                            <div style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', padding: '28px 32px', color: 'white' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                                            <DollarSign size={22} />
+                                            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>Approve & Set Payment Collection</h2>
+                                        </div>
+                                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.9rem' }}>Configure advance payment before releasing to Accounts Manager</p>
+                                    </div>
+                                    <button onClick={() => setShowPaymentModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}><X size={18} /></button>
+                                </div>
+                            </div>
+
+                            <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                {/* Project Info */}
+                                <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px 20px', border: '1px solid #e2e8f0' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div>
+                                            <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Project</p>
+                                            <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{paymentTask.title}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Client</p>
+                                            <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{paymentTask.client?.name || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Quotation Total</p>
+                                            <p style={{ margin: 0, fontWeight: 800, color: '#4f46e5', fontSize: '16px' }}>₹{quotTotal.toLocaleString('en-IN')}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Advance to Collect</p>
+                                            <p style={{ margin: 0, fontWeight: 800, color: '#10b981', fontSize: '16px' }}>₹{calcAmt.toLocaleString('en-IN')}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Advance % Picker */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '10px' }}>Advance Percentage (Locked for Accounts Manager)</label>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {ADVANCE_OPTIONS.map(pct => (
+                                            <button key={pct} onClick={() => setAdvancePct(pct)} style={{ padding: '8px 18px', borderRadius: '100px', border: `2px solid ${advancePct === pct ? '#4f46e5' : '#e2e8f0'}`, background: advancePct === pct ? '#eef2ff' : 'white', color: advancePct === pct ? '#4f46e5' : '#64748b', fontWeight: 700, fontSize: '14px', cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                {pct}%
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#64748b' }}>
+                                        <AlertTriangle size={12} style={{ display: 'inline', marginRight: '4px', color: '#f59e0b' }} />
+                                        This amount is locked and cannot be changed by the Accounts Manager
+                                    </p>
+                                </div>
+
+                                {/* Due Date */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Payment Due Date <span style={{ color: '#ef4444' }}>*</span></label>
+                                    <input type="date" value={paymentDueDate} onChange={e => setPaymentDueDate(e.target.value)} min={new Date().toISOString().split('T')[0]}
+                                        style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: `1.5px solid ${paymentDueDate ? '#4f46e5' : '#e2e8f0'}`, fontSize: '14px', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }} />
+                                </div>
+
+                                {/* Notes */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Notes for Accounts Manager <span style={{ color: '#94a3b8' }}>(optional)</span></label>
+                                    <textarea value={paymentNotes} onChange={e => setPaymentNotes(e.target.value)} placeholder="e.g. Client agreed to 30% advance via NEFT. Contact: Rahul — 9876543210"
+                                        rows={3} style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '14px', color: '#0f172a', resize: 'none', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
+                                    <button onClick={() => setShowPaymentModal(false)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1.5px solid #e2e8f0', background: 'white', fontWeight: 700, fontSize: '14px', cursor: 'pointer', color: '#374151' }}>
+                                        Cancel
+                                    </button>
+                                    <button onClick={submitApproval} disabled={submittingApproval || !paymentDueDate}
+                                        style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: submittingApproval || !paymentDueDate ? '#94a3b8' : 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white', fontWeight: 800, fontSize: '14px', cursor: submittingApproval || !paymentDueDate ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                                        {submittingApproval ? 'Approving...' : <><CheckCircle size={17} /> Approve & Send to Accounts</>}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
+
             <style>{`
                 @keyframes spin {
                     0% { transform: rotate(0deg); }

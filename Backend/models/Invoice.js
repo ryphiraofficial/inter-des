@@ -45,6 +45,10 @@ const InvoiceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quotation'
     },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project'
+    },
     purchaseOrder: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PurchaseOrder'

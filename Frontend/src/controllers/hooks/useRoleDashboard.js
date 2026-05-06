@@ -17,7 +17,7 @@ export const useRoleDashboard = (role) => {
         if (roleLower === 'site supervisor') return 'site_supervisor';
         if (roleLower === 'accounts manager') return 'accounts_manager';
         if (roleLower === 'accounts staff') return 'accounts_staff';
-        if (roleLower === 'sales') return 'staff';
+        if (roleLower.includes('sales')) return 'sales';
 
         // General roles
         if (roleLower === 'super admin' || roleLower === 'admin' || roleLower === 'manager') {
@@ -145,7 +145,7 @@ export const getRoleDepartment = (role) => {
     if (roleLower === 'procurement manager' || roleLower === 'procurement staff') return 'Procurement';
     if (roleLower === 'project manager' || roleLower === 'project engineer' || roleLower === 'site engineer' || roleLower === 'site supervisor') return 'Production';
     if (roleLower === 'accounts manager' || roleLower === 'accounts staff') return 'Accounts';
-    if (roleLower === 'sales manager' || roleLower === 'sales staff' || roleLower === 'sales') return 'Sales';
+    if (roleLower.includes('sales')) return 'Sales';
     
     return 'Admin';
 };

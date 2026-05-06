@@ -96,7 +96,7 @@ const MaterialRequestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Design Review', 'Pending', 'Approved', 'Rejected', 'In Progress', 'Completed', 'Cancelled', 'Assigned', 'Purchasing', 'Pending Manager Review', 'Pending Admin Review', 'Sent to Accounts', 'Procurement Approved'],
+        enum: ['Design Review', 'Pending', 'On Hold', 'Approved', 'Rejected', 'In Progress', 'Completed', 'Cancelled', 'Assigned', 'Purchasing', 'Pending Manager Review', 'Pending Admin Review', 'Sent to Accounts', 'Procurement Approved'],
         default: 'Pending'
     },
     managerRemarks: {

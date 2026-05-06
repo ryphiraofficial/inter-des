@@ -34,7 +34,7 @@ exports.getProjects = async (req, res) => {
         
         const projects = await Project.find(query)
             .populate('client', 'name email phone')
-            .populate('quotation', 'quotationNumber totalAmount')
+            .populate('quotation', 'quotationNumber totalAmount createdBy projectName')
             .populate('createdBy', 'fullName')
             .sort({ createdAt: -1 })
             .skip(skip)

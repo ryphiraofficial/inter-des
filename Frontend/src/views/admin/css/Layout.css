@@ -35,3 +35,34 @@
 .main-content > .page-header {
     flex-shrink: 0;
 }
+
+/* Mobile Responsive Layout */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .layout-container.sidebar-collapsed .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+.mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 45;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

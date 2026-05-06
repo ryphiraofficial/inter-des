@@ -12,11 +12,13 @@ import {
 import { taskAPI } from '../../models/api';
 import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
 import SalesTasks from './SalesTasks';
+import StaffCollectionQueue from '../Accounts/staff/StaffCollectionQueue';
 import './css/StaffTasks.css';
 
 const StaffTasks = ({ user, forceTable = false }) => {
     const department = getRoleDepartment(user?.role);
     if (department === 'Sales' && !forceTable) return <SalesTasks user={user} />;
+    if (department === 'Accounts' && !forceTable) return <StaffCollectionQueue user={user} />;
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');

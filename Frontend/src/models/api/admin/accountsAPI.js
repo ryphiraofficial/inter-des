@@ -32,5 +32,23 @@ export const accountsAPI = {
     getStats: (params = {}) => {
         const query = new URLSearchParams(params).toString();
         return apiCall(`/accounts/stats?${query}`);
-    }
+    },
+
+    // Payment Collection Queue
+    getPendingCollections: () => apiCall('/accounts/projects/pending'),
+
+    assignStaff: (data) => apiCall('/accounts/projects/assign', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    verifyPayment: (data) => apiCall('/accounts/projects/verify-payment', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    generateAdvanceInvoice: (data) => apiCall('/accounts/projects/invoice/advance', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    })
 };

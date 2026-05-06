@@ -375,3 +375,170 @@ exports.getAccountsStats = async (req, res) => {
         });
     }
 };
+
+exports.getPendingAccountsProjects = async (req, res) => {
+    try {
+        // Get projects in both 'Accounts' (initial) and 'Pending Payment' (post-design-approval) stages
+        const projects = await Project.find({ stage: { $in: ['Accounts', 'Pending Payment'] } })
+            .populate('client', 'name email phone')
+            .populate('quotation', 'quotationNumber projectName totalAmount')
+            .populate('assignedAccountsStaff', 'fullName email role')
+            .sort({ paymentDueDate: 1, createdAt: -1 });
+        
+        res.status(200).json({ success: true, count: projects.length, data: projects });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.assignAccountsStaff = async (req, res) => {
+    try {
+        const { projectId, staffId } = req.body;
+        const project = await Project.findById(projectId)
+            .populate('assignedAccountsStaff', 'fullName email');
+        
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+        
+        project.assignedAccountsStaff = staffId;
+        project.paymentCollectionStatus = 'Assigned';
+        await project.save();
+        
+        // Notify the assigned staff
+        const { notifyUser } = require('../utils/notificationHelper');
+        notifyUser(staffId, {
+            title: '💰 New Payment Collection Task',
+            description: `You have been assigned to collect the advance payment (₹${project.advanceAmount?.toLocaleString('en-IN') || 'N/A'}) for project "${project.name}". Due: ${project.paymentDueDate ? new Date(project.paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}.`,
+            type: 'Info',
+            relatedModel: 'Project',
+            relatedId: project._id
+        });
+        
+        await createNotification({
+            title: 'Staff Assigned for Payment Collection',
+            description: `Staff assigned to collect advance payment for Project "${project.name}".`,
+            type: 'Info',
+            relatedModel: 'Project',
+            relatedId: project._id,
+            createdBy: req.user.id
+        });
+        
+        res.status(200).json({ success: true, data: project, message: 'Staff assigned and notified' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.generateAdvanceInvoice = async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        const project = await Project.findById(projectId);
+        
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+        
+        const invoice = await Invoice.findOne({ project: projectId, status: 'Draft' });
+        if (!invoice) return res.status(404).json({ success: false, message: 'Draft invoice not found' });
+        
+        invoice.status = 'Sent';
+        await invoice.save();
+        
+        project.paymentStatus = 'Invoice Sent';
+        await project.save();
+        
+        res.status(200).json({ success: true, message: 'Invoice marked as sent', data: invoice });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.clearProjectPayment = async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        const project = await Project.findById(projectId);
+        
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+        
+        project.paymentStatus = 'Cleared';
+        project.stage = 'Design'; // Proceed to design
+        await project.save();
+        
+        await createNotification({
+            title: 'Payment Cleared',
+            description: `Advance payment cleared for Project "${project.name}". Ready for Design.`,
+            type: 'Success',
+            relatedModel: 'Project',
+            relatedId: project._id,
+            createdBy: req.user.id
+        });
+        
+        res.status(200).json({ success: true, data: project });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// NEW: Accounts Manager verifies advance payment received and releases project to Procurement
+exports.verifyPaymentAndRelease = async (req, res) => {
+    try {
+        const { projectId, collectedAmount, paymentNotes } = req.body;
+
+        const project = await Project.findById(projectId).populate('quotation');
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+
+        if (project.stage !== 'Pending Payment') {
+            return res.status(400).json({ success: false, message: 'Project is not in Pending Payment stage' });
+        }
+
+        const paid = Number(collectedAmount) || project.advanceAmount;
+        project.paymentStatus = paid >= project.advanceAmount ? 'Cleared' : 'Partial Payment';
+        project.collectedAmount = paid;
+        project.paymentCollectionStatus = 'Verified';
+        project.stage = 'Procurement';
+        if (paymentNotes) project.notes = (project.notes || '') + `\nPayment Note: ${paymentNotes}`;
+        await project.save();
+
+        // Activate On Hold Material Requests
+        const MaterialRequest = require('../models/MaterialRequest');
+        const heldRequests = await MaterialRequest.find({ project: projectId, status: 'On Hold' });
+        for (const mr of heldRequests) {
+            const User = require('../models/User');
+            const procStaff = await User.find({ role: 'Procurement Staff', status: 'Active' });
+            if (procStaff.length > 0) {
+                mr.assignedTo = procStaff[Math.floor(Math.random() * procStaff.length)]._id;
+                mr.status = 'Assigned';
+                const { notifyUser } = require('../utils/notificationHelper');
+                notifyUser(mr.assignedTo, {
+                    title: '📦 New Procurement Assignment',
+                    description: `Payment cleared for "${project.name}". You have been assigned to handle procurement.`,
+                    type: 'Info',
+                    relatedModel: 'MaterialRequest',
+                    relatedId: mr._id
+                });
+            } else {
+                mr.status = 'Pending';
+            }
+            await mr.save();
+        }
+
+        const { notifyByRole } = require('../utils/notificationHelper');
+        notifyByRole('Procurement Manager', {
+            title: '🚀 Payment Cleared — Procurement Released',
+            description: `Advance payment confirmed for "${project.name}". ${heldRequests.length} material request(s) now active.`,
+            type: 'Success',
+            relatedModel: 'Project',
+            relatedId: project._id
+        });
+
+        await createNotification({
+            title: '✅ Advance Payment Verified',
+            description: `Accounts Manager confirmed advance payment for "${project.name}". Project moved to Procurement.`,
+            type: 'Success',
+            relatedModel: 'Project',
+            relatedId: project._id,
+            createdBy: req.user.id
+        });
+
+        res.status(200).json({ success: true, data: project, message: 'Payment verified. Project released to Procurement.' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

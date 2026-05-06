@@ -41,18 +41,17 @@ exports.getTasks = async (reqData) => {
             const Staff = require('../models/Staff');
             const staffMember = await Staff.findOne({ email: reqData.user.email });
             if (staffMember) {
-                if (isSales && reqData.query.includeSalesReview === 'true') {
-                    // Action Center: show tasks assigned to them AND tasks pending sales review
+                if (isSales) {
+                    // Sales can see tasks assigned to them OR tasks pending sales review
                     query.$or = [
                         { assignedTo: staffMember._id },
                         { status: 'Pending Sales Review' }
                     ];
                 } else {
-                    // Regular Tasks view: only show tasks directly assigned to this staff member
                     query.assignedTo = staffMember._id;
                 }
-            } else {
-                // Staff member not found — return empty
+            } else if (!isSales) {
+                // If not found in staff model and not sales, return empty
                 return { status: 200, success: true, count: 0, data: [] };
             }
         }
@@ -678,7 +677,7 @@ exports.managerSendToAdmin = async (reqData) => {
 
 exports.adminReviewDesign = async (reqData) => {
     try {
-        const { approved, rejectionReason, approvedBudget } = reqData.body;
+        const { approved, rejectionReason, approvedBudget, advancePercentage, paymentDueDate, adminPaymentNotes } = reqData.body;
         const task = await Task.findById(reqData.params.id).populate('quotation');
         if (!task) return { status: 404, success: false, message: 'Task not found' };
 
@@ -687,7 +686,7 @@ exports.adminReviewDesign = async (reqData) => {
         }
 
         if (!approved) {
-            // Admin rejects — send back to manager for redo
+            // Admin rejects — send back to designer/manager for redo
             task.status = 'Admin Rejected';
             task.timeline.push({
                 action: 'adminReviewed',
@@ -697,35 +696,41 @@ exports.adminReviewDesign = async (reqData) => {
             });
             await task.save();
 
-            return { status: 200, success: true, data: task, message: 'Design rejected and sent back for revision' };
-
             const { notifyByRole } = require('../utils/notificationHelper');
             notifyByRole('Design Manager', {
                 title: '❌ Admin Rejected Design',
-                description: `Superadmin rejected "${task.title}". Reason: ${rejectionReason}. Please coordinate with your team to redo.`,
+                description: `Superadmin rejected "${task.title}". Reason: ${rejectionReason || 'Not specified'}. Please coordinate with your team to redo.`,
                 type: 'Error',
                 relatedModel: 'Task',
                 relatedId: task._id
             });
-            return;
+
+            return { status: 200, success: true, data: task, message: 'Design rejected and sent back for revision' };
         }
 
-        // Admin approves — push to procurement
+        // --- ADMIN APPROVES ---
+        // Resolve project reference
+        const ProjectModel = require('../models/Project');
         if (!task.project && task.quotation) {
-            const Project = require('../models/Project');
-            const project = await Project.findOne({ quotation: task.quotation._id });
+            const project = await ProjectModel.findOne({ quotation: task.quotation._id });
             if (project) task.project = project._id;
         }
 
+        // Calculate advance amount from quotation total
+        const quotationTotal = task.quotation?.totalAmount || 0;
+        const pct = Number(advancePercentage) || 30;
+        const calcAdvanceAmount = Math.round((quotationTotal * pct) / 100);
+
+        // Update task status
         task.status = 'Pushed to Procurement';
         task.timeline.push({
             action: 'adminReviewed',
             performedBy: reqData.user.id,
-            details: 'Admin approved design and pushed to procurement',
+            details: `Admin approved design. Advance payment ${pct}% (₹${calcAdvanceAmount}) sent to Accounts for collection.`,
             timestamp: new Date()
         });
 
-        // Build material request from designItems in latest submission
+        // Build material request from designItems — kept On Hold until payment cleared
         const latestSubmission = task.submissions?.[task.submissions.length - 1];
         const designItems = latestSubmission?.designItems || [];
         const materialRequestItems = designItems.map(item => ({
@@ -738,84 +743,71 @@ exports.adminReviewDesign = async (reqData) => {
 
         let materialRequest = null;
         if (task.project) {
-            // Auto-assign to a procurement staff
-            const User = require('../models/User');
-            const procStaff = await User.find({ role: 'Procurement Staff', status: 'Active' });
-            let assignedTo = null;
-            let mrStatus = 'Pending';
-
-            if (procStaff && procStaff.length > 0) {
-                // Round-robin or simple first assignment
-                assignedTo = procStaff[Math.floor(Math.random() * procStaff.length)]._id;
-                mrStatus = 'Assigned';
-            }
-
             materialRequest = await MaterialRequest.create({
                 project: task.project,
                 quotation: task.quotation ? task.quotation._id : null,
                 items: materialRequestItems,
                 priority: 'Medium',
-                status: mrStatus,
+                status: 'On Hold',  // Held until Accounts clears payment
                 requestedBy: reqData.user.id,
                 createdBy: reqData.user.id,
-                assignedTo: assignedTo,
                 approvedBudget: approvedBudget || 0,
                 isPushedFromDesign: true,
-                notes: `Admin-approved design handoff from task: ${task.title}.`
+                notes: `Design approved by admin. On hold pending advance payment collection (${pct}% = ₹${calcAdvanceAmount}).`
             });
 
-            if (assignedTo) {
-                const { notifyUser } = require('../utils/notificationHelper');
-                notifyUser(assignedTo, {
-                    title: 'New Auto-Assigned Handoff',
-                    description: `You have been auto-assigned to handle procurement for "${task.title}".`,
-                    type: 'Info',
-                    relatedModel: 'MaterialRequest',
-                    relatedId: materialRequest._id
-                });
-            }
-
-            const Project = require('../models/Project');
-            await Project.findByIdAndUpdate(task.project, { stage: 'Procurement', designComplete: true });
+            // Update project: move to 'Pending Payment' stage, save payment details
+            await ProjectModel.findByIdAndUpdate(task.project, {
+                stage: 'Pending Payment',
+                designComplete: true,
+                advancePercentage: pct,
+                advanceAmount: calcAdvanceAmount,
+                paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null,
+                adminPaymentNotes: adminPaymentNotes || '',
+                paymentCollectionStatus: 'Pending Assignment',
+                paymentStatus: 'Pending Advance'
+            });
         }
 
+        // Update quotation status
         if (task.quotation) {
-            task.quotation.status = 'Sent to Procurement';
+            task.quotation.status = 'Approved';
             await task.quotation.save();
         }
 
         await task.save();
 
-        return { status: 200, success: true, data: task, materialRequest, message: 'Design approved and pushed to procurement' };
-
-        createNotification({
-            title: '🚀 Design Pushed to Procurement',
-            description: `Admin approved "${task.title}" and it has been forwarded to procurement.`,
-            type: 'Success',
-            relatedModel: 'Task',
-            relatedId: task._id,
-            createdBy: reqData.user.id
-        });
-
-        const { notifyByRole } = require('../utils/notificationHelper');
-        notifyByRole('Procurement Manager', {
-            title: 'New Material Request from Design',
-            description: `Design "${task.title}" approved by admin. Material request created with ${materialRequestItems.length} item(s).`,
+        // Notify ALL Accounts Managers in-app
+        const { notifyByRole, notifyByRole: notifyDesign } = require('../utils/notificationHelper');
+        notifyByRole('Accounts Manager', {
+            title: '💰 New Payment Collection Request',
+            description: `Admin approved design "${task.title}". Collect ${pct}% advance (₹${calcAdvanceAmount.toLocaleString('en-IN')}) by ${paymentDueDate ? new Date(paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}. Assign a staff member to proceed.`,
             type: 'Info',
-            relatedModel: materialRequest ? 'MaterialRequest' : 'Task',
-            relatedId: materialRequest ? materialRequest._id : task._id
+            relatedModel: 'Project',
+            relatedId: task.project
         });
-        notifyByRole('Design Manager', {
-            title: '✅ Admin Approved — Procurement Notified',
-            description: `Design "${task.title}" was approved by Superadmin and has been pushed to the Procurement team.`,
+
+        // Notify Design Manager of approval
+        notifyDesign('Design Manager', {
+            title: '✅ Design Approved — Awaiting Payment',
+            description: `Admin approved "${task.title}". Project is now pending advance payment collection before procurement begins.`,
             type: 'Success',
             relatedModel: 'Task',
             relatedId: task._id
         });
+
+        return {
+            status: 200,
+            success: true,
+            data: task,
+            materialRequest,
+            message: `Design approved. Payment collection request (${pct}% = ₹${calcAdvanceAmount}) sent to Accounts Manager.`
+        };
     } catch (error) {
         return { status: 500, success: false, message: error.message };
     }
 };
+
 
 exports.addComment = async (reqData) => {
     try {
