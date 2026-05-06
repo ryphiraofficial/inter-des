@@ -174,7 +174,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
                     <Menu size={22} strokeWidth={2.4} />
                 </button>
                 <div className="welcome-text">
-                    <h1 style={{ "fontSize": "22px" }}>{title}</h1>
+                    <h1>{title}</h1>
                     {subtitle && <p>{subtitle}</p>}
                 </div>
             </div>

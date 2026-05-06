@@ -22,12 +22,14 @@
 
 /* Header & Logo */
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 0 2rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    min-height: 85px;
-    border-bottom: 1px solid #f1f5f9;
+    align-items: center;
+    height: 80px;
+    min-height: 80px;
+    border-bottom: 1px solid #e8edf2;
+    box-sizing: border-box;
 }
 
 .brand-wrapper {
@@ -35,6 +37,10 @@
     width: 100%;
     opacity: 1;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
 .sidebar-container.collapsed .brand-wrapper {
@@ -43,22 +49,23 @@
 }
 
 .brand-title {
-    font-size: 1.15rem;
+    font-size: 20px;
     color: #0f172a;
-    /* Slate 900 */
     letter-spacing: -0.02em;
     margin: 0;
     font-family: inherit;
     font-weight: 800;
+    line-height: 1.2;
 }
 
 .brand-subtitle {
-    font-size: 0.7rem;
+    font-size: 12px;
     color: #64748b;
-    /* Slate 500 */
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.4;
 }
 
 .btn-toggle-sidebar {
@@ -283,7 +290,7 @@
 /* Footer User Profile (replaces large boxed user card) */
 .sidebar-footer {
     padding: 1.25rem 1.5rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid #e8edf2;
     display: flex;
     align-items: center;
     justify-content: space-between;
