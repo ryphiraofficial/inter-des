@@ -96,7 +96,6 @@ const Quotations = ({ isStaff, user }) => {
             <div className="quotations-content">
                 <div className="quotations-header-row">
                     <div className="q-header-left">
-                        <h2>Quotations</h2>
                         <div className="q-tabs-list">
                             {['All', 'Under Review', 'Approved'].map(tab => (
                                 <button

@@ -49,6 +49,11 @@ const Staff = () => {
 
     useEffect(() => {
         fetchStaff();
+
+        const handleOpenStaffModal = () => setShowModal(true);
+        window.addEventListener('open-create-staff-modal', handleOpenStaffModal);
+
+        return () => window.removeEventListener('open-create-staff-modal', handleOpenStaffModal);
     }, []);
 
     const fetchStaff = async () => {
@@ -197,13 +202,6 @@ const Staff = () => {
     return (
         <div className="staff-container">
             <div className="staff-wrapper">
-                <div className="staff-header">
-                    <h2>Staff Management</h2>
-                    <button className="btn-new-staff" onClick={() => setShowModal(true)}>
-                        <Plus size={18} />
-                        <span>Add New Staff</span>
-                    </button>
-                </div>
 
                 <div className="staff-search-container">
                     <Search className="search-icon" size={20} />
@@ -227,97 +225,159 @@ const Staff = () => {
                         <p>Add a new staff member to get started</p>
                     </div>
                 ) : (
-                    <div className="staff-table-container">
-                        <table className="staff-table">
-                            <thead>
-                                <tr>
-                                    <th>Staff ID</th>
-                                    <th>Staff Member</th>
-                                    <th>Role</th>
-                                    <th>Contact</th>
-                                    <th>Joining Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredStaff.map((staff) => (
-                                    <tr key={staff._id}>
-                                        <td>
-                                            <span className="staff-id-badge">{staff.staffId || '—'}</span>
-                                        </td>
-                                        <td>
-                                            <div className="staff-info-cell">
-                                                <div className="staff-avatar">
-                                                    {staff.name.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div className="staff-details">
-                                                    <span className="staff-name">{staff.name}</span>
-                                                    <span className="staff-phone">{staff.phone}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="role-cell">
-                                                <Briefcase size={14} />
-                                                <span>{staff.role}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="contact-cell">
-                                                <div className="contact-item">
-                                                    <Phone size={12} />
-                                                    <span>{staff.phone}</span>
-                                                </div>
-                                                {staff.email && (
-                                                    <div className="contact-item">
-                                                        <Mail size={12} />
-                                                        <span>{staff.email}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="date-cell">
-                                                <Calendar size={14} />
-                                                <span>{new Date(staff.joiningDate).toLocaleDateString()}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
-                                                {staff.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="actions-cell">
-                                                <button
-                                                    className="btn-icon analytics"
-                                                    onClick={() => handleViewAnalytics(staff)}
-                                                    title="View Performance"
-                                                >
-                                                    <BarChart2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-icon edit"
-                                                    onClick={() => handleEdit(staff)}
-                                                    title="Edit"
-                                                >
-                                                    <Edit size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-icon delete"
-                                                    onClick={() => handleDelete(staff._id)}
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
+                    <>
+                        <div className="staff-table-container desktop-only">
+                            <table className="staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff ID</th>
+                                        <th>Staff Member</th>
+                                        <th>Role</th>
+                                        <th>Contact</th>
+                                        <th>Joining Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {filteredStaff.map((staff) => (
+                                        <tr key={staff._id}>
+                                            <td>
+                                                <span className="staff-id-badge">{staff.staffId || '—'}</span>
+                                            </td>
+                                            <td>
+                                                <div className="staff-info-cell">
+                                                    <div className="staff-avatar">
+                                                        {staff.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="staff-details">
+                                                        <span className="staff-name">{staff.name}</span>
+                                                        <span className="staff-phone">{staff.phone}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="role-cell">
+                                                    <Briefcase size={14} />
+                                                    <span>{staff.role}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="contact-cell">
+                                                    <div className="contact-item">
+                                                        <Phone size={12} />
+                                                        <span>{staff.phone}</span>
+                                                    </div>
+                                                    {staff.email && (
+                                                        <div className="contact-item">
+                                                            <Mail size={12} />
+                                                            <span>{staff.email}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="date-cell">
+                                                    <Calendar size={14} />
+                                                    <span>{new Date(staff.joiningDate).toLocaleDateString()}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
+                                                    {staff.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="actions-cell">
+                                                    <button
+                                                        className="btn-icon analytics"
+                                                        onClick={() => handleViewAnalytics(staff)}
+                                                        title="View Performance"
+                                                    >
+                                                        <BarChart2 size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon edit"
+                                                        onClick={() => handleEdit(staff)}
+                                                        title="Edit"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon delete"
+                                                        onClick={() => handleDelete(staff._id)}
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Cards View */}
+                        <div className="staff-cards-container mobile-only">
+                            {filteredStaff.map((staff) => (
+                                <div key={staff._id} className="staff-card">
+                                    <div className="staff-card-header">
+                                        <div className="staff-info-cell">
+                                            <div className="staff-avatar">
+                                                {staff.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="staff-details">
+                                                <span className="staff-name">{staff.name}</span>
+                                                <span className="staff-id-badge">{staff.staffId || '—'}</span>
+                                            </div>
+                                        </div>
+                                        <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
+                                            {staff.status}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="staff-card-body">
+                                        <div className="role-cell">
+                                            <Briefcase size={14} />
+                                            <span>{staff.role}</span>
+                                        </div>
+                                        <div className="contact-row">
+                                            <div className="contact-item">
+                                                <Phone size={14} />
+                                                <span>{staff.phone}</span>
+                                            </div>
+                                            {staff.email && (
+                                                <div className="contact-item">
+                                                    <Mail size={14} />
+                                                    <span className="email-text">{staff.email}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="staff-card-footer">
+                                        <div className="date-info">
+                                            <Calendar size={12} />
+                                            <span>Joined {new Date(staff.joiningDate).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="actions-cell">
+                                            <button className="btn-icon analytics" onClick={() => handleViewAnalytics(staff)}>
+                                                <BarChart2 size={18} />
+                                            </button>
+                                            <button className="btn-icon edit" onClick={() => handleEdit(staff)}>
+                                                <Edit size={18} />
+                                            </button>
+                                            <button className="btn-icon delete" onClick={() => handleDelete(staff._id)}>
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
                 )}
             </div>
 

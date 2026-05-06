@@ -174,7 +174,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
                     <Menu size={22} strokeWidth={2.4} />
                 </button>
                 <div className="welcome-text">
-                    <h1>{title}</h1>
+                    <h1 style={{ "fontSize": "22px" }}>{title}</h1>
                     {subtitle && <p>{subtitle}</p>}
                 </div>
             </div>
@@ -213,6 +213,11 @@ const Header = ({ user, toggleMobileSidebar }) => {
                             <ActionBtn show={isHome && tab === 'projects'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-project-modal'))} label="New Project" variant="primary" />
                             <ActionBtn show={isHome && tab === 'reports'} onClick={() => window.dispatchEvent(new CustomEvent('export-reports-pdf'))} label="Export PDF" icon={Download} variant="primary" />
                             <ActionBtn show={location.pathname === '/po-inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-po-inventory-modal'))} label="Add Item" variant="primary" />
+                            <ActionBtn show={location.pathname === '/purchase-orders'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-po-modal'))} label="Create PO" variant="primary" />
+                            <ActionBtn show={location.pathname === '/tasks'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-task-modal'))} label="Assign New Task" variant="primary" />
+                            <ActionBtn show={location.pathname === '/staff'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-staff-modal'))} label="Add New Staff" variant="primary" />
+                            <ActionBtn show={location.pathname === '/clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add New Client" variant="primary" />
+                            <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />
                         </>
                     );
                 })()}

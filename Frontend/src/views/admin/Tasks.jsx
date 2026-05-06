@@ -94,8 +94,15 @@ const Tasks = ({ isStaff, user }) => {
             }
         }
 
+        const handleOpenTaskModal = () => setShowTaskModal(true);
+
         window.addEventListener('AI_POPULATE_TASK', handleAIPopulate);
-        return () => window.removeEventListener('AI_POPULATE_TASK', handleAIPopulate);
+        window.addEventListener('open-create-task-modal', handleOpenTaskModal);
+        
+        return () => {
+            window.removeEventListener('AI_POPULATE_TASK', handleAIPopulate);
+            window.removeEventListener('open-create-task-modal', handleOpenTaskModal);
+        };
     }, []);
 
     const fetchAllData = async () => {
@@ -339,25 +346,6 @@ const Tasks = ({ isStaff, user }) => {
     return (
         <div className={`tasks-container ${isStaff ? 'staff-view' : ''}`}>
             <div className="tasks-wrapper">
-                <div className="t-tasks-header">
-                    <div className="t-tasks-title">
-                        <h2>
-                            {isStaff ? 'My Assigned Tasks' : 
-                             filterStatus === 'Pending Admin Review' ? 'Design Approval Center' : 'Task Management'}
-                        </h2>
-                        <p className="tasks-subtitle">
-                            {isStaff ? 'Update your progress and complete assigned works' : 
-                             filterStatus === 'Pending Admin Review' ? 'Review and authorize completed designs for procurement' : 'Assign work to staff members and track progress'}
-                        </p>
-                    </div>
-                    {!isStaff && (
-                        <button className="btn-new-task" onClick={() => setShowTaskModal(true)}>
-                            <Plus size={18} />
-                            <span>Assign New Task</span>
-                        </button>
-                    )}
-                </div>
-
                 <div className="tasks-stats-grid">
                     {statsCards.map((stat, i) => (
                         <div

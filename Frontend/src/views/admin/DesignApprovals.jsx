@@ -171,16 +171,8 @@ const DesignApprovals = () => {
         <div className="tasks-container">
             <div className="tasks-wrapper" style={{ maxWidth: '1400px' }}>
                 <div className="t-tasks-header" style={{ marginBottom: '2.5rem' }}>
-                    <div className="t-tasks-title">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                            <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white', padding: '10px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)' }}>
-                                <CheckCircle size={24} />
-                            </div>
-                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, color: '#1e293b' }}>Approval Hub</h2>
-                        </div>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '1rem' }}>Authorizing high-fidelity designs and procurement materials.</p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+
+                    <div className="queue-strength-box" style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                         <div style={{ textAlign: 'right' }}>
                             <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Queue Strength</span>
                             <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5' }}>{tasks.length + procurementItems.length} Pending</span>
@@ -219,7 +211,7 @@ const DesignApprovals = () => {
                         <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto' }}>There are no designs currently awaiting your review.</p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 400px), 1fr))', gap: '2rem' }}>
                         {tasks.map((task) => (
                             <div key={task._id} className="approval-card" style={{ background: 'white', borderRadius: '24px', border: '1px solid #e2e8f0', overflow: 'hidden', transition: 'all 0.3s ease', position: 'relative' }}>
                                 <div style={{ height: '200px', background: '#f1f5f9', position: 'relative', overflow: 'hidden' }}>
@@ -302,7 +294,7 @@ const DesignApprovals = () => {
                             <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto' }}>There are no procurement requests currently awaiting your review.</p>
                         </div>
                     ) : (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(440px, 1fr))', gap: '2rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 440px), 1fr))', gap: '2rem' }}>
                             {procurementItems.map((item) => {
                                 const pmAssigned = !!selectedPM[item._id];
                                 const accountsSent = !!sentToAccounts[item._id];
@@ -424,7 +416,7 @@ const DesignApprovals = () => {
                         </div>
                         
                         <div className="modal-body" style={{ padding: '2.5rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '3rem' }}>
+                            <div className="preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '3rem' }}>
                                 <div className="preview-assets">
                                     <h3 style={{ fontSize: '1.2rem', fontWeight: 750, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', color: '#1e293b' }}>
                                         <ImageIcon size={20} color="#6366f1" /> Submitted Artwork & Assets
@@ -515,7 +507,7 @@ const DesignApprovals = () => {
                             <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 {/* Project Info */}
                                 <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px 20px', border: '1px solid #e2e8f0' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    <div className="payment-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                         <div>
                                             <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Project</p>
                                             <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{paymentTask.title}</p>
@@ -590,6 +582,32 @@ const DesignApprovals = () => {
                     transform: translateY(-8px);
                     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
                     border-color: #6366f1;
+                }
+                @media (max-width: 992px) {
+                    .preview-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 1.5rem !important;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .t-tasks-header {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        gap: 1rem;
+                    }
+                    .queue-strength-box {
+                        justify-content: space-between;
+                    }
+                    .modal-footer {
+                        flex-direction: column;
+                        padding: 1.5rem !important;
+                    }
+                    .modal-footer button {
+                        width: 100%;
+                    }
+                    .payment-info-grid {
+                        grid-template-columns: 1fr !important;
+                    }
                 }
             `}</style>
         </div>

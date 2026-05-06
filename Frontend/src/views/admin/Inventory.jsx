@@ -213,13 +213,7 @@ const Inventory = () => {
     return (
         <div className="inventory-container">
             <div className="inventory-wrapper">
-                <div className="inventory-header">
-                    <h2>Catalog Management</h2>
-                    <button className="btn-new-item" onClick={() => setShowItemModal(true)}>
-                        <Plus size={18} />
-                        <span>Add New Item</span>
-                    </button>
-                </div>
+
 
                 <div className="inventory-controls">
                     <div className="search-bar">

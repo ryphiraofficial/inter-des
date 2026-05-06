@@ -50,7 +50,7 @@
 }
 
 .welcome-text h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0 0 0.25rem 0;
@@ -58,7 +58,7 @@
 
 .welcome-text p {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin: 0;
 }
 
@@ -449,7 +449,7 @@
 
     .welcome-text h1 {
         margin: 0 !important;
-        font-size: 1rem !important;
+        font-size: 1.4rem !important;
         font-weight: 700 !important;
         line-height: 1.2 !important;
         color: #0f172a !important;
@@ -460,6 +460,7 @@
 
     .welcome-text p {
         display: none !important;
+        font-size: 2rem ;
     }
 
     .header-actions {

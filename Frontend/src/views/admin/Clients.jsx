@@ -43,6 +43,11 @@ const Clients = ({ isStaff }) => {
 
     useEffect(() => {
         fetchClients();
+
+        const handleOpenClientModal = () => setShowNewClientModal(true);
+        window.addEventListener('open-create-client-modal', handleOpenClientModal);
+
+        return () => window.removeEventListener('open-create-client-modal', handleOpenClientModal);
     }, []);
 
     const fetchClients = async () => {
@@ -147,7 +152,6 @@ const Clients = ({ isStaff }) => {
             <div className="clients-wrapper">
                 <div className="c-clients-header">
                     <div className="c-header-left">
-                        <h2>Clients</h2>
                         <div className="c-tabs-list">
                             {['All', 'New', 'Staff Added'].map(tab => (
                                 <button
@@ -178,10 +182,6 @@ const Clients = ({ isStaff }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <button className="btn-new-client" onClick={() => setShowNewClientModal(true)}>
-                        <Plus size={18} />
-                        <span>Add New Client</span>
-                    </button>
                 </div>
 
                 {loading ? (

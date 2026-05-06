@@ -41,6 +41,11 @@ const PurchaseOrders = () => {
 
     useEffect(() => {
         fetchPurchaseOrders();
+        
+        const handleOpenCreateModal = () => setShowCreateModal(true);
+        window.addEventListener('open-create-po-modal', handleOpenCreateModal);
+        
+        return () => window.removeEventListener('open-create-po-modal', handleOpenCreateModal);
     }, []);
 
     const fetchPurchaseOrders = async () => {
@@ -158,12 +163,6 @@ const PurchaseOrders = () => {
     return (
         <div className="po-container">
             <div className="po-wrapper">
-                <div className="po-header-section">
-                    <button className="btn-primary-blue" onClick={() => setShowCreateModal(true)}>
-                        <Plus size={20} />
-                        <span>Create Purchase Order</span>
-                    </button>
-                </div>
 
                 <div className="po-stats-grid">
                     {statsData.map((stat, index) => (
