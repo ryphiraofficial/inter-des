@@ -1,6 +1,5 @@
 .new-quote-wrapper {
-    padding: 0 2.5rem 2rem 2.5rem;
-    /* background-color: var(--bg-color); */
+    padding: 0;
     min-height: 100vh;
 }
 

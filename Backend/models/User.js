@@ -93,6 +93,18 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', async function (next) {
+    // Automatically set department based on role if it's a new user or role changed
+    if (this.isModified('role') || !this.department) {
+        if (this.role.includes('Design')) this.department = 'Design';
+        else if (this.role.includes('Procurement')) this.department = 'Procurement';
+        else if (this.role.includes('Production') || this.role === 'Project Manager' || this.role === 'Project Engineer' || this.role === 'Site Engineer' || this.role === 'Site Supervisor') {
+            this.department = 'Production';
+        }
+        else if (this.role.includes('Accounts')) this.department = 'Accounts';
+        else if (this.role === 'Sales') this.department = 'Sales';
+        else this.department = 'Admin';
+    }
+
     if (!this.isModified('password')) {
         return next();
     }

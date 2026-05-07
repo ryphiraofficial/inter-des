@@ -39,7 +39,9 @@ const Layout = ({ user, onLogout }) => {
             {renderSidebar()}
             <main className="main-content">
                 <Header user={user} toggleMobileSidebar={toggleMobileSidebar} />
-                <Outlet />
+                <div className="page-wrapper">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );

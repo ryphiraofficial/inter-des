@@ -352,49 +352,7 @@
     white-space: nowrap;
 }
 
-/* Mobile Friendly Task Card Layout */
-@media (max-width: 992px) {
-    .st-tasks-table thead {
-        display: none;
-    }
-
-    .st-tasks-table,
-    .st-tasks-table tbody,
-    .st-tasks-table tr,
-    .st-tasks-table td {
-        display: block;
-        width: 100%;
-    }
-
-    .st-tasks-table tr {
-        border-bottom: 8px solid #f8fafc;
-        padding: 1.5rem 0;
-    }
-
-    .st-tasks-table td {
-        border-bottom: none;
-        padding: 0.5rem 1.5rem;
-    }
-
-    .st-tasks-table td::before {
-        content: attr(data-label);
-        font-weight: 800;
-        display: block;
-        font-size: 0.65rem;
-        color: #94a3b8;
-        text-transform: uppercase;
-        margin-bottom: 0.25rem;
-        letter-spacing: 0.05em;
-    }
-
-    .st-task-desc {
-        max-width: none;
-    }
-
-    .st-progress-cell {
-        min-width: 0;
-    }
-}
+/* New Mobile Responsive Pattern Handled Below */
 
 @media (max-width: 480px) {
     .st-tasks-header h2 {
@@ -426,4 +384,145 @@
 .st-empty-state p {
     margin: 0;
     font-weight: 500;
+}
+/* Desktop/Mobile Utility Classes */
+.mobile-show {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .st-tasks-container {
+        padding: 1rem;
+    }
+
+    .desktop-hide {
+        display: none !important;
+    }
+
+    .mobile-show {
+        display: table-cell !important;
+    }
+
+    tr.mobile-show {
+        display: table-row !important;
+    }
+
+    .st-tasks-table th, 
+    .st-tasks-table td {
+        padding: 1rem 0.75rem !important;
+    }
+
+    .st-task-title {
+        font-size: 0.95rem;
+    }
+
+    .st-mobile-meta {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    .st-mobile-status {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #6366f1;
+        background: #eef2ff;
+        padding: 4px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+        display: inline-block;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .st-toggle-cell {
+        width: 40px;
+        min-width: 40px;
+        text-align: right;
+    }
+
+    .st-toggle-icon {
+        color: #94a3b8;
+        transition: transform 0.3s ease;
+    }
+
+    .st-toggle-icon.active {
+        transform: rotate(180deg);
+        color: #6366f1;
+    }
+
+    /* Expansion Row Styling */
+    .st-expansion-row {
+        background-color: #f8fafc !important;
+    }
+
+    .st-expansion-content {
+        padding: 1.25rem;
+        animation: st-slideDown 0.3s ease-out;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    @keyframes st-slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .st-info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .st-info-item label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+
+    .st-info-item p, .st-info-item span {
+        font-size: 0.875rem;
+        color: #1e293b;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .st-mobile-progress {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .st-mobile-progress .st-slider {
+        flex: 1;
+    }
+
+    .st-expansion-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .st-mobile-btn-action {
+        width: 100%;
+        padding: 0.875rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .st-mobile-btn-action.approve { background: #dcfce7; color: #15803d; }
+    .st-mobile-btn-action.reject { background: #fee2e2; color: #dc2626; }
 }

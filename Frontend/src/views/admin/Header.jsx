@@ -114,16 +114,17 @@ const Header = ({ user, toggleMobileSidebar }) => {
     const getPageDetails = () => {
         const path = location.pathname;
         if (path === '/') {
-            if (tab === 'invoices') return { title: 'Invoices', subtitle: 'Manage your client invoices.' };
-            if (tab === 'expenses') return { title: 'Expenses', subtitle: 'Track your business spending.' };
-            if (tab === 'payments') return { title: 'Payments', subtitle: 'Manage your incoming payments.' };
-            if (tab === 'clients') return { title: 'Clients', subtitle: 'Manage your client database and contact details.' };
-            if (tab === 'vendors') return { title: 'Vendors', subtitle: 'Manage your vendors and suppliers.' };
-            if (tab === 'projects') return { title: 'Projects', subtitle: 'Manage your ongoing projects.' };
-            if (tab === 'reports') return { title: 'Analytics Reports', subtitle: 'Detailed overview of your business performance.' };
-            if (tab === 'pipeline') return { title: 'Design Pipeline', subtitle: 'Manage your studio workflow.' };
-            if (tab === 'dashboard') return { title: 'Studio Dashboard', subtitle: 'Overview of your studio operations.' };
-            if (tab === 'requests') return { title: 'Material Requests', subtitle: 'Manage pending material requests.' };
+            const currentTab = tab?.toLowerCase();
+            if (currentTab === 'invoices') return { title: 'Invoices', subtitle: 'Manage your client invoices.' };
+            if (currentTab === 'expenses') return { title: 'Expenses', subtitle: 'Track your business spending.' };
+            if (currentTab === 'payments') return { title: 'Payments', subtitle: 'Manage your incoming payments.' };
+            if (currentTab === 'clients') return { title: 'Clients', subtitle: 'Manage your client database and contact details.' };
+            if (currentTab === 'vendors') return { title: 'Vendors', subtitle: 'Manage your vendors and suppliers.' };
+            if (currentTab === 'projects') return { title: 'Projects', subtitle: 'Manage your ongoing projects.' };
+            if (currentTab === 'reports') return { title: 'Analytics Reports', subtitle: 'Detailed overview of your business performance.' };
+            if (currentTab === 'pipeline') return { title: 'Design Pipeline', subtitle: 'Manage your studio workflow.' };
+            if (currentTab === 'dashboard' || currentTab === 'overview') return { title: 'Studio Dashboard', subtitle: 'Overview of your studio operations.' };
+            if (currentTab === 'requests') return { title: 'Material Requests', subtitle: 'Manage pending material requests.' };
             return { title: 'Dashboard', subtitle: "Welcome back! Here's your business overview." };
         }
         if (path === '/quotations') return { title: 'Quotations', subtitle: 'Detailed overview of your project estimates and proposals.' };
@@ -136,7 +137,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
         if (path === '/reports') return { title: 'Analytics', subtitle: 'Deep dive into your revenue and conversion metrics.' };
         if (path === '/settings') return { title: 'System Controls', subtitle: 'Configure your preferences and account security.' };
         if (path === '/users') return { title: 'Team Access', subtitle: 'Manage staff accounts and administrative permissions.' };
-        if (path === '/invoice') return { title: 'Billing Manager', subtitle: 'Generate and track professional client invoices.' };
+        if (path === '/invoice') return { title: 'Invoices', subtitle: 'Generate and track professional client invoices.' };
         if (path.startsWith('/production-management/dashboard')) return { title: 'Production Dashboard', subtitle: 'Overview of your production operations' };
         if (path.startsWith('/production-management/projects')) return { title: 'Projects Overview', subtitle: 'Manage and monitor all production projects' };
         if (path.startsWith('/production-management/tasks')) return { title: 'Tasks Board', subtitle: 'Track and assign production tasks' };
@@ -205,7 +206,9 @@ const Header = ({ user, toggleMobileSidebar }) => {
                                     <ActionBtn show={true} label="New Quotation" variant="primary" />
                                 </Link>
                             )}
-                            <ActionBtn show={isHome && tab === 'invoices'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-invoice-modal'))} label="Create Invoice" variant="primary" />
+                            {(isHome && tab === 'invoices' || location.pathname === '/invoice') && (
+                                <ActionBtn show={true} onClick={() => window.dispatchEvent(new CustomEvent('open-create-invoice-modal'))} label="Create Invoice" variant="primary" />
+                            )}
                             <ActionBtn show={isHome && tab === 'expenses'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))} label="Add Expense" variant="primary" />
                             <ActionBtn show={isHome && tab === 'payments'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-payment-modal'))} label="Record Payment" variant="success" />
                             <ActionBtn show={isHome && tab === 'clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add Client" variant="primary" />

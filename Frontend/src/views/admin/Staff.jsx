@@ -14,7 +14,8 @@ import {
     CheckCircle,
     Clock,
     AlertCircle,
-    Briefcase
+    Briefcase,
+    ChevronDown
 } from 'lucide-react';
 import { staffAPI } from '../../models/api';
 import { useToast } from '../../models/context/ToastContext';
@@ -35,6 +36,11 @@ const Staff = () => {
     const [analyticsLoading, setAnalyticsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     const initialFormData = {
         name: '',
@@ -217,8 +223,7 @@ const Staff = () => {
                 </div>
 
                 {loading ? (
-                    <div className="staff-loading-skeleton">
-                        <div className="desktop-only">
+                        <div className="staff-loading-skeleton">
                             <div style={{ background: 'white', borderRadius: '16px', padding: '1rem', border: '1px solid #e2e8f0' }}>
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <div key={i} style={{ display: 'flex', gap: '2rem', padding: '1.25rem', borderBottom: i < 5 ? '1px solid #f1f5f9' : 'none' }}>
@@ -232,32 +237,6 @@ const Staff = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="mobile-only">
-                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} style={{ background: 'white', borderRadius: '16px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                                            <Skeleton width="48px" height="48px" borderRadius="50%" />
-                                            <div style={{ flex: 1 }}>
-                                                <Skeleton width="140px" height="18px" />
-                                                <div style={{ marginTop: '8px' }}>
-                                                    <Skeleton width="80px" height="12px" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Skeleton width="100%" height="40px" />
-                                        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
-                                            <Skeleton width="100px" height="16px" />
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <Skeleton width="36px" height="36px" borderRadius="8px" />
-                                                <Skeleton width="36px" height="36px" borderRadius="8px" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
                 ) : filteredStaff.length === 0 ? (
                     <div className="empty-state">
                         <h4>No staff members found</h4>
@@ -265,158 +244,142 @@ const Staff = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="staff-table-container desktop-only">
+                        <div className="staff-table-container">
                             <table className="staff-table">
                                 <thead>
                                     <tr>
-                                        <th>Staff ID</th>
+                                        <th className="desktop-hide">Staff ID</th>
                                         <th>Staff Member</th>
-                                        <th>Role</th>
-                                        <th>Contact</th>
-                                        <th>Joining Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th className="desktop-hide">Role</th>
+                                        <th className="desktop-hide">Contact</th>
+                                        <th className="desktop-hide">Joining Date</th>
+                                        <th className="desktop-hide">Status</th>
+                                        <th className="desktop-hide">Actions</th>
+                                        <th className="mobile-show">Status</th>
+                                        <th className="mobile-show"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredStaff.map((staff) => (
-                                        <tr key={staff._id}>
-                                            <td>
-                                                <span className="staff-id-badge">{staff.staffId || '—'}</span>
-                                            </td>
-                                            <td>
-                                                <div className="staff-info-cell">
-                                                    <div className="staff-avatar">
-                                                        {staff.name.charAt(0).toUpperCase()}
+                                        <React.Fragment key={staff._id}>
+                                            <tr 
+                                                className={`staff-row ${expandedRow === staff._id ? 'expanded' : ''}`}
+                                                onClick={() => window.innerWidth <= 768 && toggleRow(staff._id)}
+                                            >
+                                                <td className="desktop-hide">
+                                                    <span className="staff-id-badge">{staff.staffId || '—'}</span>
+                                                </td>
+                                                <td>
+                                                    <div className="staff-info-cell">
+                                                        <div className="staff-avatar">
+                                                            {staff.name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div className="staff-details">
+                                                            <span className="staff-name">{staff.name}</span>
+                                                            <span className="staff-phone desktop-hide">{staff.phone}</span>
+                                                            <div className="mobile-staff-meta mobile-show">
+                                                                <span className="mobile-role">{staff.role}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="staff-details">
-                                                        <span className="staff-name">{staff.name}</span>
-                                                        <span className="staff-phone">{staff.phone}</span>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="role-cell">
+                                                        <Briefcase size={14} />
+                                                        <span>{staff.role}</span>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="role-cell">
-                                                    <Briefcase size={14} />
-                                                    <span>{staff.role}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="contact-cell">
-                                                    <div className="contact-item">
-                                                        <Phone size={12} />
-                                                        <span>{staff.phone}</span>
-                                                    </div>
-                                                    {staff.email && (
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="contact-cell">
                                                         <div className="contact-item">
                                                             <Mail size={12} />
-                                                            <span>{staff.email}</span>
+                                                            <span>{staff.email || '—'}</span>
                                                         </div>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="date-cell">
-                                                    <Calendar size={14} />
-                                                    <span>{new Date(staff.joiningDate).toLocaleDateString()}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
-                                                    {staff.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="actions-cell">
-                                                    <button
-                                                        className="btn-icon analytics"
-                                                        onClick={() => handleViewAnalytics(staff)}
-                                                        title="View Performance"
-                                                    >
-                                                        <BarChart2 size={16} />
-                                                    </button>
-                                                    <button
-                                                        className="btn-icon edit"
-                                                        onClick={() => handleEdit(staff)}
-                                                        title="Edit"
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button
-                                                        className="btn-icon delete"
-                                                        onClick={() => handleDelete(staff._id)}
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                        <div className="contact-item">
+                                                            <Phone size={12} />
+                                                            <span>{staff.phone || '—'}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="date-cell">
+                                                        <Calendar size={14} />
+                                                        <span>{staff.joiningDate ? new Date(staff.joiningDate).toLocaleDateString() : '—'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
+                                                        {staff.status}
+                                                    </span>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="actions-cell">
+                                                        <button className="btn-icon analytics" onClick={() => handleViewAnalytics(staff)} title="Performance Analytics">
+                                                            <BarChart2 size={16} />
+                                                        </button>
+                                                        <button className="btn-icon edit" onClick={() => handleEdit(staff)} title="Edit Staff">
+                                                            <Edit size={16} />
+                                                        </button>
+                                                        <button className="btn-icon delete" onClick={() => handleDelete(staff._id)} title="Remove Staff">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className="mobile-show">
+                                                    <span className={`mobile-status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
+                                                        {staff.status}
+                                                    </span>
+                                                </td>
+                                                <td className="mobile-show toggle-cell">
+                                                    <ChevronDown size={18} className={`toggle-icon ${expandedRow === staff._id ? 'active' : ''}`} />
+                                                </td>
+                                            </tr>
+                                            {expandedRow === staff._id && (
+                                                <tr className="mobile-expansion-row mobile-show">
+                                                    <td colSpan="3">
+                                                        <div className="expansion-content">
+                                                            <div className="info-grid">
+                                                                <div className="info-item">
+                                                                    <label>Staff ID</label>
+                                                                    <span>{staff.staffId || '—'}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Role</label>
+                                                                    <span>{staff.role}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Email</label>
+                                                                    <span>{staff.email || '—'}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Joining Date</label>
+                                                                    <span>{staff.joiningDate ? new Date(staff.joiningDate).toLocaleDateString() : '—'}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="expansion-actions">
+                                                                <button className="btn-mobile-action primary" onClick={() => handleViewAnalytics(staff)}>
+                                                                    <BarChart2 size={16} />
+                                                                    Performance Analytics
+                                                                </button>
+                                                                <button className="btn-mobile-action secondary" onClick={() => handleEdit(staff)}>
+                                                                    <Edit size={16} />
+                                                                    Edit Staff
+                                                                </button>
+                                                                <button className="btn-mobile-action danger" onClick={() => handleDelete(staff._id)}>
+                                                                    <Trash2 size={16} />
+                                                                    Remove Staff
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Mobile Cards View */}
-                        <div className="staff-cards-container mobile-only">
-                            {filteredStaff.map((staff) => (
-                                <div key={staff._id} className="staff-card">
-                                    <div className="staff-card-header">
-                                        <div className="staff-info-cell">
-                                            <div className="staff-avatar">
-                                                {staff.name.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div className="staff-details">
-                                                <span className="staff-name">{staff.name}</span>
-                                                <span className="staff-id-badge">{staff.staffId || '—'}</span>
-                                            </div>
-                                        </div>
-                                        <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>
-                                            {staff.status}
-                                        </span>
-                                    </div>
-                                    
-                                    <div className="staff-card-body">
-                                        <div className="role-cell">
-                                            <Briefcase size={14} />
-                                            <span>{staff.role}</span>
-                                        </div>
-                                        <div className="contact-row">
-                                            <div className="contact-item">
-                                                <Phone size={14} />
-                                                <span>{staff.phone}</span>
-                                            </div>
-                                            {staff.email && (
-                                                <div className="contact-item">
-                                                    <Mail size={14} />
-                                                    <span className="email-text">{staff.email}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="staff-card-footer">
-                                        <div className="date-info">
-                                            <Calendar size={12} />
-                                            <span>Joined {new Date(staff.joiningDate).toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="actions-cell">
-                                            <button className="btn-icon analytics" onClick={() => handleViewAnalytics(staff)}>
-                                                <BarChart2 size={18} />
-                                            </button>
-                                            <button className="btn-icon edit" onClick={() => handleEdit(staff)}>
-                                                <Edit size={18} />
-                                            </button>
-                                            <button className="btn-icon delete" onClick={() => handleDelete(staff._id)}>
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
                     </>
-                )}
                 )}
             </div>
 

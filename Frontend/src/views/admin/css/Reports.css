@@ -1,9 +1,7 @@
 /* Reports Container */
 .reports-container {
-    padding: 0 2.5rem 2rem 2.5rem;
-    /* background-color: #ffffff; */
+    padding: 0;
     min-height: 100vh;
-    margin: -24px; /* Negate parent padding */
 }
 
 .reports-wrapper {

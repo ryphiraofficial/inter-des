@@ -7,7 +7,9 @@ import {
     User,
     Briefcase,
     LayoutGrid,
-    List as ListIcon
+    List as ListIcon,
+    ChevronDown,
+    Edit
 } from 'lucide-react';
 import { taskAPI } from '../../models/api';
 import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
@@ -24,6 +26,11 @@ const StaffTasks = ({ user, forceTable = false }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
     const [updatingTaskId, setUpdatingTaskId] = useState(null);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     useEffect(() => {
         fetchTasks();
@@ -147,85 +154,160 @@ const StaffTasks = ({ user, forceTable = false }) => {
                             <thead>
                                 <tr>
                                     <th>Task Details</th>
-                                    <th>Project / Client</th>
-                                    <th>Progress</th>
-                                    <th>Priority</th>
-                                    <th>Deadline</th>
-                                    <th>Actions</th>
+                                    <th className="desktop-hide">Project / Client</th>
+                                    <th className="desktop-hide">Progress</th>
+                                    <th className="desktop-hide">Priority</th>
+                                    <th className="desktop-hide">Deadline</th>
+                                    <th className="desktop-hide">Actions</th>
+                                    <th className="mobile-show">Status</th>
+                                    <th className="mobile-show"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredTasks.map(task => (
-                                    <tr key={task._id}>
-                                        <td data-label="Task Details">
-                                            <span className="st-task-title">{task.title}</span>
-                                            <span className="st-task-desc">{task.description}</span>
-                                        </td>
-                                        <td data-label="Project">
-                                            <div className="st-project-info">
-                                                <Briefcase size={12} />
-                                                <span>{task.quotation?.projectName || 'General'}</span>
-                                            </div>
-                                        </td>
-                                        <td data-label="Progress">
-                                            <div className="st-progress-cell">
-                                                <div className="st-progress-bar-bg">
-                                                    <div
-                                                        className="st-progress-bar-fill"
-                                                        style={{ width: `${task.progress}%` }}
-                                                    />
+                                    <React.Fragment key={task._id}>
+                                        <tr 
+                                            className={`st-task-row ${expandedRow === task._id ? 'expanded' : ''}`}
+                                            onClick={() => toggleRow(task._id)}
+                                        >
+                                            <td className="st-details-cell">
+                                                <div className="st-task-info">
+                                                    <span className="st-task-title">{task.title}</span>
+                                                    <span className="st-task-desc desktop-hide">{task.description}</span>
+                                                    <div className="st-mobile-meta mobile-show">
+                                                        {task.priority} Priority • {task.progress || 0}%
+                                                    </div>
                                                 </div>
-                                                <div className="st-slider-container">
-                                                    <input
-                                                        type="range"
-                                                        className="st-slider"
-                                                        min="0"
-                                                        max="100"
-                                                        step="5"
-                                                        value={task.progress || 0}
-                                                        onChange={(e) => handleProgressUpdate(task._id, parseInt(e.target.value))}
-                                                    />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="st-project-info">
+                                                    <Briefcase size={12} />
+                                                    <span>{task.quotation?.projectName || 'General'}</span>
                                                 </div>
-                                                <div className="st-progress-meta">
-                                                    <span className="st-progress-text">{task.progress}%</span>
-                                                    {updatingTaskId === task._id && <Loader size={12} className="spinner" />}
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="st-progress-cell">
+                                                    <div className="st-progress-bar-bg">
+                                                        <div
+                                                            className="st-progress-bar-fill"
+                                                            style={{ width: `${task.progress}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="st-slider-container">
+                                                        <input
+                                                            type="range"
+                                                            className="st-slider"
+                                                            min="0"
+                                                            max="100"
+                                                            step="5"
+                                                            value={task.progress || 0}
+                                                            onChange={(e) => handleProgressUpdate(task._id, parseInt(e.target.value))}
+                                                        />
+                                                    </div>
+                                                    <div className="st-progress-meta">
+                                                        <span className="st-progress-text">{task.progress}%</span>
+                                                        {updatingTaskId === task._id && <Loader size={12} className="spinner" />}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Priority">
-                                            <span className={`st-priority-badge st-priority-${task.priority?.toLowerCase()}`}>
-                                                {task.priority}
-                                            </span>
-                                        </td>
-                                        <td data-label="Deadline">
-                                            <div className="st-date-info">
-                                                <Calendar size={12} />
-                                                <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
-                                            </div>
-                                        </td>
-                                        <td data-label="Actions">
-                                            {task.status === 'Pending Sales Review' ? (
-                                                <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button 
-                                                        onClick={() => handleSalesReview(task._id, true)}
-                                                        disabled={updatingTaskId === task._id}
-                                                        style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-                                                    >
-                                                        Approve
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSalesReview(task._id, false)}
-                                                        disabled={updatingTaskId === task._id}
-                                                        style={{ background: '#ef4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-                                                    >
-                                                        Reject
-                                                    </button>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className={`st-priority-badge st-priority-${task.priority?.toLowerCase()}`}>
+                                                    {task.priority}
+                                                </span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="st-date-info">
+                                                    <Calendar size={12} />
+                                                    <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
                                                 </div>
-                                            ) : (
-                                                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No pending actions</span>
-                                            )}
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                {task.status === 'Pending Sales Review' ? (
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <button 
+                                                            onClick={() => handleSalesReview(task._id, true)}
+                                                            disabled={updatingTaskId === task._id}
+                                                            className="st-btn-action approve"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleSalesReview(task._id, false)}
+                                                            disabled={updatingTaskId === task._id}
+                                                            className="st-btn-action reject"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="st-status-badge">{task.status}</span>
+                                                )}
+                                            </td>
+                                            <td className="mobile-show">
+                                                <span className="st-mobile-status">{task.status}</span>
+                                            </td>
+                                            <td className="mobile-show st-toggle-cell">
+                                                <ChevronDown size={18} className={`st-toggle-icon ${expandedRow === task._id ? 'active' : ''}`} />
+                                            </td>
+                                        </tr>
+                                        {expandedRow === task._id && (
+                                            <tr className="st-expansion-row mobile-show">
+                                                <td colSpan="3">
+                                                    <div className="st-expansion-content">
+                                                        <div className="st-info-grid">
+                                                            <div className="st-info-item">
+                                                                <label>Description</label>
+                                                                <p>{task.description || 'No description provided'}</p>
+                                                            </div>
+                                                            <div className="st-info-item">
+                                                                <label>Project</label>
+                                                                <span>{task.quotation?.projectName || 'General'}</span>
+                                                            </div>
+                                                            <div className="st-info-item">
+                                                                <label>Deadline</label>
+                                                                <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
+                                                            </div>
+                                                            <div className="st-info-item">
+                                                                <label>Update Progress</label>
+                                                                <div className="st-mobile-progress">
+                                                                    <input
+                                                                        type="range"
+                                                                        className="st-slider"
+                                                                        min="0"
+                                                                        max="100"
+                                                                        step="5"
+                                                                        value={task.progress || 0}
+                                                                        onChange={(e) => handleProgressUpdate(task._id, parseInt(e.target.value))}
+                                                                    />
+                                                                    <span>{task.progress}%</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="st-expansion-actions">
+                                                            {task.status === 'Pending Sales Review' && (
+                                                                <div className="st-review-actions">
+                                                                    <button 
+                                                                        onClick={() => handleSalesReview(task._id, true)}
+                                                                        disabled={updatingTaskId === task._id}
+                                                                        className="st-mobile-btn-action approve"
+                                                                    >
+                                                                        Approve Design
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleSalesReview(task._id, false)}
+                                                                        disabled={updatingTaskId === task._id}
+                                                                        className="st-mobile-btn-action reject"
+                                                                    >
+                                                                        Request Revision
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>

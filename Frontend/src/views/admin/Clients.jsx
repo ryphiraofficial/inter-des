@@ -11,7 +11,8 @@ import {
     Phone,
     MapPin,
     Hash,
-    Users
+    Users,
+    ChevronDown
 } from 'lucide-react';
 import { clientAPI } from '../../models/api';
 import './css/Clients.css';
@@ -25,6 +26,11 @@ const Clients = ({ isStaff }) => {
     const [editingClient, setEditingClient] = useState(null);
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     const initialFormData = {
         name: '',
@@ -202,66 +208,119 @@ const Clients = ({ isStaff }) => {
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Contact Info</th>
-                                        <th>Site Address</th>
-                                        <th>Status</th>
-                                        <th>Added By</th>
-                                        <th>Actions</th>
+                                        <th className="desktop-hide">Contact Info</th>
+                                        <th className="desktop-hide">Site Address</th>
+                                        <th className="desktop-hide">Status</th>
+                                        <th className="desktop-hide">Added By</th>
+                                        <th className="desktop-hide">Actions</th>
+                                        <th className="mobile-show">Contact</th>
+                                        <th className="mobile-show"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredClients.map((client) => (
-                                        <tr key={client._id}>
-                                            <td className="client-name-cell">
-                                                <div className="client-profile">
-                                                    <div className="client-avatar">{client.name.charAt(0)}</div>
-                                                    <span>{client.name}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="client-contact-info">
-                                                    <div className="contact-item">
-                                                        <Mail size={12} />
-                                                        <span>{client.email}</span>
+                                        <React.Fragment key={client._id}>
+                                            <tr 
+                                                className={`c-row ${expandedRow === client._id ? 'expanded' : ''}`}
+                                                onClick={() => window.innerWidth <= 768 && toggleRow(client._id)}
+                                            >
+                                                <td className="client-name-cell">
+                                                    <div className="client-profile">
+                                                        <div className="client-avatar">{client.name.charAt(0)}</div>
+                                                        <span>{client.name}</span>
                                                     </div>
-                                                    <div className="contact-item">
-                                                        <Phone size={12} />
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="client-contact-info">
+                                                        <div className="contact-item">
+                                                            <Mail size={12} />
+                                                            <span>{client.email}</span>
+                                                        </div>
+                                                        <div className="contact-item">
+                                                            <Phone size={12} />
+                                                            <span>{client.phone}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="client-site-addr">
+                                                        <MapPin size={12} />
+                                                        <span>{client.siteAddress || 'N/A'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <span className={`c-status-badge ${client.status?.toLowerCase()}`}>
+                                                        {client.status}
+                                                    </span>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="added-by-info">
+                                                        <span className="added-by-name">{client.createdBy?.fullName || 'Admin'}</span>
+                                                        <span className={`added-by-role ${client.createdBy?.role?.toLowerCase()}`}>
+                                                            {client.createdBy?.role || 'Admin'}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="desktop-hide">
+                                                    <div className="c-action-buttons">
+                                                        <button className="btn-icon-edit" onClick={() => handleEdit(client)} title="Edit">
+                                                            <Edit size={16} />
+                                                        </button>
+                                                        {!isStaff && (
+                                                            <button className="btn-icon-delete" onClick={() => handleDelete(client._id)} title="Delete">
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="mobile-show">
+                                                    <div className="mobile-contact-preview">
                                                         <span>{client.phone}</span>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="client-site-addr">
-                                                    <MapPin size={12} />
-                                                    <span>{client.siteAddress || 'N/A'}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span className={`c-status-badge ${client.status?.toLowerCase()}`}>
-                                                    {client.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="added-by-info">
-                                                    <span className="added-by-name">{client.createdBy?.fullName || 'Admin'}</span>
-                                                    <span className={`added-by-role ${client.createdBy?.role?.toLowerCase()}`}>
-                                                        {client.createdBy?.role || 'Admin'}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="c-action-buttons">
-                                                    <button className="btn-icon-edit" onClick={() => handleEdit(client)} title="Edit">
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    {!isStaff && (
-                                                        <button className="btn-icon-delete" onClick={() => handleDelete(client._id)} title="Delete">
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td className="mobile-show toggle-cell">
+                                                    <ChevronDown size={18} className={`toggle-icon ${expandedRow === client._id ? 'active' : ''}`} />
+                                                </td>
+                                            </tr>
+                                            {expandedRow === client._id && (
+                                                <tr className="mobile-expansion-row mobile-show">
+                                                    <td colSpan="3">
+                                                        <div className="expansion-content">
+                                                            <div className="info-grid">
+                                                                <div className="info-item">
+                                                                    <label>Email</label>
+                                                                    <span>{client.email}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Site Address</label>
+                                                                    <span>{client.siteAddress || 'N/A'}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Status</label>
+                                                                    <span className={`c-status-badge ${client.status?.toLowerCase()}`}>{client.status}</span>
+                                                                </div>
+                                                                <div className="info-item">
+                                                                    <label>Added By</label>
+                                                                    <span>{client.createdBy?.fullName || 'Admin'} ({client.createdBy?.role || 'Admin'})</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="expansion-actions">
+                                                                <button className="btn-mobile-action primary" onClick={() => handleEdit(client)}>
+                                                                    <Edit size={16} />
+                                                                    Edit Client
+                                                                </button>
+                                                                {!isStaff && (
+                                                                    <button className="btn-mobile-action danger" onClick={() => handleDelete(client._id)}>
+                                                                        <Trash2 size={16} />
+                                                                        Delete Client
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>

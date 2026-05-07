@@ -9,7 +9,8 @@ import {
     Mail,
     Phone,
     UserCircle,
-    Loader
+    Loader,
+    ChevronDown
 } from 'lucide-react';
 import { userAPI } from '../../models/api';
 import './css/Users.css';
@@ -22,6 +23,11 @@ const Users = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     // Form State
     const [formData, setFormData] = useState({
@@ -65,10 +71,26 @@ const Users = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        
+        if (name === 'role') {
+            let dept = 'Admin';
+            if (value.includes('Design')) dept = 'Design';
+            else if (value.includes('Procurement')) dept = 'Procurement';
+            else if (value.includes('Production') || value.includes('Project') || value.includes('Site')) dept = 'Production';
+            else if (value.includes('Accounts')) dept = 'Accounts';
+            else if (value === 'Sales') dept = 'Sales';
+            
+            setFormData(prev => ({
+                ...prev,
+                role: value,
+                department: dept
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -165,65 +187,105 @@ const Users = () => {
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Contact Info</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th className="desktop-hide">Contact Info</th>
+                                    <th className="desktop-hide">Role</th>
+                                    <th className="desktop-hide">Status</th>
+                                    <th className="desktop-hide">Actions</th>
+                                    <th className="mobile-show">Role</th>
+                                    <th className="mobile-show"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredUsers.map((user) => (
-                                    <tr key={user._id}>
-                                        <td>
-                                            <div className="user-profile-cell">
-                                                <div className="user-avatar">{user.fullName?.charAt(0)}</div>
-                                                <div className="user-details">
-                                                    <span style={{ fontWeight: 600 }}>{user.fullName}</span>
-                                                    <span className="user-email">{user.email}</span>
+                                    <React.Fragment key={user._id}>
+                                        <tr 
+                                            className={`user-row ${expandedRow === user._id ? 'expanded' : ''}`}
+                                            onClick={() => toggleRow(user._id)}
+                                        >
+                                            <td>
+                                                <div className="user-profile-cell">
+                                                    <div className="user-avatar">{user.fullName?.charAt(0)}</div>
+                                                    <div className="user-details">
+                                                        <span style={{ fontWeight: 600 }}>{user.fullName}</span>
+                                                        <span className="user-email">{user.email}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                                <span style={{ fontSize: '0.85rem' }}><Phone size={12} style={{ marginRight: '6px' }} />{user.phone || 'N/A'}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`role-badge ${getRoleClass(user.role)}`}>
-                                                {user.role}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span style={{
-                                                padding: '4px 8px',
-                                                borderRadius: '6px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 600,
-                                                background: '#f0fdf4',
-                                                color: '#16a34a'
-                                            }}>
-                                                Active
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="invoice-actions">
-                                                <button
-                                                    className="btn-inv-action"
-                                                    title="Edit"
-                                                    onClick={() => handleEditClick(user)}
-                                                >
-                                                    <Edit size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-inv-action"
-                                                    title="Delete"
-                                                    onClick={() => handleDelete(user._id)}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                    <span style={{ fontSize: '0.85rem' }}><Phone size={12} style={{ marginRight: '6px' }} />{user.phone || 'N/A'}</span>
+                                                </div>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className={`role-badge ${getRoleClass(user.role)}`}>
+                                                    {user.role}
+                                                </span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className="status-badge-active">
+                                                    Active
+                                                </span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="invoice-actions">
+                                                    <button
+                                                        className="btn-inv-action"
+                                                        title="Edit"
+                                                        onClick={() => handleEditClick(user)}
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="btn-inv-action"
+                                                        title="Delete"
+                                                        onClick={() => handleDelete(user._id)}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="mobile-show">
+                                                <span className={`role-badge-small ${getRoleClass(user.role)}`}>
+                                                    {user.role}
+                                                </span>
+                                            </td>
+                                            <td className="mobile-show toggle-cell">
+                                                <ChevronDown size={18} className={`toggle-icon ${expandedRow === user._id ? 'active' : ''}`} />
+                                            </td>
+                                        </tr>
+                                        {expandedRow === user._id && (
+                                            <tr className="mobile-expansion-row mobile-show">
+                                                <td colSpan="3">
+                                                    <div className="expansion-content">
+                                                        <div className="info-grid">
+                                                            <div className="info-item">
+                                                                <label>Phone</label>
+                                                                <span>{user.phone || 'N/A'}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Department</label>
+                                                                <span>{user.department || 'Admin'}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Status</label>
+                                                                <span style={{ color: '#16a34a' }}>Active</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="expansion-actions">
+                                                            <button className="btn-mobile-action primary" onClick={() => handleEditClick(user)}>
+                                                                <Edit size={16} />
+                                                                Edit Account
+                                                            </button>
+                                                            <button className="btn-mobile-action danger" onClick={() => handleDelete(user._id)}>
+                                                                <Trash2 size={16} />
+                                                                Delete Account
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>

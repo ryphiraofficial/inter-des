@@ -5,12 +5,11 @@
 
 /* Dashboard Content Container */
 .dashboard-content {
-    padding: 3rem;
+    padding: 0;
     max-width: 1500px;
     margin: 0 auto;
     background-color: #fbfbfb;
     /* Elegant off-white */
-    min-height: calc(100vh - 80px);
 }
 
 /* Greeting Header */

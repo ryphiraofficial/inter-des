@@ -14,7 +14,8 @@ import {
     CheckCircle2,
     Trash2,
     Loader,
-    Sparkles
+    Sparkles,
+    ChevronDown
 } from 'lucide-react';
 import { purchaseOrderAPI, inventoryAPI } from '../../models/api';
 import AISuggestButton from '../common/AISuggestButton';
@@ -28,6 +29,11 @@ const PurchaseOrders = () => {
     const [statusFilter, setStatusFilter] = useState('All Status');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     // Form State for New PO
     const [formData, setFormData] = useState({
@@ -216,55 +222,122 @@ const PurchaseOrders = () => {
                                 <tr>
                                     <th>PO Number</th>
                                     <th>Supplier</th>
-                                    <th>Order Date</th>
-                                    <th>Delivery Date</th>
-                                    <th>Items</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th className="desktop-hide">Order Date</th>
+                                    <th className="desktop-hide">Delivery Date</th>
+                                    <th className="desktop-hide">Items</th>
+                                    <th className="desktop-hide">Amount</th>
+                                    <th className="desktop-hide">Status</th>
+                                    <th className="desktop-hide">Actions</th>
+                                    <th className="mobile-show">Amount</th>
+                                    <th className="mobile-show"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredPOs.map((po) => (
-                                    <tr key={po._id}>
-                                        <td>
-                                            <div className="po-number-cell">
-                                                <FileText size={18} className="po-icon" />
-                                                {po.poNumber}
-                                            </div>
-                                        </td>
-                                        <td>{po.supplier}</td>
-                                        <td className="date-cell">{new Date(po.orderDate).toLocaleDateString()}</td>
-                                        <td className="date-cell">{po.deliveryDate ? new Date(po.deliveryDate).toLocaleDateString() : 'TBD'}</td>
-                                        <td className="items-cell">{po.items?.length || 0} items</td>
-                                        <td className="amount-cell">₹{po.totalAmount?.toLocaleString()}</td>
-                                        <td>
-                                            <div className={`status-badge ${getStatusClass(po.status)}`}>
-                                                {po.status}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button className="btn-action" title="View"><Eye size={18} /></button>
-                                                {po.status === 'Ordered' && (
+                                    <React.Fragment key={po._id}>
+                                        <tr 
+                                            className={`po-row ${expandedRow === po._id ? 'expanded' : ''}`}
+                                            onClick={() => window.innerWidth <= 768 && toggleRow(po._id)}
+                                        >
+                                            <td>
+                                                <div className="po-number-cell">
+                                                    <FileText size={18} className="po-icon" />
+                                                    {po.poNumber}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="supplier-info">
+                                                    <span className="name">{po.supplier}</span>
+                                                    <span className="mobile-status-hint mobile-show">
+                                                        <span className={`status-dot ${getStatusClass(po.status)}`}></span>
+                                                        {po.status}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="desktop-hide date-cell">{new Date(po.orderDate).toLocaleDateString()}</td>
+                                            <td className="desktop-hide date-cell">{po.deliveryDate ? new Date(po.deliveryDate).toLocaleDateString() : 'TBD'}</td>
+                                            <td className="desktop-hide items-cell">{po.items?.length || 0} items</td>
+                                            <td className="desktop-hide amount-cell">₹{po.totalAmount?.toLocaleString()}</td>
+                                            <td className="desktop-hide">
+                                                <div className={`status-badge ${getStatusClass(po.status)}`}>
+                                                    {po.status}
+                                                </div>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="action-buttons">
+                                                    <button className="btn-action" title="View"><Eye size={18} /></button>
+                                                    {po.status === 'Ordered' && (
+                                                        <button
+                                                            className="btn-action done"
+                                                            title="Mark as Received"
+                                                            onClick={(e) => { e.stopPropagation(); handleMarkReceived(po._id); }}
+                                                        >
+                                                            <CheckCircle2 size={18} />
+                                                        </button>
+                                                    )}
                                                     <button
-                                                        className="btn-action done"
-                                                        title="Mark as Received"
-                                                        onClick={() => handleMarkReceived(po._id)}
+                                                        className="btn-action delete"
+                                                        title="Delete"
+                                                        onClick={(e) => { e.stopPropagation(); handleDelete(po._id); }}
                                                     >
-                                                        <CheckCircle2 size={18} />
+                                                        <Trash2 size={18} />
                                                     </button>
-                                                )}
-                                                <button
-                                                    className="btn-action delete"
-                                                    title="Delete"
-                                                    onClick={() => handleDelete(po._id)}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                </div>
+                                            </td>
+                                            <td className="mobile-show amount-cell">₹{po.totalAmount?.toLocaleString()}</td>
+                                            <td className="mobile-show toggle-cell">
+                                                <ChevronDown size={18} className={`toggle-icon ${expandedRow === po._id ? 'active' : ''}`} />
+                                            </td>
+                                        </tr>
+                                        {expandedRow === po._id && (
+                                            <tr className="mobile-expansion-row mobile-show">
+                                                <td colSpan="4">
+                                                    <div className="expansion-content">
+                                                        <div className="info-grid">
+                                                            <div className="info-item">
+                                                                <label>Order Date</label>
+                                                                <span>{new Date(po.orderDate).toLocaleDateString()}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Delivery Date</label>
+                                                                <span>{po.deliveryDate ? new Date(po.deliveryDate).toLocaleDateString() : 'TBD'}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Status</label>
+                                                                <span className={`status-badge ${getStatusClass(po.status)}`}>{po.status}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Items Count</label>
+                                                                <span>{po.items?.length || 0} items</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="expansion-actions">
+                                                            <button className="btn-mobile-action primary" onClick={() => {/* handle view */}}>
+                                                                <Eye size={16} />
+                                                                View Details
+                                                            </button>
+                                                            {po.status === 'Ordered' && (
+                                                                <button 
+                                                                    className="btn-mobile-action success"
+                                                                    onClick={() => handleMarkReceived(po._id)}
+                                                                >
+                                                                    <CheckCircle2 size={16} />
+                                                                    Mark Received
+                                                                </button>
+                                                            )}
+                                                            <button 
+                                                                className="btn-mobile-action danger"
+                                                                onClick={() => handleDelete(po._id)}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                                Delete PO
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>

@@ -11,7 +11,8 @@ import {
     AlertCircle,
     CheckCircle,
     Camera,
-    Sparkles
+    Sparkles,
+    ChevronDown
 } from 'lucide-react';
 import { inventoryAPI, uploadAPI } from '../../models/api';
 import AISuggestButton from '../common/AISuggestButton';
@@ -34,6 +35,11 @@ const Inventory = () => {
     const [showItemModal, setShowItemModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
 
     const initialFormData = {
         itemName: '',
@@ -255,54 +261,101 @@ const Inventory = () => {
                             <thead>
                                 <tr>
                                     <th>Item Details</th>
-                                    <th>Category</th>
-                                    <th>Stock Level</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
+                                    <th className="desktop-hide">Category</th>
+                                    <th className="desktop-hide">Stock Level</th>
+                                    <th className="desktop-hide">Price</th>
+                                    <th className="desktop-hide">Actions</th>
+                                    <th className="mobile-show">Price</th>
+                                    <th className="mobile-show"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredItems.map(item => (
-                                    <tr key={item._id}>
-                                        <td>
-                                            <div className="item-details-cell">
-                                                <div className="item-thumbnail-wrapper">
-                                                    {item.image ? (
-                                                        <img src={getImageUrl(item.image)} alt={item.itemName} className="item-list-thumb" />
-                                                    ) : (
-                                                        <div className="item-list-thumb-placeholder">
-                                                            <Package size={14} />
+                                    <React.Fragment key={item._id}>
+                                        <tr 
+                                            className={`inv-row ${expandedRow === item._id ? 'expanded' : ''}`}
+                                            onClick={() => window.innerWidth <= 768 && toggleRow(item._id)}
+                                        >
+                                            <td>
+                                                <div className="item-details-cell">
+                                                    <div className="item-thumbnail-wrapper">
+                                                        {item.image ? (
+                                                            <img src={getImageUrl(item.image)} alt={item.itemName} className="item-list-thumb" />
+                                                        ) : (
+                                                            <div className="item-list-thumb-placeholder">
+                                                                <Package size={14} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="item-text-info">
+                                                        <span className="item-name">{item.itemName}</span>
+                                                        <span className="item-desc desktop-hide">{item.description}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className="section-badge">{item.section}</span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className={`stock-value ${item.stock <= item.reorderLevel ? 'low' : ''}`}>
+                                                    {item.stock} {item.unit}
+                                                </span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <span className="price-value">₹{item.price.toLocaleString()}</span>
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <div className="table-actions">
+                                                    <button className="action-btn edit" onClick={(e) => { e.stopPropagation(); handleEdit(item); }}>
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button className="action-btn delete" onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}>
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="mobile-show">
+                                                <span className="price-value-mobile">₹{item.price.toLocaleString()}</span>
+                                            </td>
+                                            <td className="mobile-show toggle-cell">
+                                                <ChevronDown size={18} className={`toggle-icon ${expandedRow === item._id ? 'active' : ''}`} />
+                                            </td>
+                                        </tr>
+                                        {expandedRow === item._id && (
+                                            <tr className="mobile-expansion-row mobile-show">
+                                                <td colSpan="3">
+                                                    <div className="expansion-content">
+                                                        <div className="info-grid">
+                                                            <div className="info-item">
+                                                                <label>Category</label>
+                                                                <span>{item.section}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <label>Stock Level</label>
+                                                                <span className={item.stock <= item.reorderLevel ? 'stock-low' : ''}>
+                                                                    {item.stock} {item.unit}
+                                                                </span>
+                                                            </div>
+                                                            <div className="info-item full">
+                                                                <label>Description</label>
+                                                                <span>{item.description || 'No description provided'}</span>
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                </div>
-                                                <div className="item-text-info">
-                                                    <span className="item-name">{item.itemName}</span>
-                                                    <span className="item-desc">{item.description}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className="section-badge">{item.section}</span>
-                                        </td>
-                                        <td>
-                                            <span className={`stock-value ${item.stock <= item.reorderLevel ? 'low' : ''}`}>
-                                                {item.stock} {item.unit}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className="price-value">₹{item.price.toLocaleString()}</span>
-                                        </td>
-                                        <td>
-                                            <div className="table-actions">
-                                                <button className="action-btn edit" onClick={() => handleEdit(item)}>
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button className="action-btn delete" onClick={() => handleDelete(item._id)}>
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                        <div className="expansion-actions">
+                                                            <button className="btn-mobile-action primary" onClick={() => handleEdit(item)}>
+                                                                <Edit2 size={16} />
+                                                                Edit Material
+                                                            </button>
+                                                            <button className="btn-mobile-action danger" onClick={() => handleDelete(item._id)}>
+                                                                <Trash2 size={16} />
+                                                                Remove from Inventory
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>
