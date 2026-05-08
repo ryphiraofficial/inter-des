@@ -48,39 +48,28 @@ const ProjectsList = () => {
     return (
         <div className="pm-dashboard">
             {/* Toolbar */}
-            <div style={{ padding: '0 1.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <div className="pm-toolbar">
+                <div className="pm-toolbar-left">
                     {/* Filter Toggle Button */}
                     <button
                         onClick={() => setFiltersOpen(o => !o)}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0',
-                            background: filtersOpen ? '#0f172a' : 'white',
-                            color: filtersOpen ? 'white' : '#334155',
-                            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
-                            transition: 'all 0.2s ease', position: 'relative'
-                        }}
+                        className={`pm-filter-toggle-btn ${filtersOpen ? 'active' : ''}`}
                     >
                         <Filter size={15} />
                         Filters
                         {activeFilterCount > 0 && (
-                            <span style={{
-                                background: '#3b82f6', color: 'white', borderRadius: '99px',
-                                fontSize: '0.7rem', fontWeight: 700, padding: '1px 6px',
-                                marginLeft: '2px'
-                            }}>
+                            <span className="pm-filter-count">
                                 {activeFilterCount}
                             </span>
                         )}
-                        <ChevronDown size={14} style={{ transition: 'transform 0.2s ease', transform: filtersOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                        <ChevronDown size={14} className={`pm-chevron ${filtersOpen ? 'open' : ''}`} />
                     </button>
 
                     {/* Active filter chips */}
                     {filterStatus !== 'All' && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '99px', fontSize: '0.8rem', color: '#1d4ed8', fontWeight: 600 }}>
+                        <div className="pm-filter-chip">
                             {filterStatus}
-                            <button onClick={() => setFilterStatus('All')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#3b82f6' }}>
+                            <button onClick={() => setFilterStatus('All')} className="pm-filter-chip-close">
                                 <X size={12} />
                             </button>
                         </div>
@@ -94,39 +83,30 @@ const ProjectsList = () => {
             </div>
 
             {/* Collapsible Filter Panel */}
-            <div style={{
-                overflow: 'hidden',
-                maxHeight: filtersOpen ? '160px' : '0',
-                transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                marginBottom: filtersOpen ? '1rem' : '0'
-            }}>
-                <div style={{ margin: '0 1.5rem', padding: '1.25rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className={`pm-filter-panel-wrapper ${filtersOpen ? 'open' : ''}`}>
+                <div className="pm-filter-panel">
                     {/* Search */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f8fafc', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <div className="pm-search-input-container">
                         <Search size={15} color="#64748b" />
                         <input
                             type="text"
                             placeholder="Search projects or clients..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{ background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', width: '100%', fontSize: '0.875rem' }}
+                            className="pm-search-input"
                         />
-                        {searchTerm && <button onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 0 }}><X size={14} /></button>}
+                        {searchTerm && <button onClick={() => setSearchTerm('')} className="pm-search-clear"><X size={14} /></button>}
                     </div>
                     {/* Status chips */}
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, marginRight: '4px' }}>Status:</span>
-                        {STATUS_OPTIONS.map(s => (
-                            <button key={s} onClick={() => setFilterStatus(s)} style={{
-                                padding: '4px 14px', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
-                                border: '1px solid', transition: 'all 0.15s ease',
-                                background: filterStatus === s ? '#0f172a' : 'white',
-                                color: filterStatus === s ? 'white' : '#475569',
-                                borderColor: filterStatus === s ? '#0f172a' : '#e2e8f0'
-                            }}>
-                                {s === 'All' ? 'All Statuses' : s}
-                            </button>
-                        ))}
+                    <div className="pm-status-chips">
+                        <span className="pm-status-label">Status:</span>
+                        <div className="pm-status-chips-scroll">
+                            {STATUS_OPTIONS.map(s => (
+                                <button key={s} onClick={() => setFilterStatus(s)} className={`pm-status-chip-btn ${filterStatus === s ? 'active' : ''}`}>
+                                    {s === 'All' ? 'All Statuses' : s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
