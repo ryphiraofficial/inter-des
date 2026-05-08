@@ -18,6 +18,7 @@ import DesignHandoffs from './DesignHandoffs';
 import MaterialRequests from './MaterialRequests';
 import Assignments from './Assignments';
 import Vendors from './Vendors';
+import ProcurementSkeleton from './ProcurementSkeleton';
 
 const ProcurementManagerDashboard = ({ user, onLogout }) => {
     const navigate = useNavigate();
@@ -45,6 +46,12 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
     useEffect(() => {
         fetchData();
     }, [activeTab]);
+
+    useEffect(() => {
+        const handleOpenAddVendor = () => setShowAddVendorModal(true);
+        window.addEventListener('open-create-vendor-modal', handleOpenAddVendor);
+        return () => window.removeEventListener('open-create-vendor-modal', handleOpenAddVendor);
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -247,7 +254,15 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
     const completedRequests = allAssigned.filter(r => r.status === 'Procurement Approved');
     const extensionRequests = materialRequests.filter(r => r.timeExtension && r.timeExtension.status === 'Pending');
 
-    if (loading) return <div className="loading-state">Initializing Procurement Manager Workspace...</div>;
+    if (loading) {
+        return (
+            <div className="role-dashboard fade-in">
+                <main style={{ flex: 1 }}>
+                    <ProcurementSkeleton />
+                </main>
+            </div>
+        );
+    }
 
     const renderContent = () => {
         switch (activeTab) {

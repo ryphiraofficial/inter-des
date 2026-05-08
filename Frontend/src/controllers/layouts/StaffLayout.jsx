@@ -33,9 +33,9 @@ const StaffLayout = ({ user, onLogout }) => {
     const { title, subtitle } = getPageDetails();
 
     const renderSidebar = () => {
-        const props = { user, onLogout, isOpen: isSidebarOpen, toggleSidebar };
+        const props = { user, onLogout, isCollapsed: !isSidebarOpen, toggleSidebar, isMobileOpen: isSidebarOpen, toggleMobileSidebar: toggleSidebar };
         if (department === 'Design' || department === 'Procurement' || department === 'Production') {
-            return <DeptSidebar role={user?.role} {...props} isCollapsed={!isSidebarOpen} />;
+            return <DeptSidebar role={user?.role} {...props} />;
         }
         if (department === 'Accounts') {
             return <AccountsStaffSidebar {...props} />;

@@ -162,7 +162,7 @@ const getImageUrl = (path) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // DeptSidebar — the single exported component
 // ─────────────────────────────────────────────────────────────────────────────
-const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar }) => {
+const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobileOpen, toggleMobileSidebar }) => {
     const location   = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const currentTab   = searchParams.get('tab') || 'overview';
@@ -177,6 +177,13 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar }) => {
     const userInitials = user?.fullName
         ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
         : '?';
+
+    const isActiveTab = (item) => {
+        if (item.tab) {
+            return currentTab === item.tab && location.pathname === basePath;
+        }
+        return location.pathname === item.path;
+    };
 
     return (
         <div className={`sidebar-container ${sidebarClass} ${isCollapsed ? 'collapsed' : ''}`}>
@@ -198,7 +205,7 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar }) => {
                 <button className="btn-toggle-sidebar" onClick={toggleSidebar}>
                     <Menu size={20} />
                 </button>
-                <button className="btn-close-sidebar-mobile" onClick={toggleSidebar} title="Close Sidebar">
+                <button className="btn-close-sidebar-mobile" onClick={toggleMobileSidebar || toggleSidebar} title="Close Sidebar">
                     <X size={20} />
                 </button>
             </div>
@@ -209,17 +216,18 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar }) => {
                         <li key={item.name} className="nav-item">
                             <NavLink
                                 to={item.path}
-                                className={() => {
-                                    const isTabActive = item.tab
-                                        ? currentTab === item.tab && location.pathname === basePath
-                                        : location.pathname === item.path;
-                                    return `nav-link ${isTabActive ? 'active' : ''}`;
+                                className={() => `nav-link ${isActiveTab(item) ? 'active' : ''}`}
+                                onClick={() => {
+                                    if (window.innerWidth <= 768 && toggleMobileSidebar) {
+                                        toggleMobileSidebar();
+                                    }
                                 }}
                             >
                                 <item.icon size={18} className="nav-icon" />
                                 <span>{item.name}</span>
                             </NavLink>
                         </li>
+
                     ))}
                 </ul>
             </nav>

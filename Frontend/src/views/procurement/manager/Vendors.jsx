@@ -7,7 +7,6 @@ const Vendors = ({ vendors, setShowAddVendorModal, handleViewVendorDetails }) =>
             <div className="section-card">
                 <div className="section-header">
                     <h3><Users size={18} /> Verified Vendor Network</h3>
-                    <button className="btn-add-vendor" onClick={() => setShowAddVendorModal(true)} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Plus size={14} /> Add Vendor</button>
                 </div>
                 <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                     {vendors.map(vendor => (

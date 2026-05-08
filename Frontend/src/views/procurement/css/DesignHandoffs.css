@@ -69,6 +69,24 @@
     color: #4338ca;
 }
 
+.standard-request {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+}
+
+.request-id {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.request-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+
 .request-actions-col {
     display: flex;
     flex-direction: column;
@@ -248,3 +266,61 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .request-item-premium {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .request-actions-col {
+        width: 100%;
+    }
+
+    .btn-assign-primary, .btn-review-outline {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-card-premium {
+        width: 95%;
+        padding: 1.5rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-grid-2col {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-actions-row {
+        flex-direction: column;
+    }
+
+    .modal-project-title {
+        font-size: 1.25rem;
+    }
+
+    .section-header.priority-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .request-title-wrapper {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .request-title {
+        font-size: 1rem;
+    }
+
+    .request-design-note {
+        font-size: 0.75rem;
+        padding: 12px;
+    }
+}
+
+

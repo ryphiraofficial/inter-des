@@ -20,6 +20,7 @@ import Projects from './Projects';
 import Clients from './Clients';
 import Inventory from './Inventory';
 import Tasks from './Tasks';
+import DesignSkeleton from './DesignSkeleton';
 
 const DesignManagerDashboard = ({ user, onLogout }) => {
     const navigate = useNavigate();
@@ -224,7 +225,15 @@ const DesignManagerDashboard = ({ user, onLogout }) => {
         }
     };
 
-    if (loading) return <div className="loading-state">Loading Design Dashboard...</div>;
+    if (loading) {
+        return (
+            <div className="role-dashboard fade-in">
+                <main style={{ flex: 1 }}>
+                    <DesignSkeleton />
+                </main>
+            </div>
+        );
+    }
 
     const getPriorityColor = (priority) => {
         switch (priority?.toLowerCase()) {

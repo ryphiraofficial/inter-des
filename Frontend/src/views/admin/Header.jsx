@@ -177,6 +177,8 @@ const Header = ({ user, toggleMobileSidebar }) => {
         window.dispatchEvent(new CustomEvent('header-search', { detail: val }));
     };
 
+    const isHome = location.pathname === '/';
+
     return (
         <header className="page-header">
             {/* LEFT */}
@@ -195,7 +197,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
             </div>
 
             {/* RIGHT */}
-            <div className="header-actions">
+            <div className="page-header-actions">
                 {isSearchable && (
                     <div className="header-search-bar">
                         <Search size={18} className="search-icon" />
@@ -210,12 +212,12 @@ const Header = ({ user, toggleMobileSidebar }) => {
                 
                 {/* Action Buttons */}
                 {(() => {
-                    const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary' }) => {
+                    const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary', className = '' }) => {
                         if (!show) return null;
                         
                         return (
                             <button
-                                className={`btn-${variant}`}
+                                className={`btn-${variant} ${className}`.trim()}
                                 onClick={onClick}
                             >
                                 <Icon size={18} strokeWidth={2.4} />
@@ -224,10 +226,9 @@ const Header = ({ user, toggleMobileSidebar }) => {
                         );
                     };
 
-                    const isHome = location.pathname === '/';
                     return (
                         <>
-                            {isHome && (!tab || tab === 'overview' || tab === 'dashboard') && user?.role?.toLowerCase() !== 'design manager' && (
+                            {isHome && (!tab || tab === 'overview' || tab === 'dashboard') && !['design manager', 'procurement manager'].includes(user?.role?.toLowerCase()) && (
                                 <Link to="/quotations/new" className="no-underline">
                                     <ActionBtn show={true} label="New Quotation" variant="primary" />
                                 </Link>
@@ -238,7 +239,6 @@ const Header = ({ user, toggleMobileSidebar }) => {
                             <ActionBtn show={isHome && tab === 'expenses'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))} label="Add Expense" variant="primary" />
                             <ActionBtn show={isHome && tab === 'payments'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-payment-modal'))} label="Record Payment" variant="success" />
                             <ActionBtn show={isHome && tab === 'clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add Client" variant="primary" />
-                            <ActionBtn show={isHome && tab === 'vendors'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-vendor-modal'))} label="Add Vendor" variant="primary" />
                             <ActionBtn show={isHome && tab === 'projects'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-project-modal'))} label="New Project" variant="primary" />
                             <ActionBtn show={isHome && tab === 'reports'} onClick={() => window.dispatchEvent(new CustomEvent('export-reports-pdf'))} label="Export PDF" icon={Download} variant="primary" />
                             <ActionBtn show={location.pathname === '/po-inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-po-inventory-modal'))} label="Add Item" variant="primary" />
@@ -252,15 +252,25 @@ const Header = ({ user, toggleMobileSidebar }) => {
                     );
                 })()}
 
-                {/* NOTIFICATION BELL */}
-                <div className="notification-wrapper" ref={wrapperRef}>
+                {isHome && tab === 'vendors' && user?.role?.toLowerCase() === 'procurement manager' && (
                     <button
-                        className={`btn-icon ${showNotifications ? 'active' : ''}`}
+                        className="btn-primary header-vendor-navbar-btn"
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-create-vendor-modal'))}
+                    >
+                        <Plus size={18} strokeWidth={2.4} />
+                        <span>Add Vendor</span>
+                    </button>
+                )}
+
+                {/* NOTIFICATION BELL */}
+                <div className="header-notification-wrapper" ref={wrapperRef}>
+                    <button
+                        className={`header-notification-btn ${showNotifications ? 'active' : ''}`}
                         onClick={toggleNotifications}
                     >
                         <Bell size={19} strokeWidth={2.2} />
                         {unreadCount > 0 && (
-                            <span className="notification-badge">
+                            <span className="header-notification-badge">
                                 {unreadCount > 9 ? '9+' : unreadCount}
                             </span>
                         )}
@@ -268,8 +278,8 @@ const Header = ({ user, toggleMobileSidebar }) => {
 
                     {showNotifications && (
                         <>
-                            <div className="notification-overlay" onClick={() => setShowNotifications(false)} />
-                            <div ref={popupRef} className="notification-popup">
+                            <div className="header-notification-overlay" onClick={() => setShowNotifications(false)} />
+                            <div ref={popupRef} className="header-notification-popup">
                                 {/* Header */}
                                 <div className="popup-header">
                                     <div className="header-left" style={{ gap: '0.5rem' }}>

@@ -697,3 +697,149 @@
     background: var(--primary);
     color: white;
 }
+
+/* ── Material Review Hub Responsive Table ── */
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.responsive-tr {
+    border-bottom: 1px solid #f8fafc;
+    transition: 0.2s;
+}
+
+.responsive-tr:hover {
+    background-color: #fbfbff;
+}
+
+.responsive-td {
+    padding: 1rem 1.5rem;
+}
+
+.id-cell {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.designer-info-small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.avatar-mini {
+    background: #f1f5f9;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    overflow: hidden;
+}
+
+.items-count {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.date-cell {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.action-cell .btn-icon {
+    background: #f8fafc;
+    padding: 8px 16px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .review-hub-page {
+        padding: 0;
+    }
+
+    .review-hub-page .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .hub-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .requests-table thead {
+        display: none;
+    }
+
+    .responsive-tr {
+        display: block;
+        padding: 1.25rem;
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        margin: 0 1rem 1rem 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .responsive-td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0 !important;
+        border: none !important;
+    }
+
+    .responsive-td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .action-cell {
+        justify-content: center !important;
+        margin-top: 0.75rem;
+        padding-top: 1rem !important;
+        border-top: 1px solid #f8fafc !important;
+    }
+
+    .action-cell::before {
+        display: none;
+    }
+
+    .action-cell .btn-icon {
+        width: 100%;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .project-review-group {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+
+    .project-review-group > div:first-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+        padding: 1.5rem 1rem !important;
+    }
+}

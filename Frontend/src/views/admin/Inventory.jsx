@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { inventoryAPI, uploadAPI } from '../../models/api';
 import AISuggestButton from '../common/AISuggestButton';
+import InventorySkeleton from './InventorySkeleton';
 import './css/Inventory.css';
 
 // Helper to get full image URL from backend
@@ -241,16 +242,7 @@ const Inventory = () => {
                 </div>
 
                 {loading ? (
-                    <div className="skeleton-table">
-                        {[...Array(5)].map((_, i) => (
-                            <div key={i} className="skeleton-table-row">
-                                <div className="skeleton skeleton-avatar" />
-                                <div className="skeleton skeleton-table-cell" style={{ flex: 3 }} />
-                                <div className="skeleton skeleton-table-cell" />
-                                <div className="skeleton skeleton-table-cell" />
-                            </div>
-                        ))}
-                    </div>
+                    <InventorySkeleton />
                 ) : filteredItems.length === 0 ? (
                     <div className="empty-state-card">
                         <Package size={48} className="empty-icon" />

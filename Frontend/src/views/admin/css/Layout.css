@@ -84,7 +84,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
-    z-index: 45;
+    z-index: 999;
     backdrop-filter: blur(2px);
     animation: fadeIn 0.2s ease-out forwards;
 }

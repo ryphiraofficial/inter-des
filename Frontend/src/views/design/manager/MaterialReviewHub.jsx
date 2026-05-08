@@ -5,6 +5,7 @@ import {
     FileText, AlertCircle, CheckCircle, List
 } from 'lucide-react';
 import { projectAPI, procurementAPI, notificationAPI, staffAPI, BASE_IMAGE_URL } from '../../../models/api';
+import DesignSkeleton from './DesignSkeleton';
 import '../css/Dashboard.css';
 
 const MaterialReviewHub = ({ user }) => {
@@ -80,7 +81,15 @@ const MaterialReviewHub = ({ user }) => {
         return `₹${amount.toLocaleString()}`;
     };
 
-    if (loading) return <div className="loading-state">Loading Review Hub...</div>;
+    if (loading) {
+        return (
+            <div className="role-dashboard fade-in">
+                <main style={{ flex: 1 }}>
+                    <DesignSkeleton />
+                </main>
+            </div>
+        );
+    }
 
     // Filter requests for staff to see only their own, or manager to see all
     const filteredRequests = isManager 
@@ -159,36 +168,36 @@ const MaterialReviewHub = ({ user }) => {
                                         </thead>
                                         <tbody>
                                             {projectRequests.map(req => (
-                                                <tr key={req._id} style={{ borderBottom: '1px solid #f8fafc', transition: '0.2s' }}>
-                                                    <td style={{ padding: '1rem 1.5rem', fontWeight: 600, color: '#4f46e5' }}>{req.requestNumber}</td>
-                                                    <td style={{ padding: '1rem 1.5rem' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <div style={{ background: '#f1f5f9', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', overflow: 'hidden' }}>
-                                                                {req.requestedBy?.avatar ? <img src={getImageUrl(req.requestedBy.avatar)} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : (req.requestedBy?.fullName?.[0] || 'S')}
+                                                <tr key={req._id} className="responsive-tr">
+                                                    <td data-label="Request ID" className="responsive-td id-cell">{req.requestNumber}</td>
+                                                    <td data-label="Designer" className="responsive-td">
+                                                        <div className="designer-info-small">
+                                                            <div className="avatar-mini">
+                                                                {req.requestedBy?.avatar ? <img src={getImageUrl(req.requestedBy.avatar)} alt="" /> : (req.requestedBy?.fullName?.[0] || 'S')}
                                                             </div>
-                                                            <span style={{ fontSize: '0.85rem' }}>{req.requestedBy?.fullName || 'Staff'}</span>
+                                                            <span>{req.requestedBy?.fullName || 'Staff'}</span>
                                                         </div>
                                                     </td>
-                                                    <td style={{ padding: '1rem 1.5rem' }}>
-                                                        <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{req.items?.length || 0} materials</span>
+                                                    <td data-label="Items" className="responsive-td">
+                                                        <span className="items-count">{req.items?.length || 0} materials</span>
                                                     </td>
-                                                    <td style={{ padding: '1rem 1.5rem' }}>
+                                                    <td data-label="Status" className="responsive-td">
                                                         <span className={`status-pill ${req.status.toLowerCase()}`}>{req.status}</span>
                                                     </td>
-                                                    <td style={{ padding: '1rem 1.5rem', fontSize: '0.8rem', color: '#64748b' }}>
+                                                    <td data-label="Created" className="responsive-td date-cell">
                                                         {new Date(req.createdAt).toLocaleDateString()}
                                                     </td>
-                                                    <td style={{ padding: '1rem 1.5rem', textAlign: 'right' }}>
+                                                    <td className="responsive-td action-cell">
                                                         <button 
                                                             className="btn-icon" 
                                                             onClick={() => { setSelectedRequest(req); setShowReviewModal(true); }}
-                                                            style={{ background: '#f8fafc' }}
                                                         >
-                                                            <Eye size={18} />
+                                                            <Eye size={18} /> Review Details
                                                         </button>
                                                     </td>
                                                 </tr>
                                             ))}
+
                                         </tbody>
                                     </table>
                                 </div>

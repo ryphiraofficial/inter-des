@@ -13,6 +13,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../css/StaffDashboard.css';
 import Tasks from './Tasks';
+import DesignSkeleton from '../manager/DesignSkeleton';
 
 const DesignStaffDashboard = ({ user, onLogout }) => {
     const navigate = useNavigate();
@@ -259,7 +260,15 @@ const DesignStaffDashboard = ({ user, onLogout }) => {
         }
     };
 
-    if (loading) return <div className="loading-state">Initializing Designer Workspace...</div>;
+    if (loading) {
+        return (
+            <div className="role-dashboard fade-in">
+                <main style={{ flex: 1 }}>
+                    <DesignSkeleton />
+                </main>
+            </div>
+        );
+    }
 
     const pendingTasks = tasks.filter(t => ['To Do', 'In Progress', 'Revision Required'].includes(t.status));
     const revisionTasks = tasks.filter(t => t.status === 'Revision Required');

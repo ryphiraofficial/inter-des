@@ -13,6 +13,7 @@ import SourcingHub from './SourcingHub';
 import StaffTasks from './StaffTasks';
 import StaffHistory from './StaffHistory';
 import StaffVendors from './StaffVendors';
+import ProcurementSkeleton from '../manager/ProcurementSkeleton';
 
 const ProcurementStaffDashboard = ({ user, onLogout }) => {
     const navigate = useNavigate();
@@ -259,7 +260,15 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
         return acc;
     }, {});
 
-    if (loading) return <div className="loading-state">Initializing Procurement Workspace...</div>;
+    if (loading) {
+        return (
+            <div className="role-dashboard fade-in">
+                <main style={{ flex: 1 }}>
+                    <ProcurementSkeleton />
+                </main>
+            </div>
+        );
+    }
 
     const renderContent = () => {
         switch (activeTab) {
