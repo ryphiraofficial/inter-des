@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bell, X, Check, CheckCheck, Trash2, ClipboardList, FileText, Package, ShoppingCart, Users, Receipt, AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Trash2, ClipboardList, FileText, Package, ShoppingCart, Users, Receipt, AlertTriangle, Info, CheckCircle, XCircle, Menu } from 'lucide-react';
 import { notificationAPI } from '../../models/api';
 import './css/StaffHeader.css';
 
@@ -39,7 +39,7 @@ const timeAgo = (date) => {
     return new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 };
 
-const StaffHeader = ({ title, subtitle }) => {
+const StaffHeader = ({ title, subtitle, toggleSidebar }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -105,9 +105,14 @@ const StaffHeader = ({ title, subtitle }) => {
 
     return (
         <div className="staff-page-header">
-            <div className="staff-header-text">
-                {title && <h1>{title}</h1>}
-                {subtitle && <p>{subtitle}</p>}
+            <div className="staff-header-left">
+                <button className="staff-menu-toggle" onClick={toggleSidebar}>
+                    <Menu size={22} />
+                </button>
+                <div className="staff-header-text">
+                    {title && <h1>{title}</h1>}
+                    {subtitle && <p>{subtitle}</p>}
+                </div>
             </div>
 
             <div className="staff-header-actions">

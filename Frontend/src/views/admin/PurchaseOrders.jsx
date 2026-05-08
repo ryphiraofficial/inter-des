@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { purchaseOrderAPI, inventoryAPI } from '../../models/api';
 import AISuggestButton from '../common/AISuggestButton';
+import Skeleton from '../common/Skeleton';
 import './css/PurchaseOrders.css';
 
 const PurchaseOrders = () => {
@@ -212,9 +213,49 @@ const PurchaseOrders = () => {
 
                 <div className="po-table-card">
                     {loading ? (
-                        <div className="loading-state">
-                            <Loader className="spinner" size={40} />
-                            <p>Loading purchase orders...</p>
+                        <div className="po-table-skeleton">
+                            <table className="po-table">
+                                <thead>
+                                    <tr>
+                                        <th>PO Number</th>
+                                        <th>Supplier</th>
+                                        <th className="desktop-hide">Order Date</th>
+                                        <th className="desktop-hide">Delivery Date</th>
+                                        <th className="desktop-hide">Items</th>
+                                        <th className="desktop-hide">Amount</th>
+                                        <th className="desktop-hide">Status</th>
+                                        <th className="desktop-hide">Actions</th>
+                                        <th className="mobile-show">Amount</th>
+                                        <th className="mobile-show"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[...Array(6)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <Skeleton width="18px" height="18px" borderRadius="4px" />
+                                                    <Skeleton width="100px" height="16px" />
+                                                </div>
+                                            </td>
+                                            <td><Skeleton width="140px" height="16px" /></td>
+                                            <td className="desktop-hide"><Skeleton width="80px" height="16px" /></td>
+                                            <td className="desktop-hide"><Skeleton width="80px" height="16px" /></td>
+                                            <td className="desktop-hide"><Skeleton width="60px" height="16px" /></td>
+                                            <td className="desktop-hide"><Skeleton width="90px" height="16px" /></td>
+                                            <td className="desktop-hide"><Skeleton width="80px" height="24px" borderRadius="12px" /></td>
+                                            <td className="desktop-hide">
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <Skeleton width="32px" height="32px" borderRadius="8px" />
+                                                    <Skeleton width="32px" height="32px" borderRadius="8px" />
+                                                </div>
+                                            </td>
+                                            <td className="mobile-show"><Skeleton width="80px" height="16px" /></td>
+                                            <td className="mobile-show"><Skeleton width="24px" height="24px" borderRadius="50%" /></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     ) : (
                         <table className="po-table">

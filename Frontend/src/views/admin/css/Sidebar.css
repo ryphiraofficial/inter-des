@@ -93,6 +93,24 @@
     color: #0f172a;
 }
 
+.btn-close-sidebar-mobile {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 8px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-close-sidebar-mobile:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
 /* Navigation */
 .sidebar-nav {
     flex: 1;
@@ -435,5 +453,9 @@
     
     .btn-toggle-sidebar {
         display: none !important; /* Hide collapse toggle on mobile menu */
+    }
+
+    .btn-close-sidebar-mobile {
+        display: flex !important;
     }
 }

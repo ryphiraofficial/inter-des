@@ -5,6 +5,7 @@ import {
     Plus, FileText, Users, MapPin, Eye, ExternalLink, Image, Package, LogOut, Briefcase
 } from 'lucide-react';
 import { taskAPI, siteVisitAPI, BASE_IMAGE_URL } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/SalesDashboard.css';
 
 const SalesDashboard = ({ user }) => {
@@ -105,9 +106,83 @@ const SalesDashboard = ({ user }) => {
     if (loading) {
         return (
             <div className="sd-root">
-                <div className="sd-loading">
-                    <Clock size={32} className="sd-spinner" color="#6366f1" />
-                    <span>Loading your sales insights...</span>
+                <div className="sd-banner">
+                    <div className="sd-banner-left">
+                        <Skeleton width="100px" height="14px" />
+                        <div style={{ height: '8px' }} />
+                        <Skeleton width="250px" height="32px" />
+                        <div style={{ height: '8px' }} />
+                        <Skeleton width="350px" height="16px" />
+                    </div>
+                </div>
+
+                <div className="sd-kpi-row">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="sd-kpi-card">
+                            <div className="sd-kpi-header">
+                                <Skeleton width="36px" height="36px" borderRadius="10px" />
+                                <Skeleton width="80px" height="20px" borderRadius="20px" />
+                            </div>
+                            <div style={{ height: '12px' }} />
+                            <Skeleton width="50px" height="36px" />
+                            <div style={{ height: '4px' }} />
+                            <Skeleton width="100px" height="16px" />
+                        </div>
+                    ))}
+                </div>
+
+                <div className="sd-columns">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1.5 }}>
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="sd-card">
+                                <div className="sd-card-header">
+                                    <Skeleton width="150px" height="24px" />
+                                    <Skeleton width="80px" height="14px" />
+                                </div>
+                                <div className="sd-card-body">
+                                    {[...Array(3)].map((_, j) => (
+                                        <div key={j} style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                            <Skeleton width="4px" height="40px" />
+                                            <div style={{ flex: 1 }}>
+                                                <Skeleton width="200px" height="18px" />
+                                                <div style={{ height: '4px' }} />
+                                                <Skeleton width="150px" height="14px" />
+                                            </div>
+                                            <Skeleton width="60px" height="24px" borderRadius="12px" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                        <div className="sd-card">
+                            <div className="sd-card-header">
+                                <Skeleton width="120px" height="20px" />
+                            </div>
+                            <div className="sd-actions-grid">
+                                {[...Array(4)].map((_, i) => (
+                                    <Skeleton key={i} width="100%" height="80px" borderRadius="16px" />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="sd-card">
+                            <div className="sd-card-header">
+                                <Skeleton width="140px" height="20px" />
+                            </div>
+                            <div className="sd-card-body">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} style={{ marginBottom: '1rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                            <Skeleton width="80px" height="14px" />
+                                            <Skeleton width="30px" height="14px" />
+                                        </div>
+                                        <Skeleton width="100%" height="8px" borderRadius="10px" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

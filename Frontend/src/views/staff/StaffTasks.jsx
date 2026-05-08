@@ -15,6 +15,7 @@ import { taskAPI } from '../../models/api';
 import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
 import SalesTasks from './SalesTasks';
 import StaffCollectionQueue from '../Accounts/staff/StaffCollectionQueue';
+import Skeleton from '../common/Skeleton';
 import './css/StaffTasks.css';
 
 const StaffTasks = ({ user, forceTable = false }) => {
@@ -101,23 +102,23 @@ const StaffTasks = ({ user, forceTable = false }) => {
         Completed: tasks.filter(t => t.status === 'Completed').length
     };
 
-    if (loading) {
-        return (
-            <div className="st-tasks-container">
-                <div className="st-loading-state">
-                    <Loader size={40} className="spinner" />
-                    <p>Fetching your tasks...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="st-tasks-container">
             <div className="st-tasks-wrapper">
 
                 <div className="st-stats-grid">
-                    {Object.entries(stats).map(([label, value]) => (
+                    {loading ? (
+                        [...Array(5)].map((_, i) => (
+                            <div key={i} className="st-stat-card">
+                                <div className="st-stat-info">
+                                    <Skeleton width="60px" height="12px" />
+                                    <div style={{ height: '4px' }} />
+                                    <Skeleton width="40px" height="24px" />
+                                </div>
+                            </div>
+                        ))
+                    ) : Object.entries(stats).map(([label, value]) => (
                         <div
                             key={label}
                             className={`st-stat-card ${filterStatus === label ? 'selected' : ''}`}
@@ -164,7 +165,46 @@ const StaffTasks = ({ user, forceTable = false }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredTasks.map(task => (
+                                {loading ? (
+                                    [...Array(6)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td className="st-details-cell">
+                                                <Skeleton width="180px" height="18px" />
+                                                <div style={{ height: '8px' }} />
+                                                <Skeleton width="240px" height="14px" />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <Skeleton width="120px" height="16px" />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <Skeleton width="100px" height="8px" borderRadius="10px" />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <Skeleton width="80px" height="24px" borderRadius="12px" />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <Skeleton width="100px" height="16px" />
+                                            </td>
+                                            <td className="desktop-hide">
+                                                <Skeleton width="100px" height="32px" borderRadius="8px" />
+                                            </td>
+                                            <td className="mobile-show">
+                                                <Skeleton width="80px" height="20px" borderRadius="12px" />
+                                            </td>
+                                            <td className="mobile-show">
+                                                <Skeleton width="20px" height="20px" borderRadius="50%" />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : filteredTasks.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8">
+                                            <div className="st-empty-state">
+                                                <p>No tasks found matching your criteria</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : filteredTasks.map(task => (
                                     <React.Fragment key={task._id}>
                                         <tr 
                                             className={`st-task-row ${expandedRow === task._id ? 'expanded' : ''}`}
@@ -256,31 +296,31 @@ const StaffTasks = ({ user, forceTable = false }) => {
                                                     <div className="st-expansion-content">
                                                         <div className="st-info-grid">
                                                             <div className="st-info-item">
-                                                                <label>Description</label>
-                                                                <p>{task.description || 'No description provided'}</p>
+                                                                 <label>Description</label>
+                                                                 <p>{task.description || 'No description provided'}</p>
                                                             </div>
                                                             <div className="st-info-item">
-                                                                <label>Project</label>
-                                                                <span>{task.quotation?.projectName || 'General'}</span>
+                                                                 <label>Project</label>
+                                                                 <span>{task.quotation?.projectName || 'General'}</span>
                                                             </div>
                                                             <div className="st-info-item">
-                                                                <label>Deadline</label>
-                                                                <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
+                                                                 <label>Deadline</label>
+                                                                 <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
                                                             </div>
                                                             <div className="st-info-item">
-                                                                <label>Update Progress</label>
-                                                                <div className="st-mobile-progress">
-                                                                    <input
-                                                                        type="range"
-                                                                        className="st-slider"
-                                                                        min="0"
-                                                                        max="100"
-                                                                        step="5"
-                                                                        value={task.progress || 0}
-                                                                        onChange={(e) => handleProgressUpdate(task._id, parseInt(e.target.value))}
-                                                                    />
-                                                                    <span>{task.progress}%</span>
-                                                                </div>
+                                                                 <label>Update Progress</label>
+                                                                 <div className="st-mobile-progress">
+                                                                     <input
+                                                                         type="range"
+                                                                         className="st-slider"
+                                                                         min="0"
+                                                                         max="100"
+                                                                         step="5"
+                                                                         value={task.progress || 0}
+                                                                         onChange={(e) => handleProgressUpdate(task._id, parseInt(e.target.value))}
+                                                                     />
+                                                                     <span>{task.progress}%</span>
+                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="st-expansion-actions">
@@ -312,11 +352,6 @@ const StaffTasks = ({ user, forceTable = false }) => {
                             </tbody>
                         </table>
                     </div>
-                    {filteredTasks.length === 0 && (
-                        <div className="st-empty-state">
-                            <p>No tasks found matching your criteria</p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

@@ -168,9 +168,6 @@ const AccountsStaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
     return (
         <>
-            {/* Mobile Header Toggle inside StaffLayout, but we can have an overlay here */}
-            <div className={`acct-mobile-overlay ${isOpen ? 'visible' : ''}`} onClick={toggleSidebar}></div>
-
             <div className={`acct-sidebar-container ${isOpen ? 'open' : ''}`}>
                 <div className="acct-sidebar-header">
                     <div className="acct-brand">
@@ -182,6 +179,9 @@ const AccountsStaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                             <span className="acct-brand-subtitle">Accounts Portal</span>
                         </div>
                     </div>
+                    <button className="acct-close-btn" onClick={toggleSidebar}>
+                        <X size={20} />
+                    </button>
                 </div>
 
                 <div className="acct-user-card">

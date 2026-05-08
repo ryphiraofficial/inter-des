@@ -132,6 +132,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="all-tasks" element={<StaffTasks user={user} forceTable={true} />} />
                     <Route path="site-visits" element={<SiteVisit user={user} />} />
                     <Route path="clients" element={<StaffClients user={user} />} />
+                    <Route path="opportunities" element={<StaffClients user={user} isOpportunities={true} />} />
                     <Route path="quotations" element={<StaffQuotations user={user} />} />
                     <Route path="quotations/new" element={<NewQuotation isStaff={true} user={user} />} />
                     <Route path="quotations/edit/:id" element={<NewQuotation isStaff={true} isEdit={true} user={user} />} />

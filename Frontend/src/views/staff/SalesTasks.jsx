@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Target, Search, Loader, Plus, Layers, ArrowRight, Building2, AlertTriangle } from 'lucide-react';
 import { taskAPI, projectAPI } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/SalesTasks.css';
 
 const SalesTasks = ({ user }) => {
@@ -99,9 +100,48 @@ const SalesTasks = ({ user }) => {
     if (loading) {
         return (
             <div className="st-sales-container">
-                <div className="st-sales-loading">
-                    <Loader size={36} className="spinner" color="#6366f1" />
-                    <span>Loading your Projects…</span>
+                <div className="st-sales-wrapper">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px', marginTop: '24px' }}>
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', borderTop: '4px solid #e2e8f0' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                    <div>
+                                        <Skeleton width="180px" height="20px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="100px" height="14px" />
+                                    </div>
+                                    <Skeleton width="80px" height="24px" borderRadius="12px" />
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                                    <Skeleton width="16px" height="16px" borderRadius="50%" />
+                                    <Skeleton width="120px" height="16px" />
+                                </div>
+                                <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '12px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                                    <div>
+                                        <Skeleton width="40px" height="12px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="80px" height="16px" />
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <Skeleton width="40px" height="12px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="80px" height="16px" />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <Skeleton width="100px" height="14px" />
+                                        <Skeleton width="30px" height="14px" />
+                                    </div>
+                                    <Skeleton width="100%" height="8px" borderRadius="10px" />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+                                    <Skeleton width="100px" height="16px" />
+                                    <Skeleton width="80px" height="16px" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );

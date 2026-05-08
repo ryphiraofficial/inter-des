@@ -17,6 +17,35 @@
 
 .sales-sidebar-container.open { left: 0; }
 
+.sales-close-sidebar {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: all 0.2s;
+}
+
+.sales-close-sidebar:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+@media (max-width: 1024px) {
+    .sales-close-sidebar {
+        display: flex;
+    }
+}
+
 /* ─── Mobile Overlay ─────────────────────────────────────────────────────── */
 .sales-mobile-overlay {
     display: none;

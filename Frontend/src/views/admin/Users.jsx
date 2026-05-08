@@ -41,6 +41,23 @@ const Users = () => {
 
     useEffect(() => {
         fetchUsers();
+
+        const handleOpenModal = () => {
+            setEditingUser(null);
+            setFormData({ fullName: '', email: '', phone: '', role: 'Designer', password: '' });
+            setShowModal(true);
+        };
+
+        const handleHeaderSearch = (e) => {
+            setSearchTerm(e.detail || '');
+        };
+
+        window.addEventListener('open-create-user-modal', handleOpenModal);
+        window.addEventListener('header-search', handleHeaderSearch);
+        return () => {
+            window.removeEventListener('open-create-user-modal', handleOpenModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
+        };
     }, []);
 
     const fetchUsers = async () => {
@@ -152,34 +169,18 @@ const Users = () => {
     return (
         <div className="users-container">
             <div className="users-wrapper">
-                <div className="users-header">
-                    <h2>Account Management</h2>
-                    <button className="btn-add-user" onClick={() => {
-                        setEditingUser(null);
-                        setFormData({ fullName: '', email: '', phone: '', role: 'Designer', password: '' });
-                        setShowModal(true);
-                    }}>
-                        <Plus size={18} />
-                        <span>Add New User</span>
-                    </button>
-                </div>
-
-                <div className="invoice-filter-bar">
-                    <div className="search-field">
-                        <Search className="search-icon" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search team members..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
+                {/* Header and Search removed and moved to navbar */}
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Loading team members...</p>
+                    <div className="skeleton-table">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-avatar" />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <div className="users-table-card">

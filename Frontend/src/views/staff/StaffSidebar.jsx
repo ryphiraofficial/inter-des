@@ -84,9 +84,10 @@ const StaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                 </div>
             </div>
 
-            {isOpen && <div className="staff-sidebar-overlay" onClick={toggleSidebar}></div>}
-
             <div className={`staff-sidebar ${isOpen ? 'open' : ''}`}>
+                <button className="staff-close-btn" onClick={toggleSidebar}>
+                    <X size={22} />
+                </button>
 
                 <div className="user-profile">
                     <div className="avatar" style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>

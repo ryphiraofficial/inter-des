@@ -3,7 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import {
     Bell, X, Plus, Check, CheckCheck, Trash2,
     FileText, Package, ShoppingCart, ClipboardList,
-    Receipt, AlertTriangle, Info, CheckCircle, XCircle, Download, Menu
+    Receipt, AlertTriangle, Info, CheckCircle, XCircle, Download, Menu, Search
 } from 'lucide-react';
 import { notificationAPI } from '../../models/api';
 import './css/Header.css';
@@ -163,6 +163,20 @@ const Header = ({ user, toggleMobileSidebar }) => {
 
     const { title, subtitle } = getPageDetails();
 
+    const [searchValue, setSearchValue] = useState('');
+    const searchablePaths = ['/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory'];
+    const isSearchable = searchablePaths.includes(location.pathname);
+
+    useEffect(() => {
+        setSearchValue(''); // Reset on route change
+    }, [location.pathname]);
+
+    const handleSearchChange = (e) => {
+        const val = e.target.value;
+        setSearchValue(val);
+        window.dispatchEvent(new CustomEvent('header-search', { detail: val }));
+    };
+
     return (
         <header className="page-header">
             {/* LEFT */}
@@ -182,6 +196,18 @@ const Header = ({ user, toggleMobileSidebar }) => {
 
             {/* RIGHT */}
             <div className="header-actions">
+                {isSearchable && (
+                    <div className="header-search-bar">
+                        <Search size={18} className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder={`Search...`}
+                            value={searchValue}
+                            onChange={handleSearchChange}
+                        />
+                    </div>
+                )}
+                
                 {/* Action Buttons */}
                 {(() => {
                     const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary' }) => {
@@ -221,6 +247,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
                             <ActionBtn show={location.pathname === '/staff'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-staff-modal'))} label="Add New Staff" variant="primary" />
                             <ActionBtn show={location.pathname === '/clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add New Client" variant="primary" />
                             <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />
+                            <ActionBtn show={location.pathname === '/users'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-user-modal'))} label="Add New User" variant="primary" />
                         </>
                     );
                 })()}

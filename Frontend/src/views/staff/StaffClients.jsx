@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, Loader, Mail, Phone, MapPin, User, Plus, X } from 'lucide-react';
 import { clientAPI } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/StaffClients.css';
 
-const StaffClients = () => {
+const StaffClients = ({ isOpportunities }) => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -73,16 +74,6 @@ const StaffClients = () => {
         client.siteAddress?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) {
-        return (
-            <div className="sc-clients-container">
-                <div className="sc-loading">
-                    <Loader size={40} className="spinner" />
-                    <p>Loading clients list...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="sc-clients-container">
@@ -100,7 +91,7 @@ const StaffClients = () => {
                     </div>
                     <button className="sc-btn-add" onClick={() => setShowModal(true)}>
                         <Plus size={18} />
-                        <span>Add Client</span>
+                        <span>{isOpportunities ? 'Add Opportunity' : 'Add Client'}</span>
                     </button>
                 </div>
 
@@ -115,7 +106,40 @@ const StaffClients = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredClients.map(client => (
+                                {loading ? (
+                                    [...Array(6)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td data-label="Client Profile">
+                                                <div className="sc-client-profile">
+                                                    <Skeleton width="40px" height="40px" borderRadius="50%" />
+                                                    <Skeleton width="120px" height="16px" style={{ marginLeft: '12px' }} />
+                                                </div>
+                                            </td>
+                                            <td data-label="Contact">
+                                                <div className="sc-contact-info">
+                                                    <div className="sc-contact-item">
+                                                        <Skeleton width="150px" height="14px" />
+                                                    </div>
+                                                    <div className="sc-contact-item" style={{ marginTop: '8px' }}>
+                                                        <Skeleton width="100px" height="14px" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td data-label="Site Address">
+                                                <Skeleton width="200px" height="14px" />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : filteredClients.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="3">
+                                            <div className="sc-empty">
+                                                <User size={40} />
+                                                <p>No clients found in directory</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : filteredClients.map(client => (
                                     <tr key={client._id}>
                                         <td data-label="Client Profile">
                                             <div className="sc-client-profile">
@@ -146,12 +170,6 @@ const StaffClients = () => {
                             </tbody>
                         </table>
                     </div>
-                    {filteredClients.length === 0 && (
-                        <div className="sc-empty">
-                            <User size={40} />
-                            <p>No clients found in directory</p>
-                        </div>
-                    )}
                 </div>
             </div>
 

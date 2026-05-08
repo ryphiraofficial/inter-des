@@ -82,11 +82,15 @@ const Inventory = () => {
             }
         }
 
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
+
         window.addEventListener('AI_POPULATE_INVENTORY', handleAIPopulate);
         window.addEventListener('open-inventory-modal', handleOpenModal);
+        window.addEventListener('header-search', handleHeaderSearch);
         return () => {
             window.removeEventListener('AI_POPULATE_INVENTORY', handleAIPopulate);
             window.removeEventListener('open-inventory-modal', handleOpenModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
         };
     }, []);
 
@@ -222,15 +226,7 @@ const Inventory = () => {
 
 
                 <div className="inventory-controls">
-                    <div className="search-bar">
-                        <Search className="search-icon" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search items..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* Search moved to navbar */}
                     <div className="filter-scroll">
                         {['All Items', ...availableSections].map(section => (
                             <button
@@ -245,9 +241,15 @@ const Inventory = () => {
                 </div>
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Accessing inventory...</p>
+                    <div className="skeleton-table">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-avatar" />
+                                <div className="skeleton skeleton-table-cell" style={{ flex: 3 }} />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                            </div>
+                        ))}
                     </div>
                 ) : filteredItems.length === 0 ? (
                     <div className="empty-state-card">

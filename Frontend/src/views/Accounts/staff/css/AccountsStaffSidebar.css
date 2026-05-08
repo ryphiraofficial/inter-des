@@ -109,6 +109,31 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0;
+    line-height: 1.4;
+}
+
+.acct-close-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--acct-text-light);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.acct-close-btn:hover {
+    background: #f1f5f9;
+    color: var(--acct-text-main);
+}
+
+@media (max-width: 1024px) {
+    .acct-close-btn {
+        display: flex;
+    }
 }
 
 /* User Profile Card */
@@ -439,17 +464,5 @@
 
 /* Mobile Overlay */
 .acct-mobile-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(2px);
-    z-index: 99;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.acct-mobile-overlay.visible {
-    opacity: 1;
-    pointer-events: auto;
+    display: none;
 }

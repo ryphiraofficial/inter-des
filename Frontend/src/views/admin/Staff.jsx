@@ -59,9 +59,15 @@ const Staff = () => {
         fetchStaff();
 
         const handleOpenStaffModal = () => setShowModal(true);
-        window.addEventListener('open-create-staff-modal', handleOpenStaffModal);
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
 
-        return () => window.removeEventListener('open-create-staff-modal', handleOpenStaffModal);
+        window.addEventListener('open-create-staff-modal', handleOpenStaffModal);
+        window.addEventListener('header-search', handleHeaderSearch);
+
+        return () => {
+            window.removeEventListener('open-create-staff-modal', handleOpenStaffModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
+        };
     }, []);
 
     const fetchStaff = async () => {
@@ -210,33 +216,19 @@ const Staff = () => {
     return (
         <div className="staff-container">
             <div className="staff-wrapper">
-
-                <div className="staff-search-container">
-                    <Search className="search-icon" size={20} />
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search by name, role, email, phone, or staff ID..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+                {/* Search moved to navbar */}
 
                 {loading ? (
-                        <div className="staff-loading-skeleton">
-                            <div style={{ background: 'white', borderRadius: '16px', padding: '1rem', border: '1px solid #e2e8f0' }}>
-                                {[1, 2, 3, 4, 5].map(i => (
-                                    <div key={i} style={{ display: 'flex', gap: '2rem', padding: '1.25rem', borderBottom: i < 5 ? '1px solid #f1f5f9' : 'none' }}>
-                                        <Skeleton width="40px" height="40px" borderRadius="50%" />
-                                        <Skeleton width="200px" height="20px" />
-                                        <Skeleton width="150px" height="20px" />
-                                        <Skeleton width="150px" height="20px" />
-                                        <Skeleton width="100px" height="20px" />
-                                        <Skeleton width="80px" height="20px" />
-                                    </div>
-                                ))}
+                    <div className="skeleton-table">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-avatar" />
+                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
                             </div>
-                        </div>
+                        ))}
+                    </div>
                 ) : filteredStaff.length === 0 ? (
                     <div className="empty-state">
                         <h4>No staff members found</h4>
@@ -528,9 +520,30 @@ const Staff = () => {
                         </div>
                         <div className="modal-body">
                             {analyticsLoading ? (
-                                <div className="loading-state">
-                                    <Loader className="spinner" size={40} />
-                                    <p>Gathering performance data...</p>
+                                <div className="analytics-skeleton">
+                                    <div className="staff-overview skeleton">
+                                        <Skeleton width="60px" height="60px" borderRadius="50%" />
+                                        <div style={{ flex: 1, marginLeft: '1rem' }}>
+                                            <Skeleton width="150px" height="24px" />
+                                            <div style={{ height: '8px' }} />
+                                            <Skeleton width="100px" height="16px" />
+                                        </div>
+                                    </div>
+                                    <div className="analytics-grid">
+                                        {[...Array(4)].map((_, i) => (
+                                            <div key={i} className="analytics-card skeleton">
+                                                <Skeleton width="40px" height="40px" borderRadius="10px" />
+                                                <div style={{ marginTop: '1rem' }}>
+                                                    <Skeleton width="80px" height="14px" />
+                                                    <div style={{ height: '8px' }} />
+                                                    <Skeleton width="100%" height="32px" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="performance-chart-skeleton" style={{ marginTop: '2rem' }}>
+                                        <Skeleton width="100%" height="200px" borderRadius="16px" />
+                                    </div>
                                 </div>
                             ) : selectedAnalytics ? (
                                 <div className="analytics-grid">

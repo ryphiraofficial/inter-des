@@ -115,9 +115,13 @@ const Reports = () => {
                 {error && <div className="error-banner">{error}</div>}
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Loading analytics reports...</p>
+                    <div className="reports-skeleton">
+                        <div className="skeleton-grid">
+                            {[...Array(8)].map((_, i) => (
+                                <div key={i} className="skeleton skeleton-card" style={{ height: '140px', borderRadius: '16px' }} />
+                            ))}
+                        </div>
+                        <div className="skeleton skeleton-table-area" style={{ height: '400px', borderRadius: '24px', marginTop: '2rem' }} />
                     </div>
                 ) : (
                     <>

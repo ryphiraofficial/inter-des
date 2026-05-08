@@ -18,7 +18,7 @@ import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Send,
     ShoppingCart, Building2, Box, ClipboardCheck, Target,
     Wrench, Clock, Image, LogOut, Menu, Plus, CheckCircle,
-    FolderOpen, CalendarOff
+    FolderOpen, CalendarOff, X
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../models/api';
 import '../admin/css/Sidebar.css';
@@ -197,6 +197,9 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar }) => {
                 </div>
                 <button className="btn-toggle-sidebar" onClick={toggleSidebar}>
                     <Menu size={20} />
+                </button>
+                <button className="btn-close-sidebar-mobile" onClick={toggleSidebar} title="Close Sidebar">
+                    <X size={20} />
                 </button>
             </div>
 

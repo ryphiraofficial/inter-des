@@ -161,7 +161,7 @@ const DesignApprovals = () => {
     if (loading) {
         return (
             <div className="tasks-container">
-                <div className="tasks-wrapper" style={{ maxWidth: '1400px' }}>
+                <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
                     <div className="t-tasks-header" style={{ marginBottom: '2.5rem' }}>
                         <Skeleton width="180px" height="40px" />
                         <Skeleton width="160px" height="60px" borderRadius="16px" />
@@ -204,7 +204,7 @@ const DesignApprovals = () => {
 
     return (
         <div className="tasks-container">
-            <div className="tasks-wrapper" style={{ maxWidth: '1400px' }}>
+            <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
                 <div className="t-tasks-header" style={{ marginBottom: '2.5rem' }}>
 
                     <div className="queue-strength-box" style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>

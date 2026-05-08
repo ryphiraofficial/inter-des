@@ -58,8 +58,15 @@ const Invoice = () => {
         fetchClients();
 
         const handleOpenModal = () => setShowCreateModal(true);
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
+
         window.addEventListener('open-create-invoice-modal', handleOpenModal);
-        return () => window.removeEventListener('open-create-invoice-modal', handleOpenModal);
+        window.addEventListener('header-search', handleHeaderSearch);
+
+        return () => {
+            window.removeEventListener('open-create-invoice-modal', handleOpenModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
+        };
     }, []);
 
     const fetchInvoices = async () => {
@@ -174,15 +181,7 @@ const Invoice = () => {
                 </div>
 
                 <div className="invoice-filter-bar">
-                    <div className="search-field">
-                        <Search className="search-icon" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search by invoice # or client..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* Search moved to navbar */}
                     {/* Shadcn-style Filter Dropdown */}
                     <div style={{ position: 'relative' }}>
                         <button
@@ -257,9 +256,15 @@ const Invoice = () => {
 
                 <div className="invoice-table-card">
                     {loading ? (
-                        <div className="loading-state">
-                            <Loader className="spinner" size={40} />
-                            <p>Loading invoices...</p>
+                        <div className="skeleton-table">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="skeleton-table-row">
+                                    <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
+                                    <div className="skeleton skeleton-table-cell" />
+                                    <div className="skeleton skeleton-table-cell" />
+                                    <div className="skeleton skeleton-table-cell" />
+                                </div>
+                            ))}
                         </div>
                     ) : filteredInvoices.length === 0 ? (
                         <div className="empty-state" style={{ padding: '3rem', textAlign: 'center' }}>

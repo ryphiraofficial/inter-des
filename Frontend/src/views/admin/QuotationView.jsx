@@ -52,9 +52,71 @@ const QuotationView = ({ isStaff }) => {
 
     if (loading) {
         return (
-            <div className="qv-loading-container">
-                <Loader className="spinner" size={48} />
-                <p>Preparing document...</p>
+            <div className="qv-wrapper skeleton-mode">
+                <div className="qv-actions-bar">
+                    <Skeleton width="80px" height="36px" borderRadius="12px" />
+                    <div className="qv-right-actions">
+                        <Skeleton width="80px" height="36px" borderRadius="12px" />
+                        <Skeleton width="100px" height="36px" borderRadius="12px" />
+                        <Skeleton width="120px" height="36px" borderRadius="12px" />
+                    </div>
+                </div>
+
+                <div className="quotation-document">
+                    <header className="doc-header">
+                        <div className="company-logo-section">
+                            <Skeleton width="200px" height="30px" />
+                            <div style={{ height: '12px' }} />
+                            <Skeleton width="250px" height="14px" />
+                            <div style={{ height: '8px' }} />
+                            <Skeleton width="180px" height="14px" />
+                        </div>
+                        <div className="doc-title-section">
+                            <Skeleton width="180px" height="40px" />
+                            <div style={{ height: '1.5rem' }} />
+                            <div className="doc-meta">
+                                <Skeleton width="120px" height="40px" />
+                                <Skeleton width="120px" height="40px" />
+                                <Skeleton width="120px" height="40px" />
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="doc-content">
+                        <section className="parties-grid">
+                            <div className="party-box">
+                                <Skeleton width="120px" height="20px" />
+                                <div style={{ height: '1rem' }} />
+                                <Skeleton width="180px" height="24px" />
+                                <div style={{ height: '8px' }} />
+                                <Skeleton width="220px" height="16px" />
+                            </div>
+                            <div className="party-box">
+                                <Skeleton width="120px" height="20px" />
+                                <div style={{ height: '1rem' }} />
+                                <Skeleton width="180px" height="24px" />
+                                <div style={{ height: '8px' }} />
+                                <Skeleton width="220px" height="16px" />
+                            </div>
+                        </section>
+
+                        <section className="items-section" style={{ marginTop: '3rem' }}>
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '1rem', padding: '1.5rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                                    <Skeleton width="40px" height="20px" />
+                                    <div style={{ flex: 1 }}>
+                                        <Skeleton width="40%" height="20px" />
+                                        <div style={{ height: '8px' }} />
+                                        <Skeleton width="80%" height="16px" />
+                                    </div>
+                                    <Skeleton width="60px" height="20px" />
+                                    <Skeleton width="100px" height="20px" />
+                                    <Skeleton width="120px" height="20px" />
+                                </div>
+                            ))}
+                        </section>
+                    </div>
+                </div>
             </div>
         );
     }

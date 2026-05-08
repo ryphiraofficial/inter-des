@@ -47,12 +47,13 @@ const StaffLayout = ({ user, onLogout }) => {
     };
 
     return (
-        <div className="staff-layout">
+        <div className={`staff-layout ${isSidebarOpen ? 'mobile-sidebar-open' : ''}`}>
+            {isSidebarOpen && <div className="staff-mobile-sidebar-overlay" onClick={toggleSidebar}></div>}
             {renderSidebar()}
 
             <main className="staff-main-content">
                 <div className="staff-header-container">
-                    <StaffHeader title={title} subtitle={subtitle} />
+                    <StaffHeader title={title} subtitle={subtitle} toggleSidebar={toggleSidebar} />
                 </div>
                 <div className="content-container">
                     <Outlet />

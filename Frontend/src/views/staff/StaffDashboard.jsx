@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { taskAPI, siteVisitAPI, BASE_IMAGE_URL } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/StaffDashboard.css';
 
 const StaffDashboard = ({ user }) => {
@@ -102,33 +103,48 @@ const StaffDashboard = ({ user }) => {
 
             {/* Stats Grid */}
             <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="stat-icon pending">
-                        <Clock size={24} />
-                    </div>
-                    <div className="stat-data">
-                        <span className="value">{stats.pendingTasks}</span>
-                        <span className="label">Pending Tasks</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon completed">
-                        <TrendingUp size={24} />
-                    </div>
-                    <div className="stat-data">
-                        <span className="value">{stats.completedToday}</span>
-                        <span className="label">Done Today</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon projects">
-                        <CheckSquare size={24} />
-                    </div>
-                    <div className="stat-data">
-                        <span className="value">{stats.activeProjects}</span>
-                        <span className="label">Active Projects</span>
-                    </div>
-                </div>
+                {loading ? (
+                    [...Array(3)].map((_, i) => (
+                        <div key={i} className="stat-card">
+                            <Skeleton width="48px" height="48px" borderRadius="14px" />
+                            <div className="stat-data" style={{ marginLeft: '1rem', flex: 1 }}>
+                                <Skeleton width="40px" height="28px" />
+                                <div style={{ height: '4px' }} />
+                                <Skeleton width="80px" height="14px" />
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <>
+                        <div className="stat-card">
+                            <div className="stat-icon pending">
+                                <Clock size={24} />
+                            </div>
+                            <div className="stat-data">
+                                <span className="value">{stats.pendingTasks}</span>
+                                <span className="label">Pending Tasks</span>
+                            </div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-icon completed">
+                                <TrendingUp size={24} />
+                            </div>
+                            <div className="stat-data">
+                                <span className="value">{stats.completedToday}</span>
+                                <span className="label">Done Today</span>
+                            </div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-icon projects">
+                                <CheckSquare size={24} />
+                            </div>
+                            <div className="stat-data">
+                                <span className="value">{stats.activeProjects}</span>
+                                <span className="label">Active Projects</span>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Sales Specific Section: Design Approvals */}
@@ -139,12 +155,30 @@ const StaffDashboard = ({ user }) => {
                             <div style={{ background: '#6366f1', color: 'white', padding: '8px', borderRadius: '12px' }}>
                                 <FileText size={20} />
                             </div>
-                            <h2 className="section-title">Designs Awaiting Your Approval ({pendingReviews.length})</h2>
+                            <h2 className="section-title">
+                                {loading ? <Skeleton width="200px" height="24px" /> : `Designs Awaiting Your Approval (${pendingReviews.length})`}
+                            </h2>
                         </div>
-                        <button onClick={() => navigate('/staff/tasks')} className="view-all">See All Tasks</button>
+                        {!loading && <button onClick={() => navigate('/staff/tasks')} className="view-all">See All Tasks</button>}
                     </div>
                     <div className="tasks-list" style={{ marginTop: '1rem' }}>
-                        {pendingReviews.length > 0 ? pendingReviews.map((task) => (
+                        {loading ? (
+                            [...Array(1)].map((_, i) => (
+                                <div key={i} className="task-item" style={{ borderLeft: '6px solid #e2e8f0' }}>
+                                    <div className="task-info">
+                                        <Skeleton width="180px" height="20px" />
+                                        <div style={{ height: '8px' }} />
+                                        <Skeleton width="240px" height="16px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="120px" height="14px" />
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <Skeleton width="100px" height="36px" borderRadius="12px" />
+                                        <Skeleton width="100px" height="36px" borderRadius="12px" />
+                                    </div>
+                                </div>
+                            ))
+                        ) : pendingReviews.length > 0 ? pendingReviews.map((task) => (
                             <div key={task._id} className="task-item" style={{ cursor: 'default', borderLeft: '6px solid #6366f1' }}>
                                 <div className="task-info">
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -230,10 +264,26 @@ const StaffDashboard = ({ user }) => {
             <section className="dashboard-section">
                 <div className="section-header">
                     <h2 className="section-title">My Tasks</h2>
-                    <button onClick={() => navigate('/staff/tasks')} className="view-all">View All</button>
+                    {!loading && <button onClick={() => navigate('/staff/tasks')} className="view-all">View All</button>}
                 </div>
                 <div className="tasks-list">
-                    {urgentTasks.length > 0 ? urgentTasks.map((task) => (
+                    {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="task-item">
+                                <div className="status-line" style={{ background: '#e2e8f0' }} />
+                                <div className="task-info">
+                                    <Skeleton width="180px" height="18px" />
+                                    <div style={{ height: '8px' }} />
+                                    <Skeleton width="140px" height="14px" />
+                                    <div style={{ height: '8px' }} />
+                                    <Skeleton width="60px" height="16px" borderRadius="4px" />
+                                </div>
+                                <div style={{ marginLeft: 'auto' }}>
+                                    <Skeleton width="16px" height="16px" borderRadius="50%" />
+                                </div>
+                            </div>
+                        ))
+                    ) : urgentTasks.length > 0 ? urgentTasks.map((task) => (
                         <div key={task._id} className="task-item" onClick={() => navigate('/staff/tasks')}>
                             {/* In-flow slim accent bar — first flex child */}
                             <div className={`status-line ${task.priority?.toLowerCase()}`} />
@@ -283,10 +333,23 @@ const StaffDashboard = ({ user }) => {
             <section className="dashboard-section">
                 <div className="section-header">
                     <h2 className="section-title">Last Site Visit Uploads</h2>
-                    <button onClick={() => navigate('/staff/site-visits')} className="view-all">Log New</button>
+                    {!loading && <button onClick={() => navigate('/staff/site-visits')} className="view-all">Log New</button>}
                 </div>
                 <div className="site-visits-grid">
-                    {recentVisits.length > 0 ? (
+                    {loading ? (
+                        [...Array(4)].map((_, i) => (
+                            <div key={i} className="visit-preview-card">
+                                <Skeleton width="100%" height="120px" borderRadius="16px" />
+                                <div className="visit-details" style={{ marginTop: '12px' }}>
+                                    <Skeleton width="120px" height="16px" />
+                                    <div style={{ height: '8px' }} />
+                                    <Skeleton width="100%" height="12px" />
+                                    <div style={{ height: '4px' }} />
+                                    <Skeleton width="60%" height="12px" />
+                                </div>
+                            </div>
+                        ))
+                    ) : recentVisits.length > 0 ? (
                         recentVisits.map((visit) => (
                             <div key={visit._id} className="visit-preview-card">
                                 <div className="visit-images">
@@ -322,24 +385,39 @@ const StaffDashboard = ({ user }) => {
             <section className="dashboard-section">
                 <h2 className="section-title">Recent Activity</h2>
                 <div className="activity-feed">
-                    {recentVisits.slice(0, 3).map((visit) => (
-                        <div key={visit._id} className="activity-item">
-                            <div className="activity-dot"></div>
-                            <div className="activity-content">
-                                <p><strong>Site Visit</strong> logged for {visit.client?.name || 'Client'}</p>
-                                <span className="time">{new Date(visit.createdAt).toLocaleString()}</span>
+                    {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="activity-item">
+                                <Skeleton width="12px" height="12px" borderRadius="50%" />
+                                <div className="activity-content" style={{ marginLeft: '1rem', flex: 1 }}>
+                                    <Skeleton width="80%" height="14px" />
+                                    <div style={{ height: '4px' }} />
+                                    <Skeleton width="40%" height="12px" />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    {urgentTasks.slice(0, 2).map((task) => (
-                        <div key={task._id} className="activity-item">
-                            <div className="activity-dot task"></div>
-                            <div className="activity-content">
-                                <p><strong>Task Updated:</strong> {task.title}</p>
-                                <span className="time">{new Date(task.updatedAt).toLocaleString()}</span>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <>
+                            {recentVisits.slice(0, 3).map((visit) => (
+                                <div key={visit._id} className="activity-item">
+                                    <div className="activity-dot"></div>
+                                    <div className="activity-content">
+                                        <p><strong>Site Visit</strong> logged for {visit.client?.name || 'Client'}</p>
+                                        <span className="time">{new Date(visit.createdAt).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                            {urgentTasks.slice(0, 2).map((task) => (
+                                <div key={task._id} className="activity-item">
+                                    <div className="activity-dot task"></div>
+                                    <div className="activity-content">
+                                        <p><strong>Task Updated:</strong> {task.title}</p>
+                                        <span className="time">{new Date(task.updatedAt).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
             </section>
 

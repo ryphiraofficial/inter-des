@@ -51,9 +51,15 @@ const Clients = ({ isStaff }) => {
         fetchClients();
 
         const handleOpenClientModal = () => setShowNewClientModal(true);
-        window.addEventListener('open-create-client-modal', handleOpenClientModal);
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
 
-        return () => window.removeEventListener('open-create-client-modal', handleOpenClientModal);
+        window.addEventListener('open-create-client-modal', handleOpenClientModal);
+        window.addEventListener('header-search', handleHeaderSearch);
+
+        return () => {
+            window.removeEventListener('open-create-client-modal', handleOpenClientModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
+        };
     }, []);
 
     const fetchClients = async () => {
@@ -178,22 +184,19 @@ const Clients = ({ isStaff }) => {
                 </div>
 
                 <div className="clients-controls-row">
-                    <div className="c-search-container">
-                        <Search className="c-search-icon" size={20} />
-                        <input
-                            type="text"
-                            className="c-search-input"
-                            placeholder="Search clients..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* Search moved to navbar */}
                 </div>
 
                 {loading ? (
-                    <div className="c-loading-state">
-                        <Loader className="c-spinner" size={40} />
-                        <p>Loading clients...</p>
+                    <div className="skeleton-table">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-avatar" />
+                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                            </div>
+                        ))}
                     </div>
                 ) : filteredClients.length === 0 ? (
                     <div className="c-empty-state-card">

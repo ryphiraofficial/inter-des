@@ -764,7 +764,18 @@ const Settings = () => {
     if (loading) {
         return (
             <div className="settings-container">
-                <div className="settings-loading">Loading settings...</div>
+                <div className="settings-wrapper">
+                    <div className="settings-layout">
+                        <div className="settings-tabs">
+                            {[...Array(7)].map((_, i) => (
+                                <div key={i} className="skeleton" style={{ height: '48px', marginBottom: '8px', borderRadius: '12px' }} />
+                            ))}
+                        </div>
+                        <div className="settings-content">
+                            <div className="skeleton" style={{ height: '600px', borderRadius: '24px' }} />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -4,13 +4,13 @@
 }
 
 .clients-container:not(.staff-view) {
-    padding: 2.5rem;
+    padding: 0;
     min-height: calc(100vh - 80px);
     background: #f8fafc;
 }
 
 .clients-wrapper {
-    max-width: 1500px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 

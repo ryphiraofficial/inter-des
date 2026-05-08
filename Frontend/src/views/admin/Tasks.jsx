@@ -27,6 +27,7 @@ import { taskAPI, staffAPI, clientAPI, quotationAPI, siteVisitAPI, BASE_IMAGE_UR
 import { useToast } from '../../models/context/ToastContext';
 import CustomSelect from '../common/CustomSelect';
 import AISuggestButton from '../common/AISuggestButton';
+import Skeleton from '../common/Skeleton';
 import './css/Tasks.css';
 import './css/TaskDetails.css';
 
@@ -101,13 +102,16 @@ const Tasks = ({ isStaff, user }) => {
         }
 
         const handleOpenTaskModal = () => setShowTaskModal(true);
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
 
         window.addEventListener('AI_POPULATE_TASK', handleAIPopulate);
         window.addEventListener('open-create-task-modal', handleOpenTaskModal);
+        window.addEventListener('header-search', handleHeaderSearch);
         
         return () => {
             window.removeEventListener('AI_POPULATE_TASK', handleAIPopulate);
             window.removeEventListener('open-create-task-modal', handleOpenTaskModal);
+            window.removeEventListener('header-search', handleHeaderSearch);
         };
     }, []);
 
@@ -372,16 +376,7 @@ const Tasks = ({ isStaff, user }) => {
                 </div>
 
                 <div className="tasks-controls">
-                    <div className="t-search-container">
-                        <Search className="t-search-icon" size={20} />
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search tasks..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* Search moved to navbar */}
 
                     <div className="tasks-filter-group">
                         <CustomSelect
@@ -400,9 +395,15 @@ const Tasks = ({ isStaff, user }) => {
                 </div>
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Loading tasks...</p>
+                    <div className="skeleton-table">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                            </div>
+                        ))}
                     </div>
                 ) : filteredTasks.length === 0 ? (
                     <div className="empty-state-card">
@@ -837,9 +838,20 @@ const Tasks = ({ isStaff, user }) => {
                             <section className="evidence-section">
                                 <h3 className="section-subtitle">Site Visit Logs & Photos</h3>
                                 {visitsLoading ? (
-                                    <div className="loader-container">
-                                        <Loader className="spinner" />
-                                        <span>Fetching field evidence...</span>
+                                    <div className="visits-skeleton">
+                                        {[...Array(2)].map((_, i) => (
+                                            <div key={i} className="visit-log-item card skeleton" style={{ padding: '1.25rem', marginBottom: '1rem' }}>
+                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '1rem' }}>
+                                                    <Skeleton width="36px" height="36px" borderRadius="50%" />
+                                                    <div style={{ flex: 1 }}>
+                                                        <Skeleton width="120px" height="14px" />
+                                                        <div style={{ height: '4px' }} />
+                                                        <Skeleton width="80px" height="12px" />
+                                                    </div>
+                                                </div>
+                                                <Skeleton width="100%" height="60px" borderRadius="12px" />
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : taskVisits.length > 0 ? (
                                     <div className="visits-timeline">

@@ -1,6 +1,8 @@
 /* Main Wrapper */
 .quotations-wrapper {
     width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 .quotations-content {
@@ -9,7 +11,7 @@
 }
 
 .quotations-wrapper:not(.staff-view) .quotations-content {
-    padding: 2.5rem;
+    padding: 0;
 }
 
 /* Header & Tabs */

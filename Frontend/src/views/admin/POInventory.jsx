@@ -12,6 +12,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { poInventoryAPI } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/POInventory.css';
 
 const POInventory = () => {
@@ -118,9 +119,44 @@ const POInventory = () => {
                 {error && <div className="error-banner">{error}</div>}
 
                 {loading ? (
-                    <div className="loading-state">
-                        <Loader className="spinner" size={40} />
-                        <p>Loading inventory...</p>
+                    <div className="po-inv-grid">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="po-inv-card skeleton">
+                                <div className="card-top">
+                                    <Skeleton width="40px" height="40px" borderRadius="12px" />
+                                    <Skeleton width="80px" height="24px" borderRadius="6px" />
+                                </div>
+                                <div className="item-title" style={{ marginTop: '1rem' }}>
+                                    <Skeleton width="60px" height="14px" />
+                                    <div style={{ height: '8px' }} />
+                                    <Skeleton width="80%" height="24px" />
+                                    <div style={{ height: '4px' }} />
+                                    <Skeleton width="60%" height="16px" />
+                                </div>
+                                <div className="stock-meter-box" style={{ marginTop: '1rem' }}>
+                                    <div className="meter-label" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <Skeleton width="100px" height="16px" />
+                                        <Skeleton width="60px" height="16px" />
+                                    </div>
+                                    <Skeleton width="100%" height="8px" borderRadius="10px" />
+                                </div>
+                                <div className="meta-grid" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div>
+                                        <Skeleton width="50px" height="12px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="70px" height="16px" />
+                                    </div>
+                                    <div>
+                                        <Skeleton width="50px" height="12px" />
+                                        <div style={{ height: '4px' }} />
+                                        <Skeleton width="70px" height="16px" />
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                    <Skeleton width="100px" height="20px" borderRadius="4px" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : filteredInventory.length === 0 ? (
                     <div className="empty-state-card" style={{ padding: '4rem', textAlign: 'center', background: 'white', borderRadius: '16px' }}>

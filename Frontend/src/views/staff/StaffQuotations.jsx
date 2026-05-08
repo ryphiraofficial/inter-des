@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Loader, Eye, FileText, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { quotationAPI } from '../../models/api';
+import Skeleton from '../common/Skeleton';
 import './css/StaffQuotations.css';
 
 const StaffQuotations = () => {
@@ -33,16 +34,6 @@ const StaffQuotations = () => {
         q.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) {
-        return (
-            <div className="sq-quotations-container">
-                <div className="sq-loading">
-                    <Loader size={40} className="spinner" />
-                    <p>Loading quotations list...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="sq-quotations-container">
@@ -77,7 +68,34 @@ const StaffQuotations = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredQuotations.map(q => (
+                                {loading ? (
+                                    [...Array(6)].map((_, i) => (
+                                        <tr key={i}>
+                                            <td>
+                                                <Skeleton width="100px" height="16px" />
+                                                <div style={{ height: '4px' }} />
+                                                <Skeleton width="60px" height="12px" />
+                                            </td>
+                                            <td>
+                                                <Skeleton width="180px" height="16px" />
+                                                <div style={{ height: '4px' }} />
+                                                <Skeleton width="120px" height="12px" />
+                                            </td>
+                                            <td><Skeleton width="80px" height="16px" /></td>
+                                            <td><Skeleton width="100px" height="24px" borderRadius="12px" /></td>
+                                            <td><Skeleton width="36px" height="36px" borderRadius="10px" /></td>
+                                        </tr>
+                                    ))
+                                ) : filteredQuotations.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5">
+                                            <div className="sq-empty">
+                                                <FileText size={40} />
+                                                <p>No project quotations found</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : filteredQuotations.map(q => (
                                     <tr key={q._id}>
                                         <td data-label="Quote No">
                                             <span className="sq-quote-num">{q.quotationNumber}</span>
@@ -107,12 +125,6 @@ const StaffQuotations = () => {
                             </tbody>
                         </table>
                     </div>
-                    {filteredQuotations.length === 0 && (
-                        <div className="sq-empty">
-                            <FileText size={40} />
-                            <p>No project quotations found</p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

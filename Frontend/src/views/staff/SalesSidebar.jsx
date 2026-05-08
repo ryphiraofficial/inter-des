@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard, Target, Phone, Camera, FileText,
     Users, Briefcase, BarChart2, TrendingUp, DollarSign,
-    CheckCircle, LogOut, Zap, Layers
+    CheckCircle, LogOut, Zap, Layers, X
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../models/api';
 import './css/SalesSidebar.css';
@@ -17,7 +17,7 @@ const SALES_STAFF_NAV = [
             { name: 'My Projects',    icon: Layers,          path: '/staff/tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
-            { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients',    badge: 'New', badgeStyle: 'new' },
+            { name: 'Opportunities',  icon: Briefcase,       path: '/staff/opportunities', badge: 'New', badgeStyle: 'new' },
         ],
     }
 ];
@@ -30,7 +30,7 @@ const SALES_MANAGER_NAV = [
             { name: 'Team Projects',  icon: Layers,          path: '/staff/tasks' },
             { name: 'Site Visits',    icon: Camera,          path: '/staff/site-visits' },
             { name: 'Clients',        icon: Users,           path: '/staff/clients' },
-            { name: 'Opportunities',  icon: Briefcase,       path: '/staff/clients' },
+            { name: 'Opportunities',  icon: Briefcase,       path: '/staff/opportunities' },
         ],
     },
     {
@@ -71,12 +71,10 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
     return (
         <>
-            <div
-                className={`sales-mobile-overlay ${isOpen ? 'visible' : ''}`}
-                onClick={toggleSidebar}
-            />
-
             <div className={`sales-sidebar-container ${isOpen ? 'open' : ''}`}>
+                <button className="sales-close-sidebar" onClick={toggleSidebar} title="Close Sidebar">
+                    <X size={20} />
+                </button>
 
                 {/* ── Profile block ── */}
                 <div className="sales-profile-block">

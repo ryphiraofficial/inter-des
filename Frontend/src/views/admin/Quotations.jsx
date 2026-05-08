@@ -23,6 +23,13 @@ const Quotations = ({ isStaff, user }) => {
 
     useEffect(() => {
         fetchQuotations();
+
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
+        window.addEventListener('header-search', handleHeaderSearch);
+
+        return () => {
+            window.removeEventListener('header-search', handleHeaderSearch);
+        };
     }, []);
 
     const fetchQuotations = async () => {
@@ -119,16 +126,7 @@ const Quotations = ({ isStaff, user }) => {
                 </div>
 
                 <div className="quotations-controls-row">
-                    <div className="q-search-container">
-                        <Search className="q-search-icon" size={20} />
-                        <input
-                            type="text"
-                            className="q-search-input"
-                            placeholder="Search projects, quotes or clients..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    {/* Search moved to navbar */}
                     <Link to={isStaff ? "/staff/quotations/new" : "/quotations/new"} className="btn-new-quotation">
                         <Plus size={18} />
                         <span>New Quotation</span>
@@ -136,9 +134,15 @@ const Quotations = ({ isStaff, user }) => {
                 </div>
 
                 {loading ? (
-                    <div className="q-loading-state">
-                        <Loader className="q-spinner" size={40} />
-                        <p>Loading quotations...</p>
+                    <div className="skeleton-table">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="skeleton-table-row">
+                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                                <div className="skeleton skeleton-table-cell" />
+                            </div>
+                        ))}
                     </div>
                 ) : filteredQuotations.length === 0 ? (
                     <div className="q-empty-state-card">
