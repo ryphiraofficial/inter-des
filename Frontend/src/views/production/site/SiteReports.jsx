@@ -157,6 +157,8 @@ const SupervisorReports = ({ user, projects }) => {
             }
         } catch (error) { console.error('Failed to submit supervisor report', error); }
         finally { setSubmitting(false); }
+    };
+
     return (
         <div className="site-report-split">
             {submitted && (

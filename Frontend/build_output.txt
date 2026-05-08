@@ -1,0 +1,31 @@
+
+> frontend@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 1845 modules transformed.
+✗ Build failed in 2.58s
+error during build:
+[vite:esbuild] Transform failed with 1 error:
+/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site/SiteAttendance.jsx:236:24: ERROR: Expected ")" but found "className"
+file: /home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site/SiteAttendance.jsx:236:24
+
+Expected ")" but found "className"
+234 |                      </table>
+235 |                  </div>
+236 |                  <button className="site-add-row-btn" onClick={handleAddRow}>
+    |                          ^
+237 |                      <Plus size={14} /> Add Worker
+238 |                  </button>
+
+    at failureErrorWithLog (/home/rohith/Documents/Startup/Interior/Frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/rohith/Documents/Startup/Interior/Frontend/node_modules/esbuild/lib/main.js:736:50
+    at responseCallbacks.<computed> (/home/rohith/Documents/Startup/Interior/Frontend/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/rohith/Documents/Startup/Interior/Frontend/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/rohith/Documents/Startup/Interior/Frontend/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)
