@@ -9,6 +9,14 @@ const ProjectsList = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filtersOpen, setFiltersOpen] = useState(false);
+    const [expandedRows, setExpandedRows] = useState({});
+
+    const toggleRow = (id) => {
+        setExpandedRows(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -116,65 +124,135 @@ const ProjectsList = () => {
                     <table className="pm-table">
                         <thead>
                             <tr>
+                                <th className="pm-desktop-only" style={{ width: '40px' }}></th>
                                 <th>Project ID & Name</th>
-                                <th>Client / Type</th>
+                                <th className="pm-desktop-only">Client / Type</th>
                                 <th>Status</th>
-                                <th>Progress</th>
-                                <th>Timeline</th>
-                                <th>Engineer</th>
+                                <th className="pm-desktop-only">Progress</th>
+                                <th className="pm-desktop-only">Timeline</th>
+                                <th className="pm-desktop-only">Engineer</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Loading projects...</td>
+                                    <td colSpan="10" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Loading projects...</td>
                                 </tr>
                             ) : displayProjects.map(project => (
-                                <tr key={project._id} className="pm-table-row">
-                                    <td>
-                                        <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '2px' }}>{project.projectName}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{project._id.toString().substring(0, 8)}</div>
-                                    </td>
-                                    <td>
-                                        <div style={{ fontWeight: 500, color: '#334155', marginBottom: '2px' }}>{project.clientId?.name || 'N/A'}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{project.projectType || 'Residential'}</div>
-                                    </td>
-                                    <td>
-                                        <span className={`pm-status-badge ${getStatusClass(project.status)}`}>{project.status}</span>
-                                    </td>
-                                    <td style={{ minWidth: '150px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <div className="pm-progress-bar-v2" style={{ flex: 1 }}>
-                                                <div className="pm-progress-fill-v2" style={{ width: `${project.progress || 0}%` }}></div>
+                                <React.Fragment key={project._id}>
+                                    <tr className={`pm-table-row ${expandedRows[project._id] ? 'expanded' : ''}`} onClick={() => window.innerWidth <= 768 && toggleRow(project._id)}>
+                                        <td className="pm-desktop-only">
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); toggleRow(project._id); }}
+                                                className="pm-expand-btn"
+                                            >
+                                                <ChevronDown size={16} style={{ transform: expandedRows[project._id] ? 'rotate(180deg)' : 'none' }} />
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <button 
+                                                    className="pm-mobile-only pm-expand-btn-mobile"
+                                                >
+                                                    <ChevronDown size={14} style={{ transform: expandedRows[project._id] ? 'rotate(180deg)' : 'none' }} />
+                                                </button>
+                                                <div>
+                                                    <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '2px' }}>{project.projectName}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{project._id.toString().substring(0, 8)}</div>
+                                                </div>
                                             </div>
-                                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>{project.progress || 0}%</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style={{ fontSize: '0.8rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
-                                            <Calendar size={12} color="#64748b" /> {project.startDate ? new Date(project.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
-                                        </div>
-                                        <div style={{ fontSize: '0.8rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <Target size={12} color="#64748b" /> {project.endDate ? new Date(project.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <div className="pm-team-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem', background: '#eff6ff', color: '#3b82f6' }}>
-                                                {(project.projectEngineer?.fullName || project.projectManager?.fullName || 'N A').split(' ').map(n=>n[0]).join('')}
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div style={{ fontWeight: 500, color: '#334155', marginBottom: '2px' }}>{project.clientId?.name || 'N/A'}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{project.projectType || 'Residential'}</div>
+                                        </td>
+                                        <td>
+                                            <span className={`pm-status-badge ${getStatusClass(project.status)}`}>{project.status}</span>
+                                        </td>
+                                        <td className="pm-desktop-only" style={{ minWidth: '150px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <div className="pm-progress-bar-v2" style={{ flex: 1 }}>
+                                                    <div className="pm-progress-fill-v2" style={{ width: `${project.progress || 0}%` }}></div>
+                                                </div>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>{project.progress || 0}%</span>
                                             </div>
-                                            <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{project.projectEngineer?.fullName || project.projectManager?.fullName || 'Unassigned'}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button className="pm-icon-btn"><MoreVertical size={16} /></button>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div style={{ fontSize: '0.8rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                                                <Calendar size={12} color="#64748b" /> {project.startDate ? new Date(project.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <Target size={12} color="#64748b" /> {project.endDate ? new Date(project.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
+                                            </div>
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <div className="pm-team-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem', background: '#eff6ff', color: '#3b82f6' }}>
+                                                    {(project.projectEngineer?.fullName || project.projectManager?.fullName || 'N A').split(' ').map(n=>n[0]).join('')}
+                                                </div>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{project.projectEngineer?.fullName || project.projectManager?.fullName || 'Unassigned'}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button className="pm-icon-btn" onClick={(e) => e.stopPropagation()}><MoreVertical size={16} /></button>
+                                        </td>
+                                    </tr>
+
+                                    {/* Expanded Detail Row (Mobile & Desktop) */}
+                                    {expandedRows[project._id] && (
+                                        <tr className="pm-expanded-row">
+                                            <td colSpan="10" style={{ padding: 0 }}>
+                                                <div className="pm-expanded-content">
+                                                    <div className="pm-expanded-grid">
+                                                        <div className="pm-expanded-item pm-mobile-only">
+                                                            <label>Client & Type</label>
+                                                            <div className="pm-expanded-value">
+                                                                <strong>{project.clientId?.name || 'N/A'}</strong>
+                                                                <span>{project.projectType || 'Residential'}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="pm-expanded-item">
+                                                            <label>Project Progress</label>
+                                                            <div className="pm-expanded-value">
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', maxWidth: '250px' }}>
+                                                                    <div className="pm-progress-bar-v2" style={{ flex: 1 }}>
+                                                                        <div className="pm-progress-fill-v2" style={{ width: `${project.progress || 0}%` }}></div>
+                                                                    </div>
+                                                                    <span style={{ fontWeight: 700 }}>{project.progress || 0}%</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="pm-expanded-item pm-mobile-only">
+                                                            <label>Timeline</label>
+                                                            <div className="pm-expanded-value">
+                                                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                                                    <span><Calendar size={12} /> {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'N/A'}</span>
+                                                                    <span><Target size={12} /> {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'N/A'}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="pm-expanded-item pm-mobile-only">
+                                                            <label>Assigned Engineer</label>
+                                                            <div className="pm-expanded-value">
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                    <div className="pm-team-avatar" style={{ width: '28px', height: '28px', fontSize: '0.8rem' }}>
+                                                                        {(project.projectEngineer?.fullName || 'U').split(' ').map(n=>n[0]).join('')}
+                                                                    </div>
+                                                                    <strong>{project.projectEngineer?.fullName || 'Unassigned'}</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
                             ))}
                             {!loading && displayProjects.length === 0 && (
                                 <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>No projects found matching your criteria.</td>
+                                    <td colSpan="10" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>No projects found matching your criteria.</td>
                                 </tr>
                             )}
                         </tbody>

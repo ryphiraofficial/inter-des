@@ -871,6 +871,21 @@
     vertical-align: middle;
 }
 
+.pm-expand-btn, .pm-expand-btn-mobile {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.pm-expand-btn:hover { background: #f1f5f9; color: #0f172a; }
+
 .pm-icon-btn {
     background: transparent;
     border: none;
@@ -888,6 +903,50 @@
     background: #f1f5f9;
     color: #1e293b;
 }
+
+.pm-mobile-only { display: none; }
+
+.pm-expanded-row {
+    background: #fafbfc;
+}
+
+.pm-expanded-content {
+    padding: 1rem 1.5rem 1.5rem 3.5rem;
+    border-left: 3px solid #3b82f6;
+    animation: pm-slide-down 0.2s ease-out;
+}
+
+@keyframes pm-slide-down {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pm-expanded-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.pm-expanded-item label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.pm-expanded-value {
+    font-size: 0.9rem;
+    color: #334155;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pm-expanded-value strong { color: #0f172a; }
+.pm-expanded-value span { color: #64748b; font-size: 0.8rem; }
 
 /* ── Kanban Board ─────────────────────────────────────────────── */
 .pm-kanban-container {
@@ -1112,6 +1171,25 @@
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
+    .pm-desktop-only { display: none; }
+    .pm-mobile-only { display: flex; }
+    
+    .pm-table td {
+        padding: 0.75rem 1rem;
+    }
+    
+    .pm-expanded-content {
+        padding: 1rem;
+        border-left: none;
+        border-bottom: 2px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    
+    .pm-expanded-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .pm-toolbar {
         flex-direction: column-reverse;
         align-items: stretch;
@@ -1132,6 +1210,6 @@
     }
     
     .pm-table {
-        min-width: 800px;
+        min-width: auto;
     }
 }
