@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bell, X, Check, CheckCheck, Trash2, ClipboardList, FileText, Package, ShoppingCart, Users, Receipt, AlertTriangle, Info, CheckCircle, XCircle, Menu } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Bell, X, Check, CheckCheck, Trash2, ClipboardList, FileText, Package, ShoppingCart, Users, Receipt, AlertTriangle, Info, CheckCircle, XCircle, Menu, Plus } from 'lucide-react';
 import { notificationAPI } from '../../models/api';
 import './css/StaffHeader.css';
 
@@ -40,6 +41,8 @@ const timeAgo = (date) => {
 };
 
 const StaffHeader = ({ title, subtitle, toggleSidebar }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -116,6 +119,15 @@ const StaffHeader = ({ title, subtitle, toggleSidebar }) => {
             </div>
 
             <div className="staff-header-actions">
+                {location.pathname === '/staff/tasks' && (
+                    <button 
+                        className="staff-header-quick-btn"
+                        onClick={() => navigate('/staff/quotations/new')}
+                    >
+                        <Plus size={16} />
+                        <span>New Quotation</span>
+                    </button>
+                )}
                 <div className="staff-notif-wrapper">
                     <button
                         className={`staff-notif-btn ${showNotifications ? 'active' : ''}`}

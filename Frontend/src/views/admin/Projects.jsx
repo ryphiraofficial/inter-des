@@ -107,9 +107,9 @@ const Projects = () => {
 
     if (urlProjectId && loading) {
         return (
-            <div className="projects-page focused-view" style={{ padding: '2rem 2.5rem', background: '#ffffff', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
-                <div className="page-header" style={{ marginBottom: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div className="projects-page focused-view">
+                <div className="page-header">
+                    <div className="header-title-section">
                         <Skeleton width="40px" height="40px" borderRadius="50%" />
                         <div>
                             <Skeleton width="240px" height="32px" />
@@ -119,10 +119,10 @@ const Projects = () => {
                         </div>
                     </div>
                 </div>
-                <div style={{ background: 'white', borderRadius: '24px', padding: '2.5rem', border: '1px solid #f1f5f9' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+                <div className="detail-container-premium">
+                    <div className="stat-grid-premium">
                         {[1, 2, 3].map(i => (
-                            <div key={i}>
+                            <div key={i} className="info-block">
                                 <Skeleton width="100px" height="12px" />
                                 <div style={{ marginTop: '12px' }}>
                                     <Skeleton width="100%" height="32px" />
@@ -130,9 +130,11 @@ const Projects = () => {
                             </div>
                         ))}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+                    <div className="info-cards-grid">
                         {[1, 2, 3].map(i => (
-                            <Skeleton key={i} width="100%" height="160px" borderRadius="16px" />
+                            <div key={i} className="info-card-premium">
+                                <Skeleton width="100%" height="160px" borderRadius="16px" />
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -143,13 +145,12 @@ const Projects = () => {
     // Special View for Direct Project Review (Focused View)
     if (urlProjectId && selectedProject) {
         return (
-            <div className="projects-page focused-view" style={{ padding: '2rem 2.5rem', background: '#ffffff', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
-                <div className="page-header" style={{ marginBottom: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div className="projects-page focused-view">
+                <div className="page-header">
+                    <div className="header-title-section">
                         <button 
                             className="btn-back-round" 
                             onClick={handleClose}
-                            style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                         >
                             <ArrowRight size={20} style={{ transform: 'rotate(180deg)' }} />
                         </button>
@@ -159,14 +160,14 @@ const Projects = () => {
                         </div>
                     </div>
                     <div className="header-actions">
-                        <span className="badge-premium" style={{ background: getStageColor(selectedProject.stage), color: 'white', padding: '6px 16px', borderRadius: '100px', fontWeight: 700 }}>
+                        <span className="badge-premium" style={{ background: getStageColor(selectedProject.stage) }}>
                             {selectedProject.stage} Stage
                         </span>
                     </div>
                 </div>
 
-                <div className="detail-container-premium" style={{ background: 'white', borderRadius: '24px', padding: '2.5rem', border: '1px solid #f1f5f9', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+                <div className="detail-container-premium">
+                    <div className="stat-grid-premium">
                         <div className="info-block">
                             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Project Status</label>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem', fontWeight: 600 }}>
@@ -180,15 +181,15 @@ const Projects = () => {
                         </div>
                         <div className="info-block">
                             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Completion</label>
-                            <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '4px', marginTop: '12px', position: 'relative' }}>
+                            <div className="completion-bar-wrapper">
                                 <div style={{ position: 'absolute', height: '100%', width: `${selectedProject.progress || 0}%`, background: getStageColor(selectedProject.stage), borderRadius: '4px' }}></div>
-                                <span style={{ position: 'absolute', right: 0, top: '-20px', fontSize: '0.8rem', fontWeight: 700 }}>{selectedProject.progress || 0}%</span>
+                                <span className="completion-pct">{selectedProject.progress || 0}%</span>
                             </div>
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
-                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+                    <div className="info-cards-grid">
+                        <div className="info-card-premium">
                             <h4 style={{ marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Building2 size={18} /> Client Information</h4>
                             <div style={{ display: 'grid', gap: '12px' }}>
                                 <div><span style={{ color: '#64748b' }}>Name:</span> <strong>{selectedProject.client?.name}</strong></div>
@@ -196,7 +197,7 @@ const Projects = () => {
                                 <div><span style={{ color: '#64748b' }}>Phone:</span> {selectedProject.client?.phone || 'N/A'}</div>
                             </div>
                         </div>
-                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+                        <div className="info-card-premium">
                             <h4 style={{ marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Calendar size={18} /> Timeline</h4>
                             <div style={{ display: 'grid', gap: '12px' }}>
                                 <div><span style={{ color: '#64748b' }}>Created On:</span> {new Date(selectedProject.createdAt).toLocaleDateString()}</div>
@@ -204,7 +205,7 @@ const Projects = () => {
                                 <div><span style={{ color: '#64748b' }}>Current Stage:</span> <strong>{selectedProject.stage}</strong></div>
                             </div>
                         </div>
-                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+                        <div className="info-card-premium">
                             <h4 style={{ marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}><Users size={18} /> Project Team</h4>
                             <div style={{ display: 'grid', gap: '12px', fontSize: '0.95rem' }}>
                                 <div><span style={{ color: '#64748b', display: 'inline-block', width: '120px' }}>Design Mgr:</span> <strong>{selectedProject.assignedDesignManager?.fullName || 'Unassigned'}</strong></div>

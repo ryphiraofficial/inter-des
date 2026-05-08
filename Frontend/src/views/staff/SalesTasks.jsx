@@ -155,9 +155,6 @@ const SalesTasks = ({ user }) => {
                         <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>My Projects</h2>
                         <p style={{ margin: '4px 0 0', color: '#64748b' }}>Track and manage your active sales projects and their pipeline progress.</p>
                     </div>
-                    <button className="st-sales-quick-btn primary" onClick={() => navigate('/staff/quotations/new')}>
-                        <Plus size={16} /> New Quotation
-                    </button>
                 </div>
 
                 <div className="st-sales-controls" style={{ marginBottom: '24px' }}>

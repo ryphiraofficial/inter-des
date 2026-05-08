@@ -56,6 +56,31 @@
     gap: 0.75rem;
 }
 
+.staff-header-quick-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.staff-header-quick-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+
+.staff-header-quick-btn span {
+    white-space: nowrap;
+}
+
 /* Notification Bell */
 .staff-notif-wrapper {
     position: relative;
@@ -467,5 +492,17 @@
         right: 10px !important;
         width: auto !important;
         transform: none !important;
+    }
+
+    .staff-header-quick-btn {
+        padding: 8px !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
+        justify-content: center !important;
+    }
+
+    .staff-header-quick-btn span {
+        display: none !important;
     }
 }

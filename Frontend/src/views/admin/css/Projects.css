@@ -377,3 +377,131 @@
         max-width: none;
     }
 }
+
+/* Focused Project View Premium Styles */
+.focused-view {
+    padding: 2rem 2.5rem;
+    background: #ffffff;
+    min-height: 100vh;
+    margin: -24px -24px 0 -24px;
+    max-width: none;
+}
+
+.detail-container-premium {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+}
+
+.header-title-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.badge-premium {
+    color: white;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-weight: 700;
+}
+
+.stat-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.info-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.info-card-premium {
+    padding: 1.5rem;
+    background: #f8fafc;
+    borderRadius: 16px;
+}
+
+.completion-bar-wrapper {
+    width: 100%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    margin-top: 12px;
+    position: relative;
+}
+
+.completion-pct {
+    position: absolute;
+    right: 0;
+    top: -22px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+@media (max-width: 1024px) {
+    .stat-grid-premium,
+    .info-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .focused-view {
+        padding: 1rem;
+        margin: 0;
+    }
+
+    .detail-container-premium {
+        padding: 1.25rem;
+        border-radius: 16px;
+    }
+
+    .stat-grid-premium,
+    .info-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-cards-grid {
+        margin-bottom: 0;
+    }
+
+    .completion-pct {
+        top: -18px;
+    }
+
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .page-header > div:first-child {
+        width: 100%;
+        gap: 12px !important;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .btn-back-round {
+        width: 32px !important;
+        height: 32px !important;
+    }
+}
