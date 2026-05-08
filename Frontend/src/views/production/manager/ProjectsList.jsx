@@ -215,28 +215,28 @@ const ProjectsList = () => {
                                                         <div className="pm-expanded-item">
                                                             <label>Project Progress</label>
                                                             <div className="pm-expanded-value">
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', maxWidth: '250px' }}>
-                                                                    <div className="pm-progress-bar-v2" style={{ flex: 1 }}>
+                                                                <div className="pm-expanded-progress-wrapper">
+                                                                    <div className="pm-progress-bar-v2">
                                                                         <div className="pm-progress-fill-v2" style={{ width: `${project.progress || 0}%` }}></div>
                                                                     </div>
-                                                                    <span style={{ fontWeight: 700 }}>{project.progress || 0}%</span>
+                                                                    <strong>{project.progress || 0}%</strong>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="pm-expanded-item pm-mobile-only">
                                                             <label>Timeline</label>
                                                             <div className="pm-expanded-value">
-                                                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                                                    <span><Calendar size={12} /> {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'N/A'}</span>
-                                                                    <span><Target size={12} /> {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'N/A'}</span>
+                                                                <div className="pm-expanded-timeline">
+                                                                    <span><Calendar size={14} /> {project.startDate ? new Date(project.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}</span>
+                                                                    <span><Target size={14} /> {project.endDate ? new Date(project.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="pm-expanded-item pm-mobile-only">
                                                             <label>Assigned Engineer</label>
                                                             <div className="pm-expanded-value">
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                                    <div className="pm-team-avatar" style={{ width: '28px', height: '28px', fontSize: '0.8rem' }}>
+                                                                <div className="pm-expanded-engineer">
+                                                                    <div className="pm-team-avatar">
                                                                         {(project.projectEngineer?.fullName || 'U').split(' ').map(n=>n[0]).join('')}
                                                                     </div>
                                                                     <strong>{project.projectEngineer?.fullName || 'Unassigned'}</strong>
