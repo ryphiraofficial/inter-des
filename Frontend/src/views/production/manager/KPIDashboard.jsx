@@ -97,7 +97,7 @@ const KPIDashboard = ({ kpiData }) => {
     ];
 
     return (
-        <div className="pm-kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="pm-kpi-grid">
             {kpiCards.map((card, i) => (
                 <div key={i} className={`pm-kpi-card ${card.color}`}>
                     <div className="pm-kpi-icon" style={{ background: card.iconBg, color: card.iconColor }}>
