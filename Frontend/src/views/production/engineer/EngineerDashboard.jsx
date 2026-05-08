@@ -42,25 +42,48 @@ const EngineerDashboard = ({ user }) => {
         const pr = getPriorityStyle(task.priority);
         const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !['Completed','Approved'].includes(task.status);
         return (
-            <div className="eng-task-row eng-task-row-clickable" onClick={onClick}>
-                <div className="eng-task-dot" style={{ background: st.dot }} />
-                <div className="eng-task-info">
-                    <span className="eng-task-title">{task.title}</span>
-                    <span className="eng-task-meta">
-                        {task.projectId?.projectName || 'General'}
+            <>
+                {/* Desktop View */}
+                <div className="eng-task-row eng-task-row-clickable desktop-only" onClick={onClick}>
+                    <div className="eng-task-dot" style={{ background: st.dot }} />
+                    <div className="eng-task-info">
+                        <span className="eng-task-title">{task.title}</span>
+                        <span className="eng-task-meta">
+                            {task.projectId?.projectName || 'General'}
+                            {task.dueDate && (
+                                <span style={{ color: isOverdue ? '#ef4444' : '#94a3b8', marginLeft: 6 }}>
+                                    · Due {new Date(task.dueDate).toLocaleDateString('en-IN',{ day:'2-digit', month:'short' })}
+                                </span>
+                            )}
+                        </span>
+                    </div>
+                    <div className="eng-task-badges">
+                        <span className="eng-badge" style={{ color: pr.color, background: pr.bg }}>{task.priority}</span>
+                        <span className="eng-badge" style={{ color: st.label, background: st.bg }}>{task.status}</span>
+                    </div>
+                    <ChevronRight size={14} style={{ color:'#94a3b8', flexShrink:0 }} />
+                </div>
+
+                {/* Mobile View */}
+                <div className="eng-mobile-task-card mobile-only" onClick={onClick} style={{ margin: '0 16px 12px' }}>
+                    <div className="eng-mobile-task-header">
+                        <div className="eng-mobile-task-title">{task.title}</div>
+                        <ChevronRight size={14} style={{ color:'#94a3b8', flexShrink:0 }} />
+                    </div>
+                    <div className="eng-mobile-task-meta">
+                        <span className="eng-badge" style={{ color: pr.color, background: pr.bg }}>{task.priority}</span>
+                        <span className="eng-badge" style={{ color: st.label, background: st.bg }}>{task.status}</span>
+                    </div>
+                    <div className="eng-mobile-task-info">
+                        <span>{task.projectId?.projectName || 'General'}</span>
                         {task.dueDate && (
-                            <span style={{ color: isOverdue ? '#ef4444' : '#94a3b8', marginLeft: 6 }}>
-                                · Due {new Date(task.dueDate).toLocaleDateString('en-IN',{ day:'2-digit', month:'short' })}
+                            <span style={{ color: isOverdue ? '#ef4444' : '#64748b' }}>
+                                Due {new Date(task.dueDate).toLocaleDateString('en-IN',{ day:'2-digit', month:'short' })}
                             </span>
                         )}
-                    </span>
+                    </div>
                 </div>
-                <div className="eng-task-badges">
-                    <span className="eng-badge" style={{ color: pr.color, background: pr.bg }}>{task.priority}</span>
-                    <span className="eng-badge" style={{ color: st.label, background: st.bg }}>{task.status}</span>
-                </div>
-                <ChevronRight size={14} style={{ color:'#94a3b8', flexShrink:0 }} />
-            </div>
+            </>
         );
     };
 

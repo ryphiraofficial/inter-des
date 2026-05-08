@@ -73,91 +73,101 @@ const SiteSafety = ({ user }) => {
 
     return (
         <div className="site-safety-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div className="site-safety-header">
                 <div className="site-form-group" style={{ margin: 0, minWidth: 200 }}>
-                    <select className="site-form-input" value={form.projectId} onChange={(e) => {
+                    <select className="site-input" value={form.projectId} onChange={(e) => {
                         setForm({...form, projectId: e.target.value});
                         fetchLogs(e.target.value);
-                    }} style={{ height: 38 }}>
+                    }} style={{ height: 42 }}>
                         <option value="">Select Project</option>
                         {projects.map(p => <option key={p._id} value={p._id}>{p.projectName}</option>)}
                     </select>
                 </div>
-                <button className="site-btn" onClick={() => setShowForm(!showForm)}>
+                <button className="site-btn-primary" onClick={() => setShowForm(!showForm)}>
                     <Plus size={16} /> Log Incident / Check
                 </button>
             </div>
 
             {showForm && (
-                <div className="site-card" style={{ marginBottom: 24, padding: 20, borderLeft: '4px solid #ef4444' }}>
-                    <h3 style={{ fontSize: 16, marginBottom: 15, display: 'flex', alignItems: 'center', gap: 8 }}><ShieldAlert size={18} color="#ef4444" /> New Safety Log</h3>
-                    <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
-                        <div className="site-form-group" style={{ margin: 0 }}>
-                            <label className="shad-form-label">Log Type</label>
-                            <select className="site-form-input" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
-                                <option value="Daily Check">Daily Check</option>
-                                <option value="Incident">Incident</option>
-                                <option value="Hazard">Hazard Warning</option>
-                            </select>
+                <div className="site-card" style={{ marginBottom: 24, borderLeft: '4px solid #ef4444' }}>
+                    <div className="site-card-header">
+                        <div className="site-card-title"><ShieldAlert size={18} color="#ef4444" /> New Safety Log</div>
+                    </div>
+                    <form onSubmit={handleSubmit} className="site-report-form">
+                        <div className="site-form-row">
+                            <div className="site-form-group">
+                                <label className="shad-form-label">Log Type</label>
+                                <select className="site-input" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
+                                    <option value="Daily Check">Daily Check</option>
+                                    <option value="Incident">Incident</option>
+                                    <option value="Hazard">Hazard Warning</option>
+                                </select>
+                            </div>
+                            <div className="site-form-group">
+                                <label className="shad-form-label">Severity</label>
+                                <select className="site-input" value={form.severity} onChange={e => setForm({...form, severity: e.target.value})}>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
                         </div>
-                        <div className="site-form-group" style={{ margin: 0 }}>
-                            <label className="shad-form-label">Severity</label>
-                            <select className="site-form-input" value={form.severity} onChange={e => setForm({...form, severity: e.target.value})}>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </div>
-                        <div className="site-form-group" style={{ margin: 0, gridColumn: '1 / -1' }}>
+                        <div className="site-form-group">
                             <label className="shad-form-label">Description</label>
-                            <textarea className="site-form-textarea" required rows={3} placeholder="Describe the incident or safety check..." value={form.description} onChange={e => setForm({...form, description: e.target.value})}></textarea>
+                            <textarea className="site-input" required rows={3} placeholder="Describe the incident or safety check..." value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
                         </div>
-                        <div className="site-form-group" style={{ margin: 0, gridColumn: '1 / -1' }}>
+                        <div className="site-form-group">
                             <label className="shad-form-label">Action Taken (Optional)</label>
-                            <input className="site-form-input" type="text" placeholder="What was done to address this?" value={form.actionTaken} onChange={e => setForm({...form, actionTaken: e.target.value})} />
+                            <input className="site-input" type="text" placeholder="What was done to address this?" value={form.actionTaken} onChange={e => setForm({...form, actionTaken: e.target.value})} />
                         </div>
-                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
+                        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
                             <button type="button" className="site-btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-                            <button type="submit" className="site-btn">Submit Log</button>
+                            <button type="submit" className="site-btn-primary">Submit Log</button>
                         </div>
                     </form>
                 </div>
             )}
 
-            <div className="safety-logs-list" style={{ display: 'grid', gap: 15 }}>
-                {loading ? <div style={{ textAlign: 'center', padding: 20, color: '#64748b' }}>Loading safety logs...</div> : 
-                 logs.length === 0 ? <div style={{ textAlign: 'center', padding: 40, background: 'white', borderRadius: 12, border: '1px dashed #cbd5e1', color: '#64748b' }}><ShieldAlert size={32} style={{ opacity: 0.5, marginBottom: 10 }} /><br/>No safety logs for this project yet.</div> :
+            <div className="site-safety-list">
+                {loading ? <div className="site-loading">Loading safety logs...</div> : 
+                 logs.length === 0 ? (
+                     <div className="site-empty" style={{ padding: '60px 24px' }}>
+                        <ShieldAlert size={40} style={{ opacity: 0.3 }} />
+                        <p>No safety logs yet</p>
+                        <span>Logs for this project will appear here.</span>
+                     </div>
+                 ) : (
                  logs.map(log => (
-                    <div key={log._id} className="site-card" style={{ padding: 16, display: 'flex', gap: 15, alignItems: 'flex-start' }}>
-                        <div style={{ padding: 10, background: SEVERITY_COLORS[log.severity] + '15', borderRadius: 8, color: SEVERITY_COLORS[log.severity] }}>
+                    <div key={log._id} className="site-safety-card">
+                        <div className="site-safety-icon" style={{ background: SEVERITY_COLORS[log.severity] + '15', color: SEVERITY_COLORS[log.severity] }}>
                             <AlertTriangle size={24} />
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                                    <h4 style={{ margin: 0, fontSize: 15, color: '#0f172a' }}>{log.type}</h4>
-                                    <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 12, background: SEVERITY_COLORS[log.severity] + '20', color: SEVERITY_COLORS[log.severity], fontWeight: 600 }}>{log.severity}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="site-safety-top">
+                                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                                    <h4 className="site-safety-type">{log.type}</h4>
+                                    <span className="site-badge" style={{ background: SEVERITY_COLORS[log.severity] + '20', color: SEVERITY_COLORS[log.severity] }}>{log.severity}</span>
                                 </div>
-                                <span style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4, color: STATUS_COLORS[log.status], background: STATUS_COLORS[log.status] + '15', padding: '2px 8px', borderRadius: 12, fontWeight: 500 }}>
+                                <span className="site-badge" style={{ color: STATUS_COLORS[log.status], background: STATUS_COLORS[log.status] + '15', display: 'flex', alignItems: 'center', gap: 4 }}>
                                     {log.status === 'Resolved' ? <CheckCircle2 size={12}/> : <Clock size={12}/>} {log.status}
                                 </span>
                             </div>
-                            <p style={{ margin: '5px 0 10px', fontSize: 14, color: '#475569', lineHeight: 1.5 }}>{log.description}</p>
+                            <p className="site-safety-desc">{log.description}</p>
                             {log.actionTaken && (
-                                <div style={{ fontSize: 13, background: '#f8fafc', padding: '8px 12px', borderRadius: 6, color: '#334155', border: '1px solid #e2e8f0', marginBottom: 10 }}>
+                                <div className="site-safety-action">
                                     <strong>Action Taken:</strong> {log.actionTaken}
                                 </div>
                             )}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#94a3b8' }}>
+                            <div className="site-safety-footer">
                                 <span>Reported by {log.reportedBy?.fullName || 'User'} on {format(new Date(log.date), 'MMM dd, yyyy')}</span>
                                 {log.status === 'Open' && (
-                                    <button onClick={() => handleResolve(log._id)} style={{ background: 'none', border: 'none', color: '#10b981', cursor: 'pointer', fontWeight: 600, fontSize: 12 }}>Mark Resolved</button>
+                                    <button onClick={() => handleResolve(log._id)} className="site-resolve-btn">Mark Resolved</button>
                                 )}
                             </div>
                         </div>
                     </div>
-                ))}
+                 )))}
             </div>
         </div>
     );

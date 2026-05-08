@@ -181,14 +181,7 @@ const SiteTasks = ({ user }) => {
 
     return (
         <div className="site-page">
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:12}}>
-                <div>
-                    <h1 style={{fontSize:20,fontWeight:700,color:'#0f172a',margin:0,display:'flex',alignItems:'center',gap:10}}>
-                        <CheckSquare size={20} style={{color:'#10b981'}}/>My Tasks
-                    </h1>
-                    <p style={{fontSize:13,color:'#64748b',margin:'5px 0 0'}}>{filtered.length} of {tasks.length} tasks</p>
-                </div>
-                
+            <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',marginBottom:24,flexWrap:'wrap',gap:12}}>
                 <button 
                     className={`site-filter-toggle ${showFilters ? 'active' : ''}`}
                     onClick={() => setShowFilters(!showFilters)}

@@ -151,6 +151,8 @@ const Header = ({ user, toggleMobileSidebar }) => {
         if (path === '/engineer/tasks') return { title: 'My Tasks', subtitle: 'All tasks assigned to you' };
         if (path.startsWith('/engineer/tasks/')) return { title: 'Task Detail', subtitle: 'Full task view, status updates and comments' };
         if (path === '/engineer/leave') return { title: 'Leave Request', subtitle: 'Submit and track your leave applications' };
+        if (path === '/engineer/reports') return { title: 'Site Monitoring', subtitle: 'Review daily progress, attendance, and safety logs from Site Engineers' };
+        if (path === '/engineer/approvals') return { title: 'Approvals', subtitle: 'Review and approve material or milestone requests' };
         if (path === '/site/dashboard') return { title: 'Dashboard', subtitle: 'Your site tasks and daily progress at a glance' };
         if (path === '/site/tasks') return { title: 'My Tasks', subtitle: 'Tasks assigned to you from the Project Engineer' };
         if (path === '/site/reports') return { title: 'Site Reports', subtitle: 'Submit and review daily site progress reports' };
@@ -244,6 +246,10 @@ const Header = ({ user, toggleMobileSidebar }) => {
                             <ActionBtn show={location.pathname === '/po-inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-po-inventory-modal'))} label="Add Item" variant="primary" />
                             <ActionBtn show={location.pathname === '/purchase-orders'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-po-modal'))} label="Create PO" variant="primary" />
                             <ActionBtn show={location.pathname === '/tasks'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-task-modal'))} label="Assign New Task" variant="primary" />
+                            <ActionBtn show={location.pathname.startsWith('/production-management/tasks')} onClick={() => window.dispatchEvent(new CustomEvent('open-create-production-task-modal'))} label="New Task" variant="primary" className="header-production-task-navbar-btn" />
+                            <ActionBtn show={location.pathname.startsWith('/production-management/projects')} onClick={() => {}} label="New Project" variant="primary" className="header-production-project-navbar-btn" />
+                            <ActionBtn show={location.pathname.startsWith('/production-management/team')} onClick={() => window.dispatchEvent(new CustomEvent('open-create-production-member-modal'))} label="Add Member" variant="primary" className="header-production-team-navbar-btn" />
+                            <ActionBtn show={location.pathname.startsWith('/production-management/reports')} onClick={() => window.dispatchEvent(new CustomEvent('export-production-reports-pdf'))} label="Export" icon={Download} variant="primary" className="header-production-reports-navbar-btn" />
                             <ActionBtn show={location.pathname === '/staff'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-staff-modal'))} label="Add New Staff" variant="primary" />
                             <ActionBtn show={location.pathname === '/clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add New Client" variant="primary" />
                             <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />

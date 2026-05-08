@@ -55,17 +55,15 @@ const EngineerTasks = ({ user }) => {
     ].filter(Boolean).length;
 
     const ChipRow = ({ label, filterKey, options }) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '60px' }}>{label}</span>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <div className="eng-filter-group">
+            <span className="eng-filter-label">{label}</span>
+            <div className="eng-filter-options">
                 {options.map(o => (
-                    <button key={o} onClick={() => setFilter(filterKey, o)} style={{
-                        padding: '4px 14px', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 600,
-                        cursor: 'pointer', border: '1px solid', transition: 'all 0.15s ease',
-                        background: filters[filterKey] === o ? '#0f172a' : 'white',
-                        color: filters[filterKey] === o ? 'white' : '#475569',
-                        borderColor: filters[filterKey] === o ? '#0f172a' : '#e2e8f0'
-                    }}>
+                    <button 
+                        key={o} 
+                        onClick={() => setFilter(filterKey, o)} 
+                        className={`eng-filter-chip ${filters[filterKey] === o ? 'active' : ''}`}
+                    >
                         {o === 'All' ? `All ${label}` : (filterKey === 'stage' ? STAGE_LABELS[o]||o : o)}
                     </button>
                 ))}
@@ -78,42 +76,16 @@ const EngineerTasks = ({ user }) => {
             {toast && <div className="eng-toast" style={{ background: toast.type==='success'?'#10b981':'#ef4444' }}>{toast.msg}</div>}
 
             {/* Header */}
-            <div className="eng-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <h1 className="eng-page-title"><CheckSquare size={22}/>My Tasks</h1>
-                    <p className="eng-page-sub">{filtered.length} of {tasks.length} task{tasks.length!==1?'s':''}</p>
-                </div>
-
-                {/* Filter Toggle Button */}
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    {/* Active filter chips */}
-                    {filters.status !== 'All' && (
-                        <div style={{ display:'flex', alignItems:'center', gap:'6px', padding:'4px 10px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'99px', fontSize:'0.8rem', color:'#1d4ed8', fontWeight:600 }}>
-                            {filters.status}
-                            <button onClick={() => setFilter('status','All')} style={{ background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', color:'#3b82f6' }}><X size={12}/></button>
-                        </div>
-                    )}
-                    {filters.priority !== 'All' && (
-                        <div style={{ display:'flex', alignItems:'center', gap:'6px', padding:'4px 10px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'99px', fontSize:'0.8rem', color:'#1d4ed8', fontWeight:600 }}>
-                            {filters.priority}
-                            <button onClick={() => setFilter('priority','All')} style={{ background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', color:'#3b82f6' }}><X size={12}/></button>
-                        </div>
-                    )}
+            <div className="eng-page-header" style={{ justifyContent: 'flex-end', marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     <button
                         onClick={() => setFiltersOpen(o => !o)}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '0.5rem 1.1rem', borderRadius: '8px', border: '1px solid #e2e8f0',
-                            background: filtersOpen ? '#0f172a' : 'white',
-                            color: filtersOpen ? 'white' : '#334155',
-                            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
-                            transition: 'all 0.2s ease'
-                        }}
+                        className={`eng-filter-toggle ${filtersOpen ? 'active' : ''}`}
                     >
                         <Filter size={15} />
                         Filters
                         {activeFilterCount > 0 && (
-                            <span style={{ background: '#3b82f6', color: 'white', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, padding: '1px 7px', marginLeft: '2px' }}>
+                            <span className="eng-filter-badge">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -121,7 +93,7 @@ const EngineerTasks = ({ user }) => {
                     </button>
                     {activeFilterCount > 0 && (
                         <button onClick={() => setFilters({ status:'All', priority:'All', stage:'All', projectId:'All' })}
-                            style={{ padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1px solid #fee2e2', background: '#fff5f5', color: '#ef4444', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
+                            className="eng-btn-ghost" style={{ padding: '8px 12px', borderColor: '#fee2e2', color: '#ef4444', background: '#fff5f5' }}>
                             Reset
                         </button>
                     )}
@@ -129,39 +101,35 @@ const EngineerTasks = ({ user }) => {
             </div>
 
             {/* Collapsible Filter Panel */}
-            <div style={{
-                overflow: 'hidden',
-                maxHeight: filtersOpen ? '300px' : '0',
-                transition: 'max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-                marginBottom: filtersOpen ? '20px' : '0'
-            }}>
-                <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
+            {filtersOpen && (
+                <div className="eng-filters-panel">
                     <ChipRow label="Status"   filterKey="status"   options={STATUS_OPTIONS}  />
                     <ChipRow label="Priority" filterKey="priority" options={PRIORITY_OPTIONS} />
                     <ChipRow label="Stage"    filterKey="stage"    options={STAGE_OPTIONS}   />
                     {projects.length > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '60px' }}>Project</span>
-                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                <button onClick={() => setFilter('projectId','All')} style={{
-                                    padding: '4px 14px', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s ease',
-                                    background: filters.projectId === 'All' ? '#0f172a' : 'white',
-                                    color: filters.projectId === 'All' ? 'white' : '#475569',
-                                    borderColor: filters.projectId === 'All' ? '#0f172a' : '#e2e8f0'
-                                }}>All Projects</button>
+                        <div className="eng-filter-group">
+                            <span className="eng-filter-label">Project</span>
+                            <div className="eng-filter-options">
+                                <button 
+                                    onClick={() => setFilter('projectId','All')} 
+                                    className={`eng-filter-chip ${filters.projectId === 'All' ? 'active' : ''}`}
+                                >
+                                    All Projects
+                                </button>
                                 {projects.map(p => (
-                                    <button key={p._id} onClick={() => setFilter('projectId', p._id)} style={{
-                                        padding: '4px 14px', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s ease',
-                                        background: filters.projectId === p._id ? '#0f172a' : 'white',
-                                        color: filters.projectId === p._id ? 'white' : '#475569',
-                                        borderColor: filters.projectId === p._id ? '#0f172a' : '#e2e8f0'
-                                    }}>{p.projectName}</button>
+                                    <button 
+                                        key={p._id} 
+                                        onClick={() => setFilter('projectId', p._id)} 
+                                        className={`eng-filter-chip ${filters.projectId === p._id ? 'active' : ''}`}
+                                    >
+                                        {p.projectName}
+                                    </button>
                                 ))}
                             </div>
                         </div>
                     )}
                 </div>
-            </div>
+            )}
 
             {/* Task Cards */}
             {loading ? (

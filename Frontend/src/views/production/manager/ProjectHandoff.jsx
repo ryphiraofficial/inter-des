@@ -106,7 +106,20 @@ const ProjectHandoff = () => {
 
 
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading new projects...</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '1.25rem' }}>
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                        <div key={idx} className="pm-card" style={{ padding: '1.25rem' }}>
+                            <div className="pm-skeleton-line" style={{ width: '62%', marginBottom: '10px' }} />
+                            <div className="pm-skeleton-line" style={{ width: '46%', marginBottom: '16px' }} />
+                            <div className="pm-skeleton-block" style={{ height: '52px', marginBottom: '14px' }} />
+                            <div className="pm-skeleton-line" style={{ width: '35%', marginBottom: '10px' }} />
+                            <div className="pm-skeleton-block" style={{ height: '38px', marginBottom: '10px' }} />
+                            <div className="pm-skeleton-block" style={{ height: '38px', marginBottom: '10px' }} />
+                            <div className="pm-skeleton-block" style={{ height: '38px', marginBottom: '16px' }} />
+                            <div className="pm-skeleton-block" style={{ height: '44px' }} />
+                        </div>
+                    ))}
+                </div>
             ) : projects.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
                     <CheckCircle size={48} color="#10b981" style={{ margin: '0 auto 1rem', opacity: 0.5 }} />

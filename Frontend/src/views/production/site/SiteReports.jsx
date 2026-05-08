@@ -157,27 +157,25 @@ const SupervisorReports = ({ user, projects }) => {
             }
         } catch (error) { console.error('Failed to submit supervisor report', error); }
         finally { setSubmitting(false); }
-    };
-
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 24, alignItems: 'start' }}>
+        <div className="site-report-split">
             {submitted && (
-                <div className="site-toast" style={{ background: '#10b981', position: 'fixed', top: 20, right: 20, zIndex: 1000, color: 'white', padding: '12px 20px', borderRadius: 8, display: 'flex', gap: 8 }}>
+                <div className="site-toast" style={{ background: '#10b981' }}>
                     <CheckCircle2 size={16} /> Supervisor report submitted!
                 </div>
             )}
             
             <div className="site-card">
                 <div className="site-card-header">
-                    <div className="site-card-title"><Send size={15} />New Supervisor Report</div>
+                    <div className="site-card-title"><Send size={15} /> New Supervisor Report</div>
                 </div>
                 <form onSubmit={handleSubmit} className="site-report-form">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                    <div className="site-form-row">
                         <ShadSelect label="Project *" placeholder="Select project..." value={form.projectId} options={projects.map(p => ({ id: p._id, name: p.projectName }))} onChange={handleProjectChange} error={errors.projectId} />
                         <ShadCalendar label="Report Date" value={form.reportDate} onChange={v => setForm(f => ({ ...f, reportDate: v }))} />
                     </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+ 
+                    <div className="site-form-row">
                         <div className="site-form-group">
                             <label className="shad-form-label">Material Received</label>
                             <textarea className="site-input" rows={2} placeholder="E.g. 100 bags of cement..." value={form.materialReceived} onChange={e => setForm(f => ({ ...f, materialReceived: e.target.value }))} />
@@ -187,12 +185,12 @@ const SupervisorReports = ({ user, projects }) => {
                             <textarea className="site-input" rows={2} placeholder="E.g. 20 bags used for foundation..." value={form.materialUsed} onChange={e => setForm(f => ({ ...f, materialUsed: e.target.value }))} />
                         </div>
                     </div>
-
+ 
                     <div className="site-form-group">
                         <label className="shad-form-label">Total Labor Count</label>
                         <input type="number" min={0} className="site-input" placeholder="Number of laborers today" value={form.laborCount} onChange={e => setForm(f => ({ ...f, laborCount: e.target.value }))} />
                     </div>
-
+ 
                     <div className="site-form-group">
                         <label className="shad-form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>Equipment Status</span>
@@ -212,21 +210,21 @@ const SupervisorReports = ({ user, projects }) => {
                             </div>
                         ))}
                     </div>
-
+ 
                     <div className="site-form-group">
                         <label className="shad-form-label">General Comments / Hurdles</label>
                         <textarea className="site-input" rows={3} placeholder="Any general comments..." value={form.comments} onChange={e => setForm(f => ({ ...f, comments: e.target.value }))} />
                     </div>
-
+ 
                     <button type="submit" className="site-btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', borderRadius: '10px', marginTop: '10px' }} disabled={submitting}>
-                        {submitting ? <><Loader2 size={15} className="site-spin" />Submitting…</> : <><Send size={15} />Submit Report</>}
+                        {submitting ? <><Loader2 size={15} className="site-spin" /> Submitting…</> : <><Send size={15} /> Submit Report</>}
                     </button>
                 </form>
             </div>
-
+ 
             <div className="site-card">
                 <div className="site-card-header">
-                    <div className="site-card-title"><ClipboardList size={15}/>Report History</div>
+                    <div className="site-card-title"><ClipboardList size={15}/> Report History</div>
                     <span className="site-count">{reports.length}</span>
                 </div>
                 {reports.length === 0 ? (
@@ -342,16 +340,8 @@ const SiteReports = ({ user }) => {
                 </div>
             )}
             
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-                <div>
-                    <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <ClipboardList size={20} style={{ color: '#10b981' }} />Site Portal
-                    </h1>
-                    <p style={{ fontSize: 13, color: '#64748b', margin: '5px 0 0' }}>Manage daily reports, attendance, and safety logs</p>
-                </div>
-            </div>
 
-            <div className="pm-tabs" style={{ marginBottom: 20 }}>
+            <div className="pm-tabs">
                 <button className={`pm-tab-btn ${activeTab === 'daily' ? 'active' : ''}`} onClick={() => setActiveTab('daily')}>
                     <ClipboardList size={16}/> Daily Reports
                 </button>
@@ -369,15 +359,15 @@ const SiteReports = ({ user }) => {
             </div>
 
             {activeTab === 'daily' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 24, alignItems: 'start' }}>
+                <div className="site-report-split">
                     {/* Form */}
                     <div className="site-card">
                         <div className="site-card-header">
-                            <div className="site-card-title"><Send size={15} />New Report</div>
+                            <div className="site-card-title"><Send size={15} /> New Report</div>
                         </div>
                         <form onSubmit={handleSubmit} className="site-report-form">
     
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                            <div className="site-form-row">
                                 <ShadSelect
                                     label="Project *"
                                     placeholder="Select project..."
@@ -393,7 +383,7 @@ const SiteReports = ({ user }) => {
                                 />
                             </div>
     
-                            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20 }}>
+                            <div className="site-form-row" style={{ gridTemplateColumns: '1.5fr 1fr' }}>
                                 <div className="site-form-group">
                                     <label className="shad-form-label">Work Status</label>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -431,7 +421,7 @@ const SiteReports = ({ user }) => {
                                 {errors.workDone && <span className="site-field-err">{errors.workDone}</span>}
                             </div>
     
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                            <div className="site-form-row">
                                 <div className="site-form-group">
                                     <label className="shad-form-label">Issues / Blockers</label>
                                     <textarea className="site-input" rows={3} placeholder="Any issues encountered…"
@@ -446,7 +436,7 @@ const SiteReports = ({ user }) => {
     
                             <button type="submit" className="site-btn-primary"
                                 style={{ width: '100%', justifyContent: 'center', padding: '12px', borderRadius: '10px', marginTop: '10px' }} disabled={submitting}>
-                                {submitting ? <><Loader2 size={15} className="site-spin" />Submitting…</> : <><Send size={15} />Submit Report</>}
+                                {submitting ? <><Loader2 size={15} className="site-spin" /> Submitting…</> : <><Send size={15} /> Submit Report</>}
                             </button>
                         </form>
                     </div>
@@ -454,7 +444,7 @@ const SiteReports = ({ user }) => {
                     {/* History */}
                     <div className="site-card">
                         <div className="site-card-header">
-                            <div className="site-card-title"><ClipboardList size={15}/>Report History</div>
+                            <div className="site-card-title"><ClipboardList size={15}/> Report History</div>
                             <span className="site-count">{reports.length}</span>
                         </div>
                         {reports.length===0 ? (

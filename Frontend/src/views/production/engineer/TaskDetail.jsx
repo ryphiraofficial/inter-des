@@ -112,14 +112,14 @@ const TaskDetail = ({ user }) => {
                 <div className="eng-detail-main">
                     {/* Header Card */}
                     <div className="eng-section-card" style={{ marginBottom:20 }}>
-                        <div style={{ padding:'24px' }}>
-                            <div style={{ display:'flex', alignItems:'flex-start', gap:16, flexWrap:'wrap' }}>
-                                <div style={{ flex:1 }}>
-                                    {task.isSubtask && <div style={{ fontSize:12, color:'#94a3b8', marginBottom:6 }}>↳ Subtask {task.parentTask?.title ? `of "${task.parentTask.title}"` : ''}</div>}
-                                    <h2 style={{ fontSize:20, fontWeight:700, color:'#0f172a', margin:'0 0 8px' }}>{task.title}</h2>
-                                    {task.description && <p style={{ fontSize:14, color:'#64748b', margin:0, lineHeight:1.6 }}>{task.description}</p>}
+                        <div className="eng-detail-header-body">
+                            <div className="eng-detail-title-row">
+                                <div className="eng-detail-title-main">
+                                    {task.isSubtask && <div className="eng-td-sub" style={{ marginBottom: 6 }}>↳ Subtask {task.parentTask?.title ? `of "${task.parentTask.title}"` : ''}</div>}
+                                    <h2 className="eng-detail-task-title">{task.title}</h2>
+                                    {task.description && <p className="eng-detail-task-desc">{task.description}</p>}
                                 </div>
-                                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                                <div className="eng-task-badges">
                                     <span className="eng-badge" style={{ color:pr.color, background:pr.bg }}>{task.priority}</span>
                                     <span className="eng-badge" style={{ color:st.label, background:st.bg }}>{task.status}</span>
                                     {isOverdue && <span className="eng-badge" style={{ color:'#dc2626', background:'#fee2e2' }}>⚠ Overdue</span>}
@@ -134,7 +134,7 @@ const TaskDetail = ({ user }) => {
                                             <div className="eng-pipe-dot"/>
                                             <span>{STAGE_LABELS[s]}</span>
                                         </div>
-                                        {i < PIPELINE.length-1 && <div className="eng-pipe-line"/>}
+                                        {i < PIPELINE.length-1 && <div className="eng-pipe-line desktop-only"/>}
                                     </React.Fragment>
                                 ))}
                             </div>

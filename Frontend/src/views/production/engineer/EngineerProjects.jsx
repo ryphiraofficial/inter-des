@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FolderOpen, Target, Calendar, Users, CheckSquare, ChevronRight } from 'lucide-react';
+import { FolderOpen, Target, Users, CheckSquare, ChevronRight, Search, Zap, CheckCircle2 } from 'lucide-react';
 import { engineerAPI } from '../../../models/api';
 import './Engineer.css';
-
-const getStatusStyle = (s) => ({
-    'Planning':   { color:'#92400e', bg:'#fef3c7', dot:'#f59e0b' },
-    'Active':     { color:'#065f46', bg:'#d1fae5', dot:'#10b981' },
-    'On Hold':    { color:'#374151', bg:'#f3f4f6', dot:'#9ca3af' },
-    'Completed':  { color:'#5b21b6', bg:'#ede9fe', dot:'#8b5cf6' },
-}[s] || { color:'#374151', bg:'#f3f4f6', dot:'#9ca3af' });
 
 const STATUS_FILTERS = ['All', 'Planning', 'Active', 'On Hold', 'Completed'];
 
@@ -49,25 +42,32 @@ const EngineerProjects = ({ user }) => {
 
     return (
         <div className="eng-tasks-page">
-            <div className="eng-page-header">
-                <div>
-                    <h1 className="eng-page-title"><FolderOpen size={22}/>My Projects</h1>
-                    <p className="eng-page-sub">{filtered.length} of {projects.length} project{projects.length !== 1 ? 's' : ''}</p>
+            <div className="eng-page-header" style={{ justifyContent: 'flex-end', marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="eng-search-wrapper desktop-only" style={{ minWidth: 200 }}>
+                        <Search size={14} className="eng-search-icon" />
+                        <input
+                            type="text"
+                            className="eng-search-input"
+                            placeholder="Search..."
+                            value={filters.search}
+                            onChange={(e) => setFilters(p => ({ ...p, search: e.target.value }))}
+                        />
+                    </div>
+                    <button 
+                        className={`eng-filter-toggle ${showFilters ? 'active' : ''}`}
+                        onClick={() => setShowFilters(!showFilters)}
+                    >
+                        <Target size={16} /> 
+                        Filters
+                        {activeFilterCount > 0 && <span className="eng-filter-badge">{activeFilterCount}</span>}
+                    </button>
                 </div>
-
-                <button 
-                    className={`eng-filter-toggle ${showFilters ? 'active' : ''}`}
-                    onClick={() => setShowFilters(!showFilters)}
-                >
-                    <Target size={16} /> 
-                    Filters
-                    {activeFilterCount > 0 && <span className="eng-filter-badge">{activeFilterCount}</span>}
-                </button>
             </div>
 
             {showFilters && (
                 <div className="eng-filters-panel">
-                    <div className="eng-filter-group">
+                    <div className="eng-filter-group mobile-only">
                         <span className="eng-filter-label">Search</span>
                         <input 
                             className="eng-filter-input" 
@@ -105,54 +105,44 @@ const EngineerProjects = ({ user }) => {
                 </div>
             ) : (
                 <div className="eng-projects-grid">
-                    {filtered.map(p => {
-                        const st = getStatusStyle(p.status);
-                        return (
-                            <div key={p._id} className="eng-project-card eng-project-card-clickable"
-                                onClick={() => navigate(`${basePath}/projects/${p._id}`)}>
-                                <div className="eng-project-card-header">
-                                    <div className="eng-project-icon"><FolderOpen size={20}/></div>
-                                    <span className="eng-badge" style={{ color:st.color, background:st.bg, marginLeft:'auto', display:'flex', alignItems:'center', gap:5 }}>
-                                        <span style={{ width:6, height:6, borderRadius:'50%', background:st.dot, display:'inline-block' }}/>
-                                        {p.status || 'Active'}
-                                    </span>
+                    {filtered.map(p => (
+                        <div key={p._id} className="eng-project-card" onClick={() => navigate(`${basePath}/projects/${p._id}`)}>
+                            <div className="eng-project-card-header">
+                                <div className="eng-project-icon-box">
+                                    <FolderOpen size={20} style={{ color:'#6366f1' }}/>
                                 </div>
-                                <div className="eng-project-body">
-                                    <h3 className="eng-project-name">{p.projectName}</h3>
-                                    {p.description && <p className="eng-project-desc">{p.description}</p>}
+                                <div className="eng-project-status-chip" style={{ 
+                                    color: p.status === 'Completed' ? '#059669' : '#2563eb',
+                                    background: p.status === 'Completed' ? '#d1fae5' : '#dbeafe'
+                                }}>
+                                    {p.status || 'Active'}
                                 </div>
-                                <div className="eng-project-progress">
+                            </div>
+                            
+                            <div className="eng-project-card-body">
+                                <h3 className="eng-project-title">{p.projectName}</h3>
+                                <p className="eng-project-pm">PM: {p.projectManager?.fullName || '—'}</p>
+                                
+                                <div className="eng-project-progress-container">
                                     <div className="eng-progress-label">
-                                        <span>Progress</span><span>{p.progress || 0}%</span>
+                                        <span>Progress</span>
+                                        <span>{p.progress || 0}%</span>
                                     </div>
                                     <div className="eng-progress-track">
-                                        <div className="eng-progress-fill" style={{ width:`${p.progress||0}%` }}/>
-                                    </div>
-                                </div>
-                                <div className="eng-project-meta">
-                                    {p.clientId?.name && (
-                                        <span className="eng-project-meta-item"><Users size={12}/>{p.clientId.name}</span>
-                                    )}
-                                    {p.endDate && (
-                                        <span className="eng-project-meta-item">
-                                            <Calendar size={12}/>
-                                            {new Date(p.endDate).toLocaleDateString('en-IN',{ day:'2-digit', month:'short', year:'numeric' })}
-                                        </span>
-                                    )}
-                                    <span className="eng-project-meta-item"><CheckSquare size={12}/>{p.taskCount ?? 0} tasks</span>
-                                </div>
-                                <div className="eng-project-footer">
-                                    <div className="eng-project-role">
-                                        <span>Your role:</span>
-                                        <strong>{myRole(p)}</strong>
-                                    </div>
-                                    <div className="eng-project-open">
-                                        View Details <ChevronRight size={13}/>
+                                        <div className="eng-progress-fill" style={{ width: `${p.progress || 0}%` }} />
                                     </div>
                                 </div>
                             </div>
-                        );
-                    })}
+
+                            <div className="eng-project-card-footer">
+                                <div className="eng-project-meta-item">
+                                    <Users size={14}/>
+                                    <span>{myRole(p)}</span>
+                                </div>
+                                <ChevronRight size={16} className="eng-chevron"/>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

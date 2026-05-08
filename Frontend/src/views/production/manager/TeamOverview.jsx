@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Mail, Phone, MapPin, MoreVertical, Plus, Award, Briefcase, Activity, Users, X } from 'lucide-react';
+import { Search, Mail, Phone, MapPin, MoreVertical, Award, Briefcase, Activity, Users, X } from 'lucide-react';
 import '../css/ProductionManagement.css';
 import { teamMemberAPI } from '../../../models/api';
 
@@ -42,6 +42,12 @@ const TeamOverview = () => {
         fetchTeam();
     }, []);
 
+    useEffect(() => {
+        const openCreateMemberModal = () => setIsModalOpen(true);
+        window.addEventListener('open-create-production-member-modal', openCreateMemberModal);
+        return () => window.removeEventListener('open-create-production-member-modal', openCreateMemberModal);
+    }, []);
+
     const filteredTeam = teamData.filter(member => 
         member.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
         member.role.toLowerCase().includes(searchTerm.toLowerCase())
@@ -80,17 +86,12 @@ const TeamOverview = () => {
     };
 
     return (
-        <div className="pm-dashboard">
-            <div className="pm-welcome-header" style={{ padding: '1.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
-                    <button onClick={() => setIsModalOpen(true)} className="pm-quick-action-btn">
-                        <Plus size={15} />
-                        <span>Add Member</span>
-                    </button>
-                </div>
+        <div className="pm-dashboard pm-team-overview">
+            <div className="pm-welcome-header pm-team-header" style={{ padding: '1.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="pm-team-header-actions" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }} />
                 
                 {/* Search Bar */}
-                <div style={{ display: 'flex', gap: '1rem', width: '100%', zIndex: 1 }}>
+                <div className="pm-team-search-row" style={{ display: 'flex', gap: '1rem', width: '100%', zIndex: 1 }}>
                     <div className="pm-search-bar" style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f1f5f9', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                         <Search size={16} color="#64748b" />
                         <input 
@@ -108,17 +109,50 @@ const TeamOverview = () => {
 
             <div className="pm-card" style={{ padding: 0, overflow: 'hidden' }}>
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading team members...</div>
+                    <div className="pm-table-container">
+                        <table className="pm-table">
+                            <thead>
+                                <tr>
+                                    <th>Member Profile</th>
+                                    <th className="pm-desktop-only">Contact Info</th>
+                                    <th className="pm-desktop-only">Reporting Team</th>
+                                    <th className="pm-desktop-only">Workload & Capacity</th>
+                                    <th className="pm-desktop-only">Performance</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Array.from({ length: 4 }).map((_, idx) => (
+                                    <tr key={`team-skeleton-${idx}`} className="pm-table-row">
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                <div className="pm-skeleton-circle" style={{ width: '40px', height: '40px' }} />
+                                                <div style={{ minWidth: 0, flex: 1 }}>
+                                                    <div className="pm-skeleton-line" style={{ width: '55%', marginBottom: '8px' }} />
+                                                    <div className="pm-skeleton-line" style={{ width: '35%' }} />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '75%' }} /></td>
+                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '58%' }} /></td>
+                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '68%' }} /></td>
+                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '52%' }} /></td>
+                                        <td><div className="pm-skeleton-circle" style={{ width: '24px', height: '24px', marginLeft: 'auto' }} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : (
                     <div className="pm-table-container">
                         <table className="pm-table">
                             <thead>
                                 <tr>
                                     <th>Member Profile</th>
-                                    <th>Contact Info</th>
-                                    <th>Reporting Team</th>
-                                    <th>Workload & Capacity</th>
-                                    <th>Performance</th>
+                                    <th className="pm-desktop-only">Contact Info</th>
+                                    <th className="pm-desktop-only">Reporting Team</th>
+                                    <th className="pm-desktop-only">Workload & Capacity</th>
+                                    <th className="pm-desktop-only">Performance</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -138,14 +172,14 @@ const TeamOverview = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className="pm-desktop-only">
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.8rem', color: '#334155' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={12} color="#64748b" /> {member.email}</div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={12} color="#64748b" /> {member.phone}</div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={12} color="#64748b" /> {member.location}</div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className="pm-desktop-only">
                                             {member.reportingManager && member.reportingManager.length > 0 ? (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                                     {member.reportingManager.map((sub, idx) => (
@@ -159,7 +193,7 @@ const TeamOverview = () => {
                                                 <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>None</span>
                                             )}
                                         </td>
-                                        <td style={{ minWidth: '180px' }}>
+                                        <td className="pm-desktop-only" style={{ minWidth: '180px' }}>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                                 <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#0f172a', display: 'flex', justifyContent: 'space-between' }}>
                                                     <span><Activity size={12} style={{ marginRight: '4px', verticalAlign: 'middle', color: '#64748b' }}/> Active Projects: {member.activeProjects}</span>
@@ -170,7 +204,7 @@ const TeamOverview = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className="pm-desktop-only">
                                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.75rem', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600, background: '#f8fafc', border: '1px solid #e2e8f0', color: '#334155' }}>
                                                 <Award size={14} color={member.performance === 'Outstanding' ? '#f59e0b' : member.performance === 'Excellent' ? '#10b981' : '#64748b'} />
                                                 {member.performance}

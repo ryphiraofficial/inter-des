@@ -84,12 +84,6 @@ const SiteLeave = ({ user }) => {
                 </div>
             )}
 
-            <div style={{marginBottom:20}}>
-                <h1 style={{fontSize:20,fontWeight:700,color:'#0f172a',margin:0,display:'flex',alignItems:'center',gap:10}}>
-                    <CalendarOff size={20} style={{color:'#10b981'}}/>Leave Request
-                </h1>
-                <p style={{fontSize:13,color:'#64748b',margin:'5px 0 0'}}>Submit and track your leave applications</p>
-            </div>
 
             <div className="site-leave-grid">
                 {/* Form */}

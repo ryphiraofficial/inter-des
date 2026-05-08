@@ -155,8 +155,8 @@ const SiteAttendance = ({ user }) => {
             {loading ? (
                 <div style={{ textAlign: 'center', padding: 40, color: '#64748b' }}>Loading records...</div>
             ) : (
-                <div className="site-table-container">
-                    <table className="site-table">
+                <div className="site-table-wrapper">
+                    <table className="site-table site-table-scrollable">
                         <thead>
                             <tr>
                                 <th>Worker Name</th>
@@ -232,10 +232,10 @@ const SiteAttendance = ({ user }) => {
                             ))}
                         </tbody>
                     </table>
-                    <button className="site-add-row-btn" onClick={handleAddRow}>
-                        <Plus size={14} /> Add Worker
-                    </button>
                 </div>
+                <button className="site-add-row-btn" onClick={handleAddRow}>
+                    <Plus size={14} /> Add Worker
+                </button>
             )}
         </div>
     );

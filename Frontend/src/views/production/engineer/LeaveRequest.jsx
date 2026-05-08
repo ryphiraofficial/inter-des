@@ -81,35 +81,29 @@ const LeaveRequest = ({ user }) => {
     const days = calcDays();
 
     return (
-        <div className="eng-tasks-page">
+        <div className="eng-dashboard">
             {submitted && (
-                <div className="eng-toast" style={{ background:'#10b981', display:'flex', alignItems:'center', gap:8 }}>
+                <div className="eng-toast" style={{ background: '#10b981' }}>
                     <CheckCircle2 size={16}/> Leave request submitted successfully!
                 </div>
             )}
 
-            <div className="eng-page-header">
-                <div>
-                    <h1 className="eng-page-title"><CalendarOff size={22}/>Leave Request</h1>
-                    <p className="eng-page-sub">Submit and track your leave applications</p>
-                </div>
-            </div>
 
             <div className="eng-leave-grid">
                 {/* ── Form ── */}
                 <div className="eng-section-card">
                     <div className="eng-section-header">
-                        <div className="eng-section-title"><Send size={16}/>New Application</div>
+                        <div className="eng-section-title"><Send size={16}/> New Application</div>
                     </div>
-                    <form onSubmit={handleSubmit} className="eng-leave-form">
+                    <form onSubmit={handleSubmit} style={{ padding: '20px 24px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
                         {/* Leave Type */}
                         <div className="eng-form-group">
-                            <label>Leave Type *</label>
+                            <label className="eng-form-label">Leave Type *</label>
                             <div className="eng-leave-type-grid">
                                 {LEAVE_TYPES.map(t => (
                                     <button type="button" key={t}
-                                        className={`eng-leave-type-btn${form.leaveType === t ? ' active' : ''}`}
+                                        className={`eng-leave-type-btn ${form.leaveType === t ? 'active' : ''}`}
                                         onClick={() => { setForm(f=>({...f, leaveType:t})); setErrors(er=>({...er,leaveType:undefined})); }}>
                                         {t}
                                     </button>
@@ -120,7 +114,7 @@ const LeaveRequest = ({ user }) => {
 
                         {/* Date Range Picker */}
                         <div className="eng-form-group">
-                            <label>Date Range *</label>
+                            <label className="eng-form-label">Date Range *</label>
                             <DateRangePicker
                                 value={form.dateRange}
                                 onChange={(range) => {
@@ -139,7 +133,7 @@ const LeaveRequest = ({ user }) => {
                                 <Clock size={14}/>
                                 Duration: <strong>{days} day{days > 1 ? 's' : ''}</strong>
                                 {form.dateRange?.from && (
-                                    <span style={{ color:'#64748b', fontWeight:400, fontSize:12 }}>
+                                    <span style={{ color: '#166534', fontWeight: 400, fontSize: 12, opacity: 0.8 }}>
                                         &nbsp;({format(form.dateRange.from,'dd MMM')}
                                         {form.dateRange?.to && form.dateRange.to !== form.dateRange.from
                                             ? ` – ${format(form.dateRange.to,'dd MMM yyyy')}`
@@ -151,9 +145,9 @@ const LeaveRequest = ({ user }) => {
 
                         {/* Reason */}
                         <div className="eng-form-group">
-                            <label>Reason *</label>
+                            <label className="eng-form-label">Reason *</label>
                             <textarea
-                                className={`eng-input${errors.reason?' eng-input-err':''}`}
+                                className={`eng-input ${errors.reason ? 'eng-input-err' : ''}`}
                                 rows={4}
                                 placeholder="Briefly describe the reason for your leave…"
                                 value={form.reason}
@@ -163,11 +157,11 @@ const LeaveRequest = ({ user }) => {
                         </div>
 
                         <button type="submit" className="eng-btn-primary"
-                            style={{ width:'100%', justifyContent:'center', padding:'12px' }}
+                            style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
                             disabled={submitting}>
                             {submitting
-                                ? <><Loader2 size={15} className="eng-spin"/>Submitting…</>
-                                : <><Send size={15}/>Submit Leave Request</>}
+                                ? <><Loader2 size={15} className="eng-spin"/> Submitting…</>
+                                : <><Send size={15}/> Submit Leave Request</>}
                         </button>
                     </form>
                 </div>
@@ -175,26 +169,26 @@ const LeaveRequest = ({ user }) => {
                 {/* ── History ── */}
                 <div className="eng-section-card">
                     <div className="eng-section-header">
-                        <div className="eng-section-title"><Clock size={16}/>My Applications</div>
+                        <div className="eng-section-title"><Clock size={16}/> My Applications</div>
                         <span className="eng-task-count">{history.length}</span>
                     </div>
 
                     {history.length === 0 ? (
-                        <div className="eng-empty" style={{ padding:'52px 24px' }}>
+                        <div className="eng-empty" style={{ padding: '60px 24px' }}>
                             <CalendarOff size={36}/>
                             <p>No applications yet</p>
                             <span>Your submitted leave requests will appear here.</span>
                         </div>
                     ) : (
-                        <div style={{ padding:'8px 0' }}>
+                        <div style={{ padding: '8px 16px 20px' }}>
                             {history.map(h => {
                                 const st = STATUS_STYLE[h.status] || STATUS_STYLE.Pending;
                                 return (
                                     <div key={h._id || h.id} className="eng-leave-card">
                                         <div className="eng-leave-card-top">
                                             <span className="eng-leave-type-chip">{h.leaveType}</span>
-                                            <span className="eng-badge" style={{ color:st.color, background:st.bg, display:'flex', alignItems:'center', gap:4 }}>
-                                                {st.icon}{h.status}
+                                            <span className="eng-badge" style={{ color: st.color, background: st.bg, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                {st.icon} {h.status}
                                             </span>
                                         </div>
                                         <div className="eng-leave-card-dates">
@@ -203,11 +197,11 @@ const LeaveRequest = ({ user }) => {
                                             {h.toDate && h.toDate !== h.fromDate && (
                                                 <> → {format(new Date(h.toDate),'dd MMM yyyy')}</>
                                             )}
-                                            <span className="eng-leave-days">· {h.days} day{h.days>1?'s':''}</span>
+                                            <span className="eng-leave-days">· {h.days} day{h.days > 1 ? 's' : ''}</span>
                                         </div>
                                         <p className="eng-leave-reason">{h.reason}</p>
                                         {h.managerComments && (
-                                            <div style={{ marginTop: 8, fontSize: 12, padding: 8, background: '#f8fafc', borderRadius: 4, border: '1px solid #e2e8f0' }}>
+                                            <div style={{ marginTop: 4, fontSize: 12, padding: '8px 12px', background: '#f8fafc', borderRadius: 8, border: '1px solid #f1f5f9', color: '#475569' }}>
                                                 <strong>Manager Note:</strong> {h.managerComments}
                                             </div>
                                         )}

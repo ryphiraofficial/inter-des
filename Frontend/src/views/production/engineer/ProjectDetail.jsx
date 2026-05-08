@@ -104,7 +104,7 @@ const ProjectDetail = ({ user }) => {
                     <button className="eng-back-btn" onClick={() => navigate(`${basePath}/projects`)}>
                         <ArrowLeft size={16}/> Back to Projects
                     </button>
-                    <h1 className="eng-page-title" style={{ marginTop:10 }}>
+                    <h1 className="eng-page-title">
                         <FolderOpen size={22}/>{project.projectName}
                     </h1>
                     <p className="eng-page-sub">
@@ -152,11 +152,11 @@ const ProjectDetail = ({ user }) => {
                             <div className="eng-section-header">
                                 <div className="eng-section-title"><CheckSquare size={16}/>Progress</div>
                             </div>
-                            <div style={{ padding:'20px 24px' }}>
-                                <div className="eng-progress-label" style={{ marginBottom:8 }}>
+                            <div className="eng-progress-section">
+                                <div className="eng-progress-label">
                                     <span>Overall completion</span><span>{project.progress||0}%</span>
                                 </div>
-                                <div className="eng-progress-track" style={{ height:10 }}>
+                                <div className="eng-progress-track">
                                     <div className="eng-progress-fill" style={{ width:`${project.progress||0}%` }}/>
                                 </div>
                                 <div className="eng-overview-stats">
@@ -164,7 +164,7 @@ const ProjectDetail = ({ user }) => {
                                       ['Done',  allTasks.filter(t=>['Completed','Approved'].includes(t.status)).length,'#10b981']
                                     ].map(([l,v,c])=>(
                                         <div key={l} className="eng-ov-stat">
-                                            <span style={{ color:c, fontSize:28, fontWeight:800 }}>{v}</span>
+                                            <span style={{ color:c }}>{v}</span>
                                             <span>{l}</span>
                                         </div>
                                     ))}
@@ -218,56 +218,96 @@ const ProjectDetail = ({ user }) => {
             {/* Tasks Tab */}
             {tab === 'tasks' && (
                 <div className="eng-tab-content">
-                    <div className="eng-table-card">
-                        {tasks.length === 0 ? (
+                    {tasks.length === 0 ? (
+                        <div className="eng-table-card">
                             <div className="eng-empty" style={{ padding:48 }}>
                                 <ClipboardList size={36}/><p>No tasks in this project</p>
                             </div>
-                        ) : (
-                            <table className="eng-table">
-                                <thead>
-                                    <tr>
-                                        <th>Task</th>
-                                        <th>Stage</th>
-                                        <th>Assigned To</th>
-                                        <th>Priority</th>
-                                        <th>Status</th>
-                                        {user?.role === 'Project Engineer' && <th>Actions</th>}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {tasks.map(t => {
-                                        const pr = getPriorityStyle(t.priority);
-                                        const st = getStatusStyle(t.status);
-                                        const isMine = t.assignedTo?._id === user?._id;
-                                        return (
-                                            <tr key={t._id} style={{ cursor:'pointer' }} onClick={()=>navigate(`${basePath}/tasks/${t._id}`)}>
-                                                <td>
-                                                    <div className="eng-td-title">{t.title}</div>
-                                                    {t.isSubtask && <div className="eng-td-sub">↳ Subtask</div>}
-                                                </td>
-                                                <td><span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span></td>
-                                                <td style={{ fontSize:13, color: isMine?'#3b82f6':'#475569', fontWeight: isMine?700:400 }}>
-                                                    {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
-                                                </td>
-                                                <td><span className="eng-badge" style={{color:pr.color,background:pr.bg}}>{t.priority}</span></td>
-                                                <td><span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span></td>
-                                                {user?.role === 'Project Engineer' && (
-                                                    <td onClick={e=>e.stopPropagation()}>
-                                                        {!t.isSubtask && (
-                                                            <button className="eng-subtask-btn" onClick={()=>{ setSelectedTask(t); setShowSubtaskModal(true); }}>
-                                                                <Plus size={13}/> Subtask
-                                                            </button>
-                                                        )}
+                        </div>
+                    ) : (
+                        <>
+                            {/* Desktop View */}
+                            <div className="eng-table-card desktop-only">
+                                <table className="eng-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Task</th>
+                                            <th>Stage</th>
+                                            <th>Assigned To</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            {user?.role === 'Project Engineer' && <th>Actions</th>}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {tasks.map(t => {
+                                            const pr = getPriorityStyle(t.priority);
+                                            const st = getStatusStyle(t.status);
+                                            const isMine = t.assignedTo?._id === user?._id;
+                                            return (
+                                                <tr key={t._id} style={{ cursor:'pointer' }} onClick={()=>navigate(`${basePath}/tasks/${t._id}`)}>
+                                                    <td>
+                                                        <div className="eng-td-title">{t.title}</div>
+                                                        {t.isSubtask && <div className="eng-td-sub">↳ Subtask</div>}
                                                     </td>
+                                                    <td><span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span></td>
+                                                    <td style={{ fontSize:13, color: isMine?'#3b82f6':'#475569', fontWeight: isMine?700:400 }}>
+                                                        {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
+                                                    </td>
+                                                    <td><span className="eng-badge" style={{color:pr.color,background:pr.bg}}>{t.priority}</span></td>
+                                                    <td><span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span></td>
+                                                    {user?.role === 'Project Engineer' && (
+                                                        <td onClick={e=>e.stopPropagation()}>
+                                                            {!t.isSubtask && (
+                                                                <button className="eng-subtask-btn" onClick={()=>{ setSelectedTask(t); setShowSubtaskModal(true); }}>
+                                                                    <Plus size={13}/> Subtask
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Mobile View */}
+                            <div className="mobile-only">
+                                {tasks.map(t => {
+                                    const pr = getPriorityStyle(t.priority);
+                                    const st = getStatusStyle(t.status);
+                                    const isMine = t.assignedTo?._id === user?._id;
+                                    return (
+                                        <div key={t._id} className="eng-mobile-task-card" onClick={()=>navigate(`${basePath}/tasks/${t._id}`)}>
+                                            <div className="eng-mobile-task-header">
+                                                <div className="eng-mobile-task-title">{t.title}</div>
+                                                {t.isSubtask && <span className="eng-badge" style={{color:'#7c3aed',background:'#ede9fe'}}>Subtask</span>}
+                                            </div>
+                                            <div className="eng-mobile-task-meta">
+                                                <span className="eng-badge" style={{color:pr.color,background:pr.bg}}>{t.priority}</span>
+                                                <span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span>
+                                                <span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span>
+                                            </div>
+                                            <div className="eng-mobile-task-info">
+                                                <span style={{ fontWeight: isMine?700:400, color: isMine?'#3b82f6':'inherit' }}>
+                                                    {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
+                                                </span>
+                                                {user?.role === 'Project Engineer' && !t.isSubtask && (
+                                                    <button 
+                                                        className="eng-subtask-btn" 
+                                                        onClick={e=>{ e.stopPropagation(); setSelectedTask(t); setShowSubtaskModal(true); }}
+                                                    >
+                                                        <Plus size={12}/>
+                                                    </button>
                                                 )}
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 

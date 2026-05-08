@@ -167,6 +167,22 @@
     white-space: nowrap;
 }
 
+.header-production-task-navbar-btn {
+    white-space: nowrap;
+}
+
+.header-production-project-navbar-btn {
+    white-space: nowrap;
+}
+
+.header-production-team-navbar-btn {
+    white-space: nowrap;
+}
+
+.header-production-reports-navbar-btn {
+    white-space: nowrap;
+}
+
 .header-notification-badge {
     position: absolute;
     top: -4px;
@@ -611,6 +627,110 @@
     }
 
     .page-header .header-vendor-navbar-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+    }
+
+    .page-header .header-production-task-navbar-btn {
+        position: absolute !important;
+        right: 60px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 2 !important;
+    }
+
+    .page-header .header-production-task-navbar-btn span {
+        display: none !important;
+    }
+
+    .page-header .header-production-task-navbar-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+    }
+
+    .page-header .header-production-project-navbar-btn {
+        position: absolute !important;
+        right: 60px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 2 !important;
+    }
+
+    .page-header .header-production-project-navbar-btn span {
+        display: none !important;
+    }
+
+    .page-header .header-production-project-navbar-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+    }
+
+    .page-header .header-production-team-navbar-btn {
+        position: absolute !important;
+        right: 60px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 2 !important;
+    }
+
+    .page-header .header-production-team-navbar-btn span {
+        display: none !important;
+    }
+
+    .page-header .header-production-team-navbar-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+    }
+
+    .page-header .header-production-reports-navbar-btn {
+        position: absolute !important;
+        right: 60px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 2 !important;
+    }
+
+    .page-header .header-production-reports-navbar-btn span {
+        display: none !important;
+    }
+
+    .page-header .header-production-reports-navbar-btn svg {
         width: 18px !important;
         height: 18px !important;
         margin: 0 !important;

@@ -69,70 +69,55 @@ const SiteDashboard = ({ user }) => {
             </div>
         );
     };
-
     const ProjectCard = ({ project }) => {
         const sc = statusColors[project.status] || { bg: '#f1f5f9', color: '#475569' };
         return (
-            <div
-                style={{
-                    background: 'white',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    padding: '16px 20px',
-                    cursor: 'pointer',
-                    transition: 'box-shadow 0.15s ease, transform 0.15s ease',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 12,
-                }}
-                onClick={() => navigate(`/site/projects/${project._id}`)}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
-            >
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+            <div className="site-project-card" onClick={() => navigate(`/site/projects/${project._id}`)}>
+                <div className="site-project-card-top">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 9, background: 'linear-gradient(135deg,#34d399,#10b981)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div className="site-project-icon">
                             <Briefcase size={16} color="white" />
                         </div>
                         <div>
-                            <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{project.projectName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>Your role: <span style={{ color: '#10b981', fontWeight: 600 }}>{project.myRole}</span></div>
+                            <div className="site-project-name">{project.projectName}</div>
+                            <div className="site-project-role">Your role: <span style={{ color: '#10b981', fontWeight: 600 }}>{project.myRole}</span></div>
                         </div>
                     </div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: sc.bg, color: sc.color, whiteSpace: 'nowrap' }}>
+                    <span className="site-badge" style={{ background: sc.bg, color: sc.color }}>
                         {project.status}
                     </span>
                 </div>
 
                 {project.location && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: '#64748b' }}>
+                    <div className="site-project-location">
                         <MapPin size={12} /> {project.location}
                     </div>
                 )}
 
                 {/* Progress bar */}
-                <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginBottom: 5 }}>
+                <div className="site-project-progress">
+                    <div className="site-progress-header">
                         <span>Progress</span>
-                        <span style={{ fontWeight: 600 }}>{project.progress || 0}%</span>
+                        <span>{project.progress || 0}%</span>
                     </div>
-                    <div style={{ height: 5, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${project.progress || 0}%`, background: 'linear-gradient(90deg,#34d399,#10b981)', borderRadius: 3, transition: 'width 0.6s ease' }} />
+                    <div className="site-progress-bar">
+                        <div className="site-progress-fill" style={{ width: `${project.progress || 0}%` }} />
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.78rem', color: '#64748b' }}>
+                <div className="site-project-footer">
+                    <div className="site-project-pm">
                         <Users size={12} />
                         {project.projectManager?.fullName && <span>PM: {project.projectManager.fullName.split(' ')[0]}</span>}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>
+                    <div className="site-project-link">
                         View Details <ArrowRight size={12} />
                     </div>
                 </div>
             </div>
         );
     };
+
 
     const Section = ({icon,title,color,tasks,empty}) => (
         <div className="site-card">

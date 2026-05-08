@@ -119,9 +119,28 @@ const Dashboard = () => {
 
     if (loading) {
         return (
-            <div className="pm-loading-screen">
-                <div className="pm-loading-spinner"></div>
-                <p>Loading Dashboard...</p>
+            <div className="production-management pm-dashboard">
+                <div className="pm-skeleton-block" style={{ height: '54px', marginBottom: '1rem' }} />
+                <div className="pm-stats-grid">
+                    {Array.from({ length: 6 }).map((_, idx) => (
+                        <div className="pm-stat-card-v2" key={idx}>
+                            <div className="pm-stat-card-header">
+                                <div className="pm-skeleton-circle" />
+                            </div>
+                            <div className="pm-skeleton-line" style={{ width: '45%', height: '28px', marginBottom: '10px' }} />
+                            <div className="pm-skeleton-line" style={{ width: '72%' }} />
+                        </div>
+                    ))}
+                </div>
+                <div className="pm-main-grid">
+                    <div className="pm-skeleton-block" style={{ height: '320px' }} />
+                    <div className="pm-skeleton-block" style={{ height: '320px' }} />
+                </div>
+                <div className="pm-bottom-grid">
+                    <div className="pm-skeleton-block" style={{ height: '260px' }} />
+                    <div className="pm-skeleton-block" style={{ height: '260px' }} />
+                    <div className="pm-skeleton-block" style={{ height: '260px' }} />
+                </div>
             </div>
         );
     }
