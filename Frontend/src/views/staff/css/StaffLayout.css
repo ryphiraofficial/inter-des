@@ -32,6 +32,7 @@
 
 .content-container {
     padding: 1.5rem;
+    padding-top: 1rem;
     flex: 1;
     animation: fadeIn 0.4s ease-out;
 }
@@ -62,6 +63,7 @@
 
     .content-container {
         padding: 2rem 2.5rem;
+        padding-top: 1.5rem;
     }
 }
 

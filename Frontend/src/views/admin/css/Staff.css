@@ -520,10 +520,15 @@
     gap: 1.25rem;
 }
 
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    min-width: 0;
 }
 
 .form-group label {
@@ -544,6 +549,9 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     color: #1e293b;
     font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .form-group input:focus,
@@ -616,6 +624,160 @@
     .staff-search-container {
         margin-bottom: 1rem;
         padding: 0.6rem 1rem;
+    }
+
+    /* Modal responsive */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        max-height: 92vh;
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        padding: 1.25rem 1.25rem;
+    }
+
+    .modal-body {
+        padding: 1.25rem;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.25rem;
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .modal-footer button {
+        width: 100%;
+        justify-content: center;
+        padding: 0.875rem;
+    }
+
+    /* Form grid: 2-col → 1-col on mobile */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Analytics modal responsive */
+    .analytics-modal {
+        max-width: none !important;
+        width: 95% !important;
+        max-height: 92vh !important;
+    }
+
+    .modal-body {
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    /* Profile card: compact horizontal row */
+    .analytics-card.main {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .analytics-card {
+        padding: 1rem;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    /* Avatar compact */
+    .staff-overview .staff-avatar.large {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+        margin: 0 auto 0.4rem;
+    }
+
+    .staff-overview h4 {
+        font-size: 0.95rem;
+    }
+
+    .staff-overview span {
+        font-size: 0.78rem;
+    }
+
+    /* Shrink circular progress */
+    .circular-progress {
+        width: 90px;
+        height: 90px;
+        flex-shrink: 0;
+    }
+
+    .circular-progress .score {
+        font-size: 1.1rem;
+    }
+
+    .circular-progress .label {
+        font-size: 0.6rem;
+    }
+
+    /* Stats grid: 1 COLUMN — full width cards */
+    .analytics-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    /* Each stat card: icon left, text right */
+    .stat-card {
+        flex-direction: row;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        gap: 1rem;
+        min-width: 0;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    .stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .stat-info .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-info .stat-label {
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    /* Current assignment compact */
+    .current-assignment {
+        padding: 1rem;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .assignment-details {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .analytics-note {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .analytics-note p {
+        font-size: 0.8rem;
     }
 }
 

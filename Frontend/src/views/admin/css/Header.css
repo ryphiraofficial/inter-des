@@ -19,7 +19,7 @@
     min-height: 80px;
     background-color: #ffffff;
     /* border-bottom: 1px solid #e8edf2; Removed unwanted underline */
-    margin-bottom: 0; /* Removed gap */
+    margin-bottom: 1rem;
     position: sticky;
     top: 0;
     z-index: 100;

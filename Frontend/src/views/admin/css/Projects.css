@@ -126,8 +126,8 @@
 
 .stage-name {
     font-weight: 700;
-    font-size: 0.9rem;
-    color: #0f172a;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
 }
 
 .stage-count {
@@ -481,17 +481,6 @@
 
     .page-header h1 {
         font-size: 1.25rem;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .page-header > div:first-child {
-        width: 100%;
-        gap: 12px !important;
     }
 
     .header-actions {

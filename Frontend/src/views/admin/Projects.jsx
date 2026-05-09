@@ -367,7 +367,7 @@ const Projects = () => {
                         className={`stage-column ${stageFilter === stage ? 'active' : ''}`}
                     >
                         <div className="stage-header" style={{ borderColor: getStageColor(stage) }}>
-                            <span className="stage-name">{stage}</span>
+                            <span className="stage-name" style={{ color: getStageColor(stage) }}>{stage}</span>
                             <span className="stage-count">
                                 {loading ? '...' : projects.filter(p => p.stage === stage).length}
                             </span>
