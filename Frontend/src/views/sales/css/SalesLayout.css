@@ -20,14 +20,14 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    height: 100vh;
 }
 
 /* Page content below the header */
 .sales-page-content {
     flex: 1;
     padding: 24px;
-    overflow-y: auto;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */

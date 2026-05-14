@@ -54,6 +54,8 @@ import SiteVisit from '../../views/sales/SiteVisit';
 import SalesTasks from '../../views/sales/SalesTasks';
 import SalesClients from '../../views/sales/SalesClients';
 import SalesQuotations from '../../views/sales/SalesQuotations';
+import SalesNewQuotation from '../../views/sales/SalesNewQuotation';
+import SalesQuotationView from '../../views/sales/SalesQuotationView';
 
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
@@ -134,9 +136,9 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="clients" element={<SalesClients user={user} />} />
                     <Route path="opportunities" element={<SalesClients user={user} isOpportunities={true} />} />
                     <Route path="quotations" element={<SalesQuotations user={user} />} />
-                    <Route path="quotations/new" element={<NewQuotation isStaff={true} user={user} />} />
-                    <Route path="quotations/edit/:id" element={<NewQuotation isStaff={true} isEdit={true} user={user} />} />
-                    <Route path="quotations/view/:id" element={<QuotationView isStaff={true} />} />
+                    <Route path="quotations/new" element={<SalesNewQuotation isStaff={true} user={user} />} />
+                    <Route path="quotations/edit/:id" element={<SalesNewQuotation isStaff={true} isEdit={true} user={user} />} />
+                    <Route path="quotations/view/:id" element={<SalesQuotationView isStaff={true} />} />
                     <Route path="projects/:id" element={<Projects />} />
                     <Route path="material-review" element={<MaterialReviewHub user={user} />} />
                     <Route path="*" element={<Navigate to="/staff/dashboard" replace />} />

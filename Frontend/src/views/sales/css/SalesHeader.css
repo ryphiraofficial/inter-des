@@ -6,14 +6,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
+    height: 75px;
+    min-height: 75px;
     padding: 0 32px;
     background: #ffffff;
-    border-bottom: 1.5px solid #e6faf2;
+    border-bottom: 1px solid #e8edf2;
+    box-sizing: border-box;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 1px 12px rgba(16, 185, 129, 0.06);
+    box-shadow: 0 1px 12px rgba(16, 185, 129, 0.02);
 }
 
 /* ── Left ────────────────────────────────────────────────────────────────── */
@@ -49,7 +51,7 @@
 }
 
 .sales-header-title {
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #0f172a;
     margin: 0;
@@ -58,7 +60,7 @@
 }
 
 .sales-header-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 400;
     color: #64748b;
     margin: 2px 0 0;

@@ -1,6 +1,5 @@
 .st-tasks-container {
     width: 100%;
-    padding: 24px 32px;
     animation: st-fadeIn 0.5s ease-out;
 }
 
@@ -17,9 +16,8 @@
 }
 
 .st-tasks-wrapper {
-    width: 90%;
+    width: 100%;
     max-width: 100%;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;

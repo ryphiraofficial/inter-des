@@ -55,6 +55,16 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                             <span className="sales-brand-sub">Department</span>
                         </div>
                     )}
+                    
+                    {/* Relocated Collapse Button */}
+                    <button
+                        className="sales-collapse-btn-inline header-version"
+                        onClick={() => setCollapsed(!collapsed)}
+                        title={collapsed ? 'Expand' : 'Collapse'}
+                    >
+                        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                    </button>
+
                     <button className="sales-close-mobile" onClick={toggleSidebar}>
                         <X size={18} />
                     </button>
@@ -62,24 +72,6 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
                 {/* Nav */}
                 <nav className="sales-sidebar-nav">
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: collapsed ? 'center' : 'space-between',
-                        padding: collapsed ? '8px 0' : '8px 12px 4px 6px',
-                        marginBottom: '4px'
-                    }}>
-                        {!collapsed && (
-                            <span className="sales-nav-section-label" style={{ padding: 0 }}>MENU</span>
-                        )}
-                        <button
-                            className="sales-collapse-btn-inline"
-                            onClick={() => setCollapsed(!collapsed)}
-                            title={collapsed ? 'Expand' : 'Collapse'}
-                        >
-                            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-                        </button>
-                    </div>
                     {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
                         <NavLink
                             key={to}
@@ -113,7 +105,7 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                         onClick={handleLogout}
                         title="Logout"
                     >
-                        <LogOut size={17} />
+                        <LogOut size={20} />
                         {!collapsed && <span>Logout</span>}
                     </button>
                 </div>

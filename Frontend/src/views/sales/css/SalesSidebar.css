@@ -31,7 +31,7 @@
     flex-shrink: 0;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-right: 1px solid var(--sales-border);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .sales-sidebar.collapsed {
@@ -43,10 +43,20 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 20px 16px 16px;
+    padding: 20px 14px 16px;
     border-bottom: 1px solid var(--sales-border);
     position: relative;
-    min-height: 68px;
+    min-height: 75px;
+    box-sizing: border-box;
+    overflow: visible; /* Allow toggle button to pop out */
+}
+
+.sales-sidebar:not(.collapsed) .sales-sidebar-brand {
+    justify-content: space-between;
+}
+
+.sales-sidebar.collapsed .sales-sidebar-brand {
+    justify-content: center;
 }
 
 .sales-brand-icon {
@@ -103,21 +113,40 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    background: transparent;
-    border: 1px solid transparent;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: var(--sales-bg-2);
+    border: 1.5px solid var(--sales-border);
     color: var(--sales-muted);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
 }
 
 .sales-collapse-btn-inline:hover {
-    background: rgba(99,102,241,0.08);
-    color: var(--sales-text);
-    border-color: rgba(99,102,241,0.2);
+    background: white;
+    color: var(--sales-primary);
+    border-color: var(--sales-primary);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    transform: translateY(-1px);
+}
+
+.sales-collapse-btn-inline.header-version {
+    margin-left: auto;
+    z-index: 20;
+}
+
+.sales-sidebar.collapsed .header-version {
+    position: absolute;
+    right: -15px; /* Hang halfway over the edge */
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: 1.5px solid var(--sales-primary);
+    color: var(--sales-primary);
+    border-radius: 50%; /* Make it round when collapsed for better visibility */
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────── */
@@ -235,18 +264,19 @@
 }
 
 .sales-user-avatar {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 12px;
     background: linear-gradient(135deg, var(--sales-primary), var(--sales-primary-dark));
     color: white;
-    font-size: 0.75rem;
+    font-size: 1rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     letter-spacing: 0.05em;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
 }
 
 .sales-user-info {
@@ -256,16 +286,18 @@
 }
 
 .sales-user-name {
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--sales-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
 }
 
 .sales-user-role {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 500;
     color: var(--sales-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -276,15 +308,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 9px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(239,68,68,0.2);
-    background: rgba(239,68,68,0.05);
-    color: #f87171;
-    font-size: 0.82rem;
-    font-weight: 500;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(239,68,68,0.25);
+    background: rgba(239,68,68,0.06);
+    color: #ef4444;
+    font-size: 0.9rem;
+    font-weight: 600;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
     transition: all 0.2s;
@@ -342,5 +374,9 @@
 
     .sales-close-mobile {
         display: flex;
+    }
+
+    .sales-collapse-btn-inline {
+        display: none !important;
     }
 }

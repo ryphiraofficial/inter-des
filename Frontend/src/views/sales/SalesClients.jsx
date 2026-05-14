@@ -1,221 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router-dom';
-import { Search, Loader, Mail, Phone, MapPin, User, Plus, X } from 'lucide-react';
-import { clientAPI } from '../../models/api';
-import Skeleton from './components/Skeleton';
+import React from 'react';
+import { useSalesClients } from './hooks/useSalesClients';
+import SalesClientsList from './components/SalesClientsList';
+import SalesClientModal from './components/SalesClientModal';
 import './css/SalesClients.css';
 
 const SalesClients = ({ isOpportunities }) => {
-    const [clients, setClients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    const [searchParams, setSearchParams] = useSearchParams();
-    
-    const searchTerm = searchParams.get('q') || '';
-    const showModal = searchParams.get('action') === 'new';
-
-    const closeModal = () => {
-        const p = new URLSearchParams(searchParams);
-        p.delete('action');
-        setSearchParams(p);
-    };
-
-    const initialFormData = {
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        siteAddress: '',
-        billingAddress: '',
-        billingPincode: '',
-        contact1: '',
-        contact2: '',
-        status: 'Active'
-    };
-
-    const [formData, setFormData] = useState(initialFormData);
-
-    useEffect(() => {
-        fetchClients();
-    }, []);
-
-    const fetchClients = async () => {
-        try {
-            setLoading(true);
-            const response = await clientAPI.getAll();
-            if (response.success) {
-                setClients(response.data);
-            }
-        } catch (err) {
-            console.error('Failed to load clients:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        try {
-            const response = await clientAPI.create(formData);
-            if (response.success) {
-                alert('Client added successfully');
-                closeModal();
-                setFormData(initialFormData);
-                fetchClients();
-            }
-        } catch (err) {
-            alert(err.message || 'Failed to add client');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const filteredClients = clients.filter(client =>
-        client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.siteAddress?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
+    const {
+        loading,
+        submitting,
+        showModal,
+        formData,
+        filteredClients,
+        closeModal,
+        handleInputChange,
+        handleSubmit
+    } = useSalesClients();
 
     return (
         <div className="sc-clients-container">
             <div className="sc-clients-wrapper">
-
-
-                <div className="sc-list-card">
-                    <div className="sc-table-container">
-                        <table className="sc-table">
-                            <thead>
-                                <tr>
-                                    <th>Client Profile</th>
-                                    <th>Contact Information</th>
-                                    <th>Site Address</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading ? (
-                                    [...Array(6)].map((_, i) => (
-                                        <tr key={i}>
-                                            <td data-label="Client Profile">
-                                                <div className="sc-client-profile">
-                                                    <Skeleton width="40px" height="40px" borderRadius="50%" />
-                                                    <Skeleton width="120px" height="16px" style={{ marginLeft: '12px' }} />
-                                                </div>
-                                            </td>
-                                            <td data-label="Contact">
-                                                <div className="sc-contact-info">
-                                                    <div className="sc-contact-item">
-                                                        <Skeleton width="150px" height="14px" />
-                                                    </div>
-                                                    <div className="sc-contact-item" style={{ marginTop: '8px' }}>
-                                                        <Skeleton width="100px" height="14px" />
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td data-label="Site Address">
-                                                <Skeleton width="200px" height="14px" />
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : filteredClients.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="3">
-                                            <div className="sc-empty">
-                                                <User size={40} />
-                                                <p>No clients found in directory</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ) : filteredClients.map(client => (
-                                    <tr key={client._id}>
-                                        <td data-label="Client Profile">
-                                            <div className="sc-client-profile">
-                                                <div className="sc-avatar">{client.name?.charAt(0)}</div>
-                                                <span className="sc-client-name">{client.name}</span>
-                                            </div>
-                                        </td>
-                                        <td data-label="Contact">
-                                            <div className="sc-contact-info">
-                                                <div className="sc-contact-item">
-                                                    <Mail size={12} />
-                                                    <span>{client.email}</span>
-                                                </div>
-                                                <div className="sc-contact-item">
-                                                    <Phone size={12} />
-                                                    <span>{client.phone}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Site Address">
-                                            <div className="sc-contact-item">
-                                                <MapPin size={12} />
-                                                <span>{client.siteAddress || 'N/A'}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <SalesClientsList 
+                    loading={loading} 
+                    filteredClients={filteredClients} 
+                />
             </div>
 
-            {showModal && createPortal(
-                <div className="sc-modal-overlay">
-                    <div className="sc-modal-card">
-                        <div className="sc-modal-header">
-                            <h3>Add New Client</h3>
-                            <button type="button" onClick={closeModal} className="sc-modal-close">
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="sc-form">
-                            <div className="sc-form-section">
-                                <div className="sc-form-grid">
-                                    <div className="sc-input-group">
-                                        <label>Full Name *</label>
-                                        <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="Client name" />
-                                    </div>
-                                    <div className="sc-input-group">
-                                        <label>Email *</label>
-                                        <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="email@example.com" />
-                                    </div>
-                                    <div className="sc-input-group">
-                                        <label>Phone *</label>
-                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required placeholder="Phone number" />
-                                    </div>
-                                    <div className="sc-input-group">
-                                        <label>Alternative Phone</label>
-                                        <input type="tel" name="contact1" value={formData.contact1} onChange={handleInputChange} placeholder="Secondary number" />
-                                    </div>
-                                    <div className="sc-input-group">
-                                        <label>WhatsApp Number</label>
-                                        <input type="tel" name="contact2" value={formData.contact2} onChange={handleInputChange} placeholder="Primary WhatsApp" />
-                                    </div>
-                                    <div className="sc-input-group">
-                                        <label>Site Address</label>
-                                        <input type="text" name="siteAddress" value={formData.siteAddress} onChange={handleInputChange} placeholder="Project site location" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="sc-modal-footer">
-                                <button type="button" onClick={closeModal} className="sc-btn-cancel">Cancel</button>
-                                <button type="submit" disabled={submitting} className="sc-btn-submit">
-                                    {submitting ? <Loader className="spinner" size={16} /> : 'Save Client'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
+            <SalesClientModal
+                showModal={showModal}
+                closeModal={closeModal}
+                handleSubmit={handleSubmit}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                submitting={submitting}
+            />
         </div>
     );
 };
