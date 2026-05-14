@@ -1,0 +1,47 @@
+/* ── Sales Layout ───────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.sales-layout {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    background: #f8fffe;
+}
+
+/* Main area (everything right of sidebar) */
+.sales-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Page content below the header */
+.sales-page-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .sales-layout {
+        /* sidebar is fixed/overlay on mobile, main takes full width */
+        display: block;
+    }
+
+    .sales-main {
+        width: 100%;
+    }
+
+    .sales-page-content {
+        padding: 16px;
+    }
+}

@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Controllers — Layouts
 import Layout from '../layouts/AdminLayout';
-import StaffLayout from '../layouts/StaffLayout';
+import SalesLayout from '../../views/sales/SalesLayout';
 import RoleDashboard from '../layouts/RoleDashboard';
 
 // Views — Admin
@@ -49,11 +49,11 @@ import SiteReports from '../../views/production/site/SiteReports';
 import SiteLeave from '../../views/production/site/SiteLeave';
 
 // Views — Staff
-import StaffDashboard from '../../views/staff/StaffDashboard';
-import SiteVisit from '../../views/staff/SiteVisit';
-import StaffTasks from '../../views/staff/StaffTasks';
-import StaffClients from '../../views/staff/StaffClients';
-import StaffQuotations from '../../views/staff/StaffQuotations';
+import SalesDashboard from '../../views/sales/SalesDashboard';
+import SiteVisit from '../../views/sales/SiteVisit';
+import SalesTasks from '../../views/sales/SalesTasks';
+import SalesClients from '../../views/sales/SalesClients';
+import SalesQuotations from '../../views/sales/SalesQuotations';
 
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
@@ -65,7 +65,7 @@ const AppRoutes = ({ user, onLogout }) => {
     const userRole = user?.role;
     const isProductionEngineer = ['Project Engineer', 'Site Engineer', 'Site Supervisor'].includes(userRole);
     const shouldUseAdminLayout = isAdminLayout(userRole) || isProductionEngineer;
-    const shouldUseStaffLayout = isStaffLayout(userRole) && !isProductionEngineer;
+    const shouldUseSalesLayout = isStaffLayout(userRole) && !isProductionEngineer;
 
     return (
         <Routes>
@@ -124,16 +124,16 @@ const AppRoutes = ({ user, onLogout }) => {
             )}
 
             {/* Staff Layout - for Department Staff */}
-            {shouldUseStaffLayout && (
-                <Route path="/staff" element={<StaffLayout user={user} onLogout={onLogout} />}>
+            {shouldUseSalesLayout && (
+                <Route path="/staff" element={<SalesLayout user={user} onLogout={onLogout} />}>
                     <Route index element={<Navigate to="/staff/dashboard" replace />} />
                     <Route path="dashboard" element={<RoleDashboard user={user} onLogout={onLogout} />} />
-                    <Route path="tasks" element={<StaffTasks user={user} />} />
-                    <Route path="all-tasks" element={<StaffTasks user={user} forceTable={true} />} />
+                    <Route path="tasks" element={<SalesTasks user={user} />} />
+                    <Route path="all-tasks" element={<SalesTasks user={user} forceTable={true} />} />
                     <Route path="site-visits" element={<SiteVisit user={user} />} />
-                    <Route path="clients" element={<StaffClients user={user} />} />
-                    <Route path="opportunities" element={<StaffClients user={user} isOpportunities={true} />} />
-                    <Route path="quotations" element={<StaffQuotations user={user} />} />
+                    <Route path="clients" element={<SalesClients user={user} />} />
+                    <Route path="opportunities" element={<SalesClients user={user} isOpportunities={true} />} />
+                    <Route path="quotations" element={<SalesQuotations user={user} />} />
                     <Route path="quotations/new" element={<NewQuotation isStaff={true} user={user} />} />
                     <Route path="quotations/edit/:id" element={<NewQuotation isStaff={true} isEdit={true} user={user} />} />
                     <Route path="quotations/view/:id" element={<QuotationView isStaff={true} />} />
@@ -149,7 +149,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Navigate to="/engineer/dashboard" replace />
                 ) : shouldUseAdminLayout ? (
                     <Navigate to="/" replace />
-                ) : shouldUseStaffLayout ? (
+                ) : shouldUseSalesLayout ? (
                     <Navigate to="/staff/dashboard" replace />
                 ) : (
                     <div style={{ padding: '2rem', textAlign: 'center' }}>

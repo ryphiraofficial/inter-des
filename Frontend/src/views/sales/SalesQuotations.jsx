@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader, Eye, FileText, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { quotationAPI } from '../../models/api';
-import Skeleton from '../common/Skeleton';
-import './css/StaffQuotations.css';
+import Skeleton from './components/Skeleton';
+import './css/SalesQuotations.css';
 
-const StaffQuotations = () => {
+const SalesQuotations = () => {
     const [quotations, setQuotations] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams] = useSearchParams();
+    const searchTerm = searchParams.get('q') || '';
 
     useEffect(() => {
         fetchQuotations();
@@ -38,22 +39,7 @@ const StaffQuotations = () => {
     return (
         <div className="sq-quotations-container">
             <div className="sq-quotations-wrapper">
-                <div className="sq-controls">
-                    <div className="sq-search-wrapper">
-                        <Search className="sq-search-icon" size={18} />
-                        <input
-                            type="text"
-                            className="sq-search-input"
-                            placeholder="Search by quote number, project, or client..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <Link to="/staff/quotations/new" className="sq-btn-add">
-                        <Plus size={18} />
-                        <span>New Quotation</span>
-                    </Link>
-                </div>
+
 
                 <div className="sq-list-card">
                     <div className="sq-table-container">
@@ -131,4 +117,4 @@ const StaffQuotations = () => {
     );
 };
 
-export default StaffQuotations;
+export default SalesQuotations;

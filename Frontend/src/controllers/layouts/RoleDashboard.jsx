@@ -6,8 +6,7 @@ import DesignStaffDashboard from '../../views/design/staff/DesignStaffDashboard'
 import ProcurementManagerDashboard from '../../views/procurement/manager/ProcurementManagerDashboard';
 import ProcurementStaffDashboard from '../../views/procurement/staff/ProcurementStaffDashboard';
 import AdminDashboard from '../../views/admin/Dashboard';
-import StaffDashboard from '../../views/staff/StaffDashboard';
-import SalesDashboard from '../../views/staff/SalesDashboard';
+import SalesDashboard from '../../views/sales/SalesDashboard';
 import AccountsManagerDashboard from '../../views/Accounts/manager/ManagerDashboard';
 import AccountsStaffDashboard from '../../views/Accounts/staff/StaffDashboard';
 
@@ -31,7 +30,7 @@ const RoleDashboard = ({ user, onLogout }) => {
         case 'site_supervisor':
             return <Navigate to="/site/dashboard" replace />;
         case 'staff':
-            return <StaffDashboard user={user} onLogout={onLogout} />;
+            return <SalesDashboard user={user} onLogout={onLogout} />;
         case 'sales':
             return <SalesDashboard user={user} />;
         case 'accounts_manager':

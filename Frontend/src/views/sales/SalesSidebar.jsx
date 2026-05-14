@@ -1,0 +1,125 @@
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import {
+    LayoutDashboard,
+    ClipboardList,
+    MapPin,
+    Users,
+    FileText,
+    LogOut,
+    ChevronLeft,
+    ChevronRight,
+    TrendingUp,
+    X,
+} from 'lucide-react';
+import './css/SalesSidebar.css';
+
+const NAV_ITEMS = [
+    { to: '/staff/dashboard',   icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/staff/tasks',       icon: ClipboardList,   label: 'My Tasks'   },
+    { to: '/staff/site-visits', icon: MapPin,          label: 'Site Visits' },
+    { to: '/staff/clients',     icon: Users,           label: 'Clients'    },
+    { to: '/staff/quotations',  icon: FileText,        label: 'Quotations' },
+];
+
+const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
+    const [collapsed, setCollapsed] = useState(false);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        onLogout?.();
+        navigate('/login');
+    };
+
+    const initials = user?.name
+        ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+        : 'S';
+
+    return (
+        <>
+            {/* Mobile overlay */}
+            {isOpen && (
+                <div className="sales-sidebar-overlay" onClick={toggleSidebar} />
+            )}
+
+            <aside className={`sales-sidebar ${collapsed ? 'collapsed' : ''} ${isOpen ? 'mobile-open' : ''}`}>
+
+                {/* Brand */}
+                <div className="sales-sidebar-brand">
+                    <div className="sales-brand-icon">
+                        <TrendingUp size={20} />
+                    </div>
+                    {!collapsed && (
+                        <div className="sales-brand-text">
+                            <span className="sales-brand-name">Sales</span>
+                            <span className="sales-brand-sub">Department</span>
+                        </div>
+                    )}
+                    <button className="sales-close-mobile" onClick={toggleSidebar}>
+                        <X size={18} />
+                    </button>
+                </div>
+
+                {/* Nav */}
+                <nav className="sales-sidebar-nav">
+                    <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: collapsed ? 'center' : 'space-between',
+                        padding: collapsed ? '8px 0' : '8px 12px 4px 6px',
+                        marginBottom: '4px'
+                    }}>
+                        {!collapsed && (
+                            <span className="sales-nav-section-label" style={{ padding: 0 }}>MENU</span>
+                        )}
+                        <button
+                            className="sales-collapse-btn-inline"
+                            onClick={() => setCollapsed(!collapsed)}
+                            title={collapsed ? 'Expand' : 'Collapse'}
+                        >
+                            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                        </button>
+                    </div>
+                    {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+                        <NavLink
+                            key={to}
+                            to={to}
+                            className={({ isActive }) =>
+                                `sales-nav-item ${isActive ? 'active' : ''}`
+                            }
+                            title={collapsed ? label : undefined}
+                            onClick={() => isOpen && toggleSidebar()}
+                        >
+                            <span className="sales-nav-icon"><Icon size={18} /></span>
+                            {!collapsed && <span className="sales-nav-label">{label}</span>}
+                            {!collapsed && <span className="sales-nav-indicator" />}
+                        </NavLink>
+                    ))}
+                </nav>
+
+                {/* User footer */}
+                <div className="sales-sidebar-footer">
+                    <div className="sales-user-card">
+                        <div className="sales-user-avatar">{initials}</div>
+                        {!collapsed && (
+                            <div className="sales-user-info">
+                                <span className="sales-user-name">{user?.name || 'Sales User'}</span>
+                                <span className="sales-user-role">{user?.role || 'Sales Staff'}</span>
+                            </div>
+                        )}
+                    </div>
+                    <button
+                        className="sales-logout-btn"
+                        onClick={handleLogout}
+                        title="Logout"
+                    >
+                        <LogOut size={17} />
+                        {!collapsed && <span>Logout</span>}
+                    </button>
+                </div>
+            </aside>
+        </>
+    );
+};
+
+export default SalesSidebar;

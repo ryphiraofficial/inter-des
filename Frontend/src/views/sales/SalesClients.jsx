@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Loader, Mail, Phone, MapPin, User, Plus, X } from 'lucide-react';
 import { clientAPI } from '../../models/api';
-import Skeleton from '../common/Skeleton';
-import './css/StaffClients.css';
+import Skeleton from './components/Skeleton';
+import './css/SalesClients.css';
 
-const StaffClients = ({ isOpportunities }) => {
+const SalesClients = ({ isOpportunities }) => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [showModal, setShowModal] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    const searchTerm = searchParams.get('q') || '';
+    const showModal = searchParams.get('action') === 'new';
+
+    const closeModal = () => {
+        const p = new URLSearchParams(searchParams);
+        p.delete('action');
+        setSearchParams(p);
+    };
 
     const initialFormData = {
         name: '',
@@ -57,7 +66,7 @@ const StaffClients = ({ isOpportunities }) => {
             const response = await clientAPI.create(formData);
             if (response.success) {
                 alert('Client added successfully');
-                setShowModal(false);
+                closeModal();
                 setFormData(initialFormData);
                 fetchClients();
             }
@@ -78,22 +87,7 @@ const StaffClients = ({ isOpportunities }) => {
     return (
         <div className="sc-clients-container">
             <div className="sc-clients-wrapper">
-                <div className="sc-controls">
-                    <div className="sc-search-wrapper">
-                        <Search className="sc-search-icon" size={18} />
-                        <input
-                            type="text"
-                            className="sc-search-input"
-                            placeholder="Search by name, email, or site address..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <button className="sc-btn-add" onClick={() => setShowModal(true)}>
-                        <Plus size={18} />
-                        <span>{isOpportunities ? 'Add Opportunity' : 'Add Client'}</span>
-                    </button>
-                </div>
+
 
                 <div className="sc-list-card">
                     <div className="sc-table-container">
@@ -178,7 +172,7 @@ const StaffClients = ({ isOpportunities }) => {
                     <div className="sc-modal-card">
                         <div className="sc-modal-header">
                             <h3>Add New Client</h3>
-                            <button onClick={() => setShowModal(false)} className="sc-modal-close">
+                            <button type="button" onClick={closeModal} className="sc-modal-close">
                                 <X size={20} />
                             </button>
                         </div>
@@ -212,7 +206,7 @@ const StaffClients = ({ isOpportunities }) => {
                                 </div>
                             </div>
                             <div className="sc-modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="sc-btn-cancel">Cancel</button>
+                                <button type="button" onClick={closeModal} className="sc-btn-cancel">Cancel</button>
                                 <button type="submit" disabled={submitting} className="sc-btn-submit">
                                     {submitting ? <Loader className="spinner" size={16} /> : 'Save Client'}
                                 </button>
@@ -226,4 +220,4 @@ const StaffClients = ({ isOpportunities }) => {
     );
 };
 
-export default StaffClients;
+export default SalesClients;

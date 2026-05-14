@@ -12,8 +12,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../models/context/ToastContext';
 import { clientAPI, uploadAPI, siteVisitAPI, taskAPI } from '../../models/api';
-import CustomSelect from '../common/CustomSelect';
-import DatePicker from '../common/DatePicker';
+import CustomSelect from './components/CustomSelect';
+import DatePicker from './components/DatePicker';
 import './css/SiteVisit.css';
 
 const SiteVisit = () => {

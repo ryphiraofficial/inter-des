@@ -17,7 +17,8 @@
 }
 
 .sc-clients-wrapper {
-    max-width: 1400px;
+    width: 90%;
+    max-width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -40,69 +41,7 @@
     letter-spacing: -0.5px;
 }
 
-.sc-btn-add {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.85rem 1.5rem;
-    background: #6366f1;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    white-space: nowrap;
-}
 
-.sc-btn-add:hover {
-    background: #4f46e5;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-}
-
-.sc-controls {
-    background: white;
-    padding: 1rem 1.25rem;
-    border-radius: 20px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sc-search-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.sc-search-icon {
-    position: absolute;
-    left: 1.25rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-}
-
-.sc-search-input {
-    width: 100%;
-    padding: 0.9rem 1rem 0.9rem 3.5rem;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 14px;
-    font-size: 1rem;
-    transition: all 0.2s;
-    background: #fcfdfe;
-}
-
-.sc-search-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
-}
 
 /* List Card & Table */
 .sc-list-card {
