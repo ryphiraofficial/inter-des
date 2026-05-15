@@ -85,63 +85,39 @@ const TeamOverview = () => {
         }
     };
 
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
+
     return (
-        <div className="pm-dashboard pm-team-overview">
-            <div className="pm-welcome-header pm-team-header" style={{ padding: '1.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div className="pm-team-header-actions" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }} />
-                
-                {/* Search Bar */}
-                <div className="pm-team-search-row" style={{ display: 'flex', gap: '1rem', width: '100%', zIndex: 1 }}>
-                    <div className="pm-search-bar" style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f1f5f9', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <div className="pm-dashboard">
+            <div className="pm-toolbar">
+                <div className="pm-toolbar-left">
+                    <div className="pm-search-input-container" style={{ width: '300px' }}>
                         <Search size={16} color="#64748b" />
                         <input 
                             type="text" 
+                            className="pm-search-input"
                             placeholder="Search by name or role..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{ background: 'transparent', border: 'none', outline: 'none', color: '#0f172a', paddingLeft: '0.5rem', width: '100%' }}
                         />
                     </div>
                 </div>
+                <button onClick={() => setIsModalOpen(true)} className="pm-quick-action-btn">
+                    <Plus size={16} /> <span>Add Member</span>
+                </button>
             </div>
 
-            {error && <div style={{ color: 'red', marginBottom: '1rem', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
+            {error && <div className="pm-error-message">{error}</div>}
 
             <div className="pm-card" style={{ padding: 0, overflow: 'hidden' }}>
                 {loading ? (
-                    <div className="pm-table-container">
-                        <table className="pm-table">
-                            <thead>
-                                <tr>
-                                    <th>Member Profile</th>
-                                    <th className="pm-desktop-only">Contact Info</th>
-                                    <th className="pm-desktop-only">Reporting Team</th>
-                                    <th className="pm-desktop-only">Workload & Capacity</th>
-                                    <th className="pm-desktop-only">Performance</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array.from({ length: 4 }).map((_, idx) => (
-                                    <tr key={`team-skeleton-${idx}`} className="pm-table-row">
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                <div className="pm-skeleton-circle" style={{ width: '40px', height: '40px' }} />
-                                                <div style={{ minWidth: 0, flex: 1 }}>
-                                                    <div className="pm-skeleton-line" style={{ width: '55%', marginBottom: '8px' }} />
-                                                    <div className="pm-skeleton-line" style={{ width: '35%' }} />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '75%' }} /></td>
-                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '58%' }} /></td>
-                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '68%' }} /></td>
-                                        <td className="pm-desktop-only"><div className="pm-skeleton-line" style={{ width: '52%' }} /></td>
-                                        <td><div className="pm-skeleton-circle" style={{ width: '24px', height: '24px', marginLeft: 'auto' }} /></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="pm-loading-state">
+                        <div className="pm-loading-spinner"></div>
+                        <span>Loading team members...</span>
                     </div>
                 ) : (
                     <div className="pm-table-container">
@@ -149,145 +125,208 @@ const TeamOverview = () => {
                             <thead>
                                 <tr>
                                     <th>Member Profile</th>
-                                    <th className="pm-desktop-only">Contact Info</th>
                                     <th className="pm-desktop-only">Reporting Team</th>
                                     <th className="pm-desktop-only">Workload & Capacity</th>
                                     <th className="pm-desktop-only">Performance</th>
-                                    <th></th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                    <th className="pm-mobile-only"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredTeam.map(member => (
-                                    <tr key={member._id} className="pm-table-row">
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                <div className="pm-team-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #e2e8f0' }}>
-                                                    {member.name ? member.name.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase() : '?'}
-                                                </div>
-                                                <div>
-                                                    <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '2px' }}>{member.name}</div>
-                                                    <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <Briefcase size={12} /> {member.role}
+                                    <React.Fragment key={member._id}>
+                                        <tr className={`pm-table-row ${expandedRow === member._id ? 'active' : ''}`} onClick={() => window.innerWidth <= 768 && toggleRow(member._id)}>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <div className="pm-team-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
+                                                        {member.name ? member.name.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase() : '?'}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '2px', fontSize: '0.95rem' }}>{member.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                            <Briefcase size={12} /> {member.role}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="pm-desktop-only">
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.8rem', color: '#334155' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={12} color="#64748b" /> {member.email}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={12} color="#64748b" /> {member.phone}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={12} color="#64748b" /> {member.location}</div>
-                                            </div>
-                                        </td>
-                                        <td className="pm-desktop-only">
-                                            {member.reportingManager && member.reportingManager.length > 0 ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                                    {member.reportingManager.map((sub, idx) => (
-                                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}>
-                                                            <Users size={12} color="#94a3b8" />
-                                                            <span style={{ fontWeight: 600, color: '#334155' }}>{sub}</span>
+                                            </td>
+                                            <td className="pm-desktop-only">
+                                                {member.reportingManager && member.reportingManager.length > 0 ? (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                                                        {member.reportingManager.map((sub, idx) => (
+                                                            <span key={idx} style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', background: '#f1f5f9', color: '#475569', fontWeight: 600 }}>
+                                                                {sub}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>None</span>
+                                                )}
+                                            </td>
+                                            <td className="pm-desktop-only" style={{ minWidth: '160px' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', display: 'flex', justifyContent: 'space-between' }}>
+                                                        <span>{member.activeProjects} Projects</span>
+                                                        <span style={{ color: getCapacityColor(member.workloadPercentage) }}>{member.workloadPercentage}%</span>
+                                                    </div>
+                                                    <div className="pm-capacity-bar" style={{ background: '#f1f5f9', height: '6px', borderRadius: '3px' }}>
+                                                        <div className="pm-capacity-fill" style={{ width: `${member.workloadPercentage}%`, background: getCapacityColor(member.workloadPercentage), height: '100%' }}></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="pm-desktop-only">
+                                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.6rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, background: '#f8fafc', border: '1px solid #e2e8f0', color: '#334155' }}>
+                                                    <Award size={14} color={member.performance === 'Outstanding' ? '#f59e0b' : member.performance === 'Excellent' ? '#10b981' : '#64748b'} />
+                                                    {member.performance}
+                                                </div>
+                                            </td>
+                                            <td style={{ textAlign: 'right' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                    <button className="pm-icon-btn pm-desktop-only" style={{ color: '#3b82f6', background: '#eff6ff' }}>
+                                                        <Mail size={16} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            if(window.confirm('Delete this team member?')) {
+                                                                await teamMemberAPI.deleteMember(member._id);
+                                                                fetchTeam();
+                                                            }
+                                                        }}
+                                                        className="pm-icon-btn" style={{ color: '#ef4444', background: '#fee2e2' }}>
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="pm-mobile-only">
+                                                <ChevronDown size={18} style={{ color: '#94a3b8', transform: expandedRow === member._id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                                            </td>
+                                        </tr>
+                                        {expandedRow === member._id && (
+                                            <tr className="pm-expanded-row">
+                                                <td colSpan="6">
+                                                    <div className="pm-expanded-content">
+                                                        <div className="pm-expanded-grid">
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Contact Details</span>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+                                                                        <Mail size={14} color="#64748b" /> {member.email}
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+                                                                        <Phone size={14} color="#64748b" /> {member.phone}
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+                                                                        <MapPin size={14} color="#64748b" /> {member.location}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Workload & Projects</span>
+                                                                <div style={{ marginTop: '8px' }}>
+                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{member.activeProjects} Active Projects</span>
+                                                                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: getCapacityColor(member.workloadPercentage) }}>{member.workloadPercentage}% Capacity</span>
+                                                                    </div>
+                                                                    <div className="pm-capacity-bar" style={{ background: '#e2e8f0', height: '8px', borderRadius: '4px' }}>
+                                                                        <div className="pm-capacity-fill" style={{ width: `${member.workloadPercentage}%`, background: getCapacityColor(member.workloadPercentage), height: '100%' }}></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {member.reportingManager && member.reportingManager.length > 0 && (
+                                                                <div className="pm-expanded-item">
+                                                                    <span className="pm-expanded-label">Reporting Team</span>
+                                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '6px' }}>
+                                                                        {member.reportingManager.map((sub, idx) => (
+                                                                            <span key={idx} style={{ padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', background: '#eef2ff', color: '#4f46e5', fontWeight: 600 }}>
+                                                                                {sub}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>None</span>
-                                            )}
-                                        </td>
-                                        <td className="pm-desktop-only" style={{ minWidth: '180px' }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#0f172a', display: 'flex', justifyContent: 'space-between' }}>
-                                                    <span><Activity size={12} style={{ marginRight: '4px', verticalAlign: 'middle', color: '#64748b' }}/> Active Projects: {member.activeProjects}</span>
-                                                    <span style={{ color: getCapacityColor(member.workloadPercentage) }}>{member.workloadPercentage}%</span>
-                                                </div>
-                                                <div className="pm-capacity-bar" style={{ background: '#f1f5f9', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                                                    <div className="pm-capacity-fill" style={{ width: `${member.workloadPercentage}%`, background: getCapacityColor(member.workloadPercentage), height: '100%', borderRadius: '3px' }}></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="pm-desktop-only">
-                                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.75rem', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600, background: '#f8fafc', border: '1px solid #e2e8f0', color: '#334155' }}>
-                                                <Award size={14} color={member.performance === 'Outstanding' ? '#f59e0b' : member.performance === 'Excellent' ? '#10b981' : '#64748b'} />
-                                                {member.performance}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <button 
-                                                onClick={async () => {
-                                                    if(window.confirm('Delete this team member?')) {
-                                                        await teamMemberAPI.deleteMember(member._id);
-                                                        fetchTeam();
-                                                    }
-                                                }}
-                                                className="pm-icon-btn" style={{ color: '#ef4444' }}>
-                                                <X size={16} />
-                                            </button>
-                                        </td>
-                                    </tr>
+                                                        <div style={{ marginTop: '1.25rem' }}>
+                                                            <button className="pm-quick-action-btn" style={{ width: '100%', justifyContent: 'center' }}>
+                                                                <Mail size={16} /> Contact Member
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 ))}
-                                {filteredTeam.length === 0 && (
-                                    <tr>
-                                        <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>No team members found.</td>
-                                    </tr>
-                                )}
                             </tbody>
                         </table>
                     </div>
                 )}
             </div>
+                {filteredTeam.length === 0 && !loading && (
+                    <div className="pm-loading-state">
+                        <span>No team members found.</span>
+                    </div>
+                )}
 
             {/* Add Member Modal */}
             {isModalOpen && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                    <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', width: '500px', maxWidth: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>Add Team Member</h2>
-                            <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={20} /></button>
+                <div className="pm-modal-overlay">
+                    <div className="pm-modal" style={{ maxWidth: '600px' }}>
+                        <div className="pm-modal-header">
+                            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.25rem' }}>
+                                <Users size={24} color="#3b82f6" /> Add Team Member
+                            </h2>
+                            <button onClick={() => setIsModalOpen(false)} className="pm-modal-close">
+                                <X size={20} />
+                            </button>
                         </div>
-                        <form onSubmit={handleCreateMember} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            <div style={{ gridColumn: 'span 2' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Full Name *</label>
-                                <input required type="text" value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                        <form onSubmit={handleCreateMember}>
+                            <div className="pm-modal-body" data-lenis-prevent>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+                                    <div style={{ gridColumn: 'span 2' }}>
+                                        <label className="pm-input-label">Full Name *</label>
+                                        <input required type="text" className="pm-text-input" value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Role *</label>
+                                        <input required type="text" className="pm-text-input" value={newMember.role} onChange={e => setNewMember({...newMember, role: e.target.value})} placeholder="e.g. Project Engineer" />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Location *</label>
+                                        <input required type="text" className="pm-text-input" value={newMember.location} onChange={e => setNewMember({...newMember, location: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Email *</label>
+                                        <input required type="email" className="pm-text-input" value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Phone *</label>
+                                        <input required type="text" className="pm-text-input" value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} />
+                                    </div>
+                                    <div style={{ gridColumn: 'span 2' }}>
+                                        <label className="pm-input-label">Reporting Team (Comma separated names)</label>
+                                        <input type="text" className="pm-text-input" value={newMember.reportingManager} onChange={e => setNewMember({...newMember, reportingManager: e.target.value})} placeholder="e.g. Arjun M., Neha S." />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Active Projects</label>
+                                        <input type="number" min="0" className="pm-text-input" value={newMember.activeProjects} onChange={e => setNewMember({...newMember, activeProjects: parseInt(e.target.value)})} />
+                                    </div>
+                                    <div>
+                                        <label className="pm-input-label">Workload %</label>
+                                        <input type="number" min="0" max="100" className="pm-text-input" value={newMember.workloadPercentage} onChange={e => setNewMember({...newMember, workloadPercentage: parseInt(e.target.value)})} />
+                                    </div>
+                                    <div style={{ gridColumn: 'span 2' }}>
+                                        <label className="pm-input-label">Performance</label>
+                                        <select className="pm-text-input" value={newMember.performance} onChange={e => setNewMember({...newMember, performance: e.target.value})}>
+                                            <option value="Good">Good</option>
+                                            <option value="Excellent">Excellent</option>
+                                            <option value="Outstanding">Outstanding</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Role *</label>
-                                <input required type="text" value={newMember.role} onChange={e => setNewMember({...newMember, role: e.target.value})} placeholder="e.g. Project Engineer" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Email *</label>
-                                <input required type="email" value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Phone *</label>
-                                <input required type="text" value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Location *</label>
-                                <input required type="text" value={newMember.location} onChange={e => setNewMember({...newMember, location: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 2' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Reporting Team (Comma separated names)</label>
-                                <input type="text" value={newMember.reportingManager} onChange={e => setNewMember({...newMember, reportingManager: e.target.value})} placeholder="e.g. Arjun M., Neha S." style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Active Projects</label>
-                                <input type="number" min="0" value={newMember.activeProjects} onChange={e => setNewMember({...newMember, activeProjects: parseInt(e.target.value)})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 1' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Workload %</label>
-                                <input type="number" min="0" max="100" value={newMember.workloadPercentage} onChange={e => setNewMember({...newMember, workloadPercentage: parseInt(e.target.value)})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                            </div>
-                            <div style={{ gridColumn: 'span 2' }}>
-                                <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>Performance</label>
-                                <select value={newMember.performance} onChange={e => setNewMember({...newMember, performance: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white' }}>
-                                    <option value="Good">Good</option>
-                                    <option value="Excellent">Excellent</option>
-                                    <option value="Outstanding">Outstanding</option>
-                                </select>
-                            </div>
-                            <div style={{ gridColumn: 'span 2', marginTop: '1rem' }}>
-                                <button type="submit" style={{ width: '100%', padding: '0.75rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>
-                                    Add Member
-                                </button>
+                            <div className="pm-modal-footer">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="pm-modal-btn secondary" style={{ flex: 1 }}>Cancel</button>
+                                <button type="submit" className="pm-modal-btn primary" style={{ flex: 1 }}>Add Member</button>
                             </div>
                         </form>
                     </div>

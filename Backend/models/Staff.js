@@ -52,6 +52,17 @@ const StaffSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    salary: {
+        baseSalary: { type: Number, default: 0 },
+        hra: { type: Number, default: 0 },
+        travelAllowance: { type: Number, default: 0 },
+        otherAllowances: { type: Number, default: 0 },
+        providentFund: { type: Number, default: 0 },
+        taxDeduction: { type: Number, default: 0 },
+        otherDeductions: { type: Number, default: 0 },
+        effectiveFrom: { type: Date, default: null },
+        notes: { type: String, default: '' }
     }
 }, {
     timestamps: true

@@ -97,6 +97,19 @@
     to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 
+@media (max-width: 768px) {
+    .dp-popover {
+        left: 50%;
+        transform: translateX(-50%);
+        animation: dp-fade-in-mobile 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes dp-fade-in-mobile {
+        from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
+        to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    }
+}
+
 /* ─── react-day-picker overrides (shadcn/ui style) ─────────────────── */
 
 .dp-popover .rdp,

@@ -1728,8 +1728,29 @@
     }
     
     .pm-expanded-grid {
+        display: grid;
         grid-template-columns: 1fr;
         gap: 1.25rem;
+    }
+
+    .pm-expanded-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .pm-expanded-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .pm-expanded-value {
+        font-size: 0.9rem;
+        color: #1e293b;
+        font-weight: 600;
     }
 
     .pm-toolbar {

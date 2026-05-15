@@ -21,6 +21,11 @@ const Approvals = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filtersOpen, setFiltersOpen] = useState(false);
+    const [expandedRow, setExpandedRow] = useState(null);
+
+    const toggleRow = (id) => {
+        setExpandedRow(expandedRow === id ? null : id);
+    };
     
     const [newRequest, setNewRequest] = useState({
         requestTitle: '',
@@ -126,26 +131,32 @@ const Approvals = () => {
         <div className="pm-dashboard">
             {/* Toolbar */}
             <div className="pm-approvals-toolbar">
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    <button
-                        onClick={() => setFiltersOpen(o => !o)}
-                        className={`pm-filter-toggle-btn ${filtersOpen ? 'active' : ''}`}
-                    >
-                        <Filter size={15} />
-                        <span className="pm-desktop-only">Filters</span>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                        <button
+                            onClick={() => setFiltersOpen(o => !o)}
+                            className={`pm-filter-toggle-btn ${filtersOpen ? 'active' : ''}`}
+                        >
+                            <Filter size={15} />
+                            <span className="pm-desktop-only">Filters</span>
+                            {filterStatus !== 'all' && (
+                                <span className="pm-filter-count">1</span>
+                            )}
+                            <ChevronDown size={14} className={`pm-chevron ${filtersOpen ? 'open' : ''}`} />
+                        </button>
                         {filterStatus !== 'all' && (
-                            <span className="pm-filter-count">1</span>
+                            <div className="pm-filter-chip pm-desktop-only">
+                                {filterStatus}
+                                <button onClick={() => setFilterStatus('all')} className="pm-filter-chip-close">
+                                    <X size={12} />
+                                </button>
+                            </div>
                         )}
-                        <ChevronDown size={14} className={`pm-chevron ${filtersOpen ? 'open' : ''}`} />
+                    </div>
+
+                    <button onClick={() => setIsModalOpen(true)} className="pm-quick-action-btn">
+                        <Plus size={16} /> <span>New Request</span>
                     </button>
-                    {filterStatus !== 'all' && (
-                        <div className="pm-filter-chip">
-                            {filterStatus}
-                            <button onClick={() => setFilterStatus('all')} className="pm-filter-chip-close">
-                                <X size={12} />
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -158,7 +169,7 @@ const Approvals = () => {
                             {['all', 'Pending', 'Approved', 'Rejected'].map(s => (
                                 <button 
                                     key={s} 
-                                    onClick={() => setFilterStatus(s)} 
+                                    onClick={() => { setFilterStatus(s); setFiltersOpen(false); }} 
                                     className={`pm-status-chip-btn ${filterStatus === s ? 'active' : ''}`}
                                 >
                                     {s === 'all' ? 'All Statuses' : s}
@@ -172,57 +183,51 @@ const Approvals = () => {
             {/* Sub-tabs */}
             <div className="pm-approvals-tabs">
                 <button 
-                    onClick={() => setActiveTab('general')}
+                    onClick={() => { setActiveTab('general'); setExpandedRow(null); }}
                     className={`pm-approvals-tab-btn ${activeTab === 'general' ? 'active' : ''}`}
                 >
-                    <FileText size={18} /> General
+                    <FileText size={18} /> <span>General Approvals</span>
                 </button>
                 <button 
-                    onClick={() => setActiveTab('staff')}
+                    onClick={() => { setActiveTab('staff'); setExpandedRow(null); }}
                     className={`pm-approvals-tab-btn ${activeTab === 'staff' ? 'active' : ''}`}
                 >
-                    <Users size={18} /> Staff
+                    <Users size={18} /> <span>Staff Replacements</span>
                 </button>
                 <button 
-                    onClick={() => setActiveTab('leaves')}
+                    onClick={() => { setActiveTab('leaves'); setExpandedRow(null); }}
                     className={`pm-approvals-tab-btn ${activeTab === 'leaves' ? 'active' : ''}`}
                 >
-                    <Clock size={18} /> Leaves
+                    <Clock size={18} /> <span>Team Leaves</span>
                 </button>
             </div>
 
             {error && <div className="pm-error-message">{error}</div>}
 
-            <div className={activeTab !== 'leaves' ? "pm-card" : ""} style={{ padding: activeTab === 'leaves' ? 0 : undefined, overflow: 'hidden' }}>
+            <div className={activeTab !== 'leaves' ? "pm-card" : ""} style={{ padding: 0, overflow: 'hidden', border: activeTab === 'leaves' ? 'none' : undefined, background: activeTab === 'leaves' ? 'transparent' : undefined, boxShadow: activeTab === 'leaves' ? 'none' : undefined }}>
                 {loading && activeTab !== 'leaves' ? (
-                    <div className="pm-mobile-approvals-list" style={{ display: 'block', padding: '1rem' }}>
-                        {Array.from({ length: 4 }).map((_, idx) => (
-                            <div key={`approval-skeleton-${idx}`} className="pm-approval-mobile-card">
-                                <div className="pm-skeleton-line" style={{ width: '62%', marginBottom: '10px' }} />
-                                <div className="pm-skeleton-line" style={{ width: '42%', marginBottom: '14px' }} />
-                                <div className="pm-skeleton-line" style={{ width: '85%', marginBottom: '8px' }} />
-                                <div className="pm-skeleton-line" style={{ width: '74%' }} />
-                            </div>
-                        ))}
+                    <div className="pm-loading-state">
+                        <div className="pm-loading-spinner"></div>
+                        <span>Loading requests...</span>
                     </div>
                 ) : activeTab === 'general' ? (
-                    <>
-                        {/* Desktop Table */}
-                        <div className="pm-table-container pm-desktop-only">
-                            <table className="pm-table">
-                                <thead>
-                                    <tr>
-                                        <th>Request Details</th>
-                                        <th>Project</th>
-                                        <th>Submitted By</th>
-                                        <th>Stage / Value</th>
-                                        <th>Status</th>
-                                        <th style={{ textAlign: 'right' }}>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredApprovals.map(item => (
-                                        <tr key={item._id} className="pm-table-row">
+                    <div className="pm-table-container">
+                        <table className="pm-table">
+                            <thead>
+                                <tr>
+                                    <th>Request Details</th>
+                                    <th className="pm-desktop-only">Project</th>
+                                    <th className="pm-desktop-only">Submitted By</th>
+                                    <th className="pm-desktop-only">Stage / Value</th>
+                                    <th>Status</th>
+                                    <th className="pm-desktop-only" style={{ textAlign: 'right' }}>Actions</th>
+                                    <th className="pm-mobile-only"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredApprovals.map(item => (
+                                    <React.Fragment key={item._id}>
+                                        <tr className={`pm-table-row ${expandedRow === item._id ? 'active' : ''}`} onClick={() => window.innerWidth <= 768 && toggleRow(item._id)}>
                                             <td>
                                                 <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     {item.requestType === 'Vendor' && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}></span>}
@@ -230,12 +235,13 @@ const Approvals = () => {
                                                 </div>
                                                 <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <Clock size={12} /> {new Date(item.submittedDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                                                    <span className="pm-mobile-only" style={{ marginLeft: '4px', color: '#94a3b8' }}>• {item.projectName}</span>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 500 }}>{item.projectName}</div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     <div className="pm-team-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}>
                                                         {item.submittedBy ? item.submittedBy.split(' ').map(n=>n[0]).join('').substring(0,2) : '?'}
@@ -243,110 +249,98 @@ const Approvals = () => {
                                                     <span style={{ fontSize: '0.85rem', color: '#334155' }}>{item.submittedBy}</span>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <span className="pm-status-badge planning" style={{ display: 'inline-block', marginBottom: '4px' }}>{TYPE_LABELS[item.requestType] || item.requestType}</span>
                                                 {item.value > 0 && <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a' }}>{formatCurrency(item.value)}</div>}
                                             </td>
                                             <td>
-                                                <span style={{
-                                                    padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase',
-                                                    background: item.status.toLowerCase() === 'approved' ? '#dcfce7' : item.status.toLowerCase() === 'rejected' ? '#fee2e2' : '#fef3c7',
-                                                    color: item.status.toLowerCase() === 'approved' ? '#16a34a' : item.status.toLowerCase() === 'rejected' ? '#ef4444' : '#d97706'
-                                                }}>
+                                                <span className={`pm-status-badge ${item.status.toLowerCase() === 'approved' ? 'active' : item.status.toLowerCase() === 'rejected' ? 'on-hold' : 'planning'}`}>
                                                     {item.status}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                                     <button className="pm-icon-btn" title="View Details" style={{ color: '#3b82f6', background: '#eff6ff' }}>
                                                         <ExternalLink size={16} />
                                                     </button>
                                                     {item.status.toLowerCase() === 'pending' && (
                                                         <>
-                                                            <button onClick={() => handleUpdateStatus(item._id, 'rejected')} className="pm-icon-btn" title="Reject" style={{ color: '#ef4444', background: '#fee2e2' }}>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleUpdateStatus(item._id, 'rejected'); }} className="pm-icon-btn" title="Reject" style={{ color: '#ef4444', background: '#fee2e2' }}>
                                                                 <XCircle size={16} />
                                                             </button>
-                                                            <button onClick={() => handleUpdateStatus(item._id, 'approved')} className="pm-icon-btn" title="Approve" style={{ color: '#10b981', background: '#dcfce7' }}>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleUpdateStatus(item._id, 'approved'); }} className="pm-icon-btn" title="Approve" style={{ color: '#10b981', background: '#dcfce7' }}>
                                                                 <CheckCircle size={16} />
                                                             </button>
                                                         </>
                                                     )}
                                                 </div>
                                             </td>
+                                            <td className="pm-mobile-only">
+                                                <ChevronDown size={18} style={{ color: '#94a3b8', transform: expandedRow === item._id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                                            </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Mobile List */}
-                        <div className="pm-mobile-approvals-list">
-                            {filteredApprovals.map(item => (
-                                <div key={item._id} className="pm-approval-mobile-card">
-                                    <div className="pm-approval-card-header">
-                                        <div>
-                                            <div className="pm-approval-card-title">{item.requestTitle}</div>
-                                            <div className="pm-approval-card-project">
-                                                <FileText size={14} /> {item.projectName}
-                                            </div>
-                                        </div>
-                                        <span style={{
-                                            padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                                            background: item.status.toLowerCase() === 'approved' ? '#dcfce7' : item.status.toLowerCase() === 'rejected' ? '#fee2e2' : '#fef3c7',
-                                            color: item.status.toLowerCase() === 'approved' ? '#16a34a' : item.status.toLowerCase() === 'rejected' ? '#ef4444' : '#d97706'
-                                        }}>
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                    <div className="pm-approval-card-meta">
-                                        <div className="pm-approval-meta-item">
-                                            <span className="pm-approval-meta-label">Submitted By</span>
-                                            <span className="pm-approval-meta-value">{item.submittedBy}</span>
-                                        </div>
-                                        <div className="pm-approval-meta-item">
-                                            <span className="pm-approval-meta-label">Type / Value</span>
-                                            <span className="pm-approval-meta-value">
-                                                {item.requestType} {item.value > 0 ? `(${formatCurrency(item.value)})` : ''}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="pm-approval-card-actions">
-                                        <button className="pm-icon-btn" style={{ color: '#3b82f6', background: '#eff6ff' }}>
-                                            <ExternalLink size={16} />
-                                        </button>
-                                        {item.status.toLowerCase() === 'pending' && (
-                                            <>
-                                                <button onClick={() => handleUpdateStatus(item._id, 'rejected')} className="pm-icon-btn" style={{ color: '#ef4444', background: '#fee2e2' }}>
-                                                    <XCircle size={16} />
-                                                </button>
-                                                <button onClick={() => handleUpdateStatus(item._id, 'approved')} className="pm-icon-btn" style={{ color: '#10b981', background: '#dcfce7' }}>
-                                                    <CheckCircle size={16} />
-                                                </button>
-                                            </>
+                                        {expandedRow === item._id && (
+                                            <tr className="pm-expanded-row">
+                                                <td colSpan="7">
+                                                    <div className="pm-expanded-content">
+                                                        <div className="pm-expanded-grid">
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Submitted By</span>
+                                                                <span className="pm-expanded-value">{item.submittedBy}</span>
+                                                            </div>
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Type / Category</span>
+                                                                <span className="pm-expanded-value">{TYPE_LABELS[item.requestType] || item.requestType}</span>
+                                                            </div>
+                                                            {item.value > 0 && (
+                                                                <div className="pm-expanded-item">
+                                                                    <span className="pm-expanded-label">Estimated Value</span>
+                                                                    <span className="pm-expanded-value">{formatCurrency(item.value)}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem' }}>
+                                                            <button className="pm-quick-action-btn" style={{ flex: 1, background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0' }}>
+                                                                <ExternalLink size={16} /> View Details
+                                                            </button>
+                                                            {item.status.toLowerCase() === 'pending' && (
+                                                                <>
+                                                                    <button onClick={() => handleUpdateStatus(item._id, 'rejected')} className="pm-quick-action-btn" style={{ flex: 1, background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca' }}>
+                                                                        Reject
+                                                                    </button>
+                                                                    <button onClick={() => handleUpdateStatus(item._id, 'approved')} className="pm-quick-action-btn" style={{ flex: 1, background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0' }}>
+                                                                        Approve
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : activeTab === 'staff' ? (
-                    <>
-                        {/* Desktop Table */}
-                        <div className="pm-table-container pm-desktop-only">
-                            <table className="pm-table">
-                                <thead>
-                                    <tr>
-                                        <th>Replacement For</th>
-                                        <th>Project</th>
-                                        <th>Reason</th>
-                                        <th>Requested By</th>
-                                        <th>Status</th>
-                                        <th style={{ textAlign: 'right' }}>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredApprovals.map(item => (
-                                        <tr key={item._id} className="pm-table-row">
+                    <div className="pm-table-container">
+                        <table className="pm-table">
+                            <thead>
+                                <tr>
+                                    <th>Replacement For</th>
+                                    <th className="pm-desktop-only">Project</th>
+                                    <th className="pm-desktop-only">Reason</th>
+                                    <th className="pm-desktop-only">Requested By</th>
+                                    <th>Status</th>
+                                    <th className="pm-desktop-only" style={{ textAlign: 'right' }}>Actions</th>
+                                    <th className="pm-mobile-only"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredApprovals.map(item => (
+                                    <React.Fragment key={item._id}>
+                                        <tr className={`pm-table-row ${expandedRow === item._id ? 'active' : ''}`} onClick={() => window.innerWidth <= 768 && toggleRow(item._id)}>
                                             <td>
                                                 <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     <UserX size={16} color="#ef4444" />
@@ -354,103 +348,89 @@ const Approvals = () => {
                                                 </div>
                                                 <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Role: {item.staffType}</div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 500 }}>{item.projectId?.projectName}</div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ fontSize: '0.85rem', color: '#475569', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={item.reason}>
                                                     {item.reason}
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ fontSize: '0.85rem', color: '#334155' }}>{item.requestedBy?.fullName}</div>
                                                 <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{new Date(item.createdAt).toLocaleDateString()}</div>
                                             </td>
                                             <td>
-                                                <span style={{
-                                                    padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase',
-                                                    background: item.status.toLowerCase() === 'approved' ? '#dcfce7' : item.status.toLowerCase() === 'rejected' ? '#fee2e2' : '#fef3c7',
-                                                    color: item.status.toLowerCase() === 'approved' ? '#16a34a' : item.status.toLowerCase() === 'rejected' ? '#ef4444' : '#d97706'
-                                                }}>
+                                                <span className={`pm-status-badge ${item.status.toLowerCase() === 'approved' ? 'active' : item.status.toLowerCase() === 'rejected' ? 'on-hold' : 'planning'}`}>
                                                     {item.status}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td className="pm-desktop-only">
                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                                     {item.status.toLowerCase() === 'pending' && (
                                                         <>
-                                                            <button onClick={() => handleActionStaffRequest(item._id, 'Rejected')} className="pm-icon-btn" title="Reject" style={{ color: '#ef4444', background: '#fee2e2' }}>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleActionStaffRequest(item._id, 'Rejected'); }} className="pm-icon-btn" title="Reject" style={{ color: '#ef4444', background: '#fee2e2' }}>
                                                                 <XCircle size={16} />
                                                             </button>
-                                                            <button onClick={() => handleActionStaffRequest(item._id, 'Approved')} className="pm-icon-btn" title="Approve" style={{ color: '#10b981', background: '#dcfce7' }}>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleActionStaffRequest(item._id, 'Approved'); }} className="pm-icon-btn" title="Approve" style={{ color: '#10b981', background: '#dcfce7' }}>
                                                                 <CheckCircle size={16} />
                                                             </button>
                                                         </>
                                                     )}
                                                 </div>
                                             </td>
+                                            <td className="pm-mobile-only">
+                                                <ChevronDown size={18} style={{ color: '#94a3b8', transform: expandedRow === item._id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                                            </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Mobile List */}
-                        <div className="pm-mobile-approvals-list">
-                            {filteredApprovals.map(item => (
-                                <div key={item._id} className="pm-approval-mobile-card">
-                                    <div className="pm-approval-card-header">
-                                        <div>
-                                            <div className="pm-approval-card-title">{item.currentStaffId?.fullName}</div>
-                                            <div className="pm-approval-card-project">
-                                                <UserX size={14} /> {item.staffType}
-                                            </div>
-                                        </div>
-                                        <span style={{
-                                            padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                                            background: item.status.toLowerCase() === 'approved' ? '#dcfce7' : item.status.toLowerCase() === 'rejected' ? '#fee2e2' : '#fef3c7',
-                                            color: item.status.toLowerCase() === 'approved' ? '#16a34a' : item.status.toLowerCase() === 'rejected' ? '#ef4444' : '#d97706'
-                                        }}>
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem', fontStyle: 'italic' }}>
-                                        "{item.reason}"
-                                    </div>
-                                    <div className="pm-approval-card-meta">
-                                        <div className="pm-approval-meta-item">
-                                            <span className="pm-approval-meta-label">Project</span>
-                                            <span className="pm-approval-meta-value">{item.projectId?.projectName}</span>
-                                        </div>
-                                        <div className="pm-approval-meta-item">
-                                            <span className="pm-approval-meta-label">Requested By</span>
-                                            <span className="pm-approval-meta-value">{item.requestedBy?.fullName}</span>
-                                        </div>
-                                    </div>
-                                    <div className="pm-approval-card-actions">
-                                        {item.status.toLowerCase() === 'pending' && (
-                                            <>
-                                                <button onClick={() => handleActionStaffRequest(item._id, 'Rejected')} className="pm-icon-btn" style={{ color: '#ef4444', background: '#fee2e2' }}>
-                                                    <XCircle size={16} />
-                                                </button>
-                                                <button onClick={() => handleActionStaffRequest(item._id, 'Approved')} className="pm-icon-btn" style={{ color: '#10b981', background: '#dcfce7' }}>
-                                                    <CheckCircle size={16} />
-                                                </button>
-                                            </>
+                                        {expandedRow === item._id && (
+                                            <tr className="pm-expanded-row">
+                                                <td colSpan="7">
+                                                    <div className="pm-expanded-content">
+                                                        <div className="pm-expanded-grid">
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Project</span>
+                                                                <span className="pm-expanded-value">{item.projectId?.projectName}</span>
+                                                            </div>
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Reason for replacement</span>
+                                                                <span className="pm-expanded-value" style={{ fontWeight: 400, fontStyle: 'italic' }}>"{item.reason}"</span>
+                                                            </div>
+                                                            <div className="pm-expanded-item">
+                                                                <span className="pm-expanded-label">Requested By</span>
+                                                                <span className="pm-expanded-value">{item.requestedBy?.fullName} ({new Date(item.createdAt).toLocaleDateString()})</span>
+                                                            </div>
+                                                        </div>
+                                                        {item.status.toLowerCase() === 'pending' && (
+                                                            <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem' }}>
+                                                                <button onClick={() => handleActionStaffRequest(item._id, 'Rejected')} className="pm-quick-action-btn" style={{ flex: 1, background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca' }}>
+                                                                    Reject
+                                                                </button>
+                                                                <button onClick={() => handleActionStaffRequest(item._id, 'Approved')} className="pm-quick-action-btn" style={{ flex: 1, background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0' }}>
+                                                                    Approve
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : activeTab === 'leaves' ? (
-                    <div style={{ padding: '0 1rem' }}>
+                    <div style={{ padding: '0' }}>
                         <LeaveApprovals />
                     </div>
                 ) : null}
                 
                 {activeTab !== 'leaves' && filteredApprovals.length === 0 && !loading && (
-                    <div className="pm-loading-state">No requests found for this filter.</div>
+                    <div className="pm-loading-state">
+                        <AlertCircle size={24} style={{ color: '#94a3b8', marginBottom: '8px' }} />
+                        <span>No requests found for this filter.</span>
+                    </div>
                 )}
             </div>
 

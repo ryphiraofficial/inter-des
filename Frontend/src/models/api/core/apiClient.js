@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://inter-des-backend.onrender.com/api';
+const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://inter-des-backend.onrender.com/api';
 export const BASE_IMAGE_URL = API_BASE_URL.replace('/api', '');
 
 // Helper function to get auth token

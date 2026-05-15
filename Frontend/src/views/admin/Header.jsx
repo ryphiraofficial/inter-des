@@ -166,17 +166,35 @@ const Header = ({ user, toggleMobileSidebar }) => {
     const { title, subtitle } = getPageDetails();
 
     const [searchValue, setSearchValue] = useState('');
+    const [searchOpen, setSearchOpen] = useState(false);
+    const searchInputRef = useRef(null);
     const searchablePaths = ['/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory'];
     const isSearchable = searchablePaths.includes(location.pathname);
 
     useEffect(() => {
         setSearchValue(''); // Reset on route change
+        setSearchOpen(false);
+        window.dispatchEvent(new CustomEvent('header-search', { detail: '' }));
     }, [location.pathname]);
 
     const handleSearchChange = (e) => {
         const val = e.target.value;
         setSearchValue(val);
         window.dispatchEvent(new CustomEvent('header-search', { detail: val }));
+    };
+
+    const handleSearchToggle = () => {
+        setSearchOpen(prev => {
+            if (!prev) {
+                // Opening — focus input after render
+                setTimeout(() => searchInputRef.current?.focus(), 50);
+            } else {
+                // Closing — clear search
+                setSearchValue('');
+                window.dispatchEvent(new CustomEvent('header-search', { detail: '' }));
+            }
+            return !prev;
+        });
     };
 
     const isHome = location.pathname === '/';
@@ -201,14 +219,23 @@ const Header = ({ user, toggleMobileSidebar }) => {
             {/* RIGHT */}
             <div className="page-header-actions">
                 {isSearchable && (
-                    <div className="header-search-bar">
-                        <Search size={18} className="search-icon" />
-                        <input
-                            type="text"
-                            placeholder={`Search...`}
-                            value={searchValue}
-                            onChange={handleSearchChange}
-                        />
+                    <div className={`header-search-bar ${searchOpen ? 'expanded' : 'collapsed'}`}>
+                        <button
+                            className="search-toggle-btn"
+                            onClick={handleSearchToggle}
+                            title={searchOpen ? 'Close search' : 'Search'}
+                        >
+                            <Search size={18} />
+                        </button>
+                        {searchOpen && (
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                placeholder="Search..."
+                                value={searchValue}
+                                onChange={handleSearchChange}
+                            />
+                        )}
                     </div>
                 )}
                 

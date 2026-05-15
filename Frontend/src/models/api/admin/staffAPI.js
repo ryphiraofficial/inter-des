@@ -27,7 +27,14 @@ export const staffAPI = {
 
     getAnalytics: (id) => apiCall(`/staff/${id}/analytics`),
 
-    getAnalyticsOverview: () => apiCall('/staff/analytics/overview')
+    getAnalyticsOverview: () => apiCall('/staff/analytics/overview'),
+
+    getSalary: (id) => apiCall(`/staff/${id}/salary`),
+
+    updateSalary: (id, data) => apiCall(`/staff/${id}/salary`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    })
 };
 
 // Team APIs

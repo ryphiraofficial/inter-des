@@ -6,7 +6,9 @@ const {
     updateStaff,
     deleteStaff,
     getStaffAnalytics,
-    getAllStaffAnalytics
+    getAllStaffAnalytics,
+    getStaffSalary,
+    updateStaffSalary
 } = require('../controllers/staffController');
 
 const router = express.Router();
@@ -30,5 +32,7 @@ router
     .delete(deleteStaff);
 
 router.get('/:id/analytics', getStaffAnalytics);
+router.get('/:id/salary', getStaffSalary);
+router.put('/:id/salary', updateStaffSalary);
 
 module.exports = router;

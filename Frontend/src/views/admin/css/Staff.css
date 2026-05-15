@@ -474,7 +474,7 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* overflow: hidden; */ /* Removed to allow dropdowns to overflow */
     position: relative;
 }
 
@@ -499,11 +499,12 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .modal-body {
     padding: 2rem;
+    padding-bottom: 120px; /* Added padding to accommodate dropdowns at the bottom */
     overflow-y: auto;
     flex: 1;
     min-height: 0;
@@ -640,6 +641,11 @@
 
     .modal-body {
         padding: 1.25rem;
+        padding-bottom: 100px; /* Responsive padding for mobile */
+    }
+
+    .salary-modal .modal-body {
+        padding-bottom: 1.25rem; /* Remove excessive padding for salary modal since it has its own layout */
     }
 
     .modal-footer {
@@ -655,7 +661,8 @@
     }
 
     /* Form grid: 2-col → 1-col on mobile */
-    .form-grid {
+    .form-grid,
+    .salary-form-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
@@ -887,6 +894,241 @@
 .staff-card-footer .btn-icon:hover {
     transform: translateY(-2px);
 }
+/* ==========================================================================
+   Salary Management Specific Styles
+   ========================================================================== */
+
+.btn-icon.salary {
+    background: #ecfdf5;
+    color: #10b981;
+}
+.btn-icon.salary:hover {
+    background: #d1fae5;
+    color: #059669;
+}
+.btn-mobile-action.salary {
+    background: #ecfdf5;
+    color: #10b981;
+    border: 1px solid #d1fae5;
+}
+
+.salary-modal {
+    max-width: 600px !important;
+}
+
+.salary-staff-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.salary-staff-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.salary-staff-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.salary-edit-trigger {
+    position: absolute;
+    right: 1.25rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4f46e5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.salary-edit-trigger:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.salary-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.salary-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.salary-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.salary-form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.salary-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.salary-prefix {
+    position: absolute;
+    left: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.salary-input-wrap input {
+    width: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 2rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: border-color 0.2s;
+}
+
+.salary-input-wrap input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.salary-date-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+/* View Mode */
+.salary-view-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.salary-view-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.salary-view-row:last-child {
+    border-bottom: none;
+}
+
+.salary-view-row span:first-child {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.salary-view-val {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.salary-view-val.green { color: #10b981; }
+.salary-view-val.red { color: #ef4444; }
+
+.salary-summary-bar {
+    display: flex;
+    justify-content: space-between;
+    background: #f8fafc;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.salary-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.salary-summary-item span {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.salary-summary-item strong {
+    font-size: 1.15rem;
+}
+
+.salary-summary-item.green strong { color: #10b981; }
+.salary-summary-item.red strong { color: #ef4444; }
+.salary-summary-item.blue strong { color: #3b82f6; font-size: 1.25rem; }
+
+.salary-effective-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.salary-not-set {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e1;
+}
+
+.salary-not-set svg {
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.salary-not-set p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 0.5rem 0;
+}
+
+.salary-not-set span {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
 /* Desktop/Mobile Utility Classes */
 .mobile-show {
     display: none !important;
@@ -1019,6 +1261,18 @@
     .btn-mobile-action.danger {
         background: #fef2f2;
         color: #dc2626;
+    }
+
+    /* Fix salary modal banner overlap on mobile */
+    .salary-staff-banner {
+        flex-wrap: wrap;
+    }
+
+    .salary-edit-trigger {
+        position: static;
+        width: 100%;
+        margin-top: 0.5rem;
+        justify-content: center;
     }
 }
 

@@ -15,13 +15,15 @@ import {
     Clock,
     AlertCircle,
     Briefcase,
-    ChevronDown
+    ChevronDown,
+    IndianRupee
 } from 'lucide-react';
 import { staffAPI } from '../../models/api';
 import { useToast } from '../../models/context/ToastContext';
 import CustomSelect from '../common/CustomSelect';
 import './css/Staff.css';
 import Skeleton from '../common/Skeleton';
+import DatePicker from '../common/DatePicker';
 
 
 const Staff = () => {
@@ -38,9 +40,30 @@ const Staff = () => {
     const [submitting, setSubmitting] = useState(false);
     const [expandedRow, setExpandedRow] = useState(null);
 
+    // --- Salary Modal State ---
+    const [showSalaryModal, setShowSalaryModal] = useState(false);
+    const [salaryStaff, setSalaryStaff] = useState(null);
+    const [salaryLoading, setSalaryLoading] = useState(false);
+    const [salarySubmitting, setSalarySubmitting] = useState(false);
+    const [salaryEditMode, setSalaryEditMode] = useState(false);
+    const [salaryForm, setSalaryForm] = useState({
+        baseSalary: '', hra: '', travelAllowance: '', otherAllowances: '',
+        providentFund: '', taxDeduction: '', otherDeductions: '',
+        effectiveFrom: '', notes: ''
+    });
+
     const toggleRow = (id) => {
         setExpandedRow(expandedRow === id ? null : id);
     };
+
+    const calcGross = (f) =>
+        (Number(f.baseSalary)||0) + (Number(f.hra)||0) + (Number(f.travelAllowance)||0) + (Number(f.otherAllowances)||0);
+
+    const calcDeductions = (f) =>
+        (Number(f.providentFund)||0) + (Number(f.taxDeduction)||0) + (Number(f.otherDeductions)||0);
+
+    const fmtINR = (n) =>
+        new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n || 0);
 
     const initialFormData = {
         name: '',
@@ -184,6 +207,65 @@ const Staff = () => {
         }
     };
 
+    const handleViewSalary = async (staff) => {
+        setSalaryStaff(null);
+        setSalaryEditMode(false);
+        setSalaryLoading(true);
+        setShowSalaryModal(true);
+        try {
+            const res = await staffAPI.getSalary(staff._id);
+            if (res.success) {
+                setSalaryStaff(res.data);
+                const s = res.data.salary || {};
+                setSalaryForm({
+                    baseSalary: s.baseSalary || '',
+                    hra: s.hra || '',
+                    travelAllowance: s.travelAllowance || '',
+                    otherAllowances: s.otherAllowances || '',
+                    providentFund: s.providentFund || '',
+                    taxDeduction: s.taxDeduction || '',
+                    otherDeductions: s.otherDeductions || '',
+                    effectiveFrom: s.effectiveFrom ? s.effectiveFrom.split('T')[0] : '',
+                    notes: s.notes || ''
+                });
+            }
+        } catch (err) {
+            showToast('Failed to load salary information', 'error');
+        } finally {
+            setSalaryLoading(false);
+        }
+    };
+
+    const handleSalarySubmit = async (e) => {
+        e.preventDefault();
+        if (!salaryStaff) return;
+        setSalarySubmitting(true);
+        try {
+            const res = await staffAPI.updateSalary(salaryStaff._id, salaryForm);
+            if (res.success) {
+                setSalaryStaff(res.data);
+                const s = res.data.salary || {};
+                setSalaryForm({
+                    baseSalary: s.baseSalary || '',
+                    hra: s.hra || '',
+                    travelAllowance: s.travelAllowance || '',
+                    otherAllowances: s.otherAllowances || '',
+                    providentFund: s.providentFund || '',
+                    taxDeduction: s.taxDeduction || '',
+                    otherDeductions: s.otherDeductions || '',
+                    effectiveFrom: s.effectiveFrom ? s.effectiveFrom.split('T')[0] : '',
+                    notes: s.notes || ''
+                });
+                setSalaryEditMode(false);
+                showToast('Salary updated successfully', 'success');
+            }
+        } catch (err) {
+            showToast('Failed to update salary', 'error');
+        } finally {
+            setSalarySubmitting(false);
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this staff member?')) return;
 
@@ -306,6 +388,9 @@ const Staff = () => {
                                                 </td>
                                                 <td className="desktop-hide">
                                                     <div className="actions-cell">
+                                                        <button className="btn-icon salary" onClick={() => handleViewSalary(staff)} title="Salary Management">
+                                                            <IndianRupee size={16} />
+                                                        </button>
                                                         <button className="btn-icon analytics" onClick={() => handleViewAnalytics(staff)} title="Performance Analytics">
                                                             <BarChart2 size={16} />
                                                         </button>
@@ -349,6 +434,10 @@ const Staff = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="expansion-actions">
+                                                                <button className="btn-mobile-action salary" onClick={() => handleViewSalary(staff)}>
+                                                                    <IndianRupee size={16} />
+                                                                    View Salary
+                                                                </button>
                                                                 <button className="btn-mobile-action primary" onClick={() => handleViewAnalytics(staff)}>
                                                                     <BarChart2 size={16} />
                                                                     Performance Analytics
@@ -632,6 +721,215 @@ const Staff = () => {
                                     <p>No analytics data available for this staff member.</p>
                                     <p>Assign tasks from the Task Management section to track performance.</p>
                                 </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── SALARY MODAL ─────────────────────────────────────── */}
+            {showSalaryModal && (
+                <div className="modal-overlay" onClick={() => { setShowSalaryModal(false); setSalaryEditMode(false); }}>
+                    <div className="modal-content salary-modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <div className="header-title">
+                                <IndianRupee size={22} color="#10b981" />
+                                <h3>Salary Management</h3>
+                            </div>
+                            <button className="modal-close" onClick={() => { setShowSalaryModal(false); setSalaryEditMode(false); }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="modal-body" data-lenis-prevent>
+                            {salaryLoading ? (
+                                <div className="salary-skeleton">
+                                    <div className="salary-skeleton-header" />
+                                    <div className="salary-skeleton-grid">
+                                        {[...Array(6)].map((_, i) => <div key={i} className="salary-skeleton-cell" />)}
+                                    </div>
+                                </div>
+                            ) : salaryStaff ? (
+                                <>
+                                    {/* Staff Info Banner */}
+                                    <div className="salary-staff-banner">
+                                        <div className="staff-avatar" style={{ width: 48, height: 48, fontSize: '1.2rem', flexShrink: 0 }}>
+                                            {salaryStaff.name?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="salary-staff-name">{salaryStaff.name}</div>
+                                            <div className="salary-staff-meta">{salaryStaff.staffId} · {salaryStaff.role}</div>
+                                        </div>
+                                        {!salaryEditMode && (
+                                            <button className="salary-edit-trigger" onClick={() => setSalaryEditMode(true)}>
+                                                <Edit size={15} /> Edit Salary
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {salaryEditMode ? (
+                                        /* ── EDIT FORM ── */
+                                        <form onSubmit={handleSalarySubmit}>
+                                            <div className="salary-section-title">Earnings</div>
+                                            <div className="salary-form-grid">
+                                                {[
+                                                    { key: 'baseSalary', label: 'Basic Salary' },
+                                                    { key: 'hra', label: 'HRA' },
+                                                    { key: 'travelAllowance', label: 'Travel Allowance' },
+                                                    { key: 'otherAllowances', label: 'Other Allowances' },
+                                                ].map(({ key, label }) => (
+                                                    <div className="salary-form-group" key={key}>
+                                                        <label>{label}</label>
+                                                        <div className="salary-input-wrap">
+                                                            <span className="salary-prefix">₹</span>
+                                                            <input
+                                                                type="number" min="0"
+                                                                value={salaryForm[key]}
+                                                                onChange={e => setSalaryForm(p => ({ ...p, [key]: e.target.value }))}
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className="salary-section-title" style={{ marginTop: '1.25rem' }}>Deductions</div>
+                                            <div className="salary-form-grid">
+                                                {[
+                                                    { key: 'providentFund', label: 'Provident Fund (PF)' },
+                                                    { key: 'taxDeduction', label: 'TDS / Income Tax' },
+                                                    { key: 'otherDeductions', label: 'Other Deductions' },
+                                                ].map(({ key, label }) => (
+                                                    <div className="salary-form-group" key={key}>
+                                                        <label>{label}</label>
+                                                        <div className="salary-input-wrap">
+                                                            <span className="salary-prefix">₹</span>
+                                                            <input
+                                                                type="number" min="0"
+                                                                value={salaryForm[key]}
+                                                                onChange={e => setSalaryForm(p => ({ ...p, [key]: e.target.value }))}
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className="salary-form-grid" style={{ marginTop: '1.25rem' }}>
+                                                <div className="salary-form-group">
+                                                    <label>Effective From</label>
+                                                    <DatePicker
+                                                        value={salaryForm.effectiveFrom}
+                                                        onChange={(val) => setSalaryForm(p => ({ ...p, effectiveFrom: val }))}
+                                                        placeholder="Select date"
+                                                    />
+                                                </div>
+                                                <div className="salary-form-group">
+                                                    <label>Notes</label>
+                                                    <input
+                                                        type="text"
+                                                        className="salary-date-input"
+                                                        placeholder="e.g. Annual increment"
+                                                        value={salaryForm.notes}
+                                                        onChange={e => setSalaryForm(p => ({ ...p, notes: e.target.value }))}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Live Summary */}
+                                            <div className="salary-summary-bar">
+                                                <div className="salary-summary-item green">
+                                                    <span>Gross Pay</span>
+                                                    <strong>{fmtINR(calcGross(salaryForm))}</strong>
+                                                </div>
+                                                <div className="salary-summary-item red">
+                                                    <span>Deductions</span>
+                                                    <strong>- {fmtINR(calcDeductions(salaryForm))}</strong>
+                                                </div>
+                                                <div className="salary-summary-item blue">
+                                                    <span>Net Pay</span>
+                                                    <strong>{fmtINR(calcGross(salaryForm) - calcDeductions(salaryForm))}</strong>
+                                                </div>
+                                            </div>
+
+                                            <div className="modal-footer" style={{ paddingTop: 0 }}>
+                                                <button type="button" className="btn-cancel" onClick={() => setSalaryEditMode(false)} disabled={salarySubmitting}>Cancel</button>
+                                                <button type="submit" className="btn-submit" disabled={salarySubmitting}>
+                                                    {salarySubmitting ? <Loader size={16} className="spinner" /> : 'Save Salary'}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    ) : (
+                                        /* ── VIEW MODE ── */
+                                        <>
+                                            {salaryStaff.salary?.effectiveFrom ? (
+                                                <>
+                                                    <div className="salary-view-section">
+                                                        <div className="salary-view-title">Earnings</div>
+                                                        <div className="salary-view-grid">
+                                                            {[
+                                                                { label: 'Basic Salary', val: salaryStaff.salary?.baseSalary },
+                                                                { label: 'HRA', val: salaryStaff.salary?.hra },
+                                                                { label: 'Travel Allowance', val: salaryStaff.salary?.travelAllowance },
+                                                                { label: 'Other Allowances', val: salaryStaff.salary?.otherAllowances },
+                                                            ].map(({ label, val }) => (
+                                                                <div className="salary-view-row" key={label}>
+                                                                    <span>{label}</span>
+                                                                    <span className="salary-view-val green">{fmtINR(val)}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="salary-view-section">
+                                                        <div className="salary-view-title">Deductions</div>
+                                                        <div className="salary-view-grid">
+                                                            {[
+                                                                { label: 'Provident Fund (PF)', val: salaryStaff.salary?.providentFund },
+                                                                { label: 'TDS / Income Tax', val: salaryStaff.salary?.taxDeduction },
+                                                                { label: 'Other Deductions', val: salaryStaff.salary?.otherDeductions },
+                                                            ].map(({ label, val }) => (
+                                                                <div className="salary-view-row" key={label}>
+                                                                    <span>{label}</span>
+                                                                    <span className="salary-view-val red">{fmtINR(val)}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="salary-summary-bar" style={{ marginTop: '1rem' }}>
+                                                        <div className="salary-summary-item green">
+                                                            <span>Gross Pay</span>
+                                                            <strong>{fmtINR(calcGross(salaryStaff.salary || {}))}</strong>
+                                                        </div>
+                                                        <div className="salary-summary-item red">
+                                                            <span>Deductions</span>
+                                                            <strong>- {fmtINR(calcDeductions(salaryStaff.salary || {}))}</strong>
+                                                        </div>
+                                                        <div className="salary-summary-item blue">
+                                                            <span>Net Pay</span>
+                                                            <strong>{fmtINR(calcGross(salaryStaff.salary || {}) - calcDeductions(salaryStaff.salary || {}))}</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="salary-effective-note">
+                                                        <Calendar size={14} />
+                                                        Effective from {new Date(salaryStaff.salary.effectiveFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                        {salaryStaff.salary.notes && <> · <em>{salaryStaff.salary.notes}</em></>}
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="salary-not-set">
+                                                    <IndianRupee size={32} strokeWidth={1.5} />
+                                                    <p>Salary not configured yet</p>
+                                                    <span>Click "Edit Salary" to set up the salary structure for this staff member.</span>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="empty-state"><p>Failed to load salary information.</p></div>
                             )}
                         </div>
                     </div>
