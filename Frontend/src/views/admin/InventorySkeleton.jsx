@@ -1,5 +1,5 @@
 import React from 'react';
-import Skeleton from '../common/Skeleton';
+import Skeleton from './components/Skeleton';
 import './css/Inventory.css';
 
 const InventorySkeleton = () => {

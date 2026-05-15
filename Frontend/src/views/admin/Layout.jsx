@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import DeptSidebar from '../common/DeptSidebar';
+import DeptSidebar from './components/DeptSidebar';
 import Header from './Header';
-import { getRoleDepartment } from '../../controllers/hooks/useRoleDashboard';
+import { getRoleDepartment } from './hooks/useRoleDashboard';
 import './css/Layout.css';
 
 const Layout = ({ user, onLogout }) => {

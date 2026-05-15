@@ -1,512 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Plus,
-    X,
-    Search,
-    Filter,
-    FileText,
-    Clock,
-    ShoppingCart,
-    Package,
-    TrendingUp,
-    Eye,
-    Edit3,
-    CheckCircle2,
-    Trash2,
-    Loader,
-    Sparkles,
-    ChevronDown
-} from 'lucide-react';
-import { purchaseOrderAPI, inventoryAPI } from '../../models/api';
-import AISuggestButton from '../common/AISuggestButton';
-import Skeleton from '../common/Skeleton';
+import React from 'react';
+import { usePOState } from './purchase-orders/hooks/usePOState';
+import { usePOData } from './purchase-orders/hooks/usePOData';
+import { usePOActions } from './purchase-orders/hooks/usePOActions';
+
+import POStats from './purchase-orders/components/POStats';
+import POFilterBar from './purchase-orders/components/POFilterBar';
+import POTable from './purchase-orders/components/POTable';
+import POFormModal from './purchase-orders/components/POFormModal';
+
 import './css/PurchaseOrders.css';
 
 const PurchaseOrders = () => {
-    const [purchaseOrders, setPurchaseOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('All Status');
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
-    const [expandedRow, setExpandedRow] = useState(null);
-
-    const toggleRow = (id) => {
-        setExpandedRow(expandedRow === id ? null : id);
-    };
-
-    // Form State for New PO
-    const [formData, setFormData] = useState({
-        supplier: '',
-        deliveryAddress: '',
-        deliveryDate: '',
-        paymentTerms: '',
-        notes: '',
-        items: []
+    const state = usePOState();
+    
+    const { fetchPurchaseOrders } = usePOData({
+        setPurchaseOrders: state.setPurchaseOrders,
+        setLoading: state.setLoading,
+        setError: state.setError,
+        setShowCreateModal: state.setShowCreateModal
     });
 
-    useEffect(() => {
-        fetchPurchaseOrders();
-        
-        const handleOpenCreateModal = () => setShowCreateModal(true);
-        window.addEventListener('open-create-po-modal', handleOpenCreateModal);
-        
-        return () => window.removeEventListener('open-create-po-modal', handleOpenCreateModal);
-    }, []);
+    const actions = usePOActions({
+        fetchPurchaseOrders,
+        setSubmitting: state.setSubmitting,
+        setShowCreateModal: state.setShowCreateModal,
+        setFormData: state.setFormData,
+        setPurchaseOrders: state.setPurchaseOrders,
+        purchaseOrders: state.purchaseOrders
+    });
 
-    const fetchPurchaseOrders = async () => {
-        try {
-            setLoading(true);
-            const response = await purchaseOrderAPI.getAll();
-            if (response.success) {
-                setPurchaseOrders(response.data);
-            }
-        } catch (err) {
-            setError(err.message);
-            console.error('Error fetching POs:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this purchase order?')) return;
-        try {
-            const response = await purchaseOrderAPI.delete(id);
-            if (response.success) {
-                setPurchaseOrders(purchaseOrders.filter(po => po._id !== id));
-            }
-        } catch (err) {
-            alert('Error deleting PO: ' + err.message);
-        }
-    };
-
-    const handleMarkReceived = async (id) => {
-        if (!window.confirm('Mark this purchase order as received? This will update inventory.')) return;
-        try {
-            setSubmitting(true);
-            const response = await purchaseOrderAPI.markReceived(id);
-            if (response.success) {
-                setPurchaseOrders(purchaseOrders.map(po =>
-                    po._id === id ? { ...po, status: 'Received' } : po
-                ));
-            }
-        } catch (err) {
-            alert('Error updating PO: ' + err.message);
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const handleCreatePO = async () => {
-        if (!formData.supplier || formData.items.length === 0 || !formData.deliveryDate || !formData.deliveryAddress) {
-            alert('Please fill in all required fields: Supplier, Delivery Date, Address, and at least one item.');
-            return;
-        }
-
-        try {
-            setSubmitting(true);
-            const poData = {
-                ...formData,
-                expectedDeliveryDate: formData.deliveryDate,
-                poNumber: `PO-${Date.now().toString().slice(-6)}`,
-                orderDate: new Date(),
-                items: formData.items.map(item => {
-                    const qty = Number(item.quantity) || 0;
-                    const r = Number(item.rate) || 0;
-                    return {
-                        ...item,
-                        quantity: qty,
-                        rate: r,
-                        amount: qty * r,
-                        unit: item.unit || 'pcs'
-                    };
-                }),
-                status: 'Ordered'
-            };
-
-            poData.totalAmount = poData.items.reduce((sum, item) => sum + item.amount, 0);
-
-            const response = await purchaseOrderAPI.create(poData);
-            if (response.success) {
-                setShowCreateModal(false);
-                fetchPurchaseOrders();
-                setFormData({ supplier: '', deliveryAddress: '', deliveryDate: '', paymentTerms: '', notes: '', items: [] });
-            }
-        } catch (err) {
-            alert('Error creating PO: ' + err.message);
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const filteredPOs = purchaseOrders.filter(po => {
-        const matchesSearch = po.poNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            po.supplier?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'All Status' || po.status === statusFilter;
+    const filteredPOs = state.purchaseOrders.filter(po => {
+        const matchesSearch = po.poNumber?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+            po.supplier?.toLowerCase().includes(state.searchTerm.toLowerCase());
+        const matchesStatus = state.statusFilter === 'All Status' || po.status === state.statusFilter;
         return matchesSearch && matchesStatus;
     });
 
-    // Stats Calculation
-    const statsData = [
-        { label: 'Total POs', value: purchaseOrders.length, icon: <FileText size={24} />, color: 'stat-purple' },
-        { label: 'Pending', value: purchaseOrders.filter(p => p.status === 'Pending').length, icon: <Clock size={24} />, color: 'stat-yellow' },
-        { label: 'Ordered', value: purchaseOrders.filter(p => p.status === 'Ordered').length, icon: <ShoppingCart size={24} />, color: 'stat-magenta' },
-        { label: 'Received', value: purchaseOrders.filter(p => p.status === 'Received').length, icon: <Package size={24} />, color: 'stat-green' },
-        { label: 'Total Value', value: `₹${purchaseOrders.reduce((sum, p) => sum + (p.totalAmount || 0), 0).toLocaleString()}`, icon: <TrendingUp size={24} />, color: 'stat-blue' }
-    ];
-
-    const getStatusClass = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'ordered': return 'status-ordered';
-            case 'received': return 'status-received';
-            case 'approved': return 'status-approved';
-            case 'pending': return 'status-pending';
-            default: return '';
-        }
+    const toggleRow = (id) => {
+        state.setExpandedRow(state.expandedRow === id ? null : id);
     };
 
     return (
         <div className="po-container">
             <div className="po-wrapper">
+                <POStats purchaseOrders={state.purchaseOrders} />
 
-                <div className="po-stats-grid">
-                    {statsData.map((stat, index) => (
-                        <div key={index} className="po-stat-card">
-                            <div className="stat-info">
-                                <h4>{stat.label}</h4>
-                                <h2>{stat.value}</h2>
-                            </div>
-                            <div className={`stat-icon ${stat.color}`}>
-                                {stat.icon}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <POFilterBar 
+                    searchTerm={state.searchTerm}
+                    setSearchTerm={state.setSearchTerm}
+                    statusFilter={state.statusFilter}
+                    setStatusFilter={state.setStatusFilter}
+                />
 
-                <div className="po-filter-bar">
-                    <div className="search-wrapper">
-                        <Search className="search-icon" size={20} />
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder="Search by PO number or supplier..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <select
-                        className="filter-select"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option>All Status</option>
-                        <option>Pending</option>
-                        <option>Ordered</option>
-                        <option>Received</option>
-                        <option>Approved</option>
-                    </select>
-                </div>
-
-                {error && <div className="error-banner">{error}</div>}
+                {state.error && <div className="error-banner">{state.error}</div>}
 
                 <div className="po-table-card">
-                    {loading ? (
-                        <div className="po-table-skeleton">
-                            <table className="po-table">
-                                <thead>
-                                    <tr>
-                                        <th>PO Number</th>
-                                        <th>Supplier</th>
-                                        <th className="desktop-hide">Order Date</th>
-                                        <th className="desktop-hide">Delivery Date</th>
-                                        <th className="desktop-hide">Items</th>
-                                        <th className="desktop-hide">Amount</th>
-                                        <th className="desktop-hide">Status</th>
-                                        <th className="desktop-hide">Actions</th>
-                                        <th className="mobile-show">Amount</th>
-                                        <th className="mobile-show"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {[...Array(6)].map((_, i) => (
-                                        <tr key={i}>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <Skeleton width="18px" height="18px" borderRadius="4px" />
-                                                    <Skeleton width="100px" height="16px" />
-                                                </div>
-                                            </td>
-                                            <td><Skeleton width="140px" height="16px" /></td>
-                                            <td className="desktop-hide"><Skeleton width="80px" height="16px" /></td>
-                                            <td className="desktop-hide"><Skeleton width="80px" height="16px" /></td>
-                                            <td className="desktop-hide"><Skeleton width="60px" height="16px" /></td>
-                                            <td className="desktop-hide"><Skeleton width="90px" height="16px" /></td>
-                                            <td className="desktop-hide"><Skeleton width="80px" height="24px" borderRadius="12px" /></td>
-                                            <td className="desktop-hide">
-                                                <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <Skeleton width="32px" height="32px" borderRadius="8px" />
-                                                    <Skeleton width="32px" height="32px" borderRadius="8px" />
-                                                </div>
-                                            </td>
-                                            <td className="mobile-show"><Skeleton width="80px" height="16px" /></td>
-                                            <td className="mobile-show"><Skeleton width="24px" height="24px" borderRadius="50%" /></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <table className="po-table">
-                            <thead>
-                                <tr>
-                                    <th>PO Number</th>
-                                    <th>Supplier</th>
-                                    <th className="desktop-hide">Order Date</th>
-                                    <th className="desktop-hide">Delivery Date</th>
-                                    <th className="desktop-hide">Items</th>
-                                    <th className="desktop-hide">Amount</th>
-                                    <th className="desktop-hide">Status</th>
-                                    <th className="desktop-hide">Actions</th>
-                                    <th className="mobile-show">Amount</th>
-                                    <th className="mobile-show"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredPOs.map((po) => (
-                                    <React.Fragment key={po._id}>
-                                        <tr 
-                                            className={`po-row ${expandedRow === po._id ? 'expanded' : ''}`}
-                                            onClick={() => window.innerWidth <= 768 && toggleRow(po._id)}
-                                        >
-                                            <td>
-                                                <div className="po-number-cell">
-                                                    <FileText size={18} className="po-icon" />
-                                                    {po.poNumber}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="supplier-info">
-                                                    <span className="name">{po.supplier}</span>
-                                                    <span className="mobile-status-hint mobile-show">
-                                                        <span className={`status-dot ${getStatusClass(po.status)}`}></span>
-                                                        {po.status}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="desktop-hide date-cell">{new Date(po.orderDate).toLocaleDateString()}</td>
-                                            <td className="desktop-hide date-cell">{po.deliveryDate ? new Date(po.deliveryDate).toLocaleDateString() : 'TBD'}</td>
-                                            <td className="desktop-hide items-cell">{po.items?.length || 0} items</td>
-                                            <td className="desktop-hide amount-cell">₹{po.totalAmount?.toLocaleString()}</td>
-                                            <td className="desktop-hide">
-                                                <div className={`status-badge ${getStatusClass(po.status)}`}>
-                                                    {po.status}
-                                                </div>
-                                            </td>
-                                            <td className="desktop-hide">
-                                                <div className="action-buttons">
-                                                    <button className="btn-action" title="View"><Eye size={18} /></button>
-                                                    {po.status === 'Ordered' && (
-                                                        <button
-                                                            className="btn-action done"
-                                                            title="Mark as Received"
-                                                            onClick={(e) => { e.stopPropagation(); handleMarkReceived(po._id); }}
-                                                        >
-                                                            <CheckCircle2 size={18} />
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        className="btn-action delete"
-                                                        title="Delete"
-                                                        onClick={(e) => { e.stopPropagation(); handleDelete(po._id); }}
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td className="mobile-show amount-cell">₹{po.totalAmount?.toLocaleString()}</td>
-                                            <td className="mobile-show toggle-cell">
-                                                <ChevronDown size={18} className={`toggle-icon ${expandedRow === po._id ? 'active' : ''}`} />
-                                            </td>
-                                        </tr>
-                                        {expandedRow === po._id && (
-                                            <tr className="mobile-expansion-row mobile-show">
-                                                <td colSpan="4">
-                                                    <div className="expansion-content">
-                                                        <div className="info-grid">
-                                                            <div className="info-item">
-                                                                <label>Order Date</label>
-                                                                <span>{new Date(po.orderDate).toLocaleDateString()}</span>
-                                                            </div>
-                                                            <div className="info-item">
-                                                                <label>Delivery Date</label>
-                                                                <span>{po.deliveryDate ? new Date(po.deliveryDate).toLocaleDateString() : 'TBD'}</span>
-                                                            </div>
-                                                            <div className="info-item">
-                                                                <label>Status</label>
-                                                                <span className={`status-badge ${getStatusClass(po.status)}`}>{po.status}</span>
-                                                            </div>
-                                                            <div className="info-item">
-                                                                <label>Items Count</label>
-                                                                <span>{po.items?.length || 0} items</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="expansion-actions">
-                                                            <button className="btn-mobile-action primary" onClick={() => {/* handle view */}}>
-                                                                <Eye size={16} />
-                                                                View Details
-                                                            </button>
-                                                            {po.status === 'Ordered' && (
-                                                                <button 
-                                                                    className="btn-mobile-action success"
-                                                                    onClick={() => handleMarkReceived(po._id)}
-                                                                >
-                                                                    <CheckCircle2 size={16} />
-                                                                    Mark Received
-                                                                </button>
-                                                            )}
-                                                            <button 
-                                                                className="btn-mobile-action danger"
-                                                                onClick={() => handleDelete(po._id)}
-                                                            >
-                                                                <Trash2 size={16} />
-                                                                Delete PO
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
+                    <POTable 
+                        purchaseOrders={filteredPOs}
+                        loading={state.loading}
+                        expandedRow={state.expandedRow}
+                        toggleRow={toggleRow}
+                        handleMarkReceived={actions.handleMarkReceived}
+                        handleDelete={actions.handleDelete}
+                    />
                 </div>
             </div>
 
-            {showCreateModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content-wide" data-lenis-prevent>
-                        <div className="modal-header">
-                            <h3>Create Purchase Order</h3>
-                            <button className="modal-close" onClick={() => setShowCreateModal(false)}><X size={24} /></button>
-                        </div>
-                        <div className="modal-form-body">
-                            <div className="modal-form-grid">
-                                <div className="form-field">
-                                    <label>Supplier <span>*</span></label>
-                                    <input
-                                        type="text"
-                                        className="po-input"
-                                        placeholder="Supplier name"
-                                        value={formData.supplier}
-                                        onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                                    />
-                                </div>
-                                <div className="form-field">
-                                    <label>Delivery Date</label>
-                                    <input
-                                        type="date"
-                                        className="po-input"
-                                        value={formData.deliveryDate}
-                                        onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-field" style={{ marginBottom: '1rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <label>Delivery Address</label>
-                                    <AISuggestButton
-                                        type="PurchaseOrder"
-                                        field="deliveryAddress"
-                                        value={formData.deliveryAddress}
-                                        context={{ supplier: formData.supplier }}
-                                        onSuggest={(v) => setFormData({ ...formData, deliveryAddress: v })}
-                                    />
-                                </div>
-                                <textarea
-                                    className="po-input"
-                                    value={formData.deliveryAddress}
-                                    onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
-                                />
-                            </div>
-                            <div className="items-section-header">
-                                <h4>Items</h4>
-                                <button
-                                    className="btn-add-item-purple"
-                                    onClick={() => setFormData({ ...formData, items: [...formData.items, { itemName: '', quantity: 1, rate: 0, unit: 'pcs' }] })}
-                                >
-                                    <Plus size={18} /> Add Item
-                                </button>
-                            </div>
-                            <div className="po-items-list" style={{ marginBottom: '1.5rem' }}>
-                                {formData.items.map((item, idx) => (
-                                    <div key={idx} className="po-item-row" style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                        <input
-                                            placeholder="Item name"
-                                            className="po-input"
-                                            style={{ flex: 3 }}
-                                            value={item.itemName}
-                                            onChange={(e) => {
-                                                const newItems = [...formData.items];
-                                                newItems[idx].itemName = e.target.value;
-                                                setFormData({ ...formData, items: newItems });
-                                            }}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Qty"
-                                            className="po-input"
-                                            style={{ flex: 1 }}
-                                            value={item.quantity}
-                                            onChange={(e) => {
-                                                const newItems = [...formData.items];
-                                                newItems[idx].quantity = e.target.value;
-                                                setFormData({ ...formData, items: newItems });
-                                            }}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Rate"
-                                            className="po-input"
-                                            style={{ flex: 1 }}
-                                            value={item.rate}
-                                            onChange={(e) => {
-                                                const newItems = [...formData.items];
-                                                newItems[idx].rate = e.target.value;
-                                                setFormData({ ...formData, items: newItems });
-                                            }}
-                                        />
-                                        <input
-                                            placeholder="Unit"
-                                            className="po-input"
-                                            style={{ flex: 1 }}
-                                            value={item.unit}
-                                            onChange={(e) => {
-                                                const newItems = [...formData.items];
-                                                newItems[idx].unit = e.target.value;
-                                                setFormData({ ...formData, items: newItems });
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
-                            <button
-                                className="btn-create-po"
-                                onClick={handleCreatePO}
-                                disabled={submitting}
-                            >
-                                {submitting ? 'Creating...' : 'Create Purchase Order'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <POFormModal 
+                showCreateModal={state.showCreateModal}
+                setShowCreateModal={state.setShowCreateModal}
+                formData={state.formData}
+                setFormData={state.setFormData}
+                submitting={state.submitting}
+                handleCreatePO={actions.handleCreatePO}
+            />
         </div>
     );
 };

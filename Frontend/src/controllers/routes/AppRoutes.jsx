@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Controllers — Layouts
-import Layout from '../layouts/AdminLayout';
+import Layout from '../../views/admin/Layout';
 import SalesLayout from '../../views/sales/SalesLayout';
 import RoleDashboard from '../layouts/RoleDashboard';
 

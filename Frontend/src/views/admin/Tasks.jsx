@@ -1,341 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-    Search,
-    Plus,
-    CheckCircle,
-    X,
-    Edit,
-    Trash2,
-    Loader,
-    Calendar,
-    Briefcase,
-    Clock,
-    AlertCircle,
-    User,
-    Sparkles,
-    Eye,
-    MapPin,
-    Camera,
-    AlertTriangle,
-    ExternalLink,
-    Package,
-    Image as ImageIcon,
-    ChevronDown
-} from 'lucide-react';
-import { taskAPI, staffAPI, clientAPI, quotationAPI, siteVisitAPI, BASE_IMAGE_URL } from '../../models/api';
 import { useToast } from '../../models/context/ToastContext';
-import CustomSelect from '../common/CustomSelect';
-import AISuggestButton from '../common/AISuggestButton';
-import Skeleton from '../common/Skeleton';
+
+// Hooks
+import { useTasksState } from './tasks/hooks/useTasksState';
+import { useTasksData } from './tasks/hooks/useTasksData';
+import { useTasksActions } from './tasks/hooks/useTasksActions';
+import { useTasksDetails } from './tasks/hooks/useTasksDetails';
+
+// Components
+import TasksStatsGrid from './tasks/components/TasksStatsGrid';
+import TasksTable from './tasks/components/TasksTable';
+import TaskFormModal from './tasks/components/TaskFormModal';
+import TaskDetailsModal from './tasks/components/TaskDetailsModal';
+import DesignPreviewModal from './tasks/components/DesignPreviewModal';
+import CustomSelect from './components/CustomSelect';
+
 import './css/Tasks.css';
 import './css/TaskDetails.css';
 
 const Tasks = ({ isStaff, user }) => {
     const { showToast } = useToast();
     const [searchParams] = useSearchParams();
-    const [tasks, setTasks] = useState([]);
-    const [staff, setStaff] = useState([]);
-    const [clients, setClients] = useState([]);
-    const [quotations, setQuotations] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState(searchParams.get('status') || 'All');
-    const [filterPriority, setFilterPriority] = useState('All');
-    const [showTaskModal, setShowTaskModal] = useState(false);
-    const [editingTask, setEditingTask] = useState(null);
-    const [selectedTask, setSelectedTask] = useState(null);
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [taskVisits, setTaskVisits] = useState([]);
-    const [visitsLoading, setVisitsLoading] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
-    const [showDesignModal, setShowDesignModal] = useState(false);
-    const [expandedRow, setExpandedRow] = useState(null);
 
-    const toggleRow = (id) => {
-        setExpandedRow(expandedRow === id ? null : id);
-    };
-
-    const initialFormData = {
-        title: '',
-        description: '',
-        status: 'To Do',
-        priority: 'Medium',
-        assignedTo: '',
-        client: '',
-        quotation: '',
-        dueDate: '',
-        estimatedDuration: '',
-        project: '',
-        progress: 0
-    };
-
-    const [formData, setFormData] = useState(initialFormData);
-
-    useEffect(() => {
-        const status = searchParams.get('status');
-        if (status) setFilterStatus(status);
-        else setFilterStatus('All');
-    }, [searchParams]);
-
-    useEffect(() => {
-        fetchAllData();
-
-        const processAIData = (data) => {
-            if (!data) return;
-            setFormData(prev => ({
-                ...prev,
-                ...data
-            }));
-            setShowTaskModal(true);
-        };
-
-        const handleAIPopulate = (e) => processAIData(e.detail);
-        const pending = sessionStorage.getItem('AI_PENDING_DATA');
-        if (pending) {
-            const { type, data } = JSON.parse(pending);
-            if (type === 'TASK') {
-                processAIData(data);
-                sessionStorage.removeItem('AI_PENDING_DATA');
-            }
-        }
-
-        const handleOpenTaskModal = () => setShowTaskModal(true);
-        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
-
-        window.addEventListener('AI_POPULATE_TASK', handleAIPopulate);
-        window.addEventListener('open-create-task-modal', handleOpenTaskModal);
-        window.addEventListener('header-search', handleHeaderSearch);
-        
-        return () => {
-            window.removeEventListener('AI_POPULATE_TASK', handleAIPopulate);
-            window.removeEventListener('open-create-task-modal', handleOpenTaskModal);
-            window.removeEventListener('header-search', handleHeaderSearch);
-        };
-    }, []);
-
-    const fetchAllData = async () => {
-        try {
-            setLoading(true);
-            const [tasksRes, staffRes, clientsRes, quotationsRes] = await Promise.all([
-                taskAPI.getAll(),
-                staffAPI.getAll(),
-                clientAPI.getAll({ limit: 1000 }),
-                quotationAPI.getAll({ limit: 1000 })
-            ]);
-
-            if (tasksRes.success) setTasks(tasksRes.data);
-            if (staffRes.success) setStaff(staffRes.data);
-            if (clientsRes.success) setClients(clientsRes.data);
-            if (quotationsRes.success) setQuotations(quotationsRes.data);
-        } catch (err) {
-            setError(err.message);
-            showToast('Failed to load task data', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchTasks = async () => {
-        try {
-            const response = await taskAPI.getAll();
-            if (response.success) setTasks(response.data);
-        } catch (err) {
-            console.error('Error fetching tasks:', err);
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value, type } = e.target;
-        const newValue = type === 'range' ? parseInt(value, 10) : value;
-
-        if (name === 'client') {
-            setFormData(prev => ({
-                ...prev,
-                client: newValue,
-                quotation: ''
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: newValue
-            }));
-        }
-    };
-
-    const filteredQuotations = formData.client
-        ? quotations.filter(q => 
-            (q.client?._id === formData.client || q.client === formData.client)
-          )
-        : [];
-
-    const handleViewDetails = async (task) => {
-        setSelectedTask(task);
-        setShowDetailsModal(true);
-        setVisitsLoading(true);
-        document.body.style.overflow = 'hidden';
-        try {
-            const res = await siteVisitAPI.getByTask(task._id);
-            if (res.success) {
-                setTaskVisits(res.data);
-            }
-        } catch (err) {
-            console.error('Error fetching task site visits:', err);
-        } finally {
-            setVisitsLoading(false);
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-
-        try {
-            if (editingTask) {
-                const response = await taskAPI.update(editingTask._id, formData);
-                if (response.success) {
-                    await fetchTasks();
-                    showToast('Task updated successfully');
-                    closeModal();
-                }
-            } else {
-                const response = await taskAPI.create(formData);
-                if (response.success) {
-                    await fetchTasks();
-                    showToast('New task assigned successfully');
-                    closeModal();
-                }
-            }
-        } catch (err) {
-            showToast(err.message || 'Failed to save task', 'error');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const handleEdit = (task) => {
-        setEditingTask(task);
-        setFormData({
-            title: task.title || '',
-            description: task.description || '',
-            status: task.status || 'To Do',
-            priority: task.priority || 'Medium',
-            assignedTo: task.assignedTo?._id || '',
-            client: task.client?._id || '',
-            quotation: task.quotation?._id || '',
-            dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
-            estimatedDuration: task.estimatedDuration || '',
-            project: task.project || '',
-            progress: task.progress || 0
-        });
-        setShowTaskModal(true);
-    };
-
-    const handleStatusChange = async (taskId, newStatus) => {
-        try {
-            const response = await taskAPI.update(taskId, { status: newStatus });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: newStatus, progress: newStatus === 'Completed' ? 100 : t.progress } : t));
-                showToast(`Task status updated to ${newStatus}`);
-            }
-        } catch (err) {
-            showToast('Failed to update status', 'error');
-        }
-    };
-
-    const handleProgressChange = async (taskId, newProgress) => {
-        try {
-            const updateData = { progress: newProgress };
-            if (newProgress === 100) updateData.status = 'Completed';
-            else if (newProgress > 0 && newProgress < 100) updateData.status = 'In Progress';
-
-            const response = await taskAPI.update(taskId, updateData);
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...updateData } : t));
-            }
-        } catch (err) {
-            showToast('Failed to update progress', 'error');
-        }
-    };
-
-    const handlePushToProcurement = async (taskId) => {
-        if (!window.confirm('Approve this design and push to procurement?')) return;
-        try {
-            const response = await taskAPI.pushToProcurement(taskId);
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: 'Pushed to Procurement' } : t));
-                showToast('Design pushed to procurement successfully');
-            }
-        } catch (err) {
-            showToast('Failed to push to procurement', 'error');
-        }
-    };
-
-    const handleSalesReview = async (taskId, approved) => {
-        const notes = prompt(approved ? 'Add optional sales notes:' : 'Enter reason for revision:');
-        if (!approved && !notes) return; // Need reason for rejection
-
-        try {
-            const response = await taskAPI.salesApprove(taskId, { approved, salesNotes: notes || '' });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Sales Approved' : 'Revision Required' } : t));
-                showToast(approved ? 'Design approved by Sales' : 'Revision requested');
-            }
-        } catch (err) {
-            showToast('Sales review failed', 'error');
-        }
-    };
-
-    const handleAdminReview = async (taskId, approved) => {
-        const notes = prompt(approved ? 'Add final approval notes (optional):' : 'Enter rejection reason (required):');
-        if (!approved && !notes) return;
-
-        try {
-            const response = await taskAPI.adminReview(taskId, { approved, rejectionReason: notes || '' });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Pushed to Procurement' : 'Admin Rejected' } : t));
-                showToast(approved ? 'Pushed to Procurement successfully' : 'Design rejected and sent back');
-            }
-        } catch (err) {
-            showToast('Admin review failed', 'error');
-        }
-    };
-
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this task?')) return;
-
-        try {
-            const response = await taskAPI.delete(id);
-            if (response.success) {
-                await fetchTasks();
-                showToast('Task deleted successfully');
-            }
-        } catch (err) {
-            showToast('Failed to delete task', 'error');
-        }
-    };
-
-    const closeModal = () => {
-        setShowTaskModal(false);
-        setShowDetailsModal(false);
-        setEditingTask(null);
-        setFormData(initialFormData);
-        setError(null);
-        document.body.style.overflow = 'unset';
-    };
-
-    const filteredTasks = tasks.filter(task => {
-        // 1. Staff Filter: Only show tasks assigned to me
-        if (isStaff && task.assignedTo?.email !== user?.email) return false;
-
-        const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            task.description?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === 'All' || task.status === filterStatus;
-        const matchesPriority = filterPriority === 'All' || task.priority === filterPriority;
-        return matchesSearch && matchesStatus && matchesPriority;
+    // Logic Hooks
+    const state = useTasksState(searchParams);
+    
+    const data = useTasksData({
+        setTasks: state.setTasks, setStaff: state.setStaff, setClients: state.setClients,
+        setQuotations: state.setQuotations, setLoading: state.setLoading,
+        setError: state.setError, showToast, setShowTaskModal: state.setShowTaskModal,
+        setFormData: state.setFormData, setSearchTerm: state.setSearchTerm
     });
 
+    const details = useTasksDetails({
+        setSelectedTask: state.setSelectedTask, setShowDetailsModal: state.setShowDetailsModal,
+        setVisitsLoading: state.setVisitsLoading, setTaskVisits: state.setTaskVisits, document
+    });
+
+    const actions = useTasksActions({
+        editingTask: state.editingTask, formData: state.formData, fetchTasks: data.fetchTasks,
+        showToast, closeModal: () => {
+            state.setShowTaskModal(false); state.setShowDetailsModal(false);
+            state.setEditingTask(null); state.setFormData(state.initialFormData);
+            document.body.style.overflow = 'unset';
+        },
+        setTasks: state.setTasks, setSubmitting: state.setSubmitting
+    });
+
+    // Priority Colors
     const getPriorityColor = (priority) => {
         switch (priority) {
             case 'Critical': return '#dc2626';
@@ -345,39 +58,32 @@ const Tasks = ({ isStaff, user }) => {
         }
     };
 
-    const statsCards = [
-        { label: 'Total Tasks', value: tasks.length, color: 'purple', icon: <Loader size={20} />, status: 'All' },
-        { label: 'To Do', value: tasks.filter(t => t.status === 'To Do').length, color: 'orange', icon: <Plus size={20} />, status: 'To Do' },
-        { label: 'In Progress', value: tasks.filter(t => t.status === 'In Progress').length, color: 'blue', icon: <Calendar size={20} />, status: 'In Progress' },
-        { label: 'Design Approvals', value: tasks.filter(t => t.status === 'Pending Admin Review').length, color: 'indigo', icon: <ImageIcon size={20} />, status: 'Pending Admin Review' },
-        { label: 'Completed', value: tasks.filter(t => t.status === 'Completed').length, color: 'green', icon: <CheckCircle size={20} />, status: 'Completed' },
-    ];
+    // Filter Logic
+    const filteredTasks = state.tasks.filter(task => {
+        if (isStaff && task.assignedTo?.email !== user?.email) return false;
+        const matchesSearch = task.title?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+            task.description?.toLowerCase().includes(state.searchTerm.toLowerCase());
+        const matchesStatus = state.filterStatus === 'All' || task.status === state.filterStatus;
+        const matchesPriority = state.filterPriority === 'All' || task.priority === state.filterPriority;
+        return matchesSearch && matchesStatus && matchesPriority;
+    });
+
+    const filteredQuotationsForForm = state.formData.client
+        ? state.quotations.filter(q => (q.client?._id === state.formData.client || q.client === state.formData.client))
+        : [];
+
+    if (state.loading) return <div className="loading-container">Loading tasks...</div>;
 
     return (
         <div className={`tasks-container ${isStaff ? 'staff-view' : ''}`}>
             <div className="tasks-wrapper">
-                <div className="tasks-stats-grid">
-                    {statsCards.map((stat, i) => (
-                        <div
-                            key={i}
-                            className={`tasks-stat-card stat-${stat.color} ${filterStatus === stat.status ? 'selected' : ''}`}
-                            onClick={() => setFilterStatus(stat.status)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div className="stat-content">
-                                <span className="stat-value">{stat.value}</span>
-                                <span className="stat-label">{stat.label}</span>
-                            </div>
-                            <div className="stat-icon-box">
-                                {stat.icon}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <TasksStatsGrid 
+                    tasks={state.tasks} 
+                    filterStatus={state.filterStatus} 
+                    setFilterStatus={state.setFilterStatus} 
+                />
 
                 <div className="tasks-controls">
-                    {/* Search moved to navbar */}
-
                     <div className="tasks-filter-group">
                         <CustomSelect
                             options={[
@@ -387,598 +93,82 @@ const Tasks = ({ isStaff, user }) => {
                                 { value: 'Medium', label: 'Medium' },
                                 { value: 'Low', label: 'Low' }
                             ]}
-                            value={filterPriority}
-                            onChange={(e) => setFilterPriority(e.target.value)}
+                            value={state.filterPriority}
+                            onChange={(e) => state.setFilterPriority(e.target.value)}
                             searchable={false}
                         />
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="skeleton-table">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="skeleton-table-row">
-                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
-                                <div className="skeleton skeleton-table-cell" />
-                                <div className="skeleton skeleton-table-cell" />
-                                <div className="skeleton skeleton-table-cell" />
-                            </div>
-                        ))}
-                    </div>
-                ) : filteredTasks.length === 0 ? (
+                {filteredTasks.length === 0 ? (
                     <div className="empty-state-card">
                         <h4>No tasks found</h4>
                         <p>Assign your first task to get started</p>
                     </div>
                 ) : (
-                    <div className="tasks-list-card">
-                        <div className="tasks-table-container">
-                            <table className="tasks-table">
-                                <thead>
-                                    <tr>
-                                        <th>Task Details</th>
-                                        <th className="desktop-hide">Assigned To</th>
-                                        <th className="desktop-hide">Client & Project</th>
-                                        <th className="desktop-hide">Due Date</th>
-                                        <th className="desktop-hide">Duration</th>
-                                        <th className="desktop-hide">Priority</th>
-                                        <th className="desktop-hide">Status</th>
-                                        <th className="desktop-hide">Progress</th>
-                                        <th className="desktop-hide">{!isStaff && 'Actions'}</th>
-                                        <th className="mobile-show">Status</th>
-                                        <th className="mobile-show"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredTasks.map((task) => (
-                                        <React.Fragment key={task._id}>
-                                            <tr 
-                                                className={`task-row ${expandedRow === task._id ? 'expanded' : ''}`}
-                                                onClick={() => toggleRow(task._id)}
-                                            >
-                                                <td className="task-details-cell">
-                                                    <div className="task-info-main">
-                                                        <span className="task-list-title">{task.title}</span>
-                                                        <span className="task-list-desc">{task.description}</span>
-                                                        <div className="mobile-task-meta mobile-show">
-                                                            <span className="priority-dot" style={{ background: getPriorityColor(task.priority) }}></span>
-                                                            {task.priority} Priority • {task.progress || 0}%
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <div className="task-assignee">
-                                                        <div className="assignee-avatar">
-                                                            {task.assignedTo?.name?.charAt(0) || '?'}
-                                                        </div>
-                                                        <div className="assignee-info">
-                                                            <span className="assignee-name">{task.assignedTo?.name || 'Unassigned'}</span>
-                                                            <span className="assignee-role">{task.assignedTo?.role || ''}</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <div className="task-project-cell">
-                                                        {task.client && (
-                                                            <div className="project-item">
-                                                                <User size={12} />
-                                                                <span>{task.client.name}</span>
-                                                            </div>
-                                                        )}
-                                                        {task.quotation && (
-                                                            <div className="project-item quotation">
-                                                                <Briefcase size={12} />
-                                                                <span>{task.quotation.projectName}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <div className="task-date">
-                                                        <Calendar size={14} />
-                                                        <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <div className="task-duration">
-                                                        <Clock size={14} />
-                                                        <span>{task.estimatedDuration || 'N/A'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <span className="priority-badge-small" style={{ borderLeft: `3px solid ${getPriorityColor(task.priority)}` }}>
-                                                        {task.priority}
-                                                    </span>
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <CustomSelect
-                                                        variant="inline"
-                                                        options={[
-                                                            { value: 'To Do', label: 'To Do' },
-                                                            { value: 'In Progress', label: 'In Progress' },
-                                                            { value: 'Review Pending', label: 'Review Pending' },
-                                                            { value: 'Revision Required', label: 'Revision Required' },
-                                                            { value: 'Approved', label: 'Approved (Manager)' },
-                                                            { value: 'Pending Sales Review', label: 'Pending Sales' },
-                                                            { value: 'Pushed to Procurement', label: 'Procurement Ready' },
-                                                            { value: 'Completed', label: 'Completed' },
-                                                            { value: 'Blocked', label: 'Blocked' }
-                                                        ]}
-                                                        value={task.status}
-                                                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                                                        searchable={false}
-                                                    />
-                                                </td>
-                                                <td className="desktop-hide">
-                                                    <div className="task-progress-cell">
-                                                        <div className="progress-info">
-                                                            <div className="progress-bar-bg">
-                                                                <div
-                                                                    className="progress-bar-fill"
-                                                                    style={{
-                                                                        width: `${task.progress || 0}%`,
-                                                                        backgroundColor: task.progress === 100 ? '#10b981' : '#6366f1'
-                                                                    }}
-                                                                ></div>
-                                                            </div>
-                                                            <span className="progress-value">{task.progress || 0}%</span>
-                                                        </div>
-                                                        {isStaff && (
-                                                            <input
-                                                                type="range"
-                                                                min="0"
-                                                                max="100"
-                                                                step="5"
-                                                                className="progress-slider"
-                                                                value={task.progress || 0}
-                                                                onChange={(e) => handleProgressChange(task._id, parseInt(e.target.value))}
-                                                            />
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="desktop-hide task-actions-cell">
-                                                    <div className="task-actions">
-                                                        {task.status === 'Pending Sales Review' && (
-                                                             <>
-                                                                 <button className="btn-icon approve" onClick={() => handleSalesReview(task._id, true)} title="Sales: Approve Design" style={{ color: '#10b981' }}>
-                                                                     <CheckCircle size={16} />
-                                                                 </button>
-                                                                 <button className="btn-icon reject" onClick={() => handleSalesReview(task._id, false)} title="Sales: Reject Design" style={{ color: '#ef4444' }}>
-                                                                     <X size={16} />
-                                                                 </button>
-                                                             </>
-                                                         )}
-                                                         {task.status === 'Pending Admin Review' && (
-                                                             <>
-                                                                 <button className="btn-icon approve" onClick={() => { setSelectedTask(task); setShowDesignModal(true); }} title="Review & Approve Design" style={{ color: '#6366f1' }}>
-                                                                     <Eye size={16} />
-                                                                 </button>
-                                                                 <button className="btn-icon approve" onClick={() => handleAdminReview(task._id, true)} title="Admin: Fast Approve" style={{ color: '#10b981' }}>
-                                                                     <CheckCircle size={16} />
-                                                                 </button>
-                                                                 <button className="btn-icon reject" onClick={() => handleAdminReview(task._id, false)} title="Admin: Reject Design" style={{ color: '#ef4444' }}>
-                                                                     <AlertTriangle size={16} />
-                                                                 </button>
-                                                             </>
-                                                         )}
-                                                        <button className="btn-icon" onClick={() => handleViewDetails(task)} title="View Details">
-                                                            <Eye size={16} />
-                                                        </button>
-                                                        <button className="btn-icon" onClick={() => handleEdit(task)} title="Link to Project/Edit">
-                                                            <Edit size={16} />
-                                                        </button>
-                                                        <button className="btn-icon delete" onClick={() => handleDelete(task._id)} title="Delete Task">
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                                <td className="mobile-show">
-                                                    <span className="mobile-status-text">{task.status}</span>
-                                                </td>
-                                                <td className="mobile-show toggle-cell">
-                                                    <ChevronDown size={18} className={`toggle-icon ${expandedRow === task._id ? 'active' : ''}`} />
-                                                </td>
-                                            </tr>
-                                            {expandedRow === task._id && (
-                                                <tr className="mobile-expansion-row mobile-show">
-                                                    <td colSpan="3">
-                                                        <div className="expansion-content">
-                                                            <div className="info-grid">
-                                                                <div className="info-item">
-                                                                    <label>Assigned To</label>
-                                                                    <span>{task.assignedTo?.name || 'Unassigned'}</span>
-                                                                </div>
-                                                                <div className="info-item">
-                                                                    <label>Project</label>
-                                                                    <span>{task.quotation?.projectName || 'No Project'}</span>
-                                                                </div>
-                                                                <div className="info-item">
-                                                                    <label>Due Date</label>
-                                                                    <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}</span>
-                                                                </div>
-                                                                <div className="info-item">
-                                                                    <label>Progress</label>
-                                                                    <span>{task.progress || 0}%</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="expansion-actions">
-                                                                <button className="btn-mobile-action primary" onClick={() => handleViewDetails(task)}>
-                                                                    <Eye size={16} />
-                                                                    View Details
-                                                                </button>
-                                                                <button className="btn-mobile-action secondary" onClick={() => handleEdit(task)}>
-                                                                    <Edit size={16} />
-                                                                    Edit Task
-                                                                </button>
-                                                                {!isStaff && (
-                                                                    <button className="btn-mobile-action danger" onClick={() => handleDelete(task._id)}>
-                                                                        <Trash2 size={16} />
-                                                                        Delete Task
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </React.Fragment>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <TasksTable 
+                        tasks={filteredTasks}
+                        isStaff={isStaff}
+                        expandedRow={state.expandedRow}
+                        toggleRow={(id) => state.setExpandedRow(state.expandedRow === id ? null : id)}
+                        getPriorityColor={getPriorityColor}
+                        handleStatusChange={actions.handleStatusChange}
+                        handleProgressChange={actions.handleProgressChange}
+                        handleSalesReview={actions.handleSalesReview}
+                        handleAdminReview={actions.handleAdminReview}
+                        handleViewDetails={details.handleViewDetails}
+                        handleEdit={(task) => {
+                            state.setEditingTask(task);
+                            state.setFormData({
+                                title: task.title || '',
+                                description: task.description || '',
+                                status: task.status || 'To Do',
+                                priority: task.priority || 'Medium',
+                                assignedTo: task.assignedTo?._id || '',
+                                client: task.client?._id || '',
+                                quotation: task.quotation?._id || '',
+                                dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
+                                estimatedDuration: task.estimatedDuration || '',
+                                project: task.project || '',
+                                progress: task.progress || 0
+                            });
+                            state.setShowTaskModal(true);
+                        } }
+                        handleDelete={actions.handleDelete}
+                        setShowDesignModal={state.setShowDesignModal}
+                        setSelectedTask={state.setSelectedTask}
+                    />
                 )}
             </div>
 
-            {showTaskModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content-wide">
-                        <div className="modal-header">
-                            <h3>{editingTask ? 'Edit Task' : 'Assign New Task'}</h3>
-                            <button className="modal-close" onClick={closeModal}>
-                                <X size={20} />
-                            </button>
-                        </div>
+            <TaskFormModal 
+                show={state.showTaskModal}
+                closeModal={() => { state.setShowTaskModal(false); state.setEditingTask(null); state.setFormData(state.initialFormData); }}
+                editingTask={state.editingTask}
+                handleSubmit={actions.handleSubmit}
+                formData={state.formData}
+                handleInputChange={state.handleInputChange}
+                setFormData={state.setFormData}
+                staff={state.staff}
+                clients={state.clients}
+                filteredQuotations={filteredQuotationsForForm}
+                submitting={state.submitting}
+            />
 
-                        <form onSubmit={handleSubmit}>
-                            <div className="modal-form-body" data-lenis-prevent>
-                                <div className="form-grid">
-                                    <div className="form-field full-width">
-                                        <label>Task Title <span>*</span></label>
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            className="client-input"
-                                            value={formData.title}
-                                            onChange={handleInputChange}
-                                            placeholder="e.g., Install kitchen cabinets"
-                                            required
-                                        />
-                                    </div>
+            <TaskDetailsModal 
+                show={state.showDetailsModal}
+                setShow={state.setShowDetailsModal}
+                selectedTask={state.selectedTask}
+                visitsLoading={state.visitsLoading}
+                taskVisits={state.taskVisits}
+            />
 
-                                    <div className="form-field full-width">
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <label>Description</label>
-                                            <AISuggestButton
-                                                type="Task"
-                                                field="description"
-                                                value={formData.description}
-                                                context={{ title: formData.title }}
-                                                onSuggest={(v) => setFormData(prev => ({ ...prev, description: v }))}
-                                            />
-                                        </div>
-                                        <textarea
-                                            name="description"
-                                            className="client-input"
-                                            rows="3"
-                                            value={formData.description}
-                                            onChange={handleInputChange}
-                                            placeholder="Detailed task description..."
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <CustomSelect
-                                            label="Assign to Staff Member"
-                                            name="assignedTo"
-                                            required
-                                            options={staff.filter(s => s.status === 'Active').map(s => ({
-                                                value: s._id,
-                                                label: `${s.name} - ${s.role}`
-                                            }))}
-                                            value={formData.assignedTo}
-                                            onChange={handleInputChange}
-                                            placeholder="Select Staff"
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <CustomSelect
-                                            label="Client"
-                                            name="client"
-                                            options={clients.map(c => ({ value: c._id, label: c.name }))}
-                                            value={formData.client}
-                                            onChange={handleInputChange}
-                                            placeholder="Select Client"
-                                        />
-                                    </div>
-
-                                     <div className="form-field">
-                                        <CustomSelect
-                                            label="Link to Project / Quotation (Required for BOQ)"
-                                            name="quotation"
-                                            options={filteredQuotations.map(q => ({
-                                                value: q._id,
-                                                label: `${q.quotationNumber} - ${q.projectName} (${q.status})`
-                                            }))}
-                                            value={formData.quotation}
-                                            onChange={handleInputChange}
-                                            placeholder={formData.client ? (filteredQuotations.length > 0 ? "Select Project to Link" : "No Projects Found for Client") : "Select Client First"}
-                                            disabled={!formData.client}
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <label>Due Date <span>*</span></label>
-                                        <input
-                                            type="date"
-                                            name="dueDate"
-                                            className="client-input"
-                                            value={formData.dueDate}
-                                            onChange={handleInputChange}
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <label>Estimated Duration</label>
-                                        <input
-                                            type="text"
-                                            name="estimatedDuration"
-                                            className="client-input"
-                                            value={formData.estimatedDuration}
-                                            onChange={handleInputChange}
-                                            placeholder="e.g., 5 days, 2 weeks"
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <CustomSelect
-                                            label="Priority"
-                                            name="priority"
-                                            required
-                                            options={[
-                                                { value: 'Low', label: 'Low' },
-                                                { value: 'Medium', label: 'Medium' },
-                                                { value: 'High', label: 'High' },
-                                                { value: 'Critical', label: 'Critical' }
-                                            ]}
-                                            value={formData.priority}
-                                            onChange={handleInputChange}
-                                            searchable={false}
-                                        />
-                                    </div>
-
-                                    <div className="form-field">
-                                        <CustomSelect
-                                            label="Status"
-                                            name="status"
-                                            required
-                                            options={[
-                                                { value: 'To Do', label: 'To Do' },
-                                                { value: 'In Progress', label: 'In Progress' },
-                                                { value: 'Completed', label: 'Completed' },
-                                                { value: 'Blocked', label: 'Blocked' }
-                                            ]}
-                                            value={formData.status}
-                                            onChange={handleInputChange}
-                                            searchable={false}
-                                        />
-                                    </div>
-
-                                    <div className="form-field full-width">
-                                        <label>Progress ({formData.progress}%)</label>
-                                        <input
-                                            type="range"
-                                            name="progress"
-                                            min="0"
-                                            max="100"
-                                            step="5"
-                                            value={formData.progress}
-                                            onChange={handleInputChange}
-                                            className="slider-input"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button type="button" className="btn-cancel" onClick={closeModal} disabled={submitting}>
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn-submit" disabled={submitting}>
-                                    {submitting ? <Loader className="spinner" size={16} /> : (editingTask ? 'Update Task' : 'Assign Task')}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Task Details & Evidence Modal */}
-            {showDetailsModal && selectedTask && (
-                <div className="modal-overlay">
-                    <div className="modal-content task-details-modal">
-                        <div className="modal-header">
-                            <div className="header-title">
-                                <h2>Task Evidence & Progress</h2>
-                                <p>{selectedTask.title}</p>
-                            </div>
-                            <button className="btn-close" onClick={() => setShowDetailsModal(false)}>
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            <div className="task-summary-strip">
-                                <div className="summary-item">
-                                    <span className="label">Assigned To</span>
-                                    <span className="value">{selectedTask.assignedTo?.name || 'Unassigned'}</span>
-                                </div>
-                                <div className="summary-item">
-                                    <span className="label">Status</span>
-                                    <span className="value-badge">{selectedTask.status}</span>
-                                </div>
-                                <div className="summary-item">
-                                    <span className="label">Current Progress</span>
-                                    <span className="value">{selectedTask.progress}%</span>
-                                </div>
-                            </div>
-
-                            <section className="evidence-section">
-                                <h3 className="section-subtitle">Site Visit Logs & Photos</h3>
-                                {visitsLoading ? (
-                                    <div className="visits-skeleton">
-                                        {[...Array(2)].map((_, i) => (
-                                            <div key={i} className="visit-log-item card skeleton" style={{ padding: '1.25rem', marginBottom: '1rem' }}>
-                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '1rem' }}>
-                                                    <Skeleton width="36px" height="36px" borderRadius="50%" />
-                                                    <div style={{ flex: 1 }}>
-                                                        <Skeleton width="120px" height="14px" />
-                                                        <div style={{ height: '4px' }} />
-                                                        <Skeleton width="80px" height="12px" />
-                                                    </div>
-                                                </div>
-                                                <Skeleton width="100%" height="60px" borderRadius="12px" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : taskVisits.length > 0 ? (
-                                    <div className="visits-timeline">
-                                        {taskVisits.map((visit) => (
-                                            <div key={visit._id} className="visit-log-item card">
-                                                <div className="visit-log-header">
-                                                    <div className="uploader-info">
-                                                        <div className="avatar">{visit.staff?.name?.charAt(0) || 'S'}</div>
-                                                        <div className="name-box">
-                                                            <span className="staff-name">{visit.staff?.name || 'Staff member'}</span>
-                                                            <span className="visit-time">{new Date(visit.createdAt).toLocaleString()}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="visit-date-badge">
-                                                        <Calendar size={12} />
-                                                        <span>{new Date(visit.visitDate).toLocaleDateString()}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="visit-log-notes">
-                                                    <p>{visit.notes || 'No notes provided for this visit.'}</p>
-                                                    {visit.location && (
-                                                        <div className="visit-loc">
-                                                            <MapPin size={12} />
-                                                            <span>{visit.location}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {visit.images && visit.images.length > 0 && (
-                                                    <div className="visit-log-gallery">
-                                                        {visit.images.map((img, i) => (
-                                                            <div key={i} className="gallery-img">
-                                                                <img src={`${BASE_IMAGE_URL}${img}`} alt={`Visit site evidence ${i + 1}`} className="evidence-image" />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="no-evidence-state">
-                                        <Camera size={40} />
-                                        <p>No site visit logs uploaded for this task yet.</p>
-                                    </div>
-                                )}
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Design Preview Modal for Admin Final Review */}
-            {showDesignModal && selectedTask && (
-                <div className="modal-overlay" style={{ zIndex: 1100 }}>
-                    <div className="modal-content-wide design-preview-admin" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
-                        <div className="modal-header">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ background: '#6366f1', color: 'white', padding: '10px', borderRadius: '14px' }}><ImageIcon size={24} /></div>
-                                <div>
-                                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>Design Final Review</h2>
-                                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>{selectedTask.title}</p>
-                                </div>
-                            </div>
-                            <button className="btn-close" onClick={() => setShowDesignModal(false)}><X size={20} /></button>
-                        </div>
-                        
-                        <div className="modal-body" style={{ padding: '2rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
-                                <div className="preview-assets">
-                                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <ImageIcon size={18} color="#6366f1" /> Submitted Files
-                                    </h3>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
-                                        {selectedTask.submissions?.[selectedTask.submissions.length - 1]?.files?.map((file, i) => {
-                                            const isImg = file.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i);
-                                            return (
-                                                <div key={i} style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                                                    {isImg ? (
-                                                        <div style={{ height: '120px', background: '#eee' }}>
-                                                            <img src={file.url.startsWith('http') ? file.url : `${BASE_IMAGE_URL}${file.url}`} alt="Design" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                        </div>
-                                                    ) : (
-                                                        <div style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e2e8f0' }}><FileText size={36} color="#64748b" /></div>
-                                                    )}
-                                                    <div style={{ padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <span style={{ fontSize: '0.7rem', color: '#1e293b', fontWeight: 600, maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name || `Asset ${i+1}`}</span>
-                                                        <a href={file.url.startsWith('http') ? file.url : `${BASE_IMAGE_URL}${file.url}`} target="_blank" rel="noreferrer" style={{ color: '#6366f1' }}><ExternalLink size={14} /></a>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="preview-details">
-                                    <div style={{ background: '#f1f5f9', borderRadius: '20px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-                                        <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 12px 0' }}>Designer's Vision</h3>
-                                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: '1.6' }}>
-                                            {selectedTask.submissions?.[selectedTask.submissions.length - 1]?.designerNotes || 'No specific notes provided.'}
-                                        </p>
-                                    </div>
-
-                                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '1.5rem' }}>
-                                        <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 12px 0' }}>Material List (BOQ)</h3>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            {selectedTask.submissions?.[selectedTask.submissions.length - 1]?.designItems?.map((item, i) => (
-                                                <div key={i} style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                                                    <span style={{ fontWeight: 600 }}>{item.name}</span>
-                                                    <span style={{ color: '#6366f1' }}>{item.quantity} {item.unit}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="modal-footer" style={{ padding: '1.5rem 2rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                            <button className="btn-cancel" onClick={() => setShowDesignModal(false)}>Close</button>
-                            <button className="btn-submit" onClick={() => { handleAdminReview(selectedTask._id, false); setShowDesignModal(false); }} style={{ background: '#ef4444' }}>Request Redo</button>
-                            <button className="btn-submit" onClick={() => { handleAdminReview(selectedTask._id, true); setShowDesignModal(false); }} style={{ background: '#10b981' }}>Approve & Finalize</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <DesignPreviewModal 
+                show={state.showDesignModal}
+                setShow={state.setShowDesignModal}
+                selectedTask={state.selectedTask}
+                handleAdminReview={actions.handleAdminReview}
+            />
         </div>
     );
 };

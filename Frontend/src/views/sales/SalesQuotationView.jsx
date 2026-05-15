@@ -1,348 +1,105 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-    Printer,
-    ArrowLeft,
-    Download,
-    Mail,
-    MapPin,
-    Phone,
-    Globe,
-    CheckCircle,
-    FileText,
-    Calendar,
-    Briefcase,
-    IndianRupee,
-    Loader,
-    Edit
-} from 'lucide-react';
-import { quotationAPI } from '../../models/api';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+
+// Hooks
+import { useQuotationViewState } from './quotations/view/hooks/useQuotationViewState';
+import { useQuotationViewData } from './quotations/view/hooks/useQuotationViewData';
+import { useQuotationViewActions } from './quotations/view/hooks/useQuotationViewActions';
+import { useQuotationViewCalculations } from './quotations/view/hooks/useQuotationViewCalculations';
+
+// Components
+import { ActionHeader, DocHeader } from './quotations/view/components/HeaderComponents';
+import { PartiesGrid, ItemsTable } from './quotations/view/components/ContentComponents';
+import { DocSummary, DocFooter } from './quotations/view/components/FooterComponents';
 import Skeleton from './components/Skeleton';
+
 import './css/SalesQuotationView.css';
 
 const SalesQuotationView = ({ isStaff }) => {
     const { id } = useParams();
-    const navigate = useNavigate();
-    const [quotation, setQuotation] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const state = useQuotationViewState();
+    
+    useQuotationViewData({
+        id,
+        setQuotation: state.setQuotation,
+        setLoading: state.setLoading,
+        setError: state.setError
+    });
 
-    useEffect(() => {
-        const fetchQuotation = async () => {
-            try {
-                setLoading(true);
-                const res = await quotationAPI.getById(id);
-                if (res.success) {
-                    setQuotation(res.data);
-                } else {
-                    setError('Quotation not found');
-                }
-            } catch (err) {
-                console.error('Error fetching quotation:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchQuotation();
-    }, [id]);
+    const actions = useQuotationViewActions({ isStaff, id });
+    const calc = useQuotationViewCalculations(state.quotation);
 
-    const handlePrint = () => {
-        window.print();
-    };
-
-    if (loading) {
+    if (state.loading) {
         return (
             <div className="qv-wrapper skeleton-mode">
                 <div className="qv-actions-bar">
                     <Skeleton width="80px" height="36px" borderRadius="12px" />
                     <div className="qv-right-actions">
-                        <Skeleton width="80px" height="36px" borderRadius="12px" />
-                        <Skeleton width="100px" height="36px" borderRadius="12px" />
-                        <Skeleton width="120px" height="36px" borderRadius="12px" />
+                        <Skeleton width="80px" height="36px" borderRadius="12px" /><Skeleton width="100px" height="36px" borderRadius="12px" /><Skeleton width="120px" height="36px" borderRadius="12px" />
                     </div>
                 </div>
-
                 <div className="quotation-document">
                     <header className="doc-header">
-                        <div className="company-logo-section">
-                            <Skeleton width="200px" height="30px" />
-                            <div style={{ height: '12px' }} />
-                            <Skeleton width="250px" height="14px" />
-                            <div style={{ height: '8px' }} />
-                            <Skeleton width="180px" height="14px" />
-                        </div>
-                        <div className="doc-title-section">
-                            <Skeleton width="180px" height="40px" />
-                            <div style={{ height: '1.5rem' }} />
-                            <div className="doc-meta">
-                                <Skeleton width="120px" height="40px" />
-                                <Skeleton width="120px" height="40px" />
-                                <Skeleton width="120px" height="40px" />
-                            </div>
-                        </div>
+                        <div className="company-logo-section"><Skeleton width="200px" height="30px" /><div style={{ height: '12px' }} /><Skeleton width="250px" height="14px" /></div>
+                        <div className="doc-title-section"><Skeleton width="180px" height="40px" /><div style={{ height: '1.5rem' }} /><div className="doc-meta"><Skeleton width="120px" height="40px" /><Skeleton width="120px" height="40px" /></div></div>
                     </header>
-
-                    <div className="doc-content">
-                        <section className="parties-grid">
-                            <div className="party-box">
-                                <Skeleton width="120px" height="20px" />
-                                <div style={{ height: '1rem' }} />
-                                <Skeleton width="180px" height="24px" />
-                                <div style={{ height: '8px' }} />
-                                <Skeleton width="220px" height="16px" />
-                            </div>
-                            <div className="party-box">
-                                <Skeleton width="120px" height="20px" />
-                                <div style={{ height: '1rem' }} />
-                                <Skeleton width="180px" height="24px" />
-                                <div style={{ height: '8px' }} />
-                                <Skeleton width="220px" height="16px" />
-                            </div>
-                        </section>
-
-                        <section className="items-section" style={{ marginTop: '3rem' }}>
-                            {[...Array(4)].map((_, i) => (
-                                <div key={i} style={{ display: 'flex', gap: '1rem', padding: '1.5rem 0', borderBottom: '1px solid #f1f5f9' }}>
-                                    <Skeleton width="40px" height="20px" />
-                                    <div style={{ flex: 1 }}>
-                                        <Skeleton width="40%" height="20px" />
-                                        <div style={{ height: '8px' }} />
-                                        <Skeleton width="80%" height="16px" />
-                                    </div>
-                                    <Skeleton width="60px" height="20px" />
-                                    <Skeleton width="100px" height="20px" />
-                                    <Skeleton width="120px" height="20px" />
-                                </div>
-                            ))}
-                        </section>
-                    </div>
                 </div>
             </div>
         );
     }
 
-    if (error || !quotation) {
+    if (state.error || !state.quotation) {
         return (
             <div className="qv-error-container">
                 <div className="error-card">
                     <h2>Error</h2>
-                    <p>{error || 'Something went wrong'}</p>
-                    <button onClick={() => navigate(isStaff ? '/staff/quotations' : '/quotations')}>
-                        <ArrowLeft size={18} /> Back to List
-                    </button>
+                    <p>{state.error || 'Something went wrong'}</p>
+                    <button onClick={actions.handleBack}><ArrowLeft size={18} /> Back to List</button>
                 </div>
             </div>
         );
     }
 
-    const {
-        quotationNumber,
-        projectName,
-        client,
-        items = [],
-        taxRate = 18,
-        discount = 0,
-        status,
-        createdAt,
-        validUntil,
-        notes,
-        termsAndConditions,
-        projectName: projectTitle,
-        projectDescription,
-        depositPercent = 30
-    } = quotation;
-
-    const subtotal = items.reduce((sum, item) => sum + (item.amount || 0), 0);
-    const discountAmount = (subtotal * discount) / 100;
-    const offerPrice = subtotal - discountAmount;
-    const taxAmount = (offerPrice * taxRate) / 100;
-    const grandTotal = offerPrice + taxAmount;
+    const q = state.quotation;
 
     return (
         <div className="qv-wrapper">
-            <div className="qv-actions-bar no-print">
-                <button className="btn-back" onClick={() => navigate(isStaff ? '/staff/quotations' : '/quotations')}>
-                    <ArrowLeft size={18} /> Back
-                </button>
-                <div className="qv-right-actions">
-                    <button className="btn-edit" onClick={() => navigate(isStaff ? `/staff/quotations/edit/${id}` : `/quotations/edit/${id}`)}>
-                        <Edit size={18} /> Edit
-                    </button>
-                    <button className="btn-secondary" onClick={() => window.print()}>
-                        <Printer size={18} /> Print
-                    </button>
-                    <button className="btn-primary" onClick={() => {/* Future: Download PDF */ }}>
-                        <Download size={18} /> Download
-                    </button>
-                </div>
-            </div>
+            <ActionHeader 
+                handleBack={actions.handleBack}
+                handleEdit={actions.handleEdit}
+                handlePrint={actions.handlePrint}
+                handleDownload={actions.handleDownload}
+            />
 
             <div className="quotation-document">
-                {/* Header */}
-                <header className="doc-header">
-                    <div className="company-logo-section">
-                        <div className="qv-logo">
-                            <span className="logo-accent">I</span>nterior Design
-                        </div>
-                        <div className="company-details">
-                            <p><MapPin size={12} /> 123 Design Studio, Creative Avenue, NY</p>
-                            <p><Phone size={12} /> +1 234 567 890</p>
-                            <p><Globe size={12} /> www.interiordesign.com</p>
-                        </div>
-                    </div>
-                    <div className="doc-title-section">
-                        <h1>QUOTATION</h1>
-                        <div className="doc-meta">
-                            <div className="meta-item">
-                                <label>Quote #</label>
-                                <span>{quotationNumber}</span>
-                            </div>
-                            <div className="meta-item">
-                                <label>Date</label>
-                                <span>{new Date(createdAt).toLocaleDateString()}</span>
-                            </div>
-                            <div className="meta-item">
-                                <label>Status</label>
-                                <span className={`status-badge ${status?.toLowerCase()}`}>{status}</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <DocHeader 
+                    quotationNumber={q.quotationNumber}
+                    createdAt={q.createdAt}
+                    status={q.status}
+                />
 
                 <div className="doc-content">
-                    {/* Parties Section */}
-                    <section className="parties-grid">
-                        <div className="party-box client-box">
-                            <h3>Prepared For</h3>
-                            <div className="party-details">
-                                <p className="client-name">{client?.name || 'Walk-in Client'}</p>
-                                <p>{client?.email}</p>
-                                <p>{client?.phone}</p>
-                                <p>{client?.company}</p>
-                            </div>
-                        </div>
-                        <div className="party-box project-box">
-                            <h3>Project Details</h3>
-                            <div className="party-details">
-                                <p className="project-title">{projectName}</p>
-                                <p className="project-desc">{projectDescription}</p>
-                                {validUntil && (
-                                    <p className="validity">
-                                        <Calendar size={14} /> Valid Until: {new Date(validUntil).toLocaleDateString()}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </section>
+                    <PartiesGrid 
+                        client={q.client}
+                        projectName={q.projectName}
+                        projectDescription={q.projectDescription}
+                        validUntil={q.validUntil}
+                    />
 
-                    {/* Items Table */}
-                    <section className="items-section">
-                        <table className="qv-items-table">
-                            <thead>
-                                <tr>
-                                    <th className="col-idx">#</th>
-                                    <th className="col-item">Description & Specifications</th>
-                                    <th className="col-qty">Qty</th>
-                                    <th className="col-rate">Rate</th>
-                                    <th className="col-amount">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.map((item, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <tr className="item-row">
-                                            <td className="col-idx" data-label="#">{idx + 1}</td>
-                                            <td className="col-item" data-label="Item">
-                                                <div className="item-main-info">
-                                                    <span className="item-name">{item.itemName}</span>
-                                                    {item.section && <span className="item-section-tag">{item.section}</span>}
-                                                </div>
-                                                <p className="item-desc">{item.description}</p>
-                                                <div className="item-specs">
-                                                    {item.finish && <span><strong>Finish:</strong> {item.finish}</span>}
-                                                    {item.material && <span><strong>Material:</strong> {item.material}</span>}
-                                                    {item.size && <span><strong>Size:</strong> {item.size}</span>}
-                                                </div>
-                                            </td>
-                                            <td className="col-qty" data-label="Qty">{item.quantity} {item.unit}</td>
-                                            <td className="col-rate" data-label="Rate">₹{item.rate?.toLocaleString()}</td>
-                                            <td className="col-amount" data-label="Amount">₹{item.amount?.toLocaleString()}</td>
-                                        </tr>
-                                        {item.image && (
-                                            <tr className="image-row no-print">
-                                                <td className="col-idx"></td>
-                                                <td colSpan="4">
-                                                    <div className="item-preview-img">
-                                                        <img src={`${item.image}`} alt="Preview" />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </tbody>
-                        </table>
-                    </section>
+                    <ItemsTable items={q.items || []} />
 
-                    {/* Summary Section */}
-                    <section className="summary-section">
-                        <div className="notes-col">
-                            {notes && (
-                                <div className="doc-note-box">
-                                    <h4>Notes</h4>
-                                    <p>{notes}</p>
-                                </div>
-                            )}
-                            {termsAndConditions && (
-                                <div className="doc-note-box">
-                                    <h4>Terms & Conditions</h4>
-                                    <p>{termsAndConditions}</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="totals-col">
-                            <div className="total-row">
-                                <label>Subtotal</label>
-                                <span>₹{subtotal.toLocaleString()}</span>
-                            </div>
-                            {discount > 0 && (
-                                <div className="total-row discount">
-                                    <label>Discount ({discount}%)</label>
-                                    <span>- ₹{discountAmount.toLocaleString()}</span>
-                                </div>
-                            )}
-                            <div className="total-row offer">
-                                <label>Offer Price</label>
-                                <span>₹{offerPrice.toLocaleString()}</span>
-                            </div>
-                            <div className="total-row">
-                                <label>GST ({taxRate}%)</label>
-                                <span>+ ₹{taxAmount.toLocaleString()}</span>
-                            </div>
-                            <div className="total-row grand-total">
-                                <label>Grand Total</label>
-                                <span>₹{grandTotal.toLocaleString()}</span>
-                            </div>
-                            <div className="deposit-box">
-                                <label>Advance Required ({depositPercent}%)</label>
-                                <span>₹{((grandTotal * depositPercent) / 100).toLocaleString()}</span>
-                            </div>
-                        </div>
-                    </section>
+                    <DocSummary 
+                        {...calc}
+                        notes={q.notes}
+                        termsAndConditions={q.termsAndConditions}
+                        taxRate={q.taxRate}
+                        discount={q.discount}
+                        depositPercent={q.depositPercent}
+                    />
                 </div>
 
-                <footer className="doc-footer">
-                    <div className="signature-area">
-                        <div className="sig-line">
-                            <p>Authorized Signatory</p>
-                        </div>
-                        <div className="sig-line">
-                            <p>Client Signature</p>
-                        </div>
-                    </div>
-                    <p className="thank-you">Thank you for your business!</p>
-                </footer>
+                <DocFooter />
             </div>
         </div>
     );

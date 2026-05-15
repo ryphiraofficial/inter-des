@@ -1,0 +1,120 @@
+import React from 'react';
+import { Briefcase, Calendar, Plus } from 'lucide-react';
+import CustomSelect from '../../components/CustomSelect';
+import DatePicker from '../../components/DatePicker';
+import AISuggestButton from '../../../common/AISuggestButton';
+
+const ProjectDetailsSection = ({ 
+    formData, handleInputChange, clientSearchQuery, handleClientSearch, 
+    showClientSuggestions, filteredClients, selectClient, handleQuickAddClient, setFormData 
+}) => {
+    return (
+        <div className="form-section">
+            <div className="section-header-row" style={{ borderBottom: 'none', marginBottom: '1rem' }}>
+                <div className="section-header-left">
+                    <Briefcase className="section-icon" size={18} />
+                    <h3>Project Details</h3>
+                </div>
+            </div>
+            <div className="form-grid">
+                <div className="form-group" style={{ position: 'relative' }}>
+                    <label>Client *</label>
+                    <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
+                        <input
+                            type="text"
+                            className="input-styled"
+                            placeholder="Type to search client..."
+                            value={clientSearchQuery}
+                            onChange={(e) => handleClientSearch(e.target.value)}
+                            onFocus={() => clientSearchQuery.trim() && showClientSuggestions && true} 
+                            required
+                        />
+                        {showClientSuggestions && (
+                            <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
+                                {filteredClients.map(c => (
+                                    <div key={c._id} className="search-result-item" onClick={() => selectClient(c)}>
+                                        <div className="res-info">
+                                            <span className="res-name">{c.name}</span>
+                                            <span className="res-cat">{c.company || 'Individual'}</span>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Select</span>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div
+                                    className="search-result-item add-new-prompt"
+                                    onClick={handleQuickAddClient}
+                                    style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}
+                                >
+                                    <div className="res-info">
+                                        <span className="res-name" style={{ color: '#6366f1' }}>+ Add "{clientSearchQuery}"</span>
+                                        <span className="res-cat">Create new client profile</span>
+                                    </div>
+                                    <Plus size={16} color="#6366f1" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className="form-group">
+                    <CustomSelect 
+                        label="Document Type"
+                        name="documentType" 
+                        value={formData.documentType} 
+                        onChange={handleInputChange} 
+                        options={[
+                            { value: 'Quotation', label: 'Quotation' },
+                            { value: 'Estimate', label: 'Estimate' },
+                            { value: 'Proposal', label: 'Proposal' }
+                        ]} 
+                    />
+                </div>
+            </div>
+            <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label>Project Name *</label>
+                    <AISuggestButton
+                        field="projectName"
+                        value={formData.projectName}
+                        onSuggest={(v) => setFormData(prev => ({ ...prev, projectName: v }))}
+                    />
+                </div>
+                <input type="text" name="projectName" className="input-styled" placeholder="e.g., Living Room Interior Design" value={formData.projectName} onChange={handleInputChange} required />
+            </div>
+            <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label>Description</label>
+                    <AISuggestButton
+                        field="projectDescription"
+                        value={formData.projectDescription}
+                        onSuggest={(v) => setFormData(prev => ({ ...prev, projectDescription: v }))}
+                    />
+                </div>
+                <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2"></textarea>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
+                <div className="form-group">
+                    <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project Start</label>
+                    <DatePicker 
+                        value={formData.projectStart} 
+                        onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val }})} 
+                    />
+                </div>
+                <div className="form-group">
+                    <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project End</label>
+                    <DatePicker 
+                        value={formData.projectEnd} 
+                        onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val }})} 
+                    />
+                </div>
+            </div>
+            <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <label>Scope of Work</label>
+                <textarea name="scopeOfWork" className="textarea-styled" placeholder="Define what is included in this project..." value={formData.scopeOfWork} onChange={handleInputChange} rows="2"></textarea>
+            </div>
+        </div>
+    );
+};
+
+export default ProjectDetailsSection;

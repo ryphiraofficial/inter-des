@@ -1,0 +1,133 @@
+import React from 'react';
+import { X, Plus } from 'lucide-react';
+import AISuggestButton from '../../components/AISuggestButton';
+
+const POFormModal = ({ 
+    showCreateModal, setShowCreateModal, formData, setFormData, submitting, handleCreatePO 
+}) => {
+    if (!showCreateModal) return null;
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content-wide" data-lenis-prevent>
+                <div className="modal-header">
+                    <h3>Create Purchase Order</h3>
+                    <button className="modal-close" onClick={() => setShowCreateModal(false)}><X size={24} /></button>
+                </div>
+                <div className="modal-form-body">
+                    <div className="modal-form-grid">
+                        <div className="form-field">
+                            <label>Supplier <span>*</span></label>
+                            <input
+                                type="text"
+                                className="po-input"
+                                placeholder="Supplier name"
+                                value={formData.supplier}
+                                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-field">
+                            <label>Delivery Date</label>
+                            <input
+                                type="date"
+                                className="po-input"
+                                value={formData.deliveryDate}
+                                onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-field" style={{ marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <label>Delivery Address</label>
+                            <AISuggestButton
+                                type="PurchaseOrder"
+                                field="deliveryAddress"
+                                value={formData.deliveryAddress}
+                                context={{ supplier: formData.supplier }}
+                                onSuggest={(v) => setFormData({ ...formData, deliveryAddress: v })}
+                            />
+                        </div>
+                        <textarea
+                            className="po-input"
+                            value={formData.deliveryAddress}
+                            onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
+                        />
+                    </div>
+                    <div className="items-section-header">
+                        <h4>Items</h4>
+                        <button
+                            className="btn-add-item-purple"
+                            onClick={() => setFormData({ ...formData, items: [...formData.items, { itemName: '', quantity: 1, rate: 0, unit: 'pcs' }] })}
+                        >
+                            <Plus size={18} /> Add Item
+                        </button>
+                    </div>
+                    <div className="po-items-list" style={{ marginBottom: '1.5rem' }}>
+                        {formData.items.map((item, idx) => (
+                            <div key={idx} className="po-item-row" style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                <input
+                                    placeholder="Item name"
+                                    className="po-input"
+                                    style={{ flex: 3 }}
+                                    value={item.itemName}
+                                    onChange={(e) => {
+                                        const newItems = [...formData.items];
+                                        newItems[idx].itemName = e.target.value;
+                                        setFormData({ ...formData, items: newItems });
+                                    }}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Qty"
+                                    className="po-input"
+                                    style={{ flex: 1 }}
+                                    value={item.quantity}
+                                    onChange={(e) => {
+                                        const newItems = [...formData.items];
+                                        newItems[idx].quantity = e.target.value;
+                                        setFormData({ ...formData, items: newItems });
+                                    }}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Rate"
+                                    className="po-input"
+                                    style={{ flex: 1 }}
+                                    value={item.rate}
+                                    onChange={(e) => {
+                                        const newItems = [...formData.items];
+                                        newItems[idx].rate = e.target.value;
+                                        setFormData({ ...formData, items: newItems });
+                                    }}
+                                />
+                                <input
+                                    placeholder="Unit"
+                                    className="po-input"
+                                    style={{ flex: 1 }}
+                                    value={item.unit}
+                                    onChange={(e) => {
+                                        const newItems = [...formData.items];
+                                        newItems[idx].unit = e.target.value;
+                                        setFormData({ ...formData, items: newItems });
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
+                    <button
+                        className="btn-create-po"
+                        onClick={() => handleCreatePO(formData)}
+                        disabled={submitting}
+                    >
+                        {submitting ? 'Creating...' : 'Create Purchase Order'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default POFormModal;

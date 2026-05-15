@@ -1,1348 +1,186 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    FileText,
-    Plus,
-    Trash2,
-    Send,
-    Save,
-    Package,
-    Layout,
-    Upload,
-    ArrowRight,
-    MapPin,
-    CheckCircle,
-    Download,
-    Printer,
-    Home,
-    Search,
-    ArrowLeft,
-    Layers,
-    Loader,
-    Calendar,
-    DollarSign,
-    Briefcase,
-    Tag,
-    X,
-    Eye,
-    SaveAll,
-    Sparkles,
-    Loader2,
-    ChevronDown,
-    ChevronUp,
-    AlertTriangle,
-    Edit
-} from 'lucide-react';
-import { quotationAPI, clientAPI, inventoryAPI, uploadAPI, aiAPI } from '../../models/api';
-import AISuggestButton from '../common/AISuggestButton';
-import CustomSelect from '../common/CustomSelect';
-import DatePicker from '../common/DatePicker';
-import Skeleton from '../common/Skeleton';
+import { Save, Send, X } from 'lucide-react';
+
+// Hooks
+import { useQuotationState } from './quotation/hooks/useQuotationState';
+import { useQuotationData } from './quotation/hooks/useQuotationData';
+import { useQuotationSearch } from './quotation/hooks/useQuotationSearch';
+import { useQuotationCalculations } from './quotation/hooks/useQuotationCalculations';
+import { useQuotationActions } from './quotation/hooks/useQuotationActions';
+
+// Components
+import ProjectDetailsSection from './quotation/components/ProjectDetailsSection';
+import PaymentPoliciesSection from './quotation/components/PaymentPoliciesSection';
+import LineItemsSection from './quotation/components/LineItemsSection';
+import QuotationSummary from './quotation/components/QuotationSummary';
+import NewQuotationSkeleton from './quotation/components/NewQuotationSkeleton';
+import { BillPreviewModal, QuickAddClientModal, ExitConfirmationDialog } from './quotation/components/QuotationModals';
+
 import './css/NewQuotation.css';
 
 const NewQuotation = ({ isEdit, isStaff }) => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const [clients, setClients] = useState([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Global UI states
     const [fetching, setFetching] = useState(isEdit && !!id);
     const [error, setError] = useState(null);
-    const [inventoryItems, setInventoryItems] = useState([]);
-    const [searchResults, setSearchResults] = useState([]);
-    const [activeSearchId, setActiveSearchId] = useState(null);
-    const [activeSectionFilter, setActiveSectionFilter] = useState('All Items');
-    const [globalSearchQuery, setGlobalSearchQuery] = useState('');
-    const [globalSearchResults, setGlobalSearchResults] = useState([]);
-    const [showBillPreview, setShowBillPreview] = useState(false);
-    const [pendingStatus, setPendingStatus] = useState('Under Review');
     const [isSaving, setIsSaving] = useState(false);
-    const [clientSearchQuery, setClientSearchQuery] = useState('');
-    const [showClientSuggestions, setShowClientSuggestions] = useState(false);
-    const [filteredClients, setFilteredClients] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showBillPreview, setShowBillPreview] = useState(false);
     const [showQuickAddModal, setShowQuickAddModal] = useState(false);
-    const [quickAddData, setQuickAddData] = useState({ name: '', email: '', phone: '' });
-    const [expandedItems, setExpandedItems] = useState({});
     const [showExitDialog, setShowExitDialog] = useState(false);
+    const [pendingStatus, setPendingStatus] = useState('Under Review');
+    const [quickAddData, setQuickAddData] = useState({ name: '', email: '', phone: '' });
 
-    // Form States
-    const [lineItems, setLineItems] = useState([]);
-    const [taxRate, setTaxRate] = useState(18);
-    const [includeTax, setIncludeTax] = useState(true);
-    const [discount, setDiscount] = useState(0);
-    const [includeDiscount, setIncludeDiscount] = useState(false);
+    // Data states
+    const [clients, setClients] = useState([]);
+    const [inventoryItems, setInventoryItems] = useState([]);
 
-    const [formData, setFormData] = useState({
-        client: '',
-        quoteNumber: `QT-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
-        date: new Date().toISOString().split('T')[0],
-        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        documentType: 'Quotation',
-        projectName: '',
-        projectDescription: '',
-        projectStart: new Date().toISOString().split('T')[0],
-        projectEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        scopeOfWork: '',
-        depositPercent: 30,
-        paymentTerms: '',
-        warrantyTerms: '',
-        cancellationPolicy: '',
-        notes: '',
-        termsConditions: 'Payment due within 30 days. 50% deposit required to commence work.'
+    // Logic Hooks
+    const state = useQuotationState();
+    
+    useQuotationData({ 
+        isEdit, id, setFormData: state.setFormData, setLineItems: state.setLineItems, 
+        setTaxRate: state.setTaxRate, setDiscount: state.setDiscount, 
+        setIncludeDiscount: state.setIncludeDiscount, setFetching, setError, 
+        setClients, setInventoryItems, clients 
     });
 
-    // Fetch clients and inventory
+    const search = useQuotationSearch({ 
+        clients, inventoryItems, setFormData: state.setFormData, 
+        setLineItems: state.setLineItems, lineItems: state.lineItems 
+    });
+
+    const calc = useQuotationCalculations({ 
+        lineItems: state.lineItems, includeDiscount: state.includeDiscount, 
+        discount: state.discount, includeTax: state.includeTax, 
+        taxRate: state.taxRate, formData: state.formData 
+    });
+
+    const actions = useQuotationActions({
+        formData: state.formData, lineItems: state.lineItems, taxRate: state.taxRate,
+        discount: state.discount, includeDiscount: state.includeDiscount,
+        offerPrice: calc.offerPrice, isEdit, id, isStaff, navigate, setError,
+        setIsSaving, setShowBillPreview, setPendingStatus, setClients,
+        setShowQuickAddModal, setShowExitDialog
+    });
+
+    // Handle clicks outside for search suggestions
     useEffect(() => {
-        const loadInitialData = async () => {
-            try {
-                const clientRes = await clientAPI.getAll();
-                if (clientRes.success) setClients(clientRes.data);
-
-                const inventoryRes = await inventoryAPI.getAll();
-                if (inventoryRes.success) setInventoryItems(inventoryRes.data);
-
-                if (isEdit && id) {
-                    const quoteRes = await quotationAPI.getById(id);
-                    if (quoteRes.success) {
-                        const q = quoteRes.data;
-                        const clientData = q.client?._id || q.client;
-                        setFormData({
-                            client: clientData,
-                            quoteNumber: q.quotationNumber,
-                            date: new Date(q.createdAt).toISOString().split('T')[0],
-                            validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
-                            documentType: q.documentType || 'Quotation',
-                            projectName: q.projectName,
-                            projectDescription: q.projectDescription || '',
-                            projectStart: q.projectStart ? new Date(q.projectStart).toISOString().split('T')[0] : '',
-                            projectEnd: q.projectEnd ? new Date(q.projectEnd).toISOString().split('T')[0] : '',
-                            scopeOfWork: q.scopeOfWork || '',
-                            depositPercent: q.depositPercent || 30,
-                            paymentTerms: q.paymentTerms || '',
-                            warrantyTerms: q.warrantyTerms || '',
-                            cancellationPolicy: q.cancellationPolicy || '',
-                            notes: q.notes || '',
-                            termsConditions: q.termsAndConditions || ''
-                        });
-
-                        // Set client search query if clients are already loaded
-                        if (clientRes.success && clientRes.data.length > 0) {
-                            const selected = clientRes.data.find(c => c._id === clientData);
-                            if (selected) setClientSearchQuery(selected.name);
-                        }
-
-                        setLineItems(q.items.map(item => ({
-                            id: item._id || Math.random(),
-                            name: item.itemName,
-                            description: item.description,
-                            section: item.section || 'Uncategorized',
-                            finishBrand: item.finish || '',
-                            materialOrigin: item.material || '',
-                            size: item.size || '',
-                            quantity: item.quantity,
-                            unit: item.unit,
-                            rate: item.rate,
-                            amount: item.amount,
-                            image: item.image || null
-                        })));
-                        if (q.taxRate) setTaxRate(q.taxRate);
-                        if (q.discount) {
-                            setDiscount(q.discount);
-                            setIncludeDiscount(true);
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('Error loading data:', err);
-                setError('Failed to load data: ' + err.message);
-            } finally {
-                setFetching(false);
-            }
-        };
-        loadInitialData();
-    }, [isEdit, id]);
-
-    // AI Auto-Fill Listener
-    useEffect(() => {
-        const processAIData = (data) => {
-            if (!data) return;
-
-            setFormData(prev => ({
-                ...prev,
-                projectName: data.projectName || prev.projectName,
-                projectDescription: data.projectDescription || data.description || prev.projectDescription,
-                paymentTerms: data.paymentTerms || prev.paymentTerms
-            }));
-
-            if (data.clientName) {
-                const matched = clients.find(c => c.name.toLowerCase().includes(data.clientName.toLowerCase()));
-                if (matched) {
-                    setFormData(prev => ({ ...prev, client: matched._id }));
-                    setClientSearchQuery(matched.name);
-                }
-            }
-
-            if (data.items && data.items.length > 0) {
-                const newItems = data.items.map(item => ({
-                    id: Math.random(),
-                    name: item.name || 'AI Suggested Item',
-                    description: item.description || '',
-                    section: item.section || 'General',
-                    finishBrand: item.finish || '',
-                    materialOrigin: item.material || '',
-                    size: item.size || '',
-                    quantity: item.qty || 1,
-                    unit: item.unit || 'SCM',
-                    rate: item.rate || 0,
-                    amount: (item.qty || 1) * (item.rate || 0),
-                    image: null
-                }));
-                setLineItems(newItems);
-            }
-        };
-
-        const handleAIPopulate = (e) => processAIData(e.detail);
-
-        // 1. Check for pending data from session (for after navigation)
-        const pending = sessionStorage.getItem('AI_PENDING_DATA');
-        if (pending) {
-            const { type, data } = JSON.parse(pending);
-            if (type === 'QUOTATION') {
-                processAIData(data);
-                sessionStorage.removeItem('AI_PENDING_DATA'); // Clean up
-            }
-        }
-
-        window.addEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
-        return () => window.removeEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
-    }, [clients]);
-
-    // Cleanup suggestions when clicking outside
-    useEffect(() => {
-        const handleClickOutside = () => setShowClientSuggestions(false);
+        const handleClickOutside = () => search.setShowClientSuggestions(false);
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
+    }, [search]);
 
-    const handlePreview = (e, status = 'Under Review') => {
-        if (e) e.preventDefault();
-        if (!formData.client || !formData.projectName || lineItems.length === 0) {
-            setError('Please fill in required fields and add items.');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
-        setPendingStatus(status);
-        setShowBillPreview(true);
-    };
-
-    const handleFinalSave = async () => {
-        try {
-            setIsSaving(true);
-            const quotationData = {
-                ...formData,
-                quotationNumber: formData.quoteNumber,
-                status: pendingStatus,
-                taxRate,
-                discount: includeDiscount ? discount : 0,
-                offerPrice, // Ensure this variable is in scope or recalculated here. 
-                // Better to recalculate safely:
-                // offerPrice: (lineItems.reduce((s, i) => s + (i.amount||0), 0) * (1 - (includeDiscount ? discount : 0)/100)),
-                items: lineItems.map(item => ({
-                    itemName: item.name,
-                    description: item.description,
-                    section: item.section,
-                    finish: item.finishBrand,
-                    material: item.materialOrigin,
-                    size: item.size,
-                    unit: item.unit,
-                    quantity: item.quantity,
-                    rate: item.rate,
-                    amount: item.amount,
-                    image: item.image
-                }))
-            };
-
-            let response;
-            if (isEdit) {
-                response = await quotationAPI.update(id, quotationData);
-            } else {
-                response = await quotationAPI.create(quotationData);
-            }
-
-            if (response.success) {
-                navigate(isStaff ? '/staff/quotations' : '/quotations');
-            }
-        } catch (err) {
-            setError(err.message);
-            setShowBillPreview(false); // Go back to form to show error
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleExit = () => {
-        // Only show dialog if form has been touched
-        const hasData = formData.client || formData.projectName || lineItems.length > 0;
-        if (hasData) {
-            setShowExitDialog(true);
-        } else {
-            navigate(isStaff ? '/staff/quotations' : '/quotations');
-        }
-    };
-
-    const handleSaveDraft = async () => {
-        try {
-            setIsSaving(true);
-            const quotationData = {
-                ...formData,
-                quotationNumber: formData.quoteNumber,
-                status: 'Draft',
-                taxRate,
-                discount: includeDiscount ? discount : 0,
-                items: lineItems.map(item => ({
-                    itemName: item.name,
-                    description: item.description,
-                    section: item.section,
-                    finish: item.finishBrand,
-                    material: item.materialOrigin,
-                    size: item.size,
-                    unit: item.unit,
-                    quantity: item.quantity,
-                    rate: item.rate,
-                    amount: item.amount,
-                    image: item.image
-                }))
-            };
-            let response;
-            if (isEdit) {
-                response = await quotationAPI.update(id, { ...quotationData, status: 'Draft' });
-            } else {
-                response = await quotationAPI.create(quotationData);
-            }
-            if (response.success) {
-                setShowExitDialog(false);
-                navigate(isStaff ? '/staff/quotations' : '/quotations');
-            }
-        } catch (err) {
-            setError('Failed to save draft: ' + err.message);
-            setShowExitDialog(false);
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handleClientSearch = (query) => {
-        setClientSearchQuery(query);
-        if (!query.trim()) {
-            setFilteredClients([]);
-            setShowClientSuggestions(false);
-            setFormData(prev => ({ ...prev, client: '' }));
-            return;
-        }
-
-        const filtered = clients.filter(c =>
-            c.name.toLowerCase().includes(query.toLowerCase()) ||
-            (c.company && c.company.toLowerCase().includes(query.toLowerCase()))
-        ).slice(0, 5);
-
-        setFilteredClients(filtered);
-        setShowClientSuggestions(true);
-    };
-
-    const selectClient = (client) => {
-        setFormData(prev => ({ ...prev, client: client._id }));
-        setClientSearchQuery(client.name);
-        setShowClientSuggestions(false);
-    };
-
-    const handleQuickAddClient = () => {
-        if (!clientSearchQuery.trim()) return;
-        setQuickAddData({
-            name: clientSearchQuery.trim(),
-            email: '@gmail.com',
-            phone: ''
-        });
-        setShowQuickAddModal(true);
-        setShowClientSuggestions(false);
-    };
-
-    const confirmQuickAddClient = async (e) => {
-        e.preventDefault();
-        try {
-            setIsSubmitting(true);
-            const res = await clientAPI.create({
-                ...quickAddData,
-                status: 'Active'
-            });
-            if (res.success) {
-                const newClient = res.data;
-                setClients(prev => [...prev, newClient]);
-                selectClient(newClient);
-                setShowQuickAddModal(false);
-                setError(null);
-            }
-        } catch (err) {
-            setError('Failed to create client: ' + err.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const updateLineItem = (id, field, value) => {
-        setLineItems(prev => prev.map(item => {
-            if (item.id === id) {
-                const updated = { ...item, [field]: value };
-                if (field === 'quantity' || field === 'rate') {
-                    updated.amount = (updated.quantity || 0) * (updated.rate || 0);
-                }
-                return updated;
-            }
-            return item;
-        }));
-    };
-
-    const removeLineItem = (id) => {
-        setLineItems(lineItems.filter(item => item.id !== id));
-    };
-
-    const handleImageUpload = async (itemId, file) => {
-        if (!file) return;
-        try {
-            const formData = new FormData();
-            formData.append('image', file);
-            const result = await uploadAPI.image(formData);
-            if (result.success) updateLineItem(itemId, 'image', result.data);
-        } catch (err) {
-            console.error('Upload error:', err);
-        }
-    };
-
-    const handleProductSearch = (itemId, query) => {
-        updateLineItem(itemId, 'name', query);
-        if (!query.trim()) {
-            setSearchResults([]);
-            setActiveSearchId(null);
-            return;
-        }
-        const filtered = inventoryItems.filter(p => p.itemName.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
-        setSearchResults(filtered);
-        setActiveSearchId(itemId);
-    };
-
-    const selectProduct = (itemId, item) => {
-        setLineItems(prev => prev.map(li => {
-            if (li.id === itemId) return {
-                ...li,
-                name: item.itemName,
-                description: item.description || '',
-                section: item.section || li.section || 'Uncategorized',
-                finishBrand: item.finish || '',
-                materialOrigin: item.material || '',
-                size: item.size || '',
-                unit: item.unit || 'SCM',
-                rate: item.price || 0,
-                image: item.image || null,
-                amount: (li.quantity || 1) * (item.price || 0)
-            };
-            return li;
-        }));
-        setSearchResults([]);
-        setActiveSearchId(null);
-    };
-
-    const addFromInventorySelect = (item) => {
-        const newItem = {
-            id: Date.now() + Math.random(),
-            name: item.itemName,
-            description: item.description || '',
-            section: item.section || 'Uncategorized',
-            finishBrand: item.finish || '',
-            materialOrigin: item.material || '',
-            size: item.size || '',
-            quantity: 1,
-            unit: item.unit || 'SCM',
-            rate: item.price || 0,
-            amount: item.price || 0,
-            image: item.image || null
-        };
-        setLineItems([...lineItems, newItem]);
-        setGlobalSearchQuery('');
-        setGlobalSearchResults([]);
-    };
-
-    const handleGlobalSearch = (query) => {
-        setGlobalSearchQuery(query);
-        if (!query.trim()) {
-            setGlobalSearchResults([]);
-            return;
-        }
-        const filtered = inventoryItems.filter(p =>
-            p.itemName.toLowerCase().includes(query.toLowerCase()) ||
-            (p.section && p.section.toLowerCase().includes(query.toLowerCase()))
-        ).slice(0, 8);
-        setGlobalSearchResults(filtered);
-    };
-
-    const subtotal = lineItems.reduce((sum, item) => sum + (item.amount || 0), 0);
-
-    // Discount Calculation
-    const discountAmount = includeDiscount ? (subtotal * discount) / 100 : 0;
-    const offerPrice = subtotal - discountAmount;
-
-    // Tax Calculation (on Offer Price)
-    const taxAmount = includeTax ? (offerPrice * taxRate) / 100 : 0;
-
-    const total = offerPrice + taxAmount;
-    const depositAmount = (total * formData.depositPercent) / 100;
-
-    const createNewItem = () => ({
-        id: Date.now() + Math.random(),
-        name: '',
-        description: '',
-        section: 'Uncategorized',
-        finishBrand: '',
-        materialOrigin: '',
-        size: '',
-        quantity: 1,
-        unit: 'SCM',
-        rate: 0,
-        amount: 0,
-        image: null
-    });
-
-    const addLineItem = () => setLineItems([...lineItems, createNewItem()]);
-
-    const sections = ['All Items', ...new Set(lineItems.map(item => item.section))];
-    const sectionCounts = lineItems.reduce((acc, item) => {
-        acc[item.section] = (acc[item.section] || 0) + 1;
-        return acc;
-    }, {});
-
-    const filteredItems = activeSectionFilter === 'All Items'
-        ? lineItems
-        : lineItems.filter(item => item.section === activeSectionFilter);
-
-
-
-    const AISuggestButton = ({ field, value, onSuggest }) => {
-        const [suggesting, setSuggesting] = useState(false);
-
-        const handleSuggest = async () => {
-            if (suggesting) return;
-            setSuggesting(true);
-            try {
-                const res = await aiAPI.getSuggestion('Quotation', field, value);
-                if (res.success) {
-                    onSuggest(res.suggestion);
-                }
-            } catch (err) {
-                console.error('Suggest error:', err);
-            } finally {
-                setSuggesting(false);
-            }
-        };
-
-        return (
-            <button
-                type="button"
-                onClick={handleSuggest}
-                style={{
-                    background: 'none',
-                    border: 'none',
-                    padding: '4px',
-                    cursor: 'pointer',
-                    color: suggesting ? '#6366f1' : '#94a3b8',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginLeft: 'auto'
-                }}
-                title="Get AI Suggestion"
-            >
-                {suggesting ? <Loader2 size={14} className="spinner" /> : <Sparkles size={14} />}
-            </button>
-        );
-    };
-
-    if (fetching) {
-        return (
-            <div className="new-quote-wrapper skeleton-mode">
-                <div className="form-container">
-                    <div className="form-section">
-                        <div className="section-header-row">
-                            <Skeleton width="180px" height="24px" />
-                        </div>
-                        <div className="form-grid">
-                            <div className="form-group">
-                                <Skeleton width="100px" height="16px" style={{ marginBottom: '8px' }} />
-                                <Skeleton width="100%" height="45px" borderRadius="12px" />
-                            </div>
-                            <div className="form-group">
-                                <Skeleton width="100px" height="16px" style={{ marginBottom: '8px' }} />
-                                <Skeleton width="100%" height="45px" borderRadius="12px" />
-                            </div>
-                        </div>
-                        <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                            <Skeleton width="120px" height="16px" style={{ marginBottom: '8px' }} />
-                            <Skeleton width="100%" height="45px" borderRadius="12px" />
-                        </div>
-                    </div>
-
-                    <div className="form-section" style={{ marginTop: '2rem' }}>
-                        <div className="section-header-row">
-                            <Skeleton width="150px" height="24px" />
-                        </div>
-                        <div className="line-item-container">
-                            {[...Array(3)].map((_, i) => (
-                                <div key={i} className="line-item-card skeleton" style={{ padding: '1.5rem', marginBottom: '1rem', background: 'white', borderRadius: '16px' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 150px 100px', gap: '1rem' }}>
-                                        <Skeleton width="100%" height="24px" />
-                                        <Skeleton width="80px" height="24px" />
-                                        <Skeleton width="120px" height="24px" />
-                                        <Skeleton width="80px" height="24px" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    if (fetching) return <NewQuotationSkeleton />;
 
     return (
         <div className="new-quote-wrapper" style={{ position: 'relative', overflow: showBillPreview ? 'hidden' : 'auto' }}>
             <div className="form-container" style={{
                 filter: showBillPreview ? 'blur(10px) brightness(0.9)' : 'none',
                 pointerEvents: showBillPreview ? 'none' : 'auto',
-                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+                transition: 'all 0.4s'
             }}>
+                {error && <div className="error-banner">{error}</div>}
 
-                {error && <div className="error-banner" style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem' }}>{error}</div>}
+                <form onSubmit={(e) => actions.handlePreview(e)}>
+                    <ProjectDetailsSection 
+                        formData={state.formData} 
+                        handleInputChange={state.handleInputChange}
+                        clientSearchQuery={search.clientSearchQuery}
+                        handleClientSearch={search.handleClientSearch}
+                        showClientSuggestions={search.showClientSuggestions}
+                        filteredClients={search.filteredClients}
+                        selectClient={search.selectClient}
+                        handleQuickAddClient={() => setShowQuickAddModal(true)}
+                        setFormData={state.setFormData}
+                    />
 
-                <form onSubmit={(e) => handlePreview(e)}>
-                    {/* Project Details */}
-                    <div className="form-section">
-                        <div className="section-header-row" style={{ borderBottom: 'none', marginBottom: '1rem' }}>
-                            <div className="section-header-left">
-                                <Briefcase className="section-icon" size={18} />
-                                <h3>Project Details</h3>
-                            </div>
-                        </div>
-                        <div className="form-grid">
-                            <div className="form-group" style={{ position: 'relative' }}>
-                                <label>Client *</label>
-                                <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
-                                    <input
-                                        type="text"
-                                        className="input-styled"
-                                        placeholder="Type to search client..."
-                                        value={clientSearchQuery}
-                                        onChange={(e) => handleClientSearch(e.target.value)}
-                                        onFocus={() => clientSearchQuery.trim() && setShowClientSuggestions(true)}
-                                        required
-                                    />
-                                    {showClientSuggestions && (
-                                        <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
-                                            {filteredClients.map(c => (
-                                                <div key={c._id} className="search-result-item" onClick={() => selectClient(c)}>
-                                                    <div className="res-info">
-                                                        <span className="res-name">{c.name}</span>
-                                                        <span className="res-cat">{c.company || 'Individual'}</span>
-                                                    </div>
-                                                    <div style={{ textAlign: 'right' }}>
-                                                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Select</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div
-                                                className="search-result-item add-new-prompt"
-                                                onClick={handleQuickAddClient}
-                                                style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}
-                                            >
-                                                <div className="res-info">
-                                                    <span className="res-name" style={{ color: '#6366f1' }}>+ Add "{clientSearchQuery}"</span>
-                                                    <span className="res-cat">Create new client profile</span>
-                                                </div>
-                                                <Plus size={16} color="#6366f1" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <CustomSelect 
-                                    label="Document Type"
-                                    name="documentType" 
-                                    value={formData.documentType} 
-                                    onChange={handleInputChange} 
-                                    options={[
-                                        { value: 'Quotation', label: 'Quotation' },
-                                        { value: 'Estimate', label: 'Estimate' },
-                                        { value: 'Proposal', label: 'Proposal' }
-                                    ]} 
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group" style={{ marginTop: '1.25rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <label>Project Name *</label>
-                                <AISuggestButton
-                                    field="projectName"
-                                    value={formData.projectName}
-                                    onSuggest={(v) => setFormData(prev => ({ ...prev, projectName: v }))}
-                                />
-                            </div>
-                            <input type="text" name="projectName" className="input-styled" placeholder="e.g., Living Room Interior Design" value={formData.projectName} onChange={handleInputChange} required />
-                        </div>
-                        <div className="form-group" style={{ marginTop: '1.25rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <label>Description</label>
-                                <AISuggestButton
-                                    field="projectDescription"
-                                    value={formData.projectDescription}
-                                    onSuggest={(v) => setFormData(prev => ({ ...prev, projectDescription: v }))}
-                                />
-                            </div>
-                            <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2"></textarea>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
-                            <div className="form-group">
-                                <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project Start</label>
-                                <DatePicker 
-                                    value={formData.projectStart} 
-                                    onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val }})} 
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project End</label>
-                                <DatePicker 
-                                    value={formData.projectEnd} 
-                                    onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val }})} 
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group" style={{ marginTop: '1.25rem' }}>
-                            <label>Scope of Work</label>
-                            <textarea name="scopeOfWork" className="textarea-styled" placeholder="Define what is included in this project..." value={formData.scopeOfWork} onChange={handleInputChange} rows="2"></textarea>
-                        </div>
-                    </div>
+                    <PaymentPoliciesSection 
+                        formData={state.formData} 
+                        handleInputChange={state.handleInputChange}
+                        depositAmount={calc.depositAmount}
+                    />
 
-                    {/* Payment Terms Section */}
-                    <div className="form-section" style={{ marginTop: '1.5rem' }}>
-                        <div className="section-header-row" style={{ borderBottom: 'none', marginBottom: '1rem' }}>
-                            <div className="section-header-left">
-                                <DollarSign className="section-icon" size={18} />
-                                <h3>Payment & Policies</h3>
-                            </div>
-                        </div>
-                        <div style={{ background: '#f0fdf4', border: '1px solid #dcfce7', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <label style={{ color: '#166534', fontWeight: 600, margin: 0 }}>Deposit / Advance</label>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <input
-                                    type="number"
-                                    name="depositPercent"
-                                    style={{ width: '60px', padding: '4px 8px', border: '1px solid #bbf7d0', borderRadius: '4px' }}
-                                    value={formData.depositPercent}
-                                    onChange={handleInputChange}
-                                />
-                                <span style={{ color: '#166534' }}>% = ₹{depositAmount.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                            <div className="form-group">
-                                <label>Payment Terms</label>
-                                <textarea name="paymentTerms" className="textarea-styled" placeholder="e.g., 50% advance, 50% on finish" value={formData.paymentTerms} onChange={handleInputChange} rows="2"></textarea>
-                            </div>
-                            <div className="form-group">
-                                <label>Warranty Terms</label>
-                                <textarea name="warrantyTerms" className="textarea-styled" placeholder="e.g., 1 year on materials" value={formData.warrantyTerms} onChange={handleInputChange} rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div className="form-group" style={{ marginTop: '1.25rem' }}>
-                            <label>Cancellation Policy</label>
-                            <textarea name="cancellationPolicy" className="textarea-styled" placeholder="e.g., No refund after material purchase" value={formData.cancellationPolicy} onChange={handleInputChange} rows="2"></textarea>
-                        </div>
-                    </div>
+                    <LineItemsSection 
+                        lineItems={state.lineItems}
+                        addLineItem={state.addLineItem}
+                        removeLineItem={state.removeLineItem}
+                        updateLineItem={state.updateLineItem}
+                        expandedItems={state.expandedItems}
+                        setExpandedItems={state.setExpandedItems}
+                        globalSearchQuery={search.globalSearchQuery}
+                        setGlobalSearchQuery={search.setGlobalSearchQuery}
+                        globalSearchResults={search.globalSearchResults}
+                        handleGlobalSearch={search.handleGlobalSearch}
+                        addFromInventorySelect={search.addFromInventorySelect}
+                        activeSearchId={search.activeSearchId}
+                        searchResults={search.searchResults}
+                        handleProductSearch={search.handleProductSearch}
+                        selectProduct={search.selectProduct}
+                        handleImageUpload={(itemId, file) => actions.handleImageUpload(itemId, file, state.updateLineItem)}
+                    />
 
-                    {/* Line Items Section */}
-                    <div className="form-section" style={{ marginTop: '1.5rem' }}>
-                        <div className="section-header-row" style={{ borderBottom: 'none', marginBottom: '1rem' }}>
-                            <div className="section-header-left">
-                                <Layers className="section-icon" size={18} />
-                                <h3>Line Items</h3>
-                            </div>
-                            <button type="button" onClick={addLineItem} className="btn-add-item">
-                                <Plus size={14} /> Add Item
-                            </button>
-                        </div>
+                    <QuotationSummary 
+                        {...calc}
+                        includeDiscount={state.includeDiscount}
+                        setIncludeDiscount={state.setIncludeDiscount}
+                        discount={state.discount}
+                        setDiscount={state.setDiscount}
+                        includeTax={state.includeTax}
+                        setIncludeTax={state.setIncludeTax}
+                        taxRate={state.taxRate}
+                        setTaxRate={state.setTaxRate}
+                    />
 
-                        <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                            <div style={{
-                                background: '#ffffff',
-                                padding: '0.4rem 1.25rem',
-                                borderRadius: '12px',
-                                border: '2px solid #e2e8f0',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '1rem',
-                                transition: 'all 0.2s',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                            }} className="global-search-container">
-                                <Search size={20} color="#94a3b8" />
-                                <input
-                                    type="text"
-                                    placeholder="Search inventory to quick-add (e.g., Marble, Paint, Wood)..."
-                                    className="input-styled"
-                                    style={{ border: 'none', background: 'transparent', boxShadow: 'none', padding: '0.6rem 0' }}
-                                    value={globalSearchQuery}
-                                    onChange={(e) => handleGlobalSearch(e.target.value)}
-                                />
-                                {globalSearchQuery && (
-                                    <X
-                                        size={18}
-                                        color="#94a3b8"
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => {
-                                            setGlobalSearchQuery('');
-                                            setGlobalSearchResults([]);
-                                        }}
-                                    />
-                                )}
-                            </div>
-
-                            {globalSearchResults.length > 0 && (
-                                <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
-                                    {globalSearchResults.map(res => (
-                                        <div key={res._id} className="search-result-item" onClick={() => addFromInventorySelect(res)}>
-                                            <div className="res-info">
-                                                <span className="res-name">{res.itemName}</span>
-                                                <span className="res-cat">{res.section || 'General'}</span>
-                                            </div>
-                                            <div style={{ textAlign: 'right' }}>
-                                                <span className="res-price">₹{res.price}</span>
-                                                <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>Click to Add</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="line-item-container">
-                            {lineItems.map((item, index) => (
-                                <div key={item.id} className="line-item-card" style={{ padding: '0.75rem 1rem' }}>
-                                    {/* Compact Header */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: '30px 1fr 70px 120px 100px 120px 70px', gap: '1rem', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 700 }}>#{index + 1}</span>
-                                        <div style={{ position: 'relative' }}>
-                                            <input
-                                                type="text"
-                                                className="input-styled"
-                                                style={{ padding: '0.5rem', fontSize: '0.85rem' }}
-                                                placeholder="Item name..."
-                                                value={item.name}
-                                                onChange={(e) => handleProductSearch(item.id, e.target.value)}
-                                            />
-                                            {activeSearchId === item.id && searchResults.length > 0 && (
-                                                <div className="product-search-dropdown">
-                                                    {searchResults.map(res => (
-                                                        <div key={res._id} className="search-result-item" onClick={() => selectProduct(item.id, res)}>
-                                                            <div className="res-info">
-                                                                <span className="res-name">{res.itemName}</span>
-                                                                <span className="res-cat">{res.section}</span>
-                                                            </div>
-                                                            <span className="res-price">₹{res.price}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <input
-                                            type="number"
-                                            className="input-styled"
-                                            style={{ padding: '0.5rem', fontSize: '0.9rem', textAlign: 'center' }}
-                                            value={item.quantity}
-                                            onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                                        />
-                                        <CustomSelect
-                                            value={item.unit}
-                                            onChange={(e) => updateLineItem(item.id, 'unit', e.target.value)}
-                                            options={[
-                                                { value: 'SCM', label: 'SCM' },
-                                                { value: 'SFT', label: 'SFT' },
-                                                { value: 'RFT', label: 'RFT' },
-                                                { value: 'Nos', label: 'Nos' },
-                                                { value: 'Lumpsum', label: 'Lumpsum' }
-                                            ]}
-                                        />
-                                        <input
-                                            type="number"
-                                            className="input-styled"
-                                            style={{ padding: '0.5rem', fontSize: '0.9rem' }}
-                                            value={item.rate}
-                                            onChange={(e) => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
-                                        />
-                                        <div style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '0.95rem' }}>
-                                            ₹{item.amount?.toLocaleString()}
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button
-                                                type="button"
-                                                onClick={() => setExpandedItems(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
-                                                style={{ border: 'none', background: 'none', color: '#94a3b8', cursor: 'pointer' }}
-                                            >
-                                                {expandedItems[item.id] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                            </button>
-                                            <button type="button" onClick={() => removeLineItem(item.id)} className="btn-delete-item" style={{ color: '#fca5a5' }}>
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Expanded Details */}
-                                    {expandedItems[item.id] && (
-                                        <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9', animation: 'slideDown 0.3s ease-out' }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '1.5rem' }}>
-                                                <div onClick={() => document.getElementById(`file-${item.id}`).click()} className="image-upload-dashed" style={{ height: '120px', marginBottom: 0 }}>
-                                                    {item.image ? (
-                                                        <img src={`${item.image}`} alt="P" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
-                                                    ) : (
-                                                        <>
-                                                            <Upload size={20} />
-                                                            <span style={{ fontSize: '0.7rem' }}>Photo</span>
-                                                        </>
-                                                    )}
-                                                    <input type="file" id={`file-${item.id}`} hidden onChange={(e) => handleImageUpload(item.id, e.target.files[0])} accept="image/*" />
-                                                </div>
-
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                                                        <div className="form-group">
-                                                            <label style={{ fontSize: '0.75rem' }}>Finish/Brand</label>
-                                                            <input type="text" className="input-styled" style={{ padding: '0.4rem 0.75rem' }} placeholder="e.g., Duco Paint" value={item.finishBrand} onChange={(e) => updateLineItem(item.id, 'finishBrand', e.target.value)} />
-                                                        </div>
-                                                        <div className="form-group">
-                                                            <label style={{ fontSize: '0.75rem' }}>Material/Origin</label>
-                                                            <input type="text" className="input-styled" style={{ padding: '0.4rem 0.75rem' }} placeholder="e.g., Plywood" value={item.materialOrigin} onChange={(e) => updateLineItem(item.id, 'materialOrigin', e.target.value)} />
-                                                        </div>
-                                                        <div className="form-group">
-                                                            <label style={{ fontSize: '0.75rem' }}>Size</label>
-                                                            <input type="text" className="input-styled" style={{ padding: '0.4rem 0.75rem' }} placeholder="e.g., 8' x 4'" value={item.size} onChange={(e) => updateLineItem(item.id, 'size', e.target.value)} />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="form-group">
-                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                            <label style={{ fontSize: '0.75rem' }}>Item Description</label>
-                                                            <AISuggestButton
-                                                                field="itemDescription"
-                                                                value={item.name}
-                                                                onSuggest={(v) => updateLineItem(item.id, 'description', v)}
-                                                            />
-                                                        </div>
-                                                        <textarea
-                                                            className="textarea-styled"
-                                                            style={{ fontSize: '0.85rem' }}
-                                                            placeholder="Detailed specifications..."
-                                                            value={item.description}
-                                                            onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
-                                                            rows="2"
-                                                        ></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Summary Section */}
-                    <div className="totals-summary-card">
-                        <div className="summary-row">
-                            <span>Subtotal</span>
-                            <span>Subtotal</span>
-                            <span>₹{subtotal.toLocaleString()}</span>
-                        </div>
-
-                        {/* Discount Row */}
-                        <div className="summary-row">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <input type="checkbox" checked={includeDiscount} onChange={(e) => setIncludeDiscount(e.target.checked)} style={{ width: '18px', height: '18px' }} />
-                                <span>Discount</span>
-                                {includeDiscount && (
-                                    <div style={{ display: 'flex', alignItems: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '2px 8px', marginLeft: '4px' }}>
-                                        <input
-                                            type="number"
-                                            value={discount}
-                                            onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                                            style={{ width: '40px', border: 'none', background: 'transparent', outline: 'none', fontWeight: 700, fontSize: '0.9rem', textAlign: 'right' }}
-                                        />
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b' }}>%</span>
-                                    </div>
-                                )}
-                            </div>
-                            <span className="tax-val" style={{ color: '#ef4444' }}>- ₹{discountAmount.toLocaleString()}</span>
-                        </div>
-
-                        {/* Offer Price Row */}
-                        <div className="summary-row" style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-                            <span style={{ fontWeight: 600, color: '#475569' }}>Offer Price</span>
-                            <span style={{ fontWeight: 700, color: '#1e293b' }}>₹{offerPrice.toLocaleString()}</span>
-                        </div>
-
-                        <div className="summary-row">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <input type="checkbox" checked={includeTax} onChange={(e) => setIncludeTax(e.target.checked)} style={{ width: '18px', height: '18px' }} />
-                                <span>Add Tax</span>
-                                <div style={{ display: 'flex', alignItems: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '2px 8px', marginLeft: '4px' }}>
-                                    <input
-                                        type="number"
-                                        value={taxRate}
-                                        onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                                        style={{ width: '40px', border: 'none', background: 'transparent', outline: 'none', fontWeight: 700, fontSize: '0.9rem', textAlign: 'right' }}
-                                    />
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b' }}>%</span>
-                                </div>
-                            </div>
-                            <span className="tax-val">+ ₹{taxAmount.toLocaleString()}</span>
-                        </div>
-                        <div className="summary-row main-total">
-                            <span>Grand Total</span>
-                            <span>₹{total.toLocaleString()}</span>
-                        </div>
-                    </div>
-
-                    {/* Terms and Notes */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '2rem' }}>
                         <div className="form-section">
-                            <label style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>Notes</label>
-                            <textarea name="notes" className="textarea-styled" placeholder="Notes for the client..." value={formData.notes} onChange={handleInputChange} rows="2"></textarea>
+                            <label className="section-label">Notes</label>
+                            <textarea name="notes" className="textarea-styled" value={state.formData.notes} onChange={state.handleInputChange} rows="2"></textarea>
                         </div>
                         <div className="form-section">
-                            <label style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>Terms & Conditions</label>
-                            <textarea name="termsConditions" className="textarea-styled" value={formData.termsConditions} onChange={handleInputChange} rows="2"></textarea>
+                            <label className="section-label">Terms & Conditions</label>
+                            <textarea name="termsConditions" className="textarea-styled" value={state.formData.termsConditions} onChange={state.handleInputChange} rows="2"></textarea>
                         </div>
                     </div>
 
                     <div className="form-footer-actions">
-                        <button type="button" className="btn-save-draft" onClick={handleExit} style={{ color: '#ef4444', borderColor: '#fecaca' }}>
+                        <button type="button" className="btn-exit" onClick={() => setShowExitDialog(true)}>
                             <X size={18} /> Exit
                         </button>
-                        <button type="button" className="btn-save-draft" onClick={(e) => handlePreview(e, 'Draft')}>
+                        <button type="button" className="btn-save-draft" onClick={(e) => actions.handlePreview(e, 'Draft')}>
                             <Save size={18} /> Review Draft
                         </button>
                         <button type="submit" className="btn-send-quote">
-                            <Send size={18} /> Review &amp; Save
+                            <Send size={18} /> Review & Save
                         </button>
                     </div>
                 </form>
             </div>
 
-            {showBillPreview && (() => {
-                const selectedClient = clients.find(c => c._id === formData.client);
-                return (
-                    <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        background: 'rgba(15, 23, 42, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 4000,
-                        animation: 'fadeIn 0.3s ease-out'
-                    }}>
-                        <div className="premium-receipt-card" data-lenis-prevent style={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            padding: '1.5rem',
-                            borderRadius: '24px',
-                            maxWidth: '450px',
-                            width: '95%',
-                            maxHeight: '88vh',
-                            overflowY: 'auto',
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                            position: 'relative',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
-                            animation: 'slideUpModal 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                            backdropFilter: 'blur(20px)'
-                        }}>
-                            <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-                                <div style={{
-                                    width: '56px',
-                                    height: '56px',
-                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    margin: '0 auto 0.75rem',
-                                    boxShadow: '0 8px 12px -3px rgba(16, 185, 129, 0.3)'
-                                }}>
-                                    <CheckCircle size={28} color="white" />
-                                </div>
-                                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Review Details</h2>
-                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>Quotation NO: <strong>{formData.quoteNumber}</strong></p>
-                            </div>
+            <BillPreviewModal 
+                show={showBillPreview} setShow={setShowBillPreview}
+                formData={state.formData} clients={clients} lineItems={state.lineItems}
+                {...calc} includeDiscount={state.includeDiscount} discount={state.discount}
+                includeTax={state.includeTax} taxRate={state.taxRate}
+                handleFinalSave={() => actions.handleFinalSave(pendingStatus)}
+                isSaving={isSaving}
+            />
 
-                            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', marginBottom: '1.25rem', border: '1px solid #e2e8f0' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                                    <div>
-                                        <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>Client</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{selectedClient?.name || 'Walk-in'}</span>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>Type</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{formData.documentType}</span>
-                                    </div>
-                                    <div style={{ gridColumn: 'span 2', marginTop: '2px' }}>
-                                        <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>Project</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#2563eb' }}>{formData.projectName}</span>
-                                    </div>
-                                </div>
-                            </div>
+            <QuickAddClientModal 
+                show={showQuickAddModal} setShow={setShowQuickAddModal}
+                quickAddData={quickAddData} setQuickAddData={setQuickAddData}
+                confirmQuickAddClient={(e) => actions.confirmQuickAddClient(e, quickAddData, search.selectClient)}
+                isSubmitting={isSubmitting}
+            />
 
-                            <div style={{ marginBottom: '1.25rem' }}>
-                                <h3 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.75rem', paddingBottom: '0.4rem', borderBottom: '1px solid #e2e8f0' }}>Itemized Summary</h3>
-                                <div style={{ maxHeight: '200px', overflowY: 'auto', paddingRight: '5px' }}>
-                                    {lineItems.map((item, idx) => (
-                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                                            <div>
-                                                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{item.name}</div>
-                                                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{item.quantity} {item.unit} x ₹{item.rate.toLocaleString()}</div>
-                                            </div>
-                                            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.85rem' }}>₹{item.amount?.toLocaleString()}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '16px', marginBottom: '1.5rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>
-                                    <span>Subtotal</span>
-                                    <span>₹{subtotal.toLocaleString()}</span>
-                                </div>
-                                {includeDiscount && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#ef4444' }}>
-                                        <span>Discount ({discount}%)</span>
-                                        <span>- ₹{discountAmount.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
-                                    <span>Offer Price</span>
-                                    <span>₹{offerPrice.toLocaleString()}</span>
-                                </div>
-                                {includeTax && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>
-                                        <span>GST ({taxRate}%)</span>
-                                        <span>+ ₹{taxAmount.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #cbd5e1' }}>
-                                    <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>Grand Total</span>
-                                    <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#2563eb' }}>₹{total.toLocaleString()}</span>
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                    <button onClick={() => setShowBillPreview(false)} style={{ padding: '0.7rem', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#64748b', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.85rem' }}>
-                                        Back
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            window.print();
-                                            handleFinalSave();
-                                        }}
-                                        style={{ padding: '0.7rem', background: '#ffffff', color: '#1e293b', border: '2px solid #1e293b', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.85rem' }}
-                                    >
-                                        <Printer size={16} /> Print
-                                    </button>
-                                </div>
-                                <button
-                                    onClick={handleFinalSave}
-                                    style={{
-                                        padding: '0.85rem',
-                                        background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '12px',
-                                        fontWeight: 800,
-                                        cursor: 'pointer',
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '8px',
-                                        fontSize: '0.9rem',
-                                        boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)'
-                                    }}
-                                    disabled={isSaving}
-                                >
-                                    {isSaving ? <Loader size={18} className="spinner" /> : <SaveAll size={18} />}
-                                    Confirm & Save Quotation
-                                </button>
-                                <div style={{ height: '10px' }}></div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            })()}
-            {/* Quick Add Client Modal */}
-            {showQuickAddModal && (
-                <div className="modal-overlay" style={{ zIndex: 9999 }}>
-                    <div className="modal-content" style={{ maxWidth: '450px', padding: '2rem' }} data-lenis-prevent>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>Quick Add New Client</h3>
-                            <button onClick={() => setShowQuickAddModal(false)} className="btn-icon-delete"><X size={20} /></button>
-                        </div>
-
-                        <form onSubmit={confirmQuickAddClient}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                                <div className="form-group">
-                                    <label>Client Name</label>
-                                    <input
-                                        type="text"
-                                        className="input-styled"
-                                        value={quickAddData.name}
-                                        onChange={(e) => setQuickAddData({ ...quickAddData, name: e.target.value })}
-                                        required
-                                        placeholder="Enter client's full name"
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Email Address</label>
-                                    <input
-                                        type="email"
-                                        className="input-styled"
-                                        value={quickAddData.email}
-                                        onChange={(e) => setQuickAddData({ ...quickAddData, email: e.target.value })}
-                                        required
-                                        placeholder="e.g., example@gmail.com"
-                                    />
-                                    <small style={{ color: '#64748b', fontSize: '0.75rem' }}>We've predefined @gmail.com for your convenience.</small>
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Phone Number</label>
-                                    <input
-                                        type="tel"
-                                        className="input-styled"
-                                        value={quickAddData.phone}
-                                        onChange={(e) => setQuickAddData({ ...quickAddData, phone: e.target.value })}
-                                        required
-                                        placeholder="e.g., +91 98765 43210"
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                    <button
-                                        type="button"
-                                        className="btn-save-draft"
-                                        style={{ flex: 1 }}
-                                        onClick={() => setShowQuickAddModal(false)}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="btn-send-quote"
-                                        style={{ flex: 2 }}
-                                        disabled={isSubmitting}
-                                    >
-                                        {isSubmitting ? <Loader size={18} className="spinner" /> : <Plus size={18} />}
-                                        Create Client
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-            {/* Exit Confirmation Dialog */}
-            {showExitDialog && (
-                <div style={{
-                    position: 'fixed', inset: 0,
-                    background: 'rgba(15, 23, 42, 0.5)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    zIndex: 9999, backdropFilter: 'blur(4px)'
-                }}>
-                    <div style={{
-                        background: '#fff', borderRadius: '20px', padding: '2rem',
-                        width: '420px', maxWidth: '90vw',
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-                        animation: 'slideDown 0.2s ease-out'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                            <div style={{
-                                width: '48px', height: '48px', borderRadius: '12px',
-                                background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                            }}>
-                                <AlertTriangle size={24} color="#f59e0b" />
-                            </div>
-                            <div>
-                                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Unsaved Changes</h3>
-                                <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#64748b' }}>You have unsaved work. What would you like to do?</p>
-                            </div>
-                        </div>
-
-                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem', fontSize: '0.85rem', color: '#475569' }}>
-                            Leaving without saving will permanently discard all the data you've entered in this quotation.
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            <button
-                                onClick={handleSaveDraft}
-                                disabled={isSaving}
-                                style={{
-                                    width: '100%', padding: '0.875rem',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    color: '#fff', border: 'none', borderRadius: '10px',
-                                    fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                                    boxShadow: '0 4px 12px rgba(102,126,234,0.3)'
-                                }}
-                            >
-                                {isSaving ? <Loader size={18} className="spinner" /> : <Save size={18} />}
-                                Save as Draft & Exit
-                            </button>
-                            <button
-                                onClick={() => { setShowExitDialog(false); navigate(isStaff ? '/staff/quotations' : '/quotations'); }}
-                                style={{
-                                    width: '100%', padding: '0.875rem',
-                                    background: '#fee2e2', color: '#ef4444',
-                                    border: '1px solid #fecaca', borderRadius: '10px',
-                                    fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                                }}
-                            >
-                                <Trash2 size={18} /> Discard & Exit
-                            </button>
-                            <button
-                                onClick={() => setShowExitDialog(false)}
-                                style={{
-                                    width: '100%', padding: '0.75rem',
-                                    background: 'transparent', color: '#64748b',
-                                    border: '1px solid #e2e8f0', borderRadius: '10px',
-                                    fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer'
-                                }}
-                            >
-                                Continue Editing
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ExitConfirmationDialog 
+                show={showExitDialog} setShow={setShowExitDialog}
+                handleSaveDraft={actions.handleSaveDraft} isSaving={isSaving}
+                onDiscard={() => navigate(isStaff ? '/staff/quotations' : '/quotations')}
+            />
         </div>
     );
 };
