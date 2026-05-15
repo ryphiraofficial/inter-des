@@ -78,7 +78,8 @@
     background: #f8fafc;
     border: 1.5px solid #f1f5f9;
     border-radius: 14px;
-    padding: 2px 14px;
+    padding: 0 16px;
+    height: 48px;
     transition: all 0.2s;
 }
 
@@ -94,13 +95,16 @@
 }
 
 .input-with-icon input {
-    width: 100%;
-    border: none;
-    background: none;
-    padding: 14px 0;
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0;
+    height: 100%;
     font-size: 0.95rem;
     color: #1e293b;
-    outline: none;
+    outline: none !important;
+    appearance: none;
 }
 
 .form-grid {

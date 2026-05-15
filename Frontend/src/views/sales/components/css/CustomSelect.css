@@ -26,11 +26,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 0 12px;
-    height: 40px;
+    padding: 0 16px;
+    height: 48px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     user-select: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;

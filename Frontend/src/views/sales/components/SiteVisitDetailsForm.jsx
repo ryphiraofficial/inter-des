@@ -42,7 +42,7 @@ const SiteVisitDetailsForm = ({ visitData, setVisitData, clients, tasks }) => {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label><Calendar size={14} style={{ marginRight: '4px' }} /> Visit Date</label>
+                    <label>Visit Date</label>
                     <DatePicker
                         value={visitData.visitDate}
                         onChange={(val) => setVisitData({ ...visitData, visitDate: val })}
