@@ -198,6 +198,230 @@
     font-weight: 600;
 }
 
+/* KPI Cards Styles */
+.project-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpi-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* View Tabs Styles */
+.project-tabs {
+    display: flex;
+    gap: 8px;
+    background: #f1f5f9;
+    padding: 6px;
+    border-radius: 12px;
+    width: fit-content;
+    margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: #0f172a;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #4f46e5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Table View Styles */
+.project-table-container {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.project-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.project-table th {
+    background: #f8fafc;
+    padding: 14px 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.project-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.project-table tr {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.project-table tr:hover {
+    background: #f8fafc;
+}
+
+.project-info-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.p-name {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.p-code {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.stage-badge {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-dot.not-started { background: #94a3b8; }
+.status-dot.in-progress { background: #3b82f6; }
+.status-dot.on-hold { background: #f59e0b; }
+.status-dot.completed { background: #10b981; }
+
+.table-progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.table-progress-bar {
+    flex: 1;
+    min-width: 80px;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.table-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.table-progress-wrapper .pct {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    min-width: 30px;
+}
+
+.budget-cell {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-icon-btn:hover {
+    background: #f1f5f9;
+    color: #4f46e5;
+    border-color: #4f46e5;
+}
+
 .stage-projects {
     display: flex;
     flex-direction: column;
@@ -502,6 +726,128 @@
     font-size: 0.8rem;
     font-weight: 700;
     color: #0f172a;
+}
+
+/* Timeline View Styles */
+.project-timeline-container {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.timeline-header {
+    margin-bottom: 24px;
+}
+
+.timeline-header h3 {
+    margin: 0 0 4px 0;
+    color: #0f172a;
+}
+
+.timeline-header p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+}
+
+.timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #f1f5f9;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    padding-left: 8px;
+}
+
+.timeline-marker {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #6366f1;
+    color: #6366f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.timeline-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.timeline-date {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6366f1;
+    text-transform: uppercase;
+}
+
+.timeline-project {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.timeline-project .p-name {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.timeline-project .p-stage {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 100px;
+}
+
+.timeline-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 120px;
+}
+
+.progress-mini {
+    flex: 1;
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-mini-fill {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 2px;
+}
+
+.timeline-status span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
 }
 
 @media (max-width: 1024px) {

@@ -6,6 +6,10 @@ import { useProjectActions } from './projects/hooks/useProjectActions';
 
 import ProjectFilterBar from './projects/components/ProjectFilterBar';
 import ProjectWorkflow from './projects/components/ProjectWorkflow';
+import ProjectKPIs from './projects/components/ProjectKPIs';
+import ProjectTabs from './projects/components/ProjectTabs';
+import ProjectTable from './projects/components/ProjectTable';
+import ProjectTimeline from './projects/components/ProjectTimeline';
 import ProjectDetailModal from './projects/components/ProjectDetailModal';
 import ProjectFocusedView from './projects/components/ProjectFocusedView';
 
@@ -55,33 +59,59 @@ const Projects = () => {
         );
     }
 
+    const renderActiveView = () => {
+        switch (state.activeView) {
+            case 'table':
+                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} />;
+            case 'timeline':
+                return <ProjectTimeline projects={filteredProjects} />;
+            case 'archive':
+                const archivedProjects = filteredProjects.filter(p => p.stage === 'Completed');
+                return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} />;
+            case 'kanban':
+            default:
+                const activeProjects = filteredProjects.filter(p => p.stage !== 'Completed');
+                return (
+                    <ProjectWorkflow 
+                        projects={activeProjects}
+                        loading={state.loading}
+                        stageFilter={state.stageFilter}
+                        setSelectedProject={state.setSelectedProject}
+                        groupBy={state.groupBy}
+                    />
+                );
+        }
+    };
+
     return (
         <div className="projects-page" style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
-            <ProjectFilterBar 
-                searchTerm={state.searchTerm}
-                setSearchTerm={state.setSearchTerm}
-                stageFilter={state.stageFilter}
-                setStageFilter={state.setStageFilter}
-                statusFilter={state.statusFilter}
-                setStatusFilter={state.setStatusFilter}
-                showStageDropdown={state.showStageDropdown}
-                setShowStageDropdown={state.setShowStageDropdown}
-                showStatusDropdown={state.showStatusDropdown}
-                setShowStatusDropdown={state.setShowStatusDropdown}
-                showGroupByDropdown={state.showGroupByDropdown}
-                setShowGroupByDropdown={state.setShowGroupByDropdown}
-                hideSearch={true}
-                groupBy={state.groupBy}
-                setGroupBy={state.setGroupBy}
-            />
+            <ProjectKPIs projects={state.projects} />
 
-            <ProjectWorkflow 
-                projects={filteredProjects}
-                loading={state.loading}
-                stageFilter={state.stageFilter}
-                setSelectedProject={state.setSelectedProject}
-                groupBy={state.groupBy}
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <ProjectTabs activeView={state.activeView} setActiveView={state.setActiveView} />
+                
+                <ProjectFilterBar 
+                    searchTerm={state.searchTerm}
+                    setSearchTerm={state.setSearchTerm}
+                    stageFilter={state.stageFilter}
+                    setStageFilter={state.setStageFilter}
+                    statusFilter={state.statusFilter}
+                    setStatusFilter={state.setStatusFilter}
+                    showStageDropdown={state.showStageDropdown}
+                    setShowStageDropdown={state.setShowStageDropdown}
+                    showStatusDropdown={state.showStatusDropdown}
+                    setShowStatusDropdown={state.setShowStatusDropdown}
+                    showGroupByDropdown={state.showGroupByDropdown}
+                    setShowGroupByDropdown={state.setShowGroupByDropdown}
+                    hideSearch={true}
+                    groupBy={state.groupBy}
+                    setGroupBy={state.setGroupBy}
+                />
+            </div>
+
+            <div className="view-content">
+                {renderActiveView()}
+            </div>
 
             {state.showModal && (
                 <div className="modal-overlay" onClick={() => state.setShowModal(false)}>

@@ -12,6 +12,7 @@ export const useProjectState = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const [groupBy, setGroupBy] = useState('none'); // 'none', 'priority', 'client', 'deadline'
+    const [activeView, setActiveView] = useState('kanban'); // 'kanban', 'table', 'timeline', 'archive'
 
     return {
         projects, setProjects,
@@ -24,6 +25,7 @@ export const useProjectState = () => {
         showGroupByDropdown, setShowGroupByDropdown,
         showModal, setShowModal,
         selectedProject, setSelectedProject,
-        groupBy, setGroupBy
+        groupBy, setGroupBy,
+        activeView, setActiveView
     };
 };
