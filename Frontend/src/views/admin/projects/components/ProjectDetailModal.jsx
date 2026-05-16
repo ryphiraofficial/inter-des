@@ -93,11 +93,13 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
 
     const handleManagerClick = (type, manager) => {
         // Filter tasks related to this stage/manager to find staff
-        // For now, let's just find unique staff from all tasks if they match the department
         const relatedTasks = allTasks.filter(t => {
-            if (type === 'Design') return t.status.includes('Design') || t.title.toLowerCase().includes('design');
-            if (type === 'Production') return t.status.includes('Production') || t.title.toLowerCase().includes('production');
-            return true;
+            const searchType = type.toLowerCase();
+            return (
+                t.status?.toLowerCase().includes(searchType) || 
+                t.title?.toLowerCase().includes(searchType) ||
+                t.tags?.some(tag => tag.toLowerCase().includes(searchType))
+            );
         });
 
         // Get unique staff from these tasks
@@ -187,6 +189,23 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
                                     <MoreHorizontal size={14} className="hover-icon" />
                                 </div>
                                 {popover?.type === 'Design' && (
+                                    <TeamPopover 
+                                        managerType={popover.type}
+                                        manager={popover.manager}
+                                        staff={popover.staff}
+                                        loading={popover.loading}
+                                        onClose={(e) => { e.stopPropagation(); setPopover(null); }}
+                                    />
+                                )}
+                            </div>
+
+                            <div className="info-row clickable" onClick={() => handleManagerClick('Procurement', selectedProject.assignedProcurementManager)}>
+                                <label>Procurement Mgr</label>
+                                <div className="manager-cell">
+                                    <span>{selectedProject.assignedProcurementManager?.name || 'Unassigned'}</span>
+                                    <MoreHorizontal size={14} className="hover-icon" />
+                                </div>
+                                {popover?.type === 'Procurement' && (
                                     <TeamPopover 
                                         managerType={popover.type}
                                         manager={popover.manager}
