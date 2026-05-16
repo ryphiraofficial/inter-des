@@ -608,8 +608,6 @@ const Overview = ({ user }) => {
                     </div>
                 </div>
             </div>
-
-            </div>
         </div>
     );
 };
