@@ -8,8 +8,10 @@ export const useProjectState = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [showStageDropdown, setShowStageDropdown] = useState(false);
     const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const [showGroupByDropdown, setShowGroupByDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [groupBy, setGroupBy] = useState('none'); // 'none', 'priority', 'client', 'deadline'
 
     return {
         projects, setProjects,
@@ -19,7 +21,9 @@ export const useProjectState = () => {
         statusFilter, setStatusFilter,
         showStageDropdown, setShowStageDropdown,
         showStatusDropdown, setShowStatusDropdown,
+        showGroupByDropdown, setShowGroupByDropdown,
         showModal, setShowModal,
-        selectedProject, setSelectedProject
+        selectedProject, setSelectedProject,
+        groupBy, setGroupBy
     };
 };

@@ -68,7 +68,11 @@ const Projects = () => {
                 setShowStageDropdown={state.setShowStageDropdown}
                 showStatusDropdown={state.showStatusDropdown}
                 setShowStatusDropdown={state.setShowStatusDropdown}
+                showGroupByDropdown={state.showGroupByDropdown}
+                setShowGroupByDropdown={state.setShowGroupByDropdown}
                 hideSearch={true}
+                groupBy={state.groupBy}
+                setGroupBy={state.setGroupBy}
             />
 
             <ProjectWorkflow 
@@ -76,6 +80,7 @@ const Projects = () => {
                 loading={state.loading}
                 stageFilter={state.stageFilter}
                 setSelectedProject={state.setSelectedProject}
+                groupBy={state.groupBy}
             />
 
             {state.showModal && (

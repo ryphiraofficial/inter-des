@@ -115,6 +115,65 @@
     box-shadow: inset 0 0 0 2px #667eea;
 }
 
+/* Swimlane Dashboard Styles */
+.workflow-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.swimlane-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.swimlane-header-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 4px;
+}
+
+.swimlane-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+.swimlane-count {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.swimlane-view .stage-column {
+    background: transparent;
+    padding: 0;
+}
+
+.swimlane-view .stage-header {
+    margin-bottom: 20px;
+}
+
+.swimlane-view .stage-projects {
+    min-height: 100px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px dashed #e2e8f0;
+}
+
+.swimlane-view .project-card {
+    border: 1px solid #f1f5f9;
+}
+
 .stage-header {
     display: flex;
     justify-content: space-between;
