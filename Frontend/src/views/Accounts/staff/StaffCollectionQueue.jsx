@@ -1,9 +1,10 @@
 import React from 'react';
 import { FileText, CheckCircle } from 'lucide-react';
 import { useStaffQueueLogic } from '../hooks/useStaffQueueLogic';
+import RecordPaymentModal from '../common/RecordPaymentModal';
 
 const StaffCollectionQueue = ({ user }) => {
-    const { projects, loading, handleGenerateInvoice, handleRecordPayment } = useStaffQueueLogic(user);
+    const { projects, loading, handleGenerateInvoice, handleRecordPayment, showPaymentModal, setShowPaymentModal, selectedProject, fetchData } = useStaffQueueLogic(user);
 
     if (loading) return <div style={{ padding: '24px' }}>Loading queue...</div>;
 
@@ -42,13 +43,20 @@ const StaffCollectionQueue = ({ user }) => {
                                 {p.paymentStatus === 'Pending Advance' ? (
                                     <button onClick={() => handleGenerateInvoice(p._id)} className="btn-primary-w-icon"><FileText size={16} /> Generate Invoice</button>
                                 ) : (
-                                    <button onClick={() => handleRecordPayment(p._id)} className="btn-success-w-icon"><CheckCircle size={16} /> Record Payment</button>
+                                    <button onClick={() => handleRecordPayment(p)} className="btn-success-w-icon"><CheckCircle size={16} /> Record Payment</button>
                                 )}
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+            
+            <RecordPaymentModal 
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                project={selectedProject}
+                onSuccess={() => fetchData()}
+            />
         </div>
     );
 };

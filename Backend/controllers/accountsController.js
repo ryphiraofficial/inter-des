@@ -378,8 +378,14 @@ exports.getAccountsStats = async (req, res) => {
 
 exports.getPendingAccountsProjects = async (req, res) => {
     try {
-        // Get projects in both 'Accounts' (initial) and 'Pending Payment' (post-design-approval) stages
-        const projects = await Project.find({ stage: { $in: ['Accounts', 'Pending Payment'] } })
+        // Get projects in 'Accounts' stage OR any project needing payment collection
+        const projects = await Project.find({ 
+            $or: [
+                { stage: 'Accounts' },
+                { stage: 'Pending Payment' },
+                { paymentCollectionStatus: { $in: ['Pending Assignment', 'Assigned'] } }
+            ]
+        })
             .populate('client', 'name email phone')
             .populate('quotation', 'quotationNumber projectName totalAmount')
             .populate('assignedAccountsStaff', 'fullName email role')
@@ -496,33 +502,11 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         if (paymentNotes) project.notes = (project.notes || '') + `\nPayment Note: ${paymentNotes}`;
         await project.save();
 
-        // Activate On Hold Material Requests
-        const MaterialRequest = require('../models/MaterialRequest');
-        const heldRequests = await MaterialRequest.find({ project: projectId, status: 'On Hold' });
-        for (const mr of heldRequests) {
-            const User = require('../models/User');
-            const procStaff = await User.find({ role: 'Procurement Staff', status: 'Active' });
-            if (procStaff.length > 0) {
-                mr.assignedTo = procStaff[Math.floor(Math.random() * procStaff.length)]._id;
-                mr.status = 'Assigned';
-                const { notifyUser } = require('../utils/notificationHelper');
-                notifyUser(mr.assignedTo, {
-                    title: '📦 New Procurement Assignment',
-                    description: `Payment cleared for "${project.name}". You have been assigned to handle procurement.`,
-                    type: 'Info',
-                    relatedModel: 'MaterialRequest',
-                    relatedId: mr._id
-                });
-            } else {
-                mr.status = 'Pending';
-            }
-            await mr.save();
-        }
-
+        // Since MRs are processed concurrently, we just notify Procurement that payment is cleared
         const { notifyByRole } = require('../utils/notificationHelper');
         notifyByRole('Procurement Manager', {
-            title: '🚀 Payment Cleared — Procurement Released',
-            description: `Advance payment confirmed for "${project.name}". ${heldRequests.length} material request(s) now active.`,
+            title: '🚀 Advance Payment Cleared',
+            description: `Advance payment confirmed for "${project.name}". Procurement can proceed without holds.`,
             type: 'Success',
             relatedModel: 'Project',
             relatedId: project._id

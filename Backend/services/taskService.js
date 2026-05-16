@@ -748,17 +748,17 @@ exports.adminReviewDesign = async (reqData) => {
                 quotation: task.quotation ? task.quotation._id : null,
                 items: materialRequestItems,
                 priority: 'Medium',
-                status: 'On Hold',  // Held until Accounts clears payment
+                status: 'Pending',  // Concurrent: Procurement can process while Accounts collects payment
                 requestedBy: reqData.user.id,
                 createdBy: reqData.user.id,
                 approvedBudget: approvedBudget || 0,
                 isPushedFromDesign: true,
-                notes: `Design approved by admin. On hold pending advance payment collection (${pct}% = ₹${calcAdvanceAmount}).`
+                notes: `Design approved by admin. Advance payment collection pending (${pct}% = ₹${calcAdvanceAmount}).`
             });
 
-            // Update project: move to 'Pending Payment' stage, save payment details
+            // Update project: move to 'Procurement' stage so PM can see it, save payment details for Accounts
             await ProjectModel.findByIdAndUpdate(task.project, {
-                stage: 'Pending Payment',
+                stage: 'Procurement',
                 designComplete: true,
                 advancePercentage: pct,
                 advanceAmount: calcAdvanceAmount,

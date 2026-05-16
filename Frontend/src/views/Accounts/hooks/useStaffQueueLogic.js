@@ -5,6 +5,9 @@ export const useStaffQueueLogic = (user) => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedProject, setSelectedProject] = useState(null);
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -34,9 +37,19 @@ export const useStaffQueueLogic = (user) => {
         }
     };
 
-    const handleRecordPayment = async (projectId) => {
-        alert('Payment recording modal would open here.');
+    const handleRecordPayment = (project) => {
+        setSelectedProject(project);
+        setShowPaymentModal(true);
     };
 
-    return { projects, loading, handleGenerateInvoice, handleRecordPayment };
+    return { 
+        projects, 
+        loading, 
+        handleGenerateInvoice, 
+        handleRecordPayment,
+        showPaymentModal,
+        setShowPaymentModal,
+        selectedProject,
+        fetchData
+    };
 };
