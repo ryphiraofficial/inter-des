@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Send, CheckCircle, Clock } from 'lucide-react';
 import { accountsAPI } from '../../../models/api';
+import Skeleton from './Skeleton';
 
 const StaffCollectionQueue = ({ user }) => {
     const [projects, setProjects] = useState([]);
@@ -49,7 +50,31 @@ const StaffCollectionQueue = ({ user }) => {
             </div>
 
             {loading ? (
-                <div>Loading queue...</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ flex: 1 }}>
+                                    <Skeleton width="75%" height="22px" />
+                                    <div style={{ height: '10px' }} />
+                                    <Skeleton width="50%" height="15px" />
+                                </div>
+                                <Skeleton width="90px" height="26px" borderRadius="20px" />
+                            </div>
+                            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <Skeleton width="50px" height="12px" style={{ marginBottom: '6px' }} />
+                                    <Skeleton width="90px" height="18px" />
+                                </div>
+                                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                    <Skeleton width="100px" height="12px" style={{ marginBottom: '6px' }} />
+                                    <Skeleton width="80px" height="18px" />
+                                </div>
+                            </div>
+                            <Skeleton width="100%" height="44px" borderRadius="8px" />
+                        </div>
+                    ))}
+                </div>
             ) : projects.length === 0 ? (
                 <div style={{ background: '#fff', padding: '40px', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center', color: '#64748b' }}>
                     <CheckCircle size={40} style={{ margin: '0 auto 12px', opacity: 0.5 }} />

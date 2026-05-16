@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuotationList } from './quotations/list/hooks/useQuotationList';
 import QuotationTabs from '../admin/quotations/list/components/QuotationTabs';
+import QuotationTable from './quotations/list/components/QuotationTable';
 import '../admin/css/Quotations.css';
 import './css/SalesQuotations.css';
 

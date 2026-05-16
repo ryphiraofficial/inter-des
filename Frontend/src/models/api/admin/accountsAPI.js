@@ -17,6 +17,10 @@ export const accountsAPI = {
         body: JSON.stringify(data)
     }),
 
+    deleteExpense: (id) => apiCall(`/accounts/expenses/${id}`, {
+        method: 'DELETE'
+    }),
+
     getPayments: (params = {}) => {
         const query = new URLSearchParams(params).toString();
         return apiCall(`/accounts/payments?${query}`);

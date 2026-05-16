@@ -7,6 +7,7 @@ import InvoiceStats from './invoice/components/InvoiceStats';
 import InvoiceFilterBar from './invoice/components/InvoiceFilterBar';
 import InvoiceTable from './invoice/components/InvoiceTable';
 import InvoiceFormModal from './invoice/components/InvoiceFormModal';
+import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
 import './css/Invoice.css';
 
@@ -45,7 +46,11 @@ const Invoice = () => {
     return (
         <div className="invoice-container">
             <div className="invoice-wrapper">
-                <InvoiceStats invoices={state.invoices} />
+                {state.loading ? (
+                    <StatsSkeleton count={4} />
+                ) : (
+                    <InvoiceStats invoices={state.invoices} />
+                )}
 
                 <InvoiceFilterBar 
                     statusFilter={state.statusFilter}

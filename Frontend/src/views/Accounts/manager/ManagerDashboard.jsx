@@ -2,16 +2,16 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import '../css/ManagerDashboard.css';
 
-// Import Sub-components
+// Import Localized Sub-components
 import Overview from '../common/Overview';
 import PaymentClearanceHub from './PaymentClearanceHub';
 import ManagerClients from './ManagerClients';
 import ManagerPayments from './ManagerPayments';
 import ManagerExpenses from './ManagerExpenses';
 import ManagerVendors from './ManagerVendors';
-import Invoice from '../../admin/Invoice';
-import Projects from '../../admin/Projects';
-import Reports from '../../admin/Reports';
+import AccountsInvoices from '../common/AccountsInvoices';
+import AccountsProjects from '../common/AccountsProjects';
+import AccountsReports from '../common/AccountsReports';
 
 const ManagerDashboard = ({ user }) => {
     const [searchParams] = useSearchParams();
@@ -19,26 +19,16 @@ const ManagerDashboard = ({ user }) => {
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'overview':
-                return <Overview user={user} />;
-            case 'clearance':
-                return <PaymentClearanceHub user={user} />;
-            case 'clients':
-                return <ManagerClients user={user} />;
-            case 'invoices':
-                return <Invoice user={user} />;
-            case 'payments':
-                return <ManagerPayments user={user} />;
-            case 'expenses':
-                return <ManagerExpenses user={user} />;
-            case 'vendors':
-                return <ManagerVendors user={user} />;
-            case 'projects':
-                return <Projects user={user} />;
-            case 'reports':
-                return <Reports user={user} />;
-            default:
-                return <Overview user={user} />;
+            case 'overview': return <Overview user={user} />;
+            case 'clearance': return <PaymentClearanceHub user={user} />;
+            case 'clients': return <ManagerClients user={user} />;
+            case 'invoices': return <AccountsInvoices user={user} />;
+            case 'payments': return <ManagerPayments user={user} />;
+            case 'expenses': return <ManagerExpenses user={user} />;
+            case 'vendors': return <ManagerVendors user={user} />;
+            case 'projects': return <AccountsProjects user={user} />;
+            case 'reports': return <AccountsReports user={user} />;
+            default: return <Overview user={user} />;
         }
     };
 

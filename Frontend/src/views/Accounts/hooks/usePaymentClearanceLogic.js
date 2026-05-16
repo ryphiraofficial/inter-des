@@ -1,0 +1,64 @@
+import { useState, useEffect } from 'react';
+import { accountsAPI, staffAPI } from '../../../models/api';
+
+export const usePaymentClearanceLogic = () => {
+    const [projects, setProjects] = useState([]);
+    const [staffList, setStaffList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const [assigningId, setAssigningId] = useState(null);
+    const [selectedStaff, setSelectedStaff] = useState('');
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const [projRes, staffRes] = await Promise.all([
+                accountsAPI.getPendingAccountsProjects().catch(() => ({ success: false })),
+                staffAPI.getAll().catch(() => ({ success: false }))
+            ]);
+            
+            if (projRes?.success) setProjects(projRes.data || []);
+            if (staffRes?.success) {
+                const accStaff = (staffRes.data || []).filter(s => s.role === 'Accounts Staff' || s.department === 'Accounts');
+                setStaffList(accStaff);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAssign = async (projectId) => {
+        if (!selectedStaff) return alert('Please select a staff member');
+        try {
+            await accountsAPI.assignAccountsStaff({ projectId, staffId: selectedStaff });
+            setAssigningId(null);
+            setSelectedStaff('');
+            fetchData();
+        } catch (err) {
+            alert('Error assigning staff: ' + err.message);
+        }
+    };
+
+    const handleClear = async (projectId) => {
+        if (!window.confirm('Clear payment and release this project to Design?')) return;
+        try {
+            await accountsAPI.clearProjectPayment({ projectId });
+            fetchData();
+        } catch (err) {
+            alert('Error clearing project: ' + err.message);
+        }
+    };
+
+    const filtered = projects.filter(p => p.name?.toLowerCase().includes(search.toLowerCase()) || p.client?.name?.toLowerCase().includes(search.toLowerCase()));
+
+    return {
+        projects, staffList, loading, search, setSearch, assigningId, setAssigningId,
+        selectedStaff, setSelectedStaff, filtered, handleAssign, handleClear
+    };
+};
