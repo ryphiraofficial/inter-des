@@ -9,6 +9,7 @@ import {
     PieChart, Pie, Cell
 } from 'recharts';
 import { accountsAPI } from '../../../models/api';
+import { Skeleton, StatsSkeleton, TableSkeleton } from '../../admin/components/Skeleton';
 import '../css/Expenses.css';
 
 const CATEGORIES = ['Materials', 'Labour', 'Transport', 'Tools & Equipment', 'Office', 'Utilities', 'Miscellaneous'];
@@ -163,61 +164,67 @@ const ManagerExpenses = ({ user }) => {
                 
                 {/* KPI Cards */}
                 <div className="kpi-cards-grid">
-                    <div className="kpi-card">
-                        <div className="kpi-card-header">
-                            <span className="kpi-title">Total Expenses</span>
-                            <div className="kpi-icon-wrap" style={{ background: '#e0e7ff', color: '#4f46e5' }}>
-                                <Wallet size={18} />
+                    {loading ? (
+                        <StatsSkeleton count={4} />
+                    ) : (
+                        <>
+                            <div className="kpi-card">
+                                <div className="kpi-card-header">
+                                    <span className="kpi-title">Total Expenses</span>
+                                    <div className="kpi-icon-wrap" style={{ background: '#e0e7ff', color: '#4f46e5' }}>
+                                        <Wallet size={18} />
+                                    </div>
+                                </div>
+                                <div className="kpi-value">{formatCurrency(totalExpenses)}</div>
+                                <div className="kpi-footer">
+                                    <span className="kpi-trend neutral">All Time</span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="kpi-value">{formatCurrency(totalExpenses)}</div>
-                        <div className="kpi-footer">
-                            <span className="kpi-trend neutral">All Time</span>
-                        </div>
-                    </div>
 
-                    <div className="kpi-card">
-                        <div className="kpi-card-header">
-                            <span className="kpi-title">Monthly Spending</span>
-                            <div className="kpi-icon-wrap" style={{ background: '#ecfdf5', color: '#10b981' }}>
-                                <BarChart3 size={18} />
+                            <div className="kpi-card">
+                                <div className="kpi-card-header">
+                                    <span className="kpi-title">Monthly Spending</span>
+                                    <div className="kpi-icon-wrap" style={{ background: '#ecfdf5', color: '#10b981' }}>
+                                        <BarChart3 size={18} />
+                                    </div>
+                                </div>
+                                <div className="kpi-value">{formatCurrency(currentMonthExpenses)}</div>
+                                <div className="kpi-footer">
+                                    <span className={`kpi-trend ${monthlyTrend === 0 ? 'neutral' : (isTrendUp ? 'negative' : 'positive')}`}>
+                                        {isTrendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                                        {Math.abs(monthlyTrend).toFixed(1)}%
+                                    </span>
+                                    vs last month
+                                </div>
                             </div>
-                        </div>
-                        <div className="kpi-value">{formatCurrency(currentMonthExpenses)}</div>
-                        <div className="kpi-footer">
-                            <span className={`kpi-trend ${monthlyTrend === 0 ? 'neutral' : (isTrendUp ? 'negative' : 'positive')}`}>
-                                {isTrendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                                {Math.abs(monthlyTrend).toFixed(1)}%
-                            </span>
-                            vs last month
-                        </div>
-                    </div>
 
-                    <div className="kpi-card">
-                        <div className="kpi-card-header">
-                            <span className="kpi-title">Top Category</span>
-                            <div className="kpi-icon-wrap" style={{ background: '#fef3c7', color: '#f59e0b' }}>
-                                <PieIcon size={18} />
+                            <div className="kpi-card">
+                                <div className="kpi-card-header">
+                                    <span className="kpi-title">Top Category</span>
+                                    <div className="kpi-icon-wrap" style={{ background: '#fef3c7', color: '#f59e0b' }}>
+                                        <PieIcon size={18} />
+                                    </div>
+                                </div>
+                                <div className="kpi-value">{topCategory[0]}</div>
+                                <div className="kpi-footer">
+                                    <span style={{ fontWeight: 600, color: '#334155' }}>{formatCurrency(topCategory[1])}</span> spent
+                                </div>
                             </div>
-                        </div>
-                        <div className="kpi-value">{topCategory[0]}</div>
-                        <div className="kpi-footer">
-                            <span style={{ fontWeight: 600, color: '#334155' }}>{formatCurrency(topCategory[1])}</span> spent
-                        </div>
-                    </div>
 
-                    <div className="kpi-card">
-                        <div className="kpi-card-header">
-                            <span className="kpi-title">Pending Payments</span>
-                            <div className="kpi-icon-wrap" style={{ background: '#fef2f2', color: '#ef4444' }}>
-                                <AlertCircle size={18} />
+                            <div className="kpi-card">
+                                <div className="kpi-card-header">
+                                    <span className="kpi-title">Pending Payments</span>
+                                    <div className="kpi-icon-wrap" style={{ background: '#fef2f2', color: '#ef4444' }}>
+                                        <AlertCircle size={18} />
+                                    </div>
+                                </div>
+                                <div className="kpi-value">{pendingCount}</div>
+                                <div className="kpi-footer">
+                                    Requires your attention
+                                </div>
                             </div>
-                        </div>
-                        <div className="kpi-value">{pendingCount}</div>
-                        <div className="kpi-footer">
-                            Requires your attention
-                        </div>
-                    </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Analytics Section */}
@@ -347,11 +354,7 @@ const ManagerExpenses = ({ user }) => {
 
                     <div className="table-wrapper">
                         {loading ? (
-                            <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div className="skeleton" style={{ height: 40 }}></div>
-                                <div className="skeleton" style={{ height: 40 }}></div>
-                                <div className="skeleton" style={{ height: 40 }}></div>
-                            </div>
+                            <TableSkeleton rows={8} cols={7} />
                         ) : filtered.length === 0 ? (
                             <div className="empty-state">
                                 <div className="empty-icon"><FileText size={28} /></div>

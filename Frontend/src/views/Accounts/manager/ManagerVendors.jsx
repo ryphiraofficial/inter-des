@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Trash2, Edit, X, Building2 } from 'lucide-react';
 import { vendorAPI } from '../../../models/api';
+import { TableSkeleton } from '../../admin/components/Skeleton';
 
 const ManagerVendors = ({ user }) => {
     const [vendors, setVendors] = useState([]);
@@ -91,7 +92,7 @@ const ManagerVendors = ({ user }) => {
 
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
                 {loading ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                    <TableSkeleton rows={8} cols={6} />
                 ) : filtered.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
                         <Building2 size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />

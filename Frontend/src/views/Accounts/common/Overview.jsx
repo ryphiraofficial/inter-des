@@ -11,6 +11,7 @@ import {
     XAxis, YAxis, CartesianGrid, AreaChart, Area
 } from 'recharts';
 import { accountsAPI, invoiceAPI, staffAPI } from '../../../models/api';
+import { Skeleton, StatsSkeleton, TableSkeleton } from '../../admin/components/Skeleton';
 import '../css/ManagerDashboard.css';
 
 const StatCardV3 = ({ title, value, subValue, icon: Icon, type, trendValue, onClick, iconColor, iconBg }) => {
@@ -283,16 +284,7 @@ const Overview = ({ user }) => {
     };
 
     return (
-        <div className={`accounts-overview-tab ${loading ? 'is-loading' : ''}`}>            {loading && (
-                <div className="loading-overlay">
-                    <div className="dashboard-loader">
-                        <div className="loader-ring">
-                            <div className="loader-ring-inner" />
-                        </div>
-                        <p className="loader-label">Loading dashboard<span className="loader-dots"><span>.</span><span>.</span><span>.</span></span></p>
-                    </div>
-                </div>
-            )}
+        <div className={`accounts-overview-tab ${loading ? 'is-loading' : ''}`}>
 
             {/* ── Payment Collection Queue ── */}
             {pendingCollections.length > 0 && (
@@ -398,12 +390,18 @@ const Overview = ({ user }) => {
             )}
 
             <div className="stats-grid-6-v2">
-                <StatCardV3 title="Total Revenue" value={formatCurrency(stats?.paidAmount || 0)} subValue="vs last month" icon={IndianRupee} trendValue={stats?.trends?.revenue} iconColor="#10b981" iconBg="#dcfce7" />
-                <StatCardV3 title="Total Expenses" value={formatCurrency(stats?.totalExpenses || 0)} subValue="vs last month" icon={Wallet} trendValue={stats?.trends?.expenses} iconColor="#467dcfff" iconBg="#dbeafe" />
-                <StatCardV3 title="Net Profit" value={formatCurrency((stats?.paidAmount || 0) - (stats?.totalExpenses || 0))} subValue="Net Gain" icon={Briefcase} trendValue={0} iconColor="#f59e0b" iconBg="#fef3c7" />
-                <StatCardV3 title="Outstanding" value={formatCurrency(stats?.pendingAmount || 0)} subValue={`${stats?.pendingInvoices || 0} Invoices`} icon={FileText} trendValue={0} iconColor="#8b5cf6" iconBg="#ede9fe" />
-                <StatCardV3 title="Payables" value={formatCurrency(stats?.outstandingPayablesAmount || 0)} subValue="To Vendors" icon={CreditCard} trendValue={0} iconColor="#ef4444" iconBg="#fee2e2" />
-                <StatCardV3 title="Balance" value={formatCurrency(stats?.cashBalance || 0)} subValue="Available Cash" icon={Building2} trendValue={0} iconColor="#06b6d4" iconBg="#cffafe" />
+                {loading ? (
+                    <StatsSkeleton count={6} />
+                ) : (
+                    <>
+                        <StatCardV3 title="Total Revenue" value={formatCurrency(stats?.paidAmount || 0)} subValue="vs last month" icon={IndianRupee} trendValue={stats?.trends?.revenue} iconColor="#10b981" iconBg="#dcfce7" />
+                        <StatCardV3 title="Total Expenses" value={formatCurrency(stats?.totalExpenses || 0)} subValue="vs last month" icon={Wallet} trendValue={stats?.trends?.expenses} iconColor="#467dcfff" iconBg="#dbeafe" />
+                        <StatCardV3 title="Net Profit" value={formatCurrency((stats?.paidAmount || 0) - (stats?.totalExpenses || 0))} subValue="Net Gain" icon={Briefcase} trendValue={0} iconColor="#f59e0b" iconBg="#fef3c7" />
+                        <StatCardV3 title="Outstanding" value={formatCurrency(stats?.pendingAmount || 0)} subValue={`${stats?.pendingInvoices || 0} Invoices`} icon={FileText} trendValue={0} iconColor="#8b5cf6" iconBg="#ede9fe" />
+                        <StatCardV3 title="Payables" value={formatCurrency(stats?.outstandingPayablesAmount || 0)} subValue="To Vendors" icon={CreditCard} trendValue={0} iconColor="#ef4444" iconBg="#fee2e2" />
+                        <StatCardV3 title="Balance" value={formatCurrency(stats?.cashBalance || 0)} subValue="Available Cash" icon={Building2} trendValue={0} iconColor="#06b6d4" iconBg="#cffafe" />
+                    </>
+                )}
             </div>
 
             {/* Middle Section: Visualizations */}
@@ -446,33 +444,39 @@ const Overview = ({ user }) => {
                         </div>
                     </div>
                     <div style={{ width: '100%', height: '220px' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={cashFlowData}>
-                                <defs>
-                                    <linearGradient id="colorInflow" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                                    </linearGradient>
-                                    <linearGradient id="colorOutflow" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
-                                <RechartsTooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                                <Area type="monotone" dataKey="inflow" name="Income" stroke="#10b981" fillOpacity={1} fill="url(#colorInflow)" strokeWidth={2} />
-                                <Area type="monotone" dataKey="outflow" name="Expense" stroke="#ef4444" fillOpacity={1} fill="url(#colorOutflow)" strokeWidth={2} />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        {loading ? (
+                            <Skeleton width="100%" height="100%" borderRadius="12px" />
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={cashFlowData}>
+                                    <defs>
+                                        <linearGradient id="colorInflow" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                        </linearGradient>
+                                        <linearGradient id="colorOutflow" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                    <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
+                                    <RechartsTooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                                    <Area type="monotone" dataKey="inflow" name="Income" stroke="#10b981" fillOpacity={1} fill="url(#colorInflow)" strokeWidth={2} />
+                                    <Area type="monotone" dataKey="outflow" name="Expense" stroke="#ef4444" fillOpacity={1} fill="url(#colorOutflow)" strokeWidth={2} />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
                 <div className="card-v3">
                     <div className="card-header-v3"><h3>Invoice Status</h3></div>
                     <div style={{ height: '220px' }}>
-                        {invoiceStatusData.length > 0 ? (
+                        {loading ? (
+                            <Skeleton width="100%" height="100%" borderRadius="12px" />
+                        ) : invoiceStatusData.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={invoiceStatusData} innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}>
@@ -497,7 +501,19 @@ const Overview = ({ user }) => {
                         <a className="view-all-link">View All</a>
                     </div>
                     <div className="activity-feed-list">
-                        {activityFeed.length > 0 ? activityFeed.map((activity, i) => (
+                        {loading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '10px 0' }}>
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} style={{ display: 'flex', gap: '12px' }}>
+                                        <Skeleton width="32px" height="32px" borderRadius="8px" />
+                                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                            <Skeleton width="60%" height="12px" />
+                                            <Skeleton width="40%" height="10px" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : activityFeed.length > 0 ? activityFeed.map((activity, i) => (
                             <div className="activity-item" key={activity._id || i}>
                                 <div className={`activity-icon ${activity.type.toLowerCase()}`}>
                                     {activity.type === 'Invoice' && <FileText size={14} />}
@@ -518,14 +534,26 @@ const Overview = ({ user }) => {
                         )}
                     </div>
                 </div>
-
+ 
                 {/* Upcoming Dues */}
                 <div className="card-v3">
                     <div className="card-header-v3">
                         <h3><Clock size={16} /> Upcoming Dues</h3>
                     </div>
                     <div className="dues-list">
-                        {upcomingDues.length > 0 ? upcomingDues.map((due, i) => {
+                        {loading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '10px 0' }}>
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                            <Skeleton width="120px" height="12px" />
+                                            <Skeleton width="80px" height="10px" />
+                                        </div>
+                                        <Skeleton width="60px" height="12px" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : upcomingDues.length > 0 ? upcomingDues.map((due, i) => {
                             const urgency = getUrgencyClass(due.dueDate);
                             return (
                                 <div className={`due-item ${urgency}`} key={due._id || i}>
@@ -544,14 +572,26 @@ const Overview = ({ user }) => {
                         )}
                     </div>
                 </div>
-
+ 
                 {/* Top Clients / Vendors */}
                 <div className="card-v3">
                     <div className="card-header-v3">
                         <h3>Top Clients</h3>
                     </div>
                     <div className="top-entities-list">
-                        {topClients.length > 0 ? topClients.map((client, i) => (
+                        {loading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '10px 0' }}>
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <Skeleton width="28px" height="28px" borderRadius="50%" />
+                                            <Skeleton width="100px" height="12px" />
+                                        </div>
+                                        <Skeleton width="60px" height="12px" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : topClients.length > 0 ? topClients.map((client, i) => (
                             <div className="entity-row" key={client._id || i}>
                                 <div className="entity-name">
                                     <div className="entity-avatar">{client.name?.charAt(0) || 'C'}</div>
@@ -567,6 +607,8 @@ const Overview = ({ user }) => {
                         )}
                     </div>
                 </div>
+            </div>
+
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Trash2, Edit, X, Users, Phone, Mail, MapPin, FileText, User } from 'lucide-react';
 import { clientAPI } from '../../../models/api';
+import { TableSkeleton } from '../../admin/components/Skeleton';
 
 const inputBase = {
     width: '100%', padding: '10px 12px 10px 38px',
@@ -106,7 +107,7 @@ const ManagerClients = ({ user }) => {
             {/* Table */}
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
                 {loading ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading clients...</div>
+                    <TableSkeleton rows={8} cols={5} />
                 ) : filtered.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
                         <Users size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />

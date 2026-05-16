@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Shield, UserPlus, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { accountsAPI, staffAPI } from '../../../models/api';
+import { TableSkeleton } from '../../admin/components/Skeleton';
 
 const PaymentClearanceHub = ({ user }) => {
     const [projects, setProjects] = useState([]);
@@ -86,7 +87,7 @@ const PaymentClearanceHub = ({ user }) => {
                 </div>
 
                 {loading ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                    <TableSkeleton rows={6} cols={7} />
                 ) : filtered.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
                         <Shield size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />

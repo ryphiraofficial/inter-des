@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, X, CreditCard, Trash2, ChevronDown, CheckCircle, Calendar, ChevronLeft, ChevronRight, User, Banknote } from 'lucide-react';
 import { accountsAPI, clientAPI } from '../../../models/api';
+import { TableSkeleton } from '../../admin/components/Skeleton';
 
 /* ─── Mini custom DatePicker ─── */
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -285,7 +286,7 @@ const ManagerPayments = ({ user }) => {
 
                 <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
                     {loading ? (
-                        <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                        <TableSkeleton rows={8} cols={6} />
                     ) : filtered.length === 0 ? (
                         <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
                             <CreditCard size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />
