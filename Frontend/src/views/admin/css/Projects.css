@@ -549,6 +549,16 @@
     overflow-y: auto;
 }
 
+.modal-content.project-detail-modal {
+    overflow: visible;
+}
+
+.project-detail-modal .modern-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;

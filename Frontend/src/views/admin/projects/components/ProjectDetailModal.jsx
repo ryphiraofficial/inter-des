@@ -186,6 +186,15 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
                                     <span>{selectedProject.assignedDesignManager?.name || 'Unassigned'}</span>
                                     <MoreHorizontal size={14} className="hover-icon" />
                                 </div>
+                                {popover?.type === 'Design' && (
+                                    <TeamPopover 
+                                        managerType={popover.type}
+                                        manager={popover.manager}
+                                        staff={popover.staff}
+                                        loading={popover.loading}
+                                        onClose={(e) => { e.stopPropagation(); setPopover(null); }}
+                                    />
+                                )}
                             </div>
                             
                             <div className="info-row clickable" onClick={() => handleManagerClick('Production', selectedProject.assignedProductionManager)}>
@@ -194,17 +203,16 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
                                     <span>{selectedProject.assignedProductionManager?.name || 'Unassigned'}</span>
                                     <MoreHorizontal size={14} className="hover-icon" />
                                 </div>
+                                {popover?.type === 'Production' && (
+                                    <TeamPopover 
+                                        managerType={popover.type}
+                                        manager={popover.manager}
+                                        staff={popover.staff}
+                                        loading={popover.loading}
+                                        onClose={(e) => { e.stopPropagation(); setPopover(null); }}
+                                    />
+                                )}
                             </div>
-
-                            {popover && (
-                                <TeamPopover 
-                                    managerType={popover.type}
-                                    manager={popover.manager}
-                                    staff={popover.staff}
-                                    loading={popover.loading}
-                                    onClose={() => setPopover(null)}
-                                />
-                            )}
                         </div>
                     </div>
 
