@@ -309,14 +309,14 @@ const Overview = ({ user }) => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' }}>
+                    <div className="collection-queue-grid">
                         {pendingCollections.map(proj => {
                             const isAssigned = proj.paymentCollectionStatus === 'Assigned';
                             const isDueSoon = proj.paymentDueDate && (new Date(proj.paymentDueDate) - new Date()) / 86400000 <= 3;
                             return (
-                                <div key={proj._id} style={{ background: 'white', borderRadius: '20px', border: `1px solid ${isDueSoon ? '#fca5a5' : '#e2e8f0'}`, borderTop: `4px solid ${isDueSoon ? '#ef4444' : '#f59e0b'}`, padding: '24px', boxShadow: isDueSoon ? '0 4px 12px rgba(239,68,68,0.08)' : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                <div key={proj._id} className={`collection-card ${isDueSoon ? 'is-due-soon' : ''}`}>
                                     {/* Header */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                    <div className="collection-card-header">
                                         <div>
                                             <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>{proj.name}</h4>
                                             <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontWeight: 500 }}>{proj.client?.name || 'Unknown Client'}</p>
@@ -327,25 +327,25 @@ const Overview = ({ user }) => {
                                     </div>
 
                                     {/* Info Grid */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
-                                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
-                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Quotation Total</p>
-                                            <p style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#4f46e5' }}>₹{(proj.quotation?.totalAmount || 0).toLocaleString('en-IN')}</p>
+                                    <div className="collection-card-info">
+                                        <div className="info-item">
+                                            <p className="info-label">Quotation Total</p>
+                                            <p className="info-value primary">₹{(proj.quotation?.totalAmount || 0).toLocaleString('en-IN')}</p>
                                         </div>
-                                        <div style={{ background: '#f0fdf4', borderRadius: '10px', padding: '10px 14px' }}>
-                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Advance to Collect ({proj.advancePercentage || 0}%)</p>
-                                            <p style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#10b981' }}>₹{(proj.advanceAmount || 0).toLocaleString('en-IN')}</p>
+                                        <div className="info-item success">
+                                            <p className="info-label">Advance to Collect ({proj.advancePercentage || 0}%)</p>
+                                            <p className="info-value success">₹{(proj.advanceAmount || 0).toLocaleString('en-IN')}</p>
                                         </div>
-                                        <div style={{ background: isDueSoon ? '#fef2f2' : '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
-                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Due Date</p>
-                                            <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: isDueSoon ? '#ef4444' : '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <div className={`info-item ${isDueSoon ? 'danger' : ''}`}>
+                                            <p className="info-label">Due Date</p>
+                                            <p className={`info-value ${isDueSoon ? 'danger' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                 {isDueSoon && <AlertTriangle size={13} />}
                                                 {proj.paymentDueDate ? new Date(proj.paymentDueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not set'}
                                             </p>
                                         </div>
-                                        <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '10px 14px' }}>
-                                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Assigned To</p>
-                                            <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{proj.assignedAccountsStaff?.fullName || '—'}</p>
+                                        <div className="info-item">
+                                            <p className="info-label">Assigned To</p>
+                                            <p className="info-value">{proj.assignedAccountsStaff?.fullName || '—'}</p>
                                         </div>
                                     </div>
 
@@ -408,7 +408,7 @@ const Overview = ({ user }) => {
 
             {/* Middle Section: Visualizations */}
             <div className="charts-grid-3">
-                <div className="card-v3" style={{ gridColumn: 'span 2' }}>
+                <div className="card-v3 main-chart-card">
                     <div className="card-header-v3">
                         <h3>Cash Flow Projection</h3>
                         <div style={{ position: 'relative' }} ref={datePickerRef}>

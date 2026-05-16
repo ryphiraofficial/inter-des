@@ -1,10 +1,8 @@
 /* Expenses Dashboard - Premium SaaS Styles */
 .expenses-dashboard-container {
-    padding: 2rem 2.5rem;
-    /* background-color: #ffffff; */
+    padding: 24px;
     min-height: 100vh;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    margin: -24px -24px 0 -24px;
 }
 
 .expenses-wrapper {
@@ -503,4 +501,55 @@
     background-size: 1000px 100%;
     animation: shimmer 2s infinite linear;
     border-radius: 4px;
+}
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .expenses-dashboard-container {
+        padding: 1rem;
+    }
+    
+    .kpi-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .expenses-analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .search-wrapper {
+        width: 100%;
+    }
+    
+    .filter-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .expenses-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .expenses-actions button {
+        width: 100%;
+    }
 }

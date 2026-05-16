@@ -597,6 +597,15 @@
     font-size: 12px;
     color: #64748b;
 }
+.main-chart-card {
+    grid-column: span 2;
+}
+
+@media (max-width: 1100px) {
+    .main-chart-card {
+        grid-column: span 1;
+    }
+}
 
 .due-meta {
     text-align: right;
@@ -690,4 +699,115 @@
 .accounts-manager-hub,
 .accounts-staff-hub {
     padding: 24px;
+}
+
+@media (max-width: 1024px) {
+    .accounts-manager-hub,
+    .accounts-staff-hub {
+        padding: 16px;
+    }
+}
+
+/* Collection Queue Grid */
+.collection-queue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .collection-queue-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* Collection Card */
+.collection-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    border-top: 4px solid #f59e0b;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.collection-card.is-due-soon {
+    border-color: #fca5a5;
+    border-top-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.08);
+}
+
+@media (max-width: 640px) {
+    .collection-card {
+        padding: 16px;
+    }
+}
+
+.collection-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.collection-card-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+    .collection-card-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+.info-item {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.info-item.success { background: #f0fdf4; }
+.info-item.danger { background: #fef2f2; }
+
+.info-label {
+    margin: 0 0 2px;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.info-value {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.info-value.primary { color: #4f46e5; font-size: 15px; font-weight: 800; }
+.info-value.success { color: #10b981; font-size: 15px; font-weight: 800; }
+.info-value.danger { color: #ef4444; }
+
+/* Responsive Table Container */
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    .dashboard-top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .top-bar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
 }

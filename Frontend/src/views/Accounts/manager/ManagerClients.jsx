@@ -88,11 +88,11 @@ const ManagerClients = ({ user }) => {
     );
 
     return (
-        <div style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px' }}>
+        <div className="accounts-manager-hub">
             <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
             {/* Search */}
-            <div style={{ position: 'relative', width: '320px' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input
                     type="text"
@@ -113,38 +113,40 @@ const ManagerClients = ({ user }) => {
                         <p>No clients found.</p>
                     </div>
                 ) : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ background: '#f8fafc' }}>
-                                {['Client', 'Email', 'Phone', 'GST Number', 'Actions'].map(h => (
-                                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9' }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map((c, i) => (
-                                <tr key={c._id || i} style={{ borderBottom: '1px solid #f8fafc' }}>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e7ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', flexShrink: 0 }}>
-                                                {c.name?.charAt(0).toUpperCase()}
-                                            </div>
-                                            <span style={{ fontWeight: 600, color: '#1e293b' }}>{c.name}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.email || '—'}</td>
-                                    <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.phone || '—'}</td>
-                                    <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.gstNumber || '—'}</td>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button onClick={() => openEdit(c)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#6366f1' }}><Edit size={14} /></button>
-                                            <button onClick={() => handleDelete(c._id)} style={{ background: '#fee2e2', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
-                                        </div>
-                                    </td>
+                    <div className="table-responsive-wrapper">
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                    {['Client', 'Email', 'Phone', 'GST Number', 'Actions'].map(h => (
+                                        <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9' }}>{h}</th>
+                                    ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filtered.map((c, i) => (
+                                    <tr key={c._id || i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                                        <td style={{ padding: '14px 16px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e7ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', flexShrink: 0 }}>
+                                                    {c.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span style={{ fontWeight: 600, color: '#1e293b' }}>{c.name}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.email || '—'}</td>
+                                        <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.phone || '—'}</td>
+                                        <td style={{ padding: '14px 16px', color: '#475569', fontSize: '13px' }}>{c.gstNumber || '—'}</td>
+                                        <td style={{ padding: '14px 16px' }}>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button onClick={() => openEdit(c)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#6366f1' }}><Edit size={14} /></button>
+                                                <button onClick={() => handleDelete(c._id)} style={{ background: '#fee2e2', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
