@@ -41,20 +41,8 @@ const POInventory = () => {
 
     return (
         <div className="po-inv-container">
-            <div className="po-inv-wrapper">
-                <div className="invoice-filter-bar">
-                    <div className="search-field">
-                        <Search className="search-icon" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search materials..."
-                            value={state.searchTerm}
-                            onChange={(e) => state.setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                {state.error && <div className="error-banner">{state.error}</div>}
+                <div className="po-inv-wrapper">
+                    {state.error && <div className="error-banner">{state.error}</div>}
 
                 {state.loading ? (
                     <div className="po-inv-grid">
