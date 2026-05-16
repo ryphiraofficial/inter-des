@@ -80,10 +80,10 @@ const ManagerVendors = ({ user }) => {
     );
 
     return (
-        <div style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px' }}>
+        <div className="accounts-manager-hub">
             <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            <div style={{ position: 'relative', width: '320px' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input type="text" placeholder="Search by name, category or email..." value={search} onChange={e => setSearch(e.target.value)}
                     style={{ width: '100%', height: '45px', padding: '0.6rem 1rem 0.6rem 2.5rem', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.875rem', outline: 'none', boxSizing: 'border-box' }} />
@@ -98,41 +98,43 @@ const ManagerVendors = ({ user }) => {
                         <p>No vendors found.</p>
                     </div>
                 ) : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ background: '#f8fafc' }}>
-                                {['Vendor', 'Category', 'Email', 'Phone', 'GST', 'Actions'].map(h => (
-                                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9' }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filtered.map((v, i) => (
-                                <tr key={v._id || i} style={{ borderBottom: '1px solid #f8fafc' }}>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                <Building2 size={16} color="#94a3b8" />
-                                            </div>
-                                            <span style={{ fontWeight: 600, color: '#1e293b' }}>{v.name}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        {v.category && <span style={{ background: '#e0e7ff', color: '#6366f1', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>{v.category}</span>}
-                                    </td>
-                                    <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.email || '—'}</td>
-                                    <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.phone || '—'}</td>
-                                    <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.gstNumber || '—'}</td>
-                                    <td style={{ padding: '14px 16px' }}>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button onClick={() => openEdit(v)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#6366f1' }}><Edit size={14} /></button>
-                                            <button onClick={() => handleDelete(v._id)} style={{ background: '#fee2e2', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
-                                        </div>
-                                    </td>
+                    <div className="table-responsive-wrapper">
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                    {['Vendor', 'Category', 'Email', 'Phone', 'GST', 'Actions'].map(h => (
+                                        <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9' }}>{h}</th>
+                                    ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filtered.map((v, i) => (
+                                    <tr key={v._id || i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                                        <td style={{ padding: '14px 16px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                    <Building2 size={16} color="#94a3b8" />
+                                                </div>
+                                                <span style={{ fontWeight: 600, color: '#1e293b' }}>{v.name}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '14px 16px' }}>
+                                            {v.category && <span style={{ background: '#e0e7ff', color: '#6366f1', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>{v.category}</span>}
+                                        </td>
+                                        <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.email || '—'}</td>
+                                        <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.phone || '—'}</td>
+                                        <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '13px' }}>{v.gstNumber || '—'}</td>
+                                        <td style={{ padding: '14px 16px' }}>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button onClick={() => openEdit(v)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#6366f1' }}><Edit size={14} /></button>
+                                                <button onClick={() => handleDelete(v._id)} style={{ background: '#fee2e2', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 

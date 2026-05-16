@@ -273,10 +273,10 @@ const ManagerPayments = ({ user }) => {
     ];
 
     return (
-        <div style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px' }}>
+        <div className="accounts-manager-hub">
             <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', width: '320px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
                         <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                         <input type="text" placeholder="Search by client or reference..." value={search} onChange={e => setSearch(e.target.value)}
                             style={{ width: '100%', height: '45px', padding: '0.6rem 1rem 0.6rem 2.5rem', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.875rem', outline: 'none', boxSizing: 'border-box' }} />
@@ -292,7 +292,8 @@ const ManagerPayments = ({ user }) => {
                             <p>No payments found.</p>
                         </div>
                     ) : (
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <div className="table-responsive-wrapper">
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
                             <thead>
                                 <tr style={{ background: '#f8fafc' }}>
                                     {['Date', 'Client', 'Method', 'Reference', 'Amount', 'Actions'].map(h => (
@@ -323,6 +324,7 @@ const ManagerPayments = ({ user }) => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
                     )}
                 </div>
 
