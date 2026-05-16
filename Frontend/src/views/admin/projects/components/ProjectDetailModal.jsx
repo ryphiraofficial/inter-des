@@ -1,5 +1,6 @@
-import React from 'react';
-import { Calendar, User, CreditCard, Tag, FileText, Info, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, User, CreditCard, Tag, FileText, Info, CheckCircle2, MoreHorizontal, ExternalLink } from 'lucide-react';
+import { taskAPI } from '../../../../models/api';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -25,7 +26,96 @@ const formatDate = (date) => {
     });
 };
 
+const TeamPopover = ({ managerType, manager, staff, loading, onClose }) => {
+    return (
+        <div className="team-popover">
+            <div className="popover-header">
+                <div className="p-title">
+                    <User size={14} />
+                    <span>{managerType} Team</span>
+                </div>
+                <button className="p-close" onClick={onClose}>×</button>
+            </div>
+            <div className="popover-body">
+                <div className="manager-info">
+                    <div className="m-avatar">{manager?.name?.charAt(0) || 'U'}</div>
+                    <div className="m-details">
+                        <span className="m-name">{manager?.name || 'Unassigned'}</span>
+                        <span className="m-role">{managerType} Manager</span>
+                    </div>
+                </div>
+                
+                <div className="staff-section">
+                    <label>Staff Members ({staff.length})</label>
+                    {loading ? (
+                        <div className="p-loading">Loading team...</div>
+                    ) : staff.length === 0 ? (
+                        <div className="p-empty">No staff assigned yet</div>
+                    ) : (
+                        <div className="staff-list">
+                            {staff.map(s => (
+                                <div key={s._id} className="staff-item">
+                                    <div className="s-avatar">{s.name?.charAt(0)}</div>
+                                    <div className="s-info">
+                                        <span className="s-name">{s.name}</span>
+                                        <span className="s-role">{s.role || 'Team Member'}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const ProjectDetailModal = ({ selectedProject, handleClose }) => {
+    const [popover, setPopover] = useState(null); // { type, manager, staff, loading }
+    const [allTasks, setAllTasks] = useState([]);
+
+    useEffect(() => {
+        if (selectedProject) {
+            fetchProjectTasks();
+        }
+    }, [selectedProject]);
+
+    const fetchProjectTasks = async () => {
+        try {
+            const res = await taskAPI.getAll({ project: selectedProject._id });
+            if (res.success) {
+                setAllTasks(res.data);
+            }
+        } catch (err) {
+            console.error('Error fetching project tasks:', err);
+        }
+    };
+
+    const handleManagerClick = (type, manager) => {
+        // Filter tasks related to this stage/manager to find staff
+        // For now, let's just find unique staff from all tasks if they match the department
+        const relatedTasks = allTasks.filter(t => {
+            if (type === 'Design') return t.status.includes('Design') || t.title.toLowerCase().includes('design');
+            if (type === 'Production') return t.status.includes('Production') || t.title.toLowerCase().includes('production');
+            return true;
+        });
+
+        // Get unique staff from these tasks
+        const staffMap = new Map();
+        relatedTasks.forEach(t => {
+            t.assignedTo?.forEach(s => {
+                if (s && s._id) staffMap.set(s._id, s);
+            });
+        });
+
+        setPopover({
+            type,
+            manager,
+            staff: Array.from(staffMap.values()),
+            loading: false
+        });
+    };
+
     if (!selectedProject) return null;
 
     return (
@@ -89,8 +179,32 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
                         <div className="detail-group">
                             <h4 className="section-title"><User size={16} /> Stakeholders</h4>
                             <div className="info-row"><label>Client</label><span>{selectedProject.client?.name || 'N/A'}</span></div>
-                            <div className="info-row"><label>Design Mgr</label><span>{selectedProject.assignedDesignManager?.name || 'Unassigned'}</span></div>
-                            <div className="info-row"><label>Production Mgr</label><span>{selectedProject.assignedProductionManager?.name || 'Unassigned'}</span></div>
+                            
+                            <div className="info-row clickable" onClick={() => handleManagerClick('Design', selectedProject.assignedDesignManager)}>
+                                <label>Design Mgr</label>
+                                <div className="manager-cell">
+                                    <span>{selectedProject.assignedDesignManager?.name || 'Unassigned'}</span>
+                                    <MoreHorizontal size={14} className="hover-icon" />
+                                </div>
+                            </div>
+                            
+                            <div className="info-row clickable" onClick={() => handleManagerClick('Production', selectedProject.assignedProductionManager)}>
+                                <label>Production Mgr</label>
+                                <div className="manager-cell">
+                                    <span>{selectedProject.assignedProductionManager?.name || 'Unassigned'}</span>
+                                    <MoreHorizontal size={14} className="hover-icon" />
+                                </div>
+                            </div>
+
+                            {popover && (
+                                <TeamPopover 
+                                    managerType={popover.type}
+                                    manager={popover.manager}
+                                    staff={popover.staff}
+                                    loading={popover.loading}
+                                    onClose={() => setPopover(null)}
+                                />
+                            )}
                         </div>
                     </div>
 
