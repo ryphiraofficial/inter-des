@@ -8,6 +8,7 @@ import { getRolePermissions } from './hooks/useRoleDashboard';
 
 import QuotationTabs from './quotations/list/components/QuotationTabs';
 import QuotationTable from './quotations/list/components/QuotationTable';
+import { TableSkeleton } from './components/Skeleton';
 
 import './css/Quotations.css';
 
@@ -55,16 +56,8 @@ const Quotations = ({ isStaff, user }) => {
                     setActiveTab={state.setActiveTab}
                 />
 
-
-
                 {state.loading ? (
-                    <div className="skeleton-table">
-                        {[...Array(5)].map((_, i) => (
-                            <div key={i} className="skeleton-table-row">
-                                <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} /><div className="skeleton skeleton-table-cell" /><div className="skeleton skeleton-table-cell" />
-                            </div>
-                        ))}
-                    </div>
+                    <TableSkeleton rows={10} cols={6} />
                 ) : filteredQuotations.length === 0 ? (
                     <div className="q-empty-state-card">
                         <FileText size={48} />

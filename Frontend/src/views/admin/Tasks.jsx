@@ -15,6 +15,7 @@ import TaskFormModal from './tasks/components/TaskFormModal';
 import TaskDetailsModal from './tasks/components/TaskDetailsModal';
 import DesignPreviewModal from './tasks/components/DesignPreviewModal';
 import CustomSelect from './components/CustomSelect';
+import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
 import './css/Tasks.css';
 import './css/TaskDetails.css';
@@ -72,7 +73,18 @@ const Tasks = ({ isStaff, user }) => {
         ? state.quotations.filter(q => (q.client?._id === state.formData.client || q.client === state.formData.client))
         : [];
 
-    if (state.loading) return <div className="loading-container">Loading tasks...</div>;
+    if (state.loading) {
+        return (
+            <div className={`tasks-container ${isStaff ? 'staff-view' : ''}`}>
+                <div className="tasks-wrapper">
+                    <StatsSkeleton count={4} />
+                    <div style={{ marginTop: '2rem' }}>
+                        <TableSkeleton rows={10} cols={6} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`tasks-container ${isStaff ? 'staff-view' : ''}`}>

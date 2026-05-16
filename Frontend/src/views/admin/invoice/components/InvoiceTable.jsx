@@ -1,22 +1,12 @@
 import React from 'react';
 import { Download, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-react';
+import { TableSkeleton } from '../../components/Skeleton';
 
 const InvoiceTable = ({ 
     invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete 
 }) => {
     if (loading) {
-        return (
-            <div className="skeleton-table">
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="skeleton-table-row">
-                        <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
-                        <div className="skeleton skeleton-table-cell" />
-                        <div className="skeleton skeleton-table-cell" />
-                        <div className="skeleton skeleton-table-cell" />
-                    </div>
-                ))}
-            </div>
-        );
+        return <TableSkeleton rows={10} cols={6} />;
     }
 
     if (invoices.length === 0) {

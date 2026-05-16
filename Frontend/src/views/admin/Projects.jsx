@@ -12,6 +12,7 @@ import ProjectTable from './projects/components/ProjectTable';
 import ProjectTimeline from './projects/components/ProjectTimeline';
 import ProjectDetailModal from './projects/components/ProjectDetailModal';
 import ProjectFocusedView from './projects/components/ProjectFocusedView';
+import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
 import './css/Projects.css';
 
@@ -59,6 +60,17 @@ const Projects = () => {
         );
     }
 
+    if (state.loading) {
+        return (
+            <div className="projects-page" style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
+                <StatsSkeleton count={6} />
+                <div style={{ marginTop: '2rem' }}>
+                    <TableSkeleton rows={8} cols={5} />
+                </div>
+            </div>
+        );
+    }
+
     const renderActiveView = () => {
         switch (state.activeView) {
             case 'table':
@@ -84,10 +96,11 @@ const Projects = () => {
     };
 
     return (
-        <div className="projects-page" style={{ padding: '2rem 2.5rem', minHeight: '100vh', margin: '-24px -24px 0 -24px', maxWidth: 'none' }}>
+        <div className="projects-page">
+
             <ProjectKPIs projects={state.projects} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="projects-controls">
                 <ProjectTabs activeView={state.activeView} setActiveView={state.setActiveView} />
                 
                 <ProjectFilterBar 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Phone, Edit, Trash2, ChevronDown } from 'lucide-react';
+import { TableSkeleton } from '../../components/Skeleton';
 
 const getRoleClass = (role) => {
     if (!role) return 'default';
@@ -14,18 +15,7 @@ const UserTable = ({
     users, loading, expandedRow, toggleRow, handleEditClick, handleDelete 
 }) => {
     if (loading) {
-        return (
-            <div className="skeleton-table">
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="skeleton-table-row">
-                        <div className="skeleton skeleton-avatar" />
-                        <div className="skeleton skeleton-table-cell" />
-                        <div className="skeleton skeleton-table-cell" />
-                        <div className="skeleton skeleton-table-cell" />
-                    </div>
-                ))}
-            </div>
-        );
+        return <TableSkeleton rows={10} cols={5} />;
     }
 
     return (

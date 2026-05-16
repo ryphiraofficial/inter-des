@@ -2,6 +2,7 @@ import React from 'react';
 import { useReportData } from './reports/hooks/useReportData';
 import ReportMetrics from './reports/components/ReportMetrics';
 import ReportSummaryTable from './reports/components/ReportSummaryTable';
+import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
 import './css/Reports.css';
 
@@ -14,14 +15,10 @@ const Reports = () => {
                 {error && <div className="error-banner">{error}</div>}
 
                 {loading ? (
-                    <div className="reports-skeleton">
-                        <div className="skeleton-grid">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="skeleton skeleton-card" style={{ height: '140px', borderRadius: '16px' }} />
-                            ))}
-                        </div>
-                        <div className="skeleton skeleton-table-area" style={{ height: '400px', borderRadius: '24px', marginTop: '2rem' }} />
-                    </div>
+                    <>
+                        <StatsSkeleton count={8} />
+                        <TableSkeleton rows={8} cols={5} />
+                    </>
                 ) : (
                     <>
                         <ReportMetrics 

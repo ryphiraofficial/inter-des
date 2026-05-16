@@ -1,22 +1,12 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Edit, Trash2, ChevronDown } from 'lucide-react';
+import { TableSkeleton } from '../../components/Skeleton';
 
 const ClientTable = ({ 
     clients, loading, isStaff, expandedRow, toggleRow, handleEdit, handleDelete 
 }) => {
     if (loading) {
-        return (
-            <div className="skeleton-table">
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="skeleton-table-row">
-                        <div className="skeleton skeleton-avatar" />
-                        <div className="skeleton skeleton-table-cell" style={{ flex: 2 }} />
-                        <div className="skeleton skeleton-table-cell" />
-                        <div className="skeleton skeleton-table-cell" />
-                    </div>
-                ))}
-            </div>
-        );
+        return <TableSkeleton rows={10} cols={6} />;
     }
 
     return (

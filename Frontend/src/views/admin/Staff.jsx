@@ -12,6 +12,7 @@ import StaffTable from './staff/components/StaffTable';
 import StaffFormModal from './staff/components/StaffFormModal';
 import StaffAnalyticsModal from './staff/components/StaffAnalyticsModal';
 import StaffSalaryModal from './staff/components/StaffSalaryModal';
+import { TableSkeleton } from './components/Skeleton';
 
 import './css/Staff.css';
 
@@ -49,7 +50,15 @@ const Staff = () => {
         staff.staffId?.toLowerCase().includes(state.searchTerm.toLowerCase())
     );
 
-    if (state.loading) return <div className="loading-container">Loading staff members...</div>;
+    if (state.loading) {
+        return (
+            <div className="staff-container">
+                <div className="staff-wrapper">
+                    <TableSkeleton rows={10} cols={6} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="staff-container">

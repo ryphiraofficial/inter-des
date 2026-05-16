@@ -422,7 +422,11 @@
 @media (max-width: 1024px) {
     .sales-menu-toggle { display: flex; }
 
-    .sales-header-subtitle { display: none; }
+    .sales-header-subtitle { 
+        display: block !important;
+        font-size: 10px !important;
+        opacity: 0.8 !important;
+    }
 
     .sales-notif-popup {
         position: fixed;

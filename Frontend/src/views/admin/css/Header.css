@@ -572,7 +572,12 @@
     }
 
     .welcome-text p {
-        display: none !important;
+        display: block !important;
+        font-size: 10px !important;
+        opacity: 0.8 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     .page-header-actions {
@@ -782,14 +787,20 @@
 
     .header-notification-badge {
         position: absolute !important;
-        top: -3px !important;
-        right: -3px !important;
-        width: 16px !important;
-        height: 16px !important;
-        min-width: 16px !important;
-        font-size: 9px !important;
-        font-weight: 700 !important;
+        top: -4px !important;
+        right: -4px !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        font-size: 10px !important;
+        font-weight: 800 !important;
         border: 2px solid white !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        text-align: center !important;
     }
 
     .page-header .header-notification-popup {
