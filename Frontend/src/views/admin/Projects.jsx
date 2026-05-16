@@ -131,7 +131,6 @@ const Projects = () => {
             <ProjectDetailModal 
                 selectedProject={state.selectedProject}
                 handleClose={actions.handleClose}
-                handleStageChange={actions.handleStageChange}
             />
         </div>
     );
