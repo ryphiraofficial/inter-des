@@ -17,7 +17,8 @@ const PurchaseOrders = () => {
         setPurchaseOrders: state.setPurchaseOrders,
         setLoading: state.setLoading,
         setError: state.setError,
-        setShowCreateModal: state.setShowCreateModal
+        setShowCreateModal: state.setShowCreateModal,
+        setSearchTerm: state.setSearchTerm
     });
 
     const actions = usePOActions({
@@ -50,6 +51,7 @@ const PurchaseOrders = () => {
                     setSearchTerm={state.setSearchTerm}
                     statusFilter={state.statusFilter}
                     setStatusFilter={state.setStatusFilter}
+                    hideSearch={true}
                 />
 
                 {state.error && <div className="error-banner">{state.error}</div>}

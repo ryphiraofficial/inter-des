@@ -588,6 +588,7 @@
     }
 
     .page-header-actions .btn-primary,
+    .page-header-actions .btn-success,
     .page-header-actions a[href*="new"] {
         width: 38px !important;
         height: 38px !important;
@@ -605,6 +606,8 @@
     }
 
     .page-header-actions .btn-primary span,
+    .page-header-actions .btn-success span,
+    .page-header-actions .nav-btn-text,
     .page-header-actions a[href*="new"] span {
         display: none !important;
     }

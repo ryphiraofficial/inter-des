@@ -80,6 +80,10 @@ const Header = ({ user, toggleMobileSidebar }) => {
             '/settings': { title: 'System Controls', subtitle: 'Configure your preferences.' },
             '/users': { title: 'Team Access', subtitle: 'Manage staff accounts.' },
             '/invoice': { title: 'Invoices', subtitle: 'Generate and track professional client invoices.' },
+            '/projects': { title: 'Projects', subtitle: 'Detailed overview of all ongoing projects.' },
+            '/staff': { title: 'Staff', subtitle: 'Manage your team members and roles.' },
+            '/approvals': { title: 'Approvals', subtitle: 'Review and manage pending design approvals.' },
+            '/material-review': { title: 'Material Review', subtitle: 'Review and approve material requests.' },
             '/engineer/dashboard': { title: 'Dashboard', subtitle: 'Overview of assigned tasks' },
             '/engineer/projects': { title: 'My Projects', subtitle: 'Projects you are assigned to' },
             '/engineer/tasks': { title: 'My Tasks', subtitle: 'All tasks assigned to you' },
@@ -111,7 +115,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
     };
 
     const { title, subtitle } = getPageDetails();
-    const searchablePaths = ['/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory'];
+    const searchablePaths = ['/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects'];
     const isSearchable = searchablePaths.includes(location.pathname);
 
     return (

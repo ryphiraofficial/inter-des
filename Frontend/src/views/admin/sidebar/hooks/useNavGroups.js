@@ -4,7 +4,7 @@ import {
     Target, Palette, Wrench, ClipboardCheck, Calendar, FolderOpen, 
     Bell, MessageSquare, Award, Clock, DollarSign, Building2 
 } from 'lucide-react';
-import { getRoleDepartment, useRoleDashboard } from '../hooks/useRoleDashboard';
+import { getRoleDepartment, useRoleDashboard } from '../../hooks/useRoleDashboard';
 
 export const useNavGroups = (user) => {
     const dashboardType = useRoleDashboard(user?.role);

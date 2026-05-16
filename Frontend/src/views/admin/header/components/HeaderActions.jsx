@@ -11,7 +11,7 @@ const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary
             onClick={onClick}
         >
             <Icon size={18} strokeWidth={2.4} />
-            <span>{label}</span>
+            <span className="nav-btn-text">{label}</span>
         </button>
     );
 };
@@ -43,6 +43,12 @@ const HeaderActions = ({ isHome, tab, location, user }) => {
             <ActionBtn show={location.pathname === '/clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add New Client" variant="primary" />
             <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />
             <ActionBtn show={location.pathname === '/users'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-user-modal'))} label="Add New User" variant="primary" />
+            <ActionBtn show={location.pathname === '/projects'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-project-modal'))} label="New Project" variant="primary" />
+            {location.pathname === '/quotations' && (
+                <Link to="/quotations/new" className="no-underline">
+                    <ActionBtn show={true} label="New Quotation" variant="primary" />
+                </Link>
+            )}
             
             {isHome && tab === 'vendors' && user?.role?.toLowerCase() === 'procurement manager' && (
                 <button

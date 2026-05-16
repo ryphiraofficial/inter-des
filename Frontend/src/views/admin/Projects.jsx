@@ -22,7 +22,8 @@ const Projects = () => {
         setSelectedProject: state.setSelectedProject,
         stageFilter: state.stageFilter,
         statusFilter: state.statusFilter,
-        urlProjectId
+        urlProjectId,
+        setSearchTerm: state.setSearchTerm
     });
 
     const actions = useProjectActions({
@@ -67,6 +68,7 @@ const Projects = () => {
                 setShowStageDropdown={state.setShowStageDropdown}
                 showStatusDropdown={state.showStatusDropdown}
                 setShowStatusDropdown={state.setShowStatusDropdown}
+                hideSearch={true}
             />
 
             <ProjectWorkflow 

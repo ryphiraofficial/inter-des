@@ -3,19 +3,22 @@ import { Search, SlidersHorizontal, ChevronDown, CheckCircle } from 'lucide-reac
 
 const ProjectFilterBar = ({ 
     searchTerm, setSearchTerm, stageFilter, setStageFilter, statusFilter, setStatusFilter,
-    showStageDropdown, setShowStageDropdown, showStatusDropdown, setShowStatusDropdown
+    showStageDropdown, setShowStageDropdown, showStatusDropdown, setShowStatusDropdown,
+    hideSearch = false
 }) => {
     return (
         <div className="filters-bar" style={{ marginTop: '10px' }}>
-            <div className="search-box">
-                <Search size={18} />
-                <input 
-                    type="text" 
-                    placeholder="Search projects..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
+            {!hideSearch && (
+                <div className="search-box">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search projects..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            )}
             
             <div className="filter-group">
                 {/* Stages Dropdown */}

@@ -2,8 +2,14 @@ import { useEffect } from 'react';
 import { projectAPI } from '../../../../models/api';
 
 export const useProjectData = ({ 
-    setProjects, setLoading, setSelectedProject, stageFilter, statusFilter, urlProjectId 
+    setProjects, setLoading, setSelectedProject, stageFilter, statusFilter, urlProjectId, setSearchTerm 
 }) => {
+    
+    useEffect(() => {
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
+        window.addEventListener('header-search', handleHeaderSearch);
+        return () => window.removeEventListener('header-search', handleHeaderSearch);
+    }, [setSearchTerm]);
     
     const fetchProjects = async () => {
         try {

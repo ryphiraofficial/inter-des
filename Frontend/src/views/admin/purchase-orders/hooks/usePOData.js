@@ -2,8 +2,14 @@ import { useEffect } from 'react';
 import { purchaseOrderAPI } from '../../../../models/api';
 
 export const usePOData = ({ 
-    setPurchaseOrders, setLoading, setError, setShowCreateModal 
+    setPurchaseOrders, setLoading, setError, setShowCreateModal, setSearchTerm 
 }) => {
+    
+    useEffect(() => {
+        const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
+        window.addEventListener('header-search', handleHeaderSearch);
+        return () => window.removeEventListener('header-search', handleHeaderSearch);
+    }, [setSearchTerm]);
     
     const fetchPurchaseOrders = async () => {
         try {

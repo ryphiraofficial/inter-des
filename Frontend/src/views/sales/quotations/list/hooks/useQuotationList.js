@@ -5,6 +5,7 @@ import { quotationAPI } from '../../../../../models/api';
 export const useQuotationList = () => {
     const [quotations, setQuotations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('All');
     const [searchParams] = useSearchParams();
     const searchTerm = searchParams.get('q') || '';
 
@@ -25,17 +26,30 @@ export const useQuotationList = () => {
     }, []);
 
     const filteredQuotations = useMemo(() => {
-        return quotations.filter(q =>
-            q.quotationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            q.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            q.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [quotations, searchTerm]);
+        return quotations.filter(q => {
+            const matchesSearch = (
+                q.quotationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                q.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                q.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            const matchesTab = (
+                activeTab === 'All' ||
+                (activeTab === 'Under Review' && q.status === 'Under Review') ||
+                (activeTab === 'Approved' && q.status === 'Approved')
+            );
+
+            return matchesSearch && matchesTab;
+        });
+    }, [quotations, searchTerm, activeTab]);
 
     return {
         quotations: filteredQuotations,
+        allQuotations: quotations, // Added to show badges
         loading,
         searchTerm,
+        activeTab,
+        setActiveTab,
         refresh: fetchQuotations
     };
 };

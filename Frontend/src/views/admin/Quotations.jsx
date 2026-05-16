@@ -55,12 +55,7 @@ const Quotations = ({ isStaff, user }) => {
                     setActiveTab={state.setActiveTab}
                 />
 
-                <div className="quotations-controls-row">
-                    <Link to={isStaff ? "/staff/quotations/new" : "/quotations/new"} className="btn-new-quotation">
-                        <Plus size={18} />
-                        <span>New Quotation</span>
-                    </Link>
-                </div>
+
 
                 {state.loading ? (
                     <div className="skeleton-table">

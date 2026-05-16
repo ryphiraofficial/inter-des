@@ -88,8 +88,8 @@
 
 /* Filter Bar */
 .po-filter-bar {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
+    display: flex;
+    justify-content: flex-start;
     gap: 1.5rem;
     align-items: center;
 }

@@ -86,7 +86,7 @@
 /* Controls */
 .clients-controls-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 2rem;
     gap: 2rem;
@@ -384,6 +384,13 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
     max-height: 90vh;
     overflow-y: auto;
+}
+
+.mod.tasks-controls {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
 .modal-header {

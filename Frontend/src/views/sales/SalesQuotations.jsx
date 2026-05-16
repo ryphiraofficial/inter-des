@@ -1,14 +1,21 @@
 import React from 'react';
 import { useQuotationList } from './quotations/list/hooks/useQuotationList';
-import QuotationTable from './quotations/list/components/QuotationTable';
+import QuotationTabs from '../admin/quotations/list/components/QuotationTabs';
+import '../admin/css/Quotations.css';
 import './css/SalesQuotations.css';
 
 const SalesQuotations = () => {
-    const { quotations, loading } = useQuotationList();
+    const { quotations, allQuotations, loading, activeTab, setActiveTab } = useQuotationList();
 
     return (
         <div className="sq-quotations-container">
             <div className="sq-quotations-wrapper">
+                <QuotationTabs 
+                    quotations={allQuotations}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
+                
                 <div className="sq-list-card">
                     <QuotationTable 
                         loading={loading} 
