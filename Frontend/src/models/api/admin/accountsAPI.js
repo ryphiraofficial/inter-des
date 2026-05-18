@@ -54,5 +54,23 @@ export const accountsAPI = {
     generateAdvanceInvoice: (data) => apiCall('/accounts/projects/invoice/advance', {
         method: 'POST',
         body: JSON.stringify(data)
+    }),
+
+    // Aliases to support varying consumer naming conventions
+    getPendingAccountsProjects: () => apiCall('/accounts/projects/pending'),
+
+    assignAccountsStaff: (data) => apiCall('/accounts/projects/assign', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    clearProjectPayment: (data) => apiCall('/accounts/projects/clear', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    verifyPaymentAndRelease: (data) => apiCall('/accounts/projects/verify-payment', {
+        method: 'POST',
+        body: JSON.stringify(data)
     })
 };
