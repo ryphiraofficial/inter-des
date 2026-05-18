@@ -17,13 +17,13 @@ const RoleDashboard = ({ user, onLogout }) => {
     switch (dashboardType) {
         case 'design_manager':
             return (
-                <DesignLayout role="manager" user={user}>
+                <DesignLayout role="manager" user={user} onLogout={onLogout}>
                     <DesignManagerDashboard user={user} onLogout={onLogout} />
                 </DesignLayout>
             );
         case 'design_staff':
             return (
-                <DesignLayout role="staff" user={user}>
+                <DesignLayout role="staff" user={user} onLogout={onLogout}>
                     <DesignStaffDashboard user={user} onLogout={onLogout} />
                 </DesignLayout>
             );

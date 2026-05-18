@@ -15,12 +15,12 @@ import '../css/DesignLayout.css';
  *  - isLoading: boolean for refresh spinner
  *  - children: page content
  */
-const DesignLayout = ({ role, user, onRefresh, isLoading, children }) => {
+const DesignLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
     const Sidebar = role === 'staff' ? DesignStaffSidebar : DesignManagerSidebar;
 
     return (
         <div className="design-layout">
-            <Sidebar />
+            <Sidebar user={user} onLogout={onLogout} />
             <div className="design-layout-main">
                 <DesignNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} />
                 <main className="design-layout-content">
