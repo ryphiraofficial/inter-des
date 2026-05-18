@@ -388,7 +388,7 @@ exports.getPendingAccountsProjects = async (req, res) => {
         })
             .populate('client', 'name email phone')
             .populate('quotation', 'quotationNumber projectName totalAmount')
-            .populate('assignedAccountsStaff', 'fullName email role')
+            .populate('assignedAccountsStaff', 'fullName email role staffId')
             .sort({ paymentDueDate: 1, createdAt: -1 });
         
         res.status(200).json({ success: true, count: projects.length, data: projects });
@@ -400,18 +400,34 @@ exports.getPendingAccountsProjects = async (req, res) => {
 exports.assignAccountsStaff = async (req, res) => {
     try {
         const { projectId, staffId } = req.body;
-        const project = await Project.findById(projectId)
-            .populate('assignedAccountsStaff', 'fullName email');
+        const project = await Project.findById(projectId);
         
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
         
-        project.assignedAccountsStaff = staffId;
+        const Staff = require('../models/Staff');
+        const User = require('../models/User');
+
+        let targetUserId = staffId;
+        const staff = await Staff.findById(staffId);
+        if (staff) {
+            const userDoc = await User.findOne({
+                $or: [
+                    { staffId: staff.staffId },
+                    { email: staff.email.toLowerCase() }
+                ]
+            });
+            if (userDoc) {
+                targetUserId = userDoc._id;
+            }
+        }
+
+        project.assignedAccountsStaff = targetUserId;
         project.paymentCollectionStatus = 'Assigned';
         await project.save();
         
         // Notify the assigned staff
         const { notifyUser } = require('../utils/notificationHelper');
-        notifyUser(staffId, {
+        notifyUser(targetUserId, {
             title: '💰 New Payment Collection Task',
             description: `You have been assigned to collect the advance payment (₹${project.advanceAmount?.toLocaleString('en-IN') || 'N/A'}) for project "${project.name}". Due: ${project.paymentDueDate ? new Date(project.paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}.`,
             type: 'Info',

@@ -28,8 +28,26 @@ const MyCollections = ({ user }) => {
             if (res?.success) {
                 // Filter projects assigned to this logged in staff
                 const assigned = (res.data || []).filter(p => {
-                    const staffId = p.assignedAccountsStaff?._id || p.assignedAccountsStaff;
-                    return staffId === user?._id;
+                    const assignedStaff = p.assignedAccountsStaff;
+                    if (!assignedStaff) return false;
+                    
+                    const assignedStaffId = assignedStaff._id || assignedStaff;
+                    const loggedInUserId = user?._id || user?.id;
+                    
+                    // 1. Match by user ID
+                    if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
+                    
+                    // 2. Fallback to match by email
+                    const assignedEmail = assignedStaff.email;
+                    const loggedInEmail = user?.email;
+                    if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
+                    
+                    // 3. Fallback to match by staffId
+                    const assignedStaffIdVal = assignedStaff.staffId;
+                    const loggedInStaffIdVal = user?.staffId;
+                    if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
+
+                    return false;
                 });
                 setProjects(assigned);
             }

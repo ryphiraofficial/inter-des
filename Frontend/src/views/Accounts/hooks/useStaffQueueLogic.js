@@ -17,7 +17,28 @@ export const useStaffQueueLogic = (user) => {
             setLoading(true);
             const res = await accountsAPI.getPendingAccountsProjects();
             if (res?.success) {
-                const myProjects = (res.data || []).filter(p => p.assignedAccountsStaff?._id === user._id || p.assignedAccountsStaff === user._id);
+                const myProjects = (res.data || []).filter(p => {
+                    const assignedStaff = p.assignedAccountsStaff;
+                    if (!assignedStaff) return false;
+                    
+                    const assignedStaffId = assignedStaff._id || assignedStaff;
+                    const loggedInUserId = user?._id || user?.id;
+                    
+                    // 1. Match by user ID
+                    if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
+                    
+                    // 2. Fallback to match by email
+                    const assignedEmail = assignedStaff.email;
+                    const loggedInEmail = user?.email;
+                    if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
+                    
+                    // 3. Fallback to match by staffId
+                    const assignedStaffIdVal = assignedStaff.staffId;
+                    const loggedInStaffIdVal = user?.staffId;
+                    if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
+
+                    return false;
+                });
                 setProjects(myProjects);
             }
         } catch (err) {
