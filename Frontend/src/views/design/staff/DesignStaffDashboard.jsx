@@ -6,7 +6,7 @@ import {
 import { BASE_IMAGE_URL } from '../../../models/api';
 import { taskAPI } from '../../../models/api';
 
-import DesignLayout from '../layout/DesignLayout';
+
 import DesignSkeleton from '../manager/DesignSkeleton';
 import Tasks from './Tasks';
 
@@ -49,9 +49,9 @@ const DesignStaffDashboard = ({ user }) => {
 
     if (loading) {
         return (
-            <DesignLayout role="staff" user={user} isLoading={true}>
+            <div className="role-dashboard">
                 <DesignSkeleton />
-            </DesignLayout>
+            </div>
         );
     }
 
@@ -228,7 +228,7 @@ const DesignStaffDashboard = ({ user }) => {
     };
 
     return (
-        <DesignLayout role="staff" user={user} onRefresh={() => fetchData(false)} isLoading={loading}>
+        <div className="role-dashboard">
             {renderContent()}
 
             <UploadDesignModal
@@ -258,7 +258,7 @@ const DesignStaffDashboard = ({ user }) => {
                 handleSubmitMaterialRequest={materialActions.handleSubmitMaterialRequest}
                 submittingMaterial={materialActions.submittingMaterial}
             />
-        </DesignLayout>
+        </div>
     );
 };
 

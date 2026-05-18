@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 
-import DesignLayout from '../layout/DesignLayout';
+
 import DesignOverview from './DesignOverview';
 import Projects from './Projects';
 import Tasks from './Tasks';
@@ -52,9 +52,9 @@ const DesignManagerDashboard = ({ user }) => {
 
     if (loading) {
         return (
-            <DesignLayout role="manager" user={user} isLoading={true}>
+            <div className="role-dashboard">
                 <DesignSkeleton />
-            </DesignLayout>
+            </div>
         );
     }
 
@@ -176,7 +176,7 @@ const DesignManagerDashboard = ({ user }) => {
     };
 
     return (
-        <DesignLayout role="manager" user={user} onRefresh={fetchData} isLoading={loading}>
+        <div className="role-dashboard">
             {renderContent()}
 
             <TaskAssignModal
@@ -208,7 +208,7 @@ const DesignManagerDashboard = ({ user }) => {
                 staffList={staffList}
                 onConfirm={async () => { const ok = await taskActions.handleSplitTask(selectedTask); if (ok) setShowSplitModal(false); }}
             />
-        </DesignLayout>
+        </div>
     );
 };
 
