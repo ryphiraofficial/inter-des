@@ -9,6 +9,51 @@ const User = require('../models/User');
 
 const DUPLICATE_SUBMIT_WINDOW = 5000;
 
+const healTaskReferences = async (task) => {
+    try {
+        let updated = false;
+
+        // If project reference is set but it actually points to a Quotation ID instead of a Project ID
+        if (task.project) {
+            const isProject = await Project.exists({ _id: task.project });
+            if (!isProject) {
+                // If it exists in Quotation, then task.project is currently pointing to a Quotation ID
+                const isQuotation = await Quotation.exists({ _id: task.project });
+                if (isQuotation) {
+                    task.quotation = task.project;
+                    
+                    // Look up the actual project linked to this quotation
+                    const projectDoc = await Project.findOne({ quotation: task.project });
+                    if (projectDoc) {
+                        task.project = projectDoc._id;
+                    } else {
+                        task.project = undefined;
+                    }
+                    updated = true;
+                } else {
+                    // Not a project and not a quotation, clear it
+                    task.project = undefined;
+                    updated = true;
+                }
+            }
+        }
+
+        // If project reference is missing but quotation reference is set, try to resolve it
+        if (!task.project && task.quotation) {
+            const projectDoc = await Project.findOne({ quotation: task.quotation });
+            if (projectDoc) {
+                task.project = projectDoc._id;
+                updated = true;
+            }
+        }
+
+        if (updated) {
+            await task.save();
+        }
+    } catch (err) {
+        console.error('healTaskReferences error:', err);
+    }
+};
 
 exports.getTasks = async (reqData) => {
     try {
@@ -71,9 +116,10 @@ exports.getTasks = async (reqData) => {
 
         const total = await Task.countDocuments(query);
 
-        // Update overdue flags for tasks
+        // Update overdue flags and heal task references
         const now = new Date();
         for (const task of tasks) {
+            await healTaskReferences(task);
             if (task.dueDate && new Date(task.dueDate) < now && task.status !== 'Completed' && !task.isOverdue) {
                 task.isOverdue = true;
                 await task.save();
@@ -88,6 +134,12 @@ exports.getTasks = async (reqData) => {
 
 exports.getTask = async (reqData) => {
     try {
+        const rawTask = await Task.findById(reqData.params.id);
+        if (!rawTask) {
+            return { status: 404, success: false, message: 'Task not found' };
+        }
+        await healTaskReferences(rawTask);
+
         const task = await Task.findById(reqData.params.id)
             .populate('assignedTo', 'name role email phone')
             .populate('client', 'name email phone')
@@ -95,9 +147,6 @@ exports.getTask = async (reqData) => {
             .populate('project', 'name projectNumber stage status')
             .populate('team', 'name')
             .populate('createdBy', 'fullName');
-        if (!task) {
-            return { status: 404, success: false, message: 'Task not found' };
-        }
         return { status: 200, success: true, data: task };
     } catch (error) {
         return { status: 500, success: false, message: error.message };
@@ -113,23 +162,39 @@ exports.createTask = async (reqData) => {
             }
         });
 
-        if (reqData.body.quotation) {
-            const Quotation = require('../models/Quotation');
-            const quotation = await Quotation.findById(reqData.body.quotation);
+        let quotationId = reqData.body.quotation;
 
+        if (reqData.body.project) {
+            const isQuotation = await Quotation.exists({ _id: reqData.body.project });
+            if (isQuotation) {
+                quotationId = reqData.body.project;
+                reqData.body.quotation = quotationId;
+                
+                const associatedProject = await Project.findOne({ quotation: quotationId });
+                if (associatedProject) {
+                    reqData.body.project = associatedProject._id;
+                } else {
+                    delete reqData.body.project;
+                }
+            }
+        }
+
+        if (quotationId) {
+            const quotation = await Quotation.findById(quotationId);
             if (!quotation) {
                 return { status: 404, success: false, message: 'Quotation not found' };
             }
 
-            if (quotation.status !== 'Approved' && quotation.status !== 'Design Approved') {
-                return { status: 400, success: false, message: 'Only approved quotations can be assigned to tasks. Please wait for client approval.' };
+            const allowedStatuses = ['Approved', 'Design Approved', 'Under Review', 'Draft'];
+            if (!allowedStatuses.includes(quotation.status)) {
+                return { status: 400, success: false, message: `Only active quotations can be assigned to tasks. (Current status: ${quotation.status})` };
             }
 
-            // Find associated project
-            const Project = require('../models/Project');
-            const project = await Project.findOne({ quotation: reqData.body.quotation });
-            if (project) {
-                reqData.body.project = project._id;
+            if (!reqData.body.project) {
+                const project = await Project.findOne({ quotation: quotationId });
+                if (project) {
+                    reqData.body.project = project._id;
+                }
             }
         }
 
@@ -224,23 +289,39 @@ exports.updateTask = async (reqData) => {
             dueDate: task.dueDate
         };
 
-        if (reqData.body.quotation && reqData.body.quotation !== task.quotation?.toString()) {
-            const Quotation = require('../models/Quotation');
-            const quotation = await Quotation.findById(reqData.body.quotation);
+        let quotationId = reqData.body.quotation || task.quotation?.toString();
 
+        if (reqData.body.project) {
+            const isQuotation = await Quotation.exists({ _id: reqData.body.project });
+            if (isQuotation) {
+                quotationId = reqData.body.project;
+                reqData.body.quotation = quotationId;
+                
+                const associatedProject = await Project.findOne({ quotation: quotationId });
+                if (associatedProject) {
+                    reqData.body.project = associatedProject._id;
+                } else {
+                    delete reqData.body.project;
+                }
+            }
+        }
+
+        if (quotationId && (reqData.body.quotation || reqData.body.project)) {
+            const quotation = await Quotation.findById(quotationId);
             if (!quotation) {
                 return { status: 404, success: false, message: 'Quotation not found' };
             }
 
-            if (quotation.status !== 'Approved' && quotation.status !== 'Design Approved') {
-                return { status: 400, success: false, message: 'Only approved quotations can be assigned to tasks. Please wait for client approval.' };
+            const allowedStatuses = ['Approved', 'Design Approved', 'Under Review', 'Draft'];
+            if (!allowedStatuses.includes(quotation.status)) {
+                return { status: 400, success: false, message: `Only active quotations can be assigned to tasks. (Current status: ${quotation.status})` };
             }
 
-            // Find associated project
-            const Project = require('../models/Project');
-            const project = await Project.findOne({ quotation: reqData.body.quotation });
-            if (project) {
-                reqData.body.project = project._id;
+            if (!reqData.body.project) {
+                const project = await Project.findOne({ quotation: quotationId });
+                if (project) {
+                    reqData.body.project = project._id;
+                }
             }
         }
 
@@ -504,6 +585,7 @@ exports.pushToProcurement = async (reqData) => {
         if (!task) {
             return { status: 404, success: false, message: 'Task not found' };
         }
+        await healTaskReferences(task);
 
         // If project is missing on task, try to get it from the associated Project model
         if (!task.project && task.quotation) {
@@ -680,6 +762,7 @@ exports.adminReviewDesign = async (reqData) => {
         const { approved, rejectionReason, approvedBudget, advancePercentage, paymentDueDate, adminPaymentNotes } = reqData.body;
         const task = await Task.findById(reqData.params.id).populate('quotation');
         if (!task) return { status: 404, success: false, message: 'Task not found' };
+        await healTaskReferences(task);
 
         if (task.status !== 'Pending Admin Review') {
             return { status: 400, success: false, message: 'Task is not pending admin review' };
@@ -712,8 +795,65 @@ exports.adminReviewDesign = async (reqData) => {
         // Resolve project reference
         const ProjectModel = require('../models/Project');
         if (!task.project && task.quotation) {
-            const project = await ProjectModel.findOne({ quotation: task.quotation._id });
-            if (project) task.project = project._id;
+            let project = await ProjectModel.findOne({ quotation: task.quotation._id });
+            if (!project) {
+                const Invoice = require('../models/Invoice');
+                const Checklist = require('../models/Checklist');
+                
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 15);
+                
+                const invoiceItems = task.quotation.items.map(item => ({
+                    description: `${item.itemName} ${item.section ? `(${item.section})` : ''}`,
+                    quantity: item.quantity,
+                    rate: item.rate,
+                    tax: task.quotation.taxRate || 18,
+                    amount: item.amount
+                }));
+                
+                project = await ProjectModel.create({
+                    client: task.quotation.client,
+                    quotation: task.quotation._id,
+                    name: task.quotation.projectName,
+                    description: `Project created from quotation ${task.quotation.quotationNumber}`,
+                    budget: task.quotation.totalAmount,
+                    stage: 'Accounts',
+                    status: 'Not Started',
+                    paymentStatus: 'Pending Advance',
+                    advanceAmount: task.quotation.totalAmount * 0.5,
+                    createdBy: reqData.user.id
+                });
+                
+                await Invoice.create({
+                    client: task.quotation.client,
+                    quotation: task.quotation._id,
+                    project: project._id,
+                    invoiceDate: new Date(),
+                    dueDate: dueDate,
+                    items: invoiceItems,
+                    subtotal: task.quotation.subtotal,
+                    totalTax: task.quotation.taxAmount,
+                    grandTotal: task.quotation.totalAmount,
+                    status: 'Draft',
+                    createdBy: reqData.user.id,
+                    notes: task.quotation.notes,
+                    termsAndConditions: task.quotation.termsAndConditions
+                });
+                
+                const defaultSteps = [
+                    { name: 'Demolition', order: 1 },
+                    { name: 'Cleaning', order: 2 },
+                    { name: 'Installation', order: 3 },
+                    { name: 'Final Handover', order: 4 }
+                ];
+                
+                await Checklist.create({
+                    project: project._id,
+                    steps: defaultSteps,
+                    createdBy: reqData.user.id
+                });
+            }
+            task.project = project._id;
         }
 
         // Calculate advance amount from quotation total

@@ -64,7 +64,7 @@ const PipelineTab = ({
                                     <span className="badge" style={{ background: '#eff6ff', color: '#2563eb' }}>{task.status}</span>
                                 </div>
                                 <div className="card-info" style={{ marginTop: '10px' }}>
-                                    <p><Briefcase size={12} /> {task.project?.projectName || 'No Project'}</p>
+                                    <p><Briefcase size={12} /> {task.project?.name || task.project?.projectName || task.quotation?.projectName || 'No Project'}</p>
                                     <p><Users size={12} /> {task.assignedTo?.map(s => s.name).join(', ') || 'Unassigned'}</p>
                                     <p className="time-stamp" style={{ marginTop: '8px' }}><Clock size={12} /> Assigned: {new Date(task.createdAt).toLocaleDateString()}</p>
                                 </div>
@@ -89,7 +89,7 @@ const PipelineTab = ({
                                 </div>
                                 <CardPreview task={task} />
                                 <div className="card-info">
-                                    <p><Briefcase size={12} /> {task.project?.projectName || 'No Project'}</p>
+                                    <p><Briefcase size={12} /> {task.project?.name || task.project?.projectName || task.quotation?.projectName || 'No Project'}</p>
                                     <p><Users size={12} /> {task.submissions?.[task.submissions.length - 1]?.submittedBy?.name || 'Staff'}</p>
                                     <p className="time-stamp"><Clock size={12} /> Submitted: {new Date(task.submissions?.[task.submissions.length - 1]?.submittedAt).toLocaleString()}</p>
                                 </div>
@@ -118,7 +118,7 @@ const PipelineTab = ({
                                 </div>
                                 <CardPreview task={task} />
                                 <div className="card-info">
-                                    <p><Briefcase size={12} /> {task.project?.projectName || 'No Project'}</p>
+                                    <p><Briefcase size={12} /> {task.project?.name || task.project?.projectName || task.quotation?.projectName || 'No Project'}</p>
                                     <p className="pending-notice"><Clock size={12} /> Waiting for Sales/Client approval...</p>
                                 </div>
                                 <button className="card-btn secondary" onClick={() => onReviewTask(task)}>View Design</button>
@@ -147,7 +147,7 @@ const PipelineTab = ({
                                         <div className="approval-marker sales"><CheckCircle size={10} /><span>SALES APPROVED: {getApprovalTime(task, 'salesApproved')}</span></div>
                                     </div>
                                     <div className="card-info" style={{ marginTop: '10px' }}>
-                                        <p><Briefcase size={12} /> {task.project?.projectName || 'No Project'}</p>
+                                        <p><Briefcase size={12} /> {task.project?.name || task.project?.projectName || task.quotation?.projectName || 'No Project'}</p>
                                         {task.status === 'Pending Admin Review' && <div style={{ marginTop: '10px', padding: '8px', background: '#fffbeb', color: '#b45309', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600, textAlign: 'center', border: '1px solid #fef3c7' }}>Under Review</div>}
                                         {task.status === 'Admin Rejected' && <div style={{ marginTop: '10px', padding: '8px', background: '#fef2f2', color: '#b91c1c', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600, textAlign: 'center', border: '1px solid #fee2e2' }}>Admin Requested Revision</div>}
                                     </div>
@@ -180,7 +180,7 @@ const PipelineTab = ({
                                         </div>
                                     </div>
                                     <div className="card-info" style={{ marginTop: '8px' }}>
-                                        <p style={{ color: '#64748b' }}><Briefcase size={12} /> {task.project?.projectName || 'No Project'}</p>
+                                        <p style={{ color: '#64748b' }}><Briefcase size={12} /> {task.project?.name || task.project?.projectName || task.quotation?.projectName || 'No Project'}</p>
                                         <p className="time-stamp" style={{ color: '#059669' }}>Finalized: {new Date(task.updatedAt).toLocaleDateString()}</p>
                                     </div>
                                 </div>
