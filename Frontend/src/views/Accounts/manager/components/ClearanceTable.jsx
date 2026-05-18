@@ -17,6 +17,15 @@ const ClearanceTable = ({
         }
     };
 
+    const getAssignedStaffName = (staff) => {
+        if (!staff) return '';
+        if (typeof staff === 'string') {
+            const found = staffList.find(s => s._id === staff);
+            return found ? (found.fullName || found.name) : 'Assigned (ID: ' + staff.slice(-4) + ')';
+        }
+        return staff.fullName || staff.name || staff.email || 'Assigned Staff';
+    };
+
     if (loading) return <TableSkeleton rows={6} cols={7} />;
 
     if (filtered.length === 0) {
@@ -57,7 +66,61 @@ const ClearanceTable = ({
                                 </td>
                                 <td style={{ padding: '16px 24px' }}>
                                     {p.assignedAccountsStaff ? (
-                                        <span style={{ color: '#475569', fontSize: '14px', fontWeight: 500 }}>{p.assignedAccountsStaff.fullName || p.assignedAccountsStaff.name}</span>
+                                        assigningId === p._id ? (
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minWidth: '220px' }}>
+                                                <CustomSelect
+                                                    value={selectedStaff}
+                                                    onChange={setSelectedStaff}
+                                                    options={staffList.map(s => ({ value: s._id, label: s.fullName || s.name }))}
+                                                    placeholder="Select Staff"
+                                                />
+                                                <button onClick={() => handleAssign(p._id)} className="btn-primary-sm" style={{ flexShrink: 0 }}>Save</button>
+                                                <button onClick={() => setAssigningId(null)} className="btn-outline-sm" style={{ flexShrink: 0, padding: '4px 8px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                                            </div>
+                                        ) : (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    gap: '8px', 
+                                                    background: '#f8fafc', 
+                                                    padding: '6px 12px', 
+                                                    borderRadius: '8px', 
+                                                    border: '1px solid #e2e8f0',
+                                                    color: '#334155',
+                                                    fontSize: '13px',
+                                                    fontWeight: 600
+                                                }}>
+                                                    <div style={{ 
+                                                        width: '24px', 
+                                                        height: '24px', 
+                                                        borderRadius: '50%', 
+                                                        background: '#6366f1', 
+                                                        color: '#fff', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        justifyContent: 'center',
+                                                        fontSize: '11px',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        {getAssignedStaffName(p.assignedAccountsStaff).split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                                                    </div>
+                                                    <span>{getAssignedStaffName(p.assignedAccountsStaff)}</span>
+                                                </div>
+                                                <button 
+                                                    onClick={() => {
+                                                        const staffId = typeof p.assignedAccountsStaff === 'string' ? p.assignedAccountsStaff : p.assignedAccountsStaff._id;
+                                                        setSelectedStaff(staffId);
+                                                        setAssigningId(p._id);
+                                                    }} 
+                                                    className="btn-outline-sm" 
+                                                    style={{ padding: '6px 8px', fontSize: '11px', height: '32px' }}
+                                                    title="Reassign Staff"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                        )
                                     ) : (
                                         assigningId === p._id ? (
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minWidth: '220px' }}>
@@ -68,9 +131,13 @@ const ClearanceTable = ({
                                                     placeholder="Select Staff"
                                                 />
                                                 <button onClick={() => handleAssign(p._id)} className="btn-primary-sm" style={{ flexShrink: 0 }}>Save</button>
+                                                <button onClick={() => setAssigningId(null)} className="btn-outline-sm" style={{ flexShrink: 0, padding: '4px 8px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                                             </div>
                                         ) : (
-                                            <button onClick={() => setAssigningId(p._id)} className="btn-outline-sm">
+                                            <button onClick={() => {
+                                                setSelectedStaff('');
+                                                setAssigningId(p._id);
+                                            }} className="btn-outline-sm">
                                                 <UserPlus size={14} /> Assign Staff
                                             </button>
                                         )
