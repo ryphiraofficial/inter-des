@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
+import DesignLayout from '../../views/design/layout/DesignLayout';
 import DesignManagerDashboard from '../../views/design/manager/DesignManagerDashboard';
 import DesignStaffDashboard from '../../views/design/staff/DesignStaffDashboard';
 import ProcurementManagerDashboard from '../../views/procurement/manager/ProcurementManagerDashboard';
@@ -15,9 +16,17 @@ const RoleDashboard = ({ user, onLogout }) => {
 
     switch (dashboardType) {
         case 'design_manager':
-            return <DesignManagerDashboard user={user} onLogout={onLogout} />;
+            return (
+                <DesignLayout role="manager" user={user}>
+                    <DesignManagerDashboard user={user} onLogout={onLogout} />
+                </DesignLayout>
+            );
         case 'design_staff':
-            return <DesignStaffDashboard user={user} onLogout={onLogout} />;
+            return (
+                <DesignLayout role="staff" user={user}>
+                    <DesignStaffDashboard user={user} onLogout={onLogout} />
+                </DesignLayout>
+            );
         case 'procurement_manager':
             return <ProcurementManagerDashboard user={user} onLogout={onLogout} />;
         case 'procurement_staff':

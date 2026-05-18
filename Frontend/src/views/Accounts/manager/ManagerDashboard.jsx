@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
+import AccountsLayout from '../layout/AccountsLayout';
 import '../css/ManagerDashboard.css';
 
 // Import Localized Sub-components
@@ -33,9 +34,11 @@ const ManagerDashboard = ({ user }) => {
     };
 
     return (
-        <div className="role-dashboard accounts-manager-hub">
-            {renderContent()}
-        </div>
+        <AccountsLayout role="manager" user={user}>
+            <div className="role-dashboard accounts-manager-hub">
+                {renderContent()}
+            </div>
+        </AccountsLayout>
     );
 };
 

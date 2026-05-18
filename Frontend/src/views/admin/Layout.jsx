@@ -33,6 +33,10 @@ const Layout = ({ user, onLogout }) => {
     };
 
 
+    if (department === 'Design' || department === 'Accounts') {
+        return <Outlet />;
+    }
+
     return (
         <div className={`layout-container ${isCollapsed ? 'sidebar-collapsed' : ''} ${isMobileOpen ? 'mobile-sidebar-open' : ''} ${department?.toLowerCase()}-layout`}>
             {isMobileOpen && <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}

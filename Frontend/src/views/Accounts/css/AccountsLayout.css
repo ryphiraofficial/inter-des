@@ -1,0 +1,226 @@
+/* ================================================================
+   Accounts Module — Dedicated Premium Layout CSS
+   ================================================================ */
+
+/* ── Layout Shell ── */
+.accounts-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.accounts-layout-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.accounts-layout-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+/* ── Sidebar ── */
+.accounts-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: #0f172a; /* Deep Slate/Navy background for professional look */
+    border-right: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    overflow-y: auto;
+}
+
+.accounts-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 0.85rem;
+}
+
+.accounts-sidebar-section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #475569;
+    text-transform: uppercase;
+    padding: 0.5rem 0.85rem 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.accounts-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.95rem;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+}
+
+.accounts-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.accounts-sidebar-item.active {
+    background: linear-gradient(135deg, #059669, #10b981); /* Premium Emerald color for active finances */
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.accounts-sidebar-item.active svg {
+    color: #ffffff;
+}
+
+/* ── Top Navbar ── */
+.accounts-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.75rem;
+    height: 68px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    gap: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.accounts-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.accounts-navbar-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #059669, #10b981); /* Emerald representation */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.accounts-navbar-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: block;
+    line-height: 1.2;
+}
+
+.accounts-navbar-subtitle {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+    display: block;
+}
+
+.accounts-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.accounts-navbar-refresh {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 7px 15px;
+    border-radius: 9px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.accounts-navbar-refresh:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.accounts-navbar-refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.accounts-navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.accounts-navbar-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #e2e8f0;
+}
+
+.accounts-navbar-userinfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.accounts-navbar-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.accounts-navbar-role {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: capitalize;
+}
+
+/* ── Spin animation for refresh icon ── */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ── Responsive breakpoints ── */
+@media (max-width: 768px) {
+    .accounts-sidebar {
+        display: none;
+    }
+    .accounts-navbar-subtitle,
+    .accounts-navbar-userinfo {
+        display: none;
+    }
+}
