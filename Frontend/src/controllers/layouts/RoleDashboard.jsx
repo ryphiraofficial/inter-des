@@ -43,9 +43,9 @@ const RoleDashboard = ({ user, onLogout }) => {
         case 'sales':
             return <SalesDashboard user={user} />;
         case 'accounts_manager':
-            return <AccountsManagerDashboard user={user} />;
+            return <AccountsManagerDashboard user={user} onLogout={onLogout} />;
         case 'accounts_staff':
-            return <AccountsStaffDashboard user={user} />;
+            return <AccountsStaffDashboard user={user} onLogout={onLogout} />;
         case 'admin':
         default:
             return <AdminDashboard user={user} onLogout={onLogout} />;

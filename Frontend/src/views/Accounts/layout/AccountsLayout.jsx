@@ -15,12 +15,12 @@ import '../css/AccountsLayout.css';
  *  - isLoading: boolean for refresh spinner
  *  - children: page content
  */
-const AccountsLayout = ({ role, user, onRefresh, isLoading, children }) => {
+const AccountsLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
     const Sidebar = role === 'staff' ? AccountsStaffSidebar : AccountsManagerSidebar;
 
     return (
         <div className="accounts-layout">
-            <Sidebar />
+            <Sidebar user={user} onLogout={onLogout} />
             <div className="accounts-layout-main">
                 <AccountsNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} />
                 <main className="accounts-layout-content">

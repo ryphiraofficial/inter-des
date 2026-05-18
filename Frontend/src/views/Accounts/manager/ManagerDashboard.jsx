@@ -14,7 +14,7 @@ import AccountsInvoices from '../common/AccountsInvoices';
 import AccountsProjects from '../common/AccountsProjects';
 import AccountsReports from '../common/AccountsReports';
 
-const ManagerDashboard = ({ user }) => {
+const ManagerDashboard = ({ user, onLogout }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
@@ -34,7 +34,7 @@ const ManagerDashboard = ({ user }) => {
     };
 
     return (
-        <AccountsLayout role="manager" user={user}>
+        <AccountsLayout role="manager" user={user} onLogout={onLogout}>
             <div className="role-dashboard accounts-manager-hub">
                 {renderContent()}
             </div>
