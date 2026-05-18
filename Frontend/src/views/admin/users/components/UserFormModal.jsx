@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Loader } from 'lucide-react';
+import CustomSelect from '../../components/CustomSelect';
 
 const UserFormModal = ({ 
     showModal, editingUser, formData, handleInputChange, submitting, handleSubmit, setShowModal 
@@ -33,32 +34,31 @@ const UserFormModal = ({
                     </div>
                     <div className="form-group">
                         <label>Role</label>
-                        <select name="role" className="user-input" value={formData.role} onChange={handleInputChange}>
-                            <optgroup label="Core Admin">
-                                <option value="Super Admin">Super Admin</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Manager">General Manager</option>
-                            </optgroup>
-                            <optgroup label="Design Department">
-                                <option value="Design Manager">Design Manager</option>
-                                <option value="Design Staff">Design Staff</option>
-                            </optgroup>
-                            <optgroup label="Procurement Department">
-                                <option value="Procurement Manager">Procurement Manager</option>
-                                <option value="Procurement Staff">Procurement Staff</option>
-                            </optgroup>
-                            <optgroup label="Production Department">
-                                <option value="Project Manager">Project Manager</option>
-                                <option value="Production Staff">Production Staff</option>
-                            </optgroup>
-                            <optgroup label="Sales Department">
-                                <option value="Sales">Sales Executive</option>
-                            </optgroup>
-                            <optgroup label="Accounts Department">
-                                <option value="Accounts Manager">Accounts Manager</option>
-                                <option value="Accounts Staff">Accounts Staff</option>
-                            </optgroup>
-                        </select>
+                        <CustomSelect
+                            name="role"
+                            value={formData.role}
+                            onChange={handleInputChange}
+                            options={[
+                                { value: '', label: '— Core Admin —', disabled: true },
+                                { value: 'Super Admin', label: 'Super Admin' },
+                                { value: 'Admin', label: 'Admin' },
+                                { value: 'Manager', label: 'General Manager' },
+                                { value: '', label: '— Design —', disabled: true },
+                                { value: 'Design Manager', label: 'Design Manager' },
+                                { value: 'Design Staff', label: 'Design Staff' },
+                                { value: '', label: '— Procurement —', disabled: true },
+                                { value: 'Procurement Manager', label: 'Procurement Manager' },
+                                { value: 'Procurement Staff', label: 'Procurement Staff' },
+                                { value: '', label: '— Production —', disabled: true },
+                                { value: 'Project Manager', label: 'Project Manager' },
+                                { value: 'Production Staff', label: 'Production Staff' },
+                                { value: '', label: '— Sales —', disabled: true },
+                                { value: 'Sales', label: 'Sales Executive' },
+                                { value: '', label: '— Accounts —', disabled: true },
+                                { value: 'Accounts Manager', label: 'Accounts Manager' },
+                                { value: 'Accounts Staff', label: 'Accounts Staff' },
+                            ]}
+                        />
                     </div>
                     <div className="form-group">
                         <label>Password {editingUser ? '(Leave blank to keep current)' : '*'}</label>

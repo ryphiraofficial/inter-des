@@ -216,6 +216,22 @@
     border-left: none;
 }
 
+/* Header/Disabled item */
+.option-item-header {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+    user-select: none;
+    margin-top: 4px;
+}
+.option-item-header:first-child {
+    margin-top: 0;
+}
+
 /* Check mark for selected */
 .selected-indicator {
     width: 16px;

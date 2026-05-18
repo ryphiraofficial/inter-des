@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Loader, Upload } from 'lucide-react';
 import AISuggestButton from '../../components/AISuggestButton';
+import CustomSelect from '../../components/CustomSelect';
 
 const getImageUrl = (url) => {
     if (!url) return null;
@@ -36,17 +37,32 @@ const ItemFormModal = ({
                         </div>
                         <div className="form-field">
                             <label>Section / Category</label>
-                            <select name="section" className="client-input" value={formData.section} onChange={handleInputChange}>
-                                <option value="">Select Section</option>
-                                {availableSections.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
+                            <CustomSelect
+                                name="section"
+                                value={formData.section}
+                                onChange={handleInputChange}
+                                placeholder="Select Section"
+                                options={[
+                                    { value: '', label: 'Select Section' },
+                                    ...availableSections.map(s => ({ value: s, label: s }))
+                                ]}
+                            />
                             <button type="button" className="btn-add-inline" onClick={() => setIsAddingSection(true)}>+ Add New Category</button>
                         </div>
                         <div className="form-field">
                             <label>Unit of Measure</label>
-                            <select name="unit" className="client-input" value={formData.unit} onChange={handleInputChange}>
-                                <option value="Numbers">Numbers (pcs)</option><option value="Sq Ft">Square Feet</option><option value="Running Ft">Running Feet</option><option value="Liters">Liters</option><option value="Kg">Kilograms</option>
-                            </select>
+                            <CustomSelect
+                                name="unit"
+                                value={formData.unit}
+                                onChange={handleInputChange}
+                                options={[
+                                    { value: 'Numbers', label: 'Numbers (pcs)' },
+                                    { value: 'Sq Ft', label: 'Square Feet' },
+                                    { value: 'Running Ft', label: 'Running Feet' },
+                                    { value: 'Liters', label: 'Liters' },
+                                    { value: 'Kg', label: 'Kilograms' },
+                                ]}
+                            />
                         </div>
                         <div className="form-field">
                             <label>Price (₹) <span>*</span></label>

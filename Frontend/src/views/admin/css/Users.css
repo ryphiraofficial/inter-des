@@ -135,6 +135,10 @@
     flex-direction: column;
 }
 
+.user-name {
+    font-weight: 600;
+}
+
 .user-email {
     font-size: 0.8rem;
     color: #64748b;
@@ -294,14 +298,17 @@
         display: table-row !important;
     }
 
-    /* Root container: prevent ANY horizontal overflow */
+    /* Root container: prevent horizontal overflow; page-wrapper handles padding */
     .users-container {
-        padding: 1rem;
+        padding: 0;
         overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .users-wrapper {
         overflow: hidden;
+        width: 100%;
     }
 
     .users-header {
@@ -369,11 +376,31 @@
         box-shadow: 0 -1px 4px rgba(37,99,235,0.08);
     }
 
-    /* Reset all td inside cards */
-    .users-table td {
-        display: block;
+    /* Flex card row: override table-cell on visible cells */
+    .user-row > td {
+        display: block !important;
         padding: 0 !important;
         border: none !important;
+    }
+
+    .user-row > td.desktop-hide {
+        display: none !important;
+    }
+
+    .user-row > td.user-main-cell {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-row > td.role-cell-mobile {
+        flex-shrink: 0;
+        align-self: center;
+        max-width: 42%;
+    }
+
+    .user-row > td.toggle-cell {
+        flex-shrink: 0;
+        align-self: center;
     }
 
     /* ── Avatar ── */
@@ -389,8 +416,8 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        flex: 1;
         min-width: 0;
+        width: 100%;
     }
 
     .user-details {
@@ -402,7 +429,7 @@
         overflow: hidden;
     }
 
-    .user-details span:first-child {
+    .user-name {
         font-size: 0.9rem;
         font-weight: 700;
         color: #0f172a;
@@ -421,11 +448,6 @@
     }
 
     /* ── Role Badge ── */
-    .users-table td:nth-child(6) {
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-
     .role-badge-small {
         display: inline-flex;
         font-size: 0.65rem;
@@ -437,12 +459,16 @@
         text-align: center;
         white-space: nowrap;
         line-height: 1.4;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .role-badge-small.admin { background: #fee2e2; color: #dc2626; }
     .role-badge-small.manager { background: #f3e8ff; color: #7e22ce; }
     .role-badge-small.designer { background: #e0f2fe; color: #0369a1; }
     .role-badge-small.staff { background: #ecfdf5; color: #059669; }
+    .role-badge-small.default { background: #f1f5f9; color: #475569; }
 
     .status-badge-active {
         display: none;
@@ -479,9 +505,11 @@
     }
 
     .mobile-expansion-row td {
-        display: block;
+        display: block !important;
+        width: 100%;
         padding: 0 !important;
         border: none !important;
+        box-sizing: border-box;
     }
 
     .expansion-content {
@@ -498,23 +526,21 @@
 
     .info-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem 1rem;
         margin-bottom: 0.75rem;
     }
 
     .info-item {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 0.75rem 0.25rem;
-        border-bottom: none;
+        align-items: flex-start;
+        text-align: left;
+        padding: 0;
     }
 
-    .info-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0.75rem;
+    .info-item-status {
+        grid-column: 1;
     }
 
     .info-item label {
@@ -530,11 +556,16 @@
         font-size: 0.85rem;
         font-weight: 600;
         color: #0f172a;
+        word-break: break-word;
+    }
+
+    .info-item .status-active {
+        color: #16a34a;
     }
 
     .expansion-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 0.5rem;
         margin-top: 0.5rem;
         border-top: 1px solid #e2e8f0;
@@ -546,14 +577,16 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.6rem 0.75rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
         border-radius: 10px;
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         border: none;
         cursor: pointer;
         transition: all 0.15s;
         min-height: 44px;
+        box-sizing: border-box;
     }
 
     .btn-mobile-action.primary { background: #eff6ff; color: #2563eb; }
@@ -561,5 +594,21 @@
 
     .btn-mobile-action:active {
         transform: scale(0.98);
+    }
+}
+
+@media (max-width: 480px) {
+    .user-row {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .role-badge-small {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    .user-row > td.role-cell-mobile {
+        max-width: 38%;
     }
 }

@@ -37,13 +37,13 @@ const UserTable = ({
                         <React.Fragment key={user._id}>
                             <tr 
                                 className={`user-row ${expandedRow === user._id ? 'expanded' : ''}`}
-                                onClick={() => toggleRow(user._id)}
+                                onClick={() => window.innerWidth <= 768 && toggleRow(user._id)}
                             >
-                                <td>
+                                <td className="user-main-cell">
                                     <div className="user-profile-cell">
                                         <div className="user-avatar">{user.fullName?.charAt(0)}</div>
                                         <div className="user-details">
-                                            <span style={{ fontWeight: 600 }}>{user.fullName}</span>
+                                            <span className="user-name">{user.fullName}</span>
                                             <span className="user-email">{user.email}</span>
                                         </div>
                                     </div>
@@ -63,7 +63,7 @@ const UserTable = ({
                                         <button className="btn-inv-action" title="Delete" onClick={(e) => { e.stopPropagation(); handleDelete(user._id); }}><Trash2 size={16} /></button>
                                     </div>
                                 </td>
-                                <td className="mobile-show">
+                                <td className="mobile-show role-cell-mobile">
                                     <span className={`role-badge-small ${getRoleClass(user.role)}`}>{user.role}</span>
                                 </td>
                                 <td className="mobile-show toggle-cell">
@@ -72,16 +72,16 @@ const UserTable = ({
                             </tr>
                             {expandedRow === user._id && (
                                 <tr className="mobile-expansion-row mobile-show">
-                                    <td colSpan="3">
+                                    <td colSpan="7">
                                         <div className="expansion-content">
                                             <div className="info-grid">
                                                 <div className="info-item"><label>Phone</label><span>{user.phone || 'N/A'}</span></div>
                                                 <div className="info-item"><label>Department</label><span>{user.department || 'Admin'}</span></div>
-                                                <div className="info-item"><label>Status</label><span style={{ color: '#16a34a' }}>Active</span></div>
+                                                <div className="info-item info-item-status"><label>Status</label><span className="status-active">Active</span></div>
                                             </div>
                                             <div className="expansion-actions">
-                                                <button className="btn-mobile-action primary" onClick={() => handleEditClick(user)}><Edit size={16} /> Edit Account</button>
-                                                <button className="btn-mobile-action danger" onClick={() => handleDelete(user._id)}><Trash2 size={16} /> Delete Account</button>
+                                                <button type="button" className="btn-mobile-action primary" onClick={(e) => { e.stopPropagation(); handleEditClick(user); }}><Edit size={16} /> Edit Account</button>
+                                                <button type="button" className="btn-mobile-action danger" onClick={(e) => { e.stopPropagation(); handleDelete(user._id); }}><Trash2 size={16} /> Delete Account</button>
                                             </div>
                                         </div>
                                     </td>

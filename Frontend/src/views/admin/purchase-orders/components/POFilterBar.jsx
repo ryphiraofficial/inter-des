@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import CustomSelect from '../../components/CustomSelect';
 
 const POFilterBar = ({ searchTerm, setSearchTerm, statusFilter, setStatusFilter, hideSearch = false }) => {
     return (
@@ -16,17 +17,18 @@ const POFilterBar = ({ searchTerm, setSearchTerm, statusFilter, setStatusFilter,
                     />
                 </div>
             )}
-            <select
-                className="filter-select"
+            <CustomSelect
+                variant="filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-            >
-                <option>All Status</option>
-                <option>Pending</option>
-                <option>Ordered</option>
-                <option>Received</option>
-                <option>Approved</option>
-            </select>
+                options={[
+                    { value: 'All Status', label: 'All Status' },
+                    { value: 'Pending', label: 'Pending' },
+                    { value: 'Ordered', label: 'Ordered' },
+                    { value: 'Received', label: 'Received' },
+                    { value: 'Approved', label: 'Approved' },
+                ]}
+            />
         </div>
     );
 };

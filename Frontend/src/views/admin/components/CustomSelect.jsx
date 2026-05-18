@@ -106,17 +106,23 @@ const CustomSelect = ({
                     )}
                     <ul className="options-list">
                         {filteredOptions.length > 0 ? (
-                            filteredOptions.map((option) => (
-                                <li
-                                    key={option.value}
-                                    className={`option-item ${option.value === value ? 'selected' : ''}`}
-                                    onClick={() => handleSelect(option.value)}
-                                >
-                                    {option.label}
-                                    {option.value === value && (
-                                        <Check size={14} style={{ color: '#0f172a', flexShrink: 0 }} />
-                                    )}
-                                </li>
+                            filteredOptions.map((option, index) => (
+                                option.disabled ? (
+                                    <li key={`disabled-${index}`} className="option-item-header">
+                                        {option.label}
+                                    </li>
+                                ) : (
+                                    <li
+                                        key={option.value}
+                                        className={`option-item ${option.value === value ? 'selected' : ''}`}
+                                        onClick={() => handleSelect(option.value)}
+                                    >
+                                        {option.label}
+                                        {option.value === value && (
+                                            <Check size={14} style={{ color: '#0f172a', flexShrink: 0 }} />
+                                        )}
+                                    </li>
+                                )
                             ))
                         ) : (
                             <li className="no-options">No options found</li>

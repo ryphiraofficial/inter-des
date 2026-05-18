@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Loader } from 'lucide-react';
+import CustomSelect from '../../components/CustomSelect';
 
 const ClientFormModal = ({ 
     showNewClientModal, editingClient, formData, setFormData, submitting, handleSubmit, closeModal 
@@ -49,10 +50,15 @@ const ClientFormModal = ({
                             </div>
                             <div className="form-field">
                                 <label>Status</label>
-                                <select name="status" className="c-client-input" value={formData.status} onChange={handleInputChange}>
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
+                                <CustomSelect
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleInputChange}
+                                    options={[
+                                        { value: 'Active', label: 'Active' },
+                                        { value: 'Inactive', label: 'Inactive' },
+                                    ]}
+                                />
                             </div>
                         </div>
                     </div>
