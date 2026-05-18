@@ -10,6 +10,7 @@ import ManagerPayments from '../manager/ManagerPayments';
 import ManagerExpenses from '../manager/ManagerExpenses';
 import ManagerVendors from '../manager/ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
+import MyCollections from './components/MyCollections';
 
 const StaffDashboard = ({ user, onLogout }) => {
     const [searchParams] = useSearchParams();
@@ -18,6 +19,7 @@ const StaffDashboard = ({ user, onLogout }) => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview user={user} />;
+            case 'collections': return <MyCollections user={user} />;
             case 'invoices': return <AccountsInvoices user={user} />;
             case 'payments': return <ManagerPayments user={user} />;
             case 'expenses': return <ManagerExpenses user={user} />;

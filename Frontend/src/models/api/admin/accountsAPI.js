@@ -72,5 +72,10 @@ export const accountsAPI = {
     verifyPaymentAndRelease: (data) => apiCall('/accounts/projects/verify-payment', {
         method: 'POST',
         body: JSON.stringify(data)
+    }),
+
+    submitPaymentCollection: (data) => apiCall('/accounts/projects/collect', {
+        method: 'POST',
+        body: JSON.stringify(data)
     })
 };

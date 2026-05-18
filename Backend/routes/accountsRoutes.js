@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { getExpenses, createExpense, updateExpense, getPayments, createPayment, getProjectFinancials, getAccountsStats, getPendingAccountsProjects, assignAccountsStaff, generateAdvanceInvoice, clearProjectPayment, verifyPaymentAndRelease } = require('../controllers/accountsController');
+const { getExpenses, createExpense, updateExpense, getPayments, createPayment, getProjectFinancials, getAccountsStats, getPendingAccountsProjects, assignAccountsStaff, generateAdvanceInvoice, clearProjectPayment, verifyPaymentAndRelease, submitPaymentCollection } = require('../controllers/accountsController');
 
 router.use(protect);
 
@@ -19,6 +19,9 @@ router.route('/projects/clear')
 
 router.route('/projects/verify-payment')
     .post(authorize('Admin', 'Accounts Manager'), verifyPaymentAndRelease);
+
+router.route('/projects/collect')
+    .post(authorize('Admin', 'Accounts Manager', 'Staff'), submitPaymentCollection);
 
 router.route('/expenses')
     .get(getExpenses)

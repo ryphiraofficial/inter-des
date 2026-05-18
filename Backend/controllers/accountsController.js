@@ -526,3 +526,53 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Submit payment collection details by Accounts Staff
+// @route   POST /api/accounts/projects/collect
+// @access  Private (Staff, Accounts Manager, Admin)
+exports.submitPaymentCollection = async (req, res) => {
+    try {
+        const { projectId, collectedAmount, paymentMode, referenceNumber, paymentNotes } = req.body;
+        const project = await Project.findById(projectId).populate('assignedAccountsStaff');
+        
+        if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+        
+        project.paymentCollectionStatus = 'Collected';
+        project.collectedAmount = Number(collectedAmount) || project.advanceAmount;
+        
+        const noteDetails = `\n[Payment Collected by Staff: ${req.user.fullName || 'Accounts Staff'}]\nMode: ${paymentMode || 'N/A'}\nReference: ${referenceNumber || 'N/A'}\nNotes: ${paymentNotes || 'None'}`;
+        project.notes = (project.notes || '') + noteDetails;
+        
+        await project.save();
+        
+        // Notify Accounts Managers & Admins
+        const User = require('../models/User');
+        const managers = await User.find({ role: 'Accounts Manager', status: 'Active' });
+        const { notifyUser } = require('../utils/notificationHelper');
+        
+        const notificationText = `Payment of ₹${Number(collectedAmount).toLocaleString('en-IN')} collected for project "${project.name}" by ${req.user.fullName}. Ready for your verification and release.`;
+        
+        for (const manager of managers) {
+            notifyUser(manager._id, {
+                title: '💰 Payment Collected - Verify',
+                description: notificationText,
+                type: 'Success',
+                relatedModel: 'Project',
+                relatedId: project._id
+            });
+        }
+        
+        await createNotification({
+            title: 'Payment Collection Recorded',
+            description: notificationText,
+            type: 'Success',
+            relatedModel: 'Project',
+            relatedId: project._id,
+            createdBy: req.user.id
+        });
+        
+        res.status(200).json({ success: true, data: project, message: 'Payment collection submitted successfully.' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

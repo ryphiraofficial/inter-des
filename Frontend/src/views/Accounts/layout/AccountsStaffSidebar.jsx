@@ -2,11 +2,12 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, LogOut
+    TrendingUp, Users, ShoppingBag, LogOut, ClipboardList
 } from 'lucide-react';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
+    { tab: 'collections', label: 'My Collections',      icon: ClipboardList },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
