@@ -1,0 +1,320 @@
+/* ================================================================
+   Procurement Module — Layout CSS
+   Sidebar + Navbar shell for Procurement Manager & Staff dashboards
+   ================================================================ */
+
+/* ── Layout Shell ── */
+.procurement-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.procurement-layout-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.procurement-layout-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+/* ── Sidebar ── */
+.procurement-sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.procurement-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 0.75rem;
+}
+
+.procurement-sidebar-section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.procurement-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.procurement-sidebar-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.procurement-sidebar-item.active {
+    background: #ecfdf5; /* Elegant Emerald mint green representing Sourcing & Material Procurement */
+    color: #059669;
+    font-weight: 700;
+}
+
+.procurement-sidebar-item.active svg {
+    color: #059669;
+}
+
+/* ── Top Navbar ── */
+.procurement-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    gap: 1rem;
+}
+
+.procurement-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.procurement-navbar-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #059669, #10b981); /* Stunning green sourcing gradients */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.procurement-navbar-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e293b;
+    display: block;
+    line-height: 1.2;
+}
+
+.procurement-navbar-subtitle {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 500;
+    display: block;
+}
+
+.procurement-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.procurement-navbar-refresh {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.procurement-navbar-refresh:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.procurement-navbar-refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.procurement-navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.procurement-navbar-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.procurement-navbar-userinfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.procurement-navbar-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.procurement-navbar-role {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: capitalize;
+}
+
+/* ── Spin animation for refresh icon ── */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .procurement-sidebar {
+        display: none;
+    }
+    .procurement-navbar-subtitle,
+    .procurement-navbar-userinfo {
+        display: none;
+    }
+}
+
+/* ── Procurement Sidebar Custom Header & Footer classes ── */
+.procurement-sidebar-header {
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.procurement-sidebar-logo-text {
+    font-size: 0.95rem;
+    font-weight: 850;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #059669, #10b981); /* Sleek Emerald theme */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.procurement-sidebar-nav-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 0;
+}
+
+.procurement-sidebar-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 1.25rem 1rem;
+    background: #f8fafc; /* Subtle contrast background for profile section */
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.procurement-sidebar-user-block {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.procurement-sidebar-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.procurement-sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.procurement-sidebar-user-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.procurement-sidebar-user-role {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: capitalize;
+}
+
+.procurement-sidebar-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #ef4444; /* Clean premium warning red */
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.procurement-sidebar-logout-btn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}

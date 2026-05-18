@@ -4,6 +4,7 @@ import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import DesignLayout from '../../views/design/layout/DesignLayout';
 import DesignManagerDashboard from '../../views/design/manager/DesignManagerDashboard';
 import DesignStaffDashboard from '../../views/design/staff/DesignStaffDashboard';
+import ProcurementLayout from '../../views/procurement/layout/ProcurementLayout';
 import ProcurementManagerDashboard from '../../views/procurement/manager/ProcurementManagerDashboard';
 import ProcurementStaffDashboard from '../../views/procurement/staff/ProcurementStaffDashboard';
 import AdminDashboard from '../../views/admin/Dashboard';
@@ -28,9 +29,17 @@ const RoleDashboard = ({ user, onLogout }) => {
                 </DesignLayout>
             );
         case 'procurement_manager':
-            return <ProcurementManagerDashboard user={user} onLogout={onLogout} />;
+            return (
+                <ProcurementLayout role="manager" user={user} onLogout={onLogout}>
+                    <ProcurementManagerDashboard user={user} onLogout={onLogout} />
+                </ProcurementLayout>
+            );
         case 'procurement_staff':
-            return <ProcurementStaffDashboard user={user} onLogout={onLogout} />;
+            return (
+                <ProcurementLayout role="staff" user={user} onLogout={onLogout}>
+                    <ProcurementStaffDashboard user={user} onLogout={onLogout} />
+                </ProcurementLayout>
+            );
         case 'project_manager':
             return <Navigate to="/production-management/dashboard" replace />;
         case 'project_engineer':

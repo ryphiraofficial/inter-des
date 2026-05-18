@@ -33,7 +33,7 @@ const Layout = ({ user, onLogout }) => {
     };
 
 
-    if (department === 'Design' || department === 'Accounts') {
+    if (department === 'Design' || department === 'Accounts' || department === 'Procurement') {
         return <Outlet />;
     }
 
