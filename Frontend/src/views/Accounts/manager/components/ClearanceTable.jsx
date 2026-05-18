@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, UserPlus, CheckCircle } from 'lucide-react';
 import { TableSkeleton } from '../../components/UI/Skeleton';
+import { CustomSelect } from '../../components/UI/Inputs';
 
 const ClearanceTable = ({ 
     loading, filtered, staffList, assigningId, setAssigningId, 
@@ -59,12 +60,14 @@ const ClearanceTable = ({
                                         <span style={{ color: '#475569', fontSize: '14px', fontWeight: 500 }}>{p.assignedAccountsStaff.fullName}</span>
                                     ) : (
                                         assigningId === p._id ? (
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <select value={selectedStaff} onChange={e => setSelectedStaff(e.target.value)} className="form-control-sm">
-                                                    <option value="">Select Staff</option>
-                                                    {staffList.map(s => <option key={s._id} value={s._id}>{s.fullName}</option>)}
-                                                </select>
-                                                <button onClick={() => handleAssign(p._id)} className="btn-primary-sm">Save</button>
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minWidth: '220px' }}>
+                                                <CustomSelect
+                                                    value={selectedStaff}
+                                                    onChange={setSelectedStaff}
+                                                    options={staffList.map(s => ({ value: s._id, label: s.fullName }))}
+                                                    placeholder="Select Staff"
+                                                />
+                                                <button onClick={() => handleAssign(p._id)} className="btn-primary-sm" style={{ flexShrink: 0 }}>Save</button>
                                             </div>
                                         ) : (
                                             <button onClick={() => setAssigningId(p._id)} className="btn-outline-sm">
