@@ -38,7 +38,40 @@ export const useNavGroups = (user) => {
         ];
 
         let roleSpecificItems = [];
-        if (dashboardType === 'design_manager') {
+        if (dashboardType === 'accounts_manager') {
+            return [
+                {
+                    title: "Financial",
+                    items: [
+                        { name: 'Accounts Overview', icon: LayoutDashboard, path: '/?tab=overview' },
+                        { name: 'Payment Clearance', icon: Shield, path: '/?tab=clearance' },
+                        { name: 'Invoices', icon: Receipt, path: '/?tab=invoices' },
+                        { name: 'Expenses', icon: DollarSign, path: '/?tab=expenses' },
+                        { name: 'Payments', icon: Receipt, path: '/?tab=payments' },
+                    ]
+                },
+                {
+                    title: "Operations",
+                    items: [
+                        { name: 'Clients', icon: Users, path: '/?tab=clients' },
+                        { name: 'Vendors', icon: Building2, path: '/?tab=vendors' },
+                        { name: 'Projects', icon: Target, path: '/?tab=projects' },
+                        { name: 'Reports', icon: BarChart, path: '/?tab=reports' },
+                    ]
+                },
+                {
+                    title: "Internal",
+                    items: [
+                        { name: 'Calendar', icon: Calendar, path: '/?tab=calendar' },
+                        { name: 'Documents', icon: FolderOpen, path: '/?tab=documents' },
+                        { name: 'Notifications', icon: Bell, path: '/?tab=notifications' },
+                        { name: 'Internal Notes', icon: MessageSquare, path: '/?tab=notes' },
+                        { name: 'Performance', icon: Award, path: '/?tab=performance' },
+                        { name: 'Attendance', icon: Clock, path: '/?tab=attendance' },
+                    ]
+                }
+            ];
+        } else if (dashboardType === 'design_manager') {
             roleSpecificItems = [
                 { name: 'Design Pipeline', icon: Palette, path: '/?tab=pipeline' },
                 { name: 'Studio Dashboard', icon: LayoutDashboard, path: '/?tab=dashboard' },
@@ -53,24 +86,6 @@ export const useNavGroups = (user) => {
             roleSpecificItems = [
                 { name: 'Production Pipeline', icon: Wrench, path: '/' },
                 { name: 'Checklists', icon: ClipboardCheck, path: '/checklists' },
-            ];
-        } else if (dashboardType === 'accounts_manager') {
-            roleSpecificItems = [
-                { name: 'Accounts Overview', icon: LayoutDashboard, path: '/?tab=overview' },
-                { name: 'Payment Clearance', icon: Shield, path: '/?tab=clearance' },
-                { name: 'Invoices', icon: Receipt, path: '/?tab=invoices' },
-                { name: 'Expenses', icon: DollarSign, path: '/?tab=expenses' },
-                { name: 'Payments', icon: Receipt, path: '/?tab=payments' },
-                { name: 'Clients', icon: Users, path: '/?tab=clients' },
-                { name: 'Vendors', icon: Building2, path: '/?tab=vendors' },
-                { name: 'Projects', icon: Target, path: '/?tab=projects' },
-                { name: 'Reports', icon: BarChart, path: '/?tab=reports' },
-                { name: 'Calendar', icon: Calendar, path: '/?tab=calendar' },
-                { name: 'Documents', icon: FolderOpen, path: '/?tab=documents' },
-                { name: 'Notifications', icon: Bell, path: '/?tab=notifications' },
-                { name: 'Internal Notes', icon: MessageSquare, path: '/?tab=notes' },
-                { name: 'Performance', icon: Award, path: '/?tab=performance' },
-                { name: 'Attendance', icon: Clock, path: '/?tab=attendance' },
             ];
         }
 
@@ -95,7 +110,6 @@ export const useNavGroups = (user) => {
         return groups.map(group => {
             const filteredItems = group.items.filter(item => {
                 const path = item.path.toLowerCase();
-                if (roleLower.includes('accounts')) return path.startsWith('/?tab=') || path === '/';
                 if (path === '/' || path === '/projects') return true;
                 if (roleLower.includes('design')) return ['/', '/?tab=pipeline', '/?tab=dashboard', '/material-review', '/tasks', '/projects'].includes(path);
                 if (roleLower.includes('procurement')) return ['/inventory', '/purchase-orders', '/po-inventory', '/tasks'].includes(path);

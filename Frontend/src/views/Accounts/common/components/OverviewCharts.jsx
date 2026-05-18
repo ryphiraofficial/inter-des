@@ -6,9 +6,15 @@ const OverviewCharts = ({ loading, cashFlowData, invoiceStatusData }) => {
     return (
         <div className="charts-grid-3">
             <div className="card-v3 main-chart-card">
-                <div className="card-header-v3"><h3>Cash Flow Projection</h3></div>
-                <div style={{ width: '100%', height: '220px' }}>
-                    {loading ? <Skeleton width="100%" height="100%" /> : (
+                <div className="card-header-v3">
+                    <h3>Cash Flow Projection</h3>
+                    <div className="chart-toggles" style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></div> Income</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}></div> Expense</span>
+                    </div>
+                </div>
+                <div style={{ width: '100%', height: '220px', position: 'relative' }}>
+                    {loading ? <Skeleton width="100%" height="100%" /> : cashFlowData?.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={cashFlowData}>
                                 <defs>
@@ -27,23 +33,45 @@ const OverviewCharts = ({ loading, cashFlowData, invoiceStatusData }) => {
                                 <Area type="monotone" dataKey="outflow" name="Expense" stroke="#ef4444" fillOpacity={1} fill="url(#colorOutflow)" strokeWidth={2} />
                             </AreaChart>
                         </ResponsiveContainer>
+                    ) : (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                            <p style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '13px', fontWeight: '500' }}>No financial activity yet</p>
+                            <button className="btn-primary" onClick={() => window.dispatchEvent(new CustomEvent('open-create-invoice-modal'))}>Create your first invoice</button>
+                        </div>
                     )}
                 </div>
             </div>
 
-            <div className="card-v3">
+            <div className="card-v3" style={{ position: 'relative' }}>
                 <div className="card-header-v3"><h3>Invoice Status</h3></div>
-                <div style={{ height: '220px' }}>
+                <div style={{ height: '220px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {loading ? <Skeleton width="100%" height="100%" /> : invoiceStatusData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie data={invoiceStatusData} innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}>
-                                    {invoiceStatusData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                                </Pie>
-                                <RechartsTooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    ) : <div className="empty-chart-text">No data</div>}
+                        <>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={invoiceStatusData} innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}>
+                                        {invoiceStatusData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                                    </Pie>
+                                    <RechartsTooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                                <span style={{ display: 'block', fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>{invoiceStatusData.reduce((acc, curr) => acc + curr.value, 0)}</span>
+                                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Total</span>
+                            </div>
+                        </>
+                    ) : (
+                        <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={[{ value: 1 }]} innerRadius={60} outerRadius={80} dataKey="value" fill="#f1f5f9" stroke="none" />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                                <span style={{ display: 'block', fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>No Data</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
