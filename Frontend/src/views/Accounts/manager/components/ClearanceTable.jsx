@@ -57,14 +57,14 @@ const ClearanceTable = ({
                                 </td>
                                 <td style={{ padding: '16px 24px' }}>
                                     {p.assignedAccountsStaff ? (
-                                        <span style={{ color: '#475569', fontSize: '14px', fontWeight: 500 }}>{p.assignedAccountsStaff.fullName}</span>
+                                        <span style={{ color: '#475569', fontSize: '14px', fontWeight: 500 }}>{p.assignedAccountsStaff.fullName || p.assignedAccountsStaff.name}</span>
                                     ) : (
                                         assigningId === p._id ? (
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minWidth: '220px' }}>
                                                 <CustomSelect
                                                     value={selectedStaff}
                                                     onChange={setSelectedStaff}
-                                                    options={staffList.map(s => ({ value: s._id, label: s.fullName }))}
+                                                    options={staffList.map(s => ({ value: s._id, label: s.fullName || s.name }))}
                                                     placeholder="Select Staff"
                                                 />
                                                 <button onClick={() => handleAssign(p._id)} className="btn-primary-sm" style={{ flexShrink: 0 }}>Save</button>

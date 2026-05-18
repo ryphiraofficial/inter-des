@@ -91,7 +91,7 @@ export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon
     }, []);
 
     const selected = options.find(o => (o.value ?? o) === value);
-    const label = selected ? (selected.label ?? selected) : placeholder;
+    const label = selected ? (selected.label ?? (typeof selected === 'object' ? (selected.value ?? '') : selected)) : placeholder;
 
     return (
         <div ref={ref} style={{ position: 'relative', width: '100%' }}>
@@ -119,7 +119,8 @@ export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon
                     boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 9999, padding: '4px'
                 }}>
                     {options.map(opt => {
-                        const v = opt.value ?? opt; const l = opt.label ?? opt;
+                        const v = opt.value ?? opt;
+                        const l = opt.label ?? (typeof opt === 'object' ? (opt.value ?? '') : opt);
                         const isActive = v === value;
                         return (
                             <button key={v} type="button"
