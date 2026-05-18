@@ -60,13 +60,19 @@ import SalesQuotationView from '../../views/sales/SalesQuotationView';
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
 
+// Views — Procurement
+import ProcurementLayout from '../../views/procurement/layout/ProcurementLayout';
+import ProcurementManagerDashboard from '../../views/procurement/manager/ProcurementManagerDashboard';
+import ProcurementStaffDashboard from '../../views/procurement/staff/ProcurementStaffDashboard';
+
 // Controllers — Hooks
 import { isAdminLayout, isStaffLayout } from '../hooks/useRoleDashboard';
 
 const AppRoutes = ({ user, onLogout }) => {
     const userRole = user?.role;
     const isProductionEngineer = ['Project Engineer', 'Site Engineer', 'Site Supervisor'].includes(userRole);
-    const shouldUseAdminLayout = isAdminLayout(userRole) || isProductionEngineer;
+    const isProcurementRole = userRole === 'Procurement Manager' || userRole === 'Procurement Staff';
+    const shouldUseAdminLayout = (isAdminLayout(userRole) || isProductionEngineer) && !isProcurementRole;
     const shouldUseSalesLayout = isStaffLayout(userRole) && !isProductionEngineer;
 
     const isGeneralAdmin = ['super admin', 'admin', 'manager', 'superadmin'].includes(userRole?.toLowerCase());
@@ -74,6 +80,14 @@ const AppRoutes = ({ user, onLogout }) => {
 
     return (
         <Routes>
+            {/* Dedicated Procurement Layout Route */}
+            {isProcurementRole && (
+                <Route path="/" element={<ProcurementLayout role={userRole === 'Procurement Staff' ? 'staff' : 'manager'} user={user} onLogout={onLogout} />}>
+                    <Route index element={userRole === 'Procurement Staff' ? <ProcurementStaffDashboard user={user} onLogout={onLogout} /> : <ProcurementManagerDashboard user={user} onLogout={onLogout} />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+            )}
+
             {/* Admin Layout - for Super Admin, Admin, Manager, and Department Managers */}
             {shouldUseAdminLayout && (
                 <Route path="/" element={<Layout user={user} onLogout={onLogout} />}>

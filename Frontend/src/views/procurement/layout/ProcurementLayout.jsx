@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import ProcurementNavbar from './ProcurementNavbar';
 import ProcurementManagerSidebar from './ProcurementManagerSidebar';
 import ProcurementStaffSidebar from './ProcurementStaffSidebar';
@@ -24,7 +25,7 @@ const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, childre
             <div className="procurement-layout-main">
                 <ProcurementNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} />
                 <main className="procurement-layout-content">
-                    {children}
+                    {children || <Outlet />}
                 </main>
             </div>
         </div>

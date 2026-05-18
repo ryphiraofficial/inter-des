@@ -55,33 +55,6 @@ const NAV_CONFIG = {
         ],
     },
 
-    'Procurement Manager': {
-        brandTitle:   'Procurement Manager',
-        sidebarClass: 'procurement',
-        basePath:     '/',
-        items: [
-            { name: 'Dashboard',         icon: LayoutDashboard, path: '/?tab=overview',    tab: 'overview' },
-            { name: 'Design Handoffs',   icon: Plus,            path: '/?tab=handoffs',    tab: 'handoffs' },
-            { name: 'Material Requests', icon: Package,         path: '/?tab=requests',    tab: 'requests' },
-            { name: 'Assignments',       icon: CheckSquare,     path: '/?tab=assignments', tab: 'assignments' },
-            { name: 'Vendors',           icon: Building2,       path: '/?tab=vendors',     tab: 'vendors' },
-            { name: 'Completed & Handoff', icon: CheckCircle,   path: '/?tab=completed',   tab: 'completed' },
-        ],
-    },
-
-    'Procurement Staff': {
-        brandTitle:   'Procurement Staff',
-        sidebarClass: 'procurement',
-        basePath:     '/',
-        items: [
-            { name: 'My Dashboard',     icon: LayoutDashboard, path: '/?tab=overview', tab: 'overview' },
-            { name: 'Sourcing Hub',     icon: ShoppingCart,    path: '/?tab=sourcing',  tab: 'sourcing' },
-            { name: 'My Tasks',         icon: CheckSquare,     path: '/?tab=tasks',     tab: 'tasks' },
-            { name: 'Purchase History', icon: Package,         path: '/?tab=history',   tab: 'history' },
-            { name: 'Vendors',          icon: Box,             path: '/?tab=vendors',   tab: 'vendors' },
-        ],
-    },
-
     'Project Manager': {
         brandTitle:   'Project Manager',
         sidebarClass: 'production',
