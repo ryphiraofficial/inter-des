@@ -28,15 +28,15 @@ const ReportSummaryTable = ({ quotations }) => {
                         <tbody>
                             {quotations.slice(0, 10).map((q) => (
                                 <tr key={q._id}>
-                                    <td>{q.quotationNumber}</td>
-                                    <td>{q.client?.name || 'N/A'}</td>
-                                    <td>₹{q.totalAmount?.toLocaleString()}</td>
-                                    <td>
+                                    <td data-label="Quotation #">{q.quotationNumber}</td>
+                                    <td data-label="Client">{q.client?.name || 'N/A'}</td>
+                                    <td data-label="Amount">₹{q.totalAmount?.toLocaleString()}</td>
+                                    <td data-label="Status">
                                         <span className={`status-badge-small ${q.status?.toLowerCase()}`}>
                                             {q.status}
                                         </span>
                                     </td>
-                                    <td>{new Date(q.createdAt).toLocaleDateString()}</td>
+                                    <td data-label="Date">{new Date(q.createdAt).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                         </tbody>

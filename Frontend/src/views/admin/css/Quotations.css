@@ -348,6 +348,32 @@
         margin-bottom: 1.5rem;
     }
 
+    .q-header-left {
+        align-items: center;
+        text-align: center;
+    }
+
+    .q-tabs-list {
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.25rem;
+        padding: 0.5rem;
+    }
+
+    .q-tab-item {
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        white-space: normal;
+        text-align: center;
+        font-size: 0.7rem;
+        padding: 8px 4px;
+        gap: 6px;
+    }
+
     .q-search-container {
         max-width: none;
     }
@@ -358,11 +384,21 @@
 
     .quotations-table-container {
         border-radius: 12px;
-        overflow-x: visible;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .quotations-table {
+        min-width: 100%;
     }
 
     .quotations-table th, .quotations-table td {
-        padding: 1rem 0.75rem !important;
+        padding: 1rem 0.5rem !important;
+    }
+
+    .quotations-table th {
+        font-size: 0.65rem;
+        white-space: nowrap;
     }
 
     .q-row {
@@ -378,12 +414,18 @@
         font-size: 0.8rem;
         font-weight: 700;
         color: #64748b;
+        white-space: nowrap;
+    }
+
+    .project-client-cell {
+        min-width: 100px;
     }
 
     .mobile-amount {
         font-weight: 800;
         color: #0f172a;
         font-size: 0.875rem;
+        white-space: nowrap;
     }
 
     .toggle-cell {
