@@ -5,6 +5,7 @@ import InvoiceFilterBar from './components/invoices/InvoiceFilterBar';
 import InvoiceTable from './components/invoices/InvoiceTable';
 import InvoiceFormModal from './components/invoices/InvoiceFormModal';
 import { StatsSkeleton } from '../components/UI/Skeleton';
+import '../../admin/css/Invoice.css';
 
 const AccountsInvoices = () => {
     const state = useInvoiceLogic();

@@ -811,3 +811,284 @@
         justify-content: space-between;
     }
 }
+
+/* =====================================================
+   Accounts Premium Sub-Components & Tab Views Styles
+   ===================================================== */
+
+.accounts-projects-view,
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    animation: accountsFadeIn 0.3s ease both;
+}
+
+@keyframes accountsFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reports-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Custom Cards */
+.accounts-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: box-shadow 0.2s ease;
+}
+
+.accounts-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card-header-simple {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 1rem;
+}
+
+.card-header-simple h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* Mini Tab Buttons */
+.tabs-mini {
+    display: flex;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 8px;
+    gap: 2px;
+}
+
+.tabs-mini button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.tabs-mini button:hover {
+    color: #0f172a;
+}
+
+.tabs-mini button.active {
+    background: #ffffff;
+    color: #4f46e5;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* KPI grids & Metric cards */
+.project-kpi-grid,
+.report-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .project-kpi-grid,
+    .report-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .project-kpi-grid,
+    .report-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+.project-kpi-card,
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.project-kpi-card:hover,
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e1;
+}
+
+.project-kpi-card .kpi-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.project-kpi-card .kpi-info h3,
+.metric-card h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 2px 0;
+    font-family: 'Outfit', -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+.project-kpi-card .kpi-info p,
+.metric-card p {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+/* Metric card layout adjustments (used in Reports) */
+.metric-card {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Clean Custom Tables */
+.accounts-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.accounts-table th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.accounts-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.accounts-table tr {
+    transition: background 0.15s ease;
+}
+
+.accounts-table tbody tr {
+    cursor: pointer;
+}
+
+.accounts-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.accounts-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.proj-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.proj-cell strong {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.proj-cell span {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Rounded Status Badges */
+[class^="badge-"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.badge-completed,
+.badge-paid,
+.badge-approved {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.badge-in-progress,
+.badge-sent,
+.badge-active {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.badge-on-hold,
+.badge-pending,
+.badge-unpaid {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.badge-not-started,
+.badge-draft {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.badge-overdue,
+.badge-rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+/* Responsiveness for tables */
+@media (max-width: 640px) {
+    .accounts-table th, 
+    .accounts-table td {
+        padding: 10px 12px;
+    }
+}
