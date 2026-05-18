@@ -29,8 +29,8 @@
 .accounts-sidebar {
     width: 240px;
     flex-shrink: 0;
-    background: #0f172a; /* Deep Slate/Navy background for professional look */
-    border-right: 1px solid #1e293b;
+    background: #ffffff; /* Bright, clean white background */
+    border-right: 1px solid #e2e8f0; /* Soft gray border line */
     display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
@@ -48,7 +48,7 @@
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 1.5px;
-    color: #475569;
+    color: #94a3b8; /* Muted gray for clean labeling */
     text-transform: uppercase;
     padding: 0.5rem 0.85rem 0.85rem;
     margin-top: 0.5rem;
@@ -63,7 +63,7 @@
     border: none;
     border-radius: 12px;
     background: transparent;
-    color: #94a3b8;
+    color: #64748b; /* Soft dark text for legibility */
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
@@ -72,15 +72,15 @@
 }
 
 .accounts-sidebar-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    background: #f1f5f9; /* Soft light gray hover */
+    color: #0f172a;
 }
 
 .accounts-sidebar-item.active {
-    background: linear-gradient(135deg, #059669, #10b981); /* Premium Emerald color for active finances */
+    background: linear-gradient(135deg, #059669, #10b981); /* Premium crisp emerald representation */
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
 .accounts-sidebar-item.active svg {
