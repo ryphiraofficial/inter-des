@@ -2,7 +2,7 @@ const Quotation = require('../models/Quotation');
 const Invoice = require('../models/Invoice');
 const Project = require('../models/Project');
 const Checklist = require('../models/Checklist');
-const { createNotification, notifyByRole } = require('../utils/notificationHelper');
+const { createNotification, notifyByRole, notifyUser } = require('../utils/notificationHelper');
 const { logAction } = require('../services/auditService');
 
 exports.getQuotations = async (req, res) => {
@@ -284,6 +284,8 @@ exports.approveQuotation = async (req, res) => {
             });
         }
 
+        const { procurementManagerId } = req.body;
+
         quotation.status = 'Approved';
         quotation.approvedBy = req.user.id;
         quotation.approvedAt = new Date();
@@ -311,6 +313,7 @@ exports.approveQuotation = async (req, res) => {
             status: 'Not Started',
             paymentStatus: 'Pending Advance',
             advanceAmount: quotation.totalAmount * 0.5,
+            assignedProcurementManager: procurementManagerId || undefined,
             createdBy: req.user.id
         });
 
@@ -359,6 +362,17 @@ exports.approveQuotation = async (req, res) => {
             relatedModel: 'Project',
             relatedId: project._id
         });
+
+        if (procurementManagerId) {
+            await notifyUser(procurementManagerId, {
+                title: '📦 New Project Assigned for Procurement',
+                description: `You have been assigned as the Procurement Manager for "${project.name}". The project is currently awaiting advance payment clearance.`,
+                type: 'Info',
+                relatedModel: 'Project',
+                relatedId: project._id,
+                createdBy: req.user.id
+            });
+        }
 
         res.status(200).json({
             success: true,

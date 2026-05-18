@@ -4,13 +4,12 @@ export const useQuotationListActions = ({
     fetchQuotations, setSubmitting, setExpandedRow, expandedRow 
 }) => {
     
-    const handleApprove = async (id) => {
-        if (!window.confirm('Are you sure you want to approve this quotation?')) return;
+    const handleApprove = async (id, procurementManagerId) => {
         setSubmitting(true);
         try {
-            const response = await quotationAPI.approve(id);
+            const response = await quotationAPI.approve(id, { procurementManagerId });
             if (response.success) {
-                alert('Quotation approved successfully');
+                alert('Quotation approved successfully and project initialized');
                 fetchQuotations();
             }
         } catch (err) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuotationListState } from './quotations/list/hooks/useQuotationListState';
@@ -8,18 +8,22 @@ import { getRolePermissions } from './hooks/useRoleDashboard';
 
 import QuotationTabs from './quotations/list/components/QuotationTabs';
 import QuotationTable from './quotations/list/components/QuotationTable';
+import ApproveQuotationModal from './quotations/list/components/ApproveQuotationModal';
 import { TableSkeleton } from './components/Skeleton';
 
 import './css/Quotations.css';
 
 const Quotations = ({ isStaff, user }) => {
     const state = useQuotationListState();
+    const [selectedQuotation, setSelectedQuotation] = useState(null);
+    const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
     
     const { fetchQuotations } = useQuotationListData({
         setQuotations: state.setQuotations,
         setLoading: state.setLoading,
         setError: state.setError,
-        setSearchTerm: state.setSearchTerm
+        setSearchTerm: state.setSearchTerm,
+        setProcurementManagers: state.setProcurementManagers
     });
 
     const actions = useQuotationListActions({
@@ -28,6 +32,16 @@ const Quotations = ({ isStaff, user }) => {
         setExpandedRow: state.setExpandedRow,
         expandedRow: state.expandedRow
     });
+
+    const triggerApprovalModal = (quotation) => {
+        setSelectedQuotation(quotation);
+        setIsApproveModalOpen(true);
+    };
+
+    const handleConfirmApproval = async (id, procurementManagerId) => {
+        setIsApproveModalOpen(false);
+        await actions.handleApprove(id, procurementManagerId);
+    };
 
     const canApprove = getRolePermissions(user?.role).canApproveQuotations;
 
@@ -69,7 +83,7 @@ const Quotations = ({ isStaff, user }) => {
                         quotations={filteredQuotations}
                         expandedRow={state.expandedRow}
                         toggleRow={actions.toggleRow}
-                        handleApprove={actions.handleApprove}
+                        handleApprove={triggerApprovalModal}
                         handleDelete={actions.handleDelete}
                         isStaff={isStaff}
                         canApprove={canApprove}
@@ -77,6 +91,15 @@ const Quotations = ({ isStaff, user }) => {
                     />
                 )}
             </div>
+
+            <ApproveQuotationModal
+                isOpen={isApproveModalOpen}
+                onClose={() => setIsApproveModalOpen(false)}
+                onConfirm={handleConfirmApproval}
+                quotation={selectedQuotation}
+                procurementManagers={state.procurementManagers}
+                submitting={state.submitting}
+            />
         </div>
     );
 };

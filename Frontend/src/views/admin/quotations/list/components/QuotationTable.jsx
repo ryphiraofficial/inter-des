@@ -56,7 +56,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                                         {!isStaff && canApprove && q.status === 'Under Review' && (
                                             <button
                                                 className="btn-icon approve"
-                                                onClick={(e) => { e.stopPropagation(); handleApprove(q._id); }}
+                                                onClick={(e) => { e.stopPropagation(); handleApprove(q); }}
                                                 disabled={submitting}
                                                 title="Approve"
                                             >
@@ -108,7 +108,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                                                     View Detailed Quote
                                                 </Link>
                                                 {!isStaff && canApprove && q.status === 'Under Review' && (
-                                                    <button className="btn-mobile-action success" onClick={() => handleApprove(q._id)}>
+                                                    <button className="btn-mobile-action success" onClick={() => handleApprove(q)}>
                                                         <CheckCircle size={16} />
                                                         Approve Quotation
                                                     </button>

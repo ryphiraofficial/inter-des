@@ -23,8 +23,9 @@ export const quotationAPI = {
         method: 'DELETE'
     }),
 
-    approve: (id) => apiCall(`/quotations/${id}/approve`, {
-        method: 'PUT'
+    approve: (id, data = {}) => apiCall(`/quotations/${id}/approve`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
     }),
 
     getStats: () => apiCall('/quotations/stats'),
