@@ -5,7 +5,11 @@ export const useApprovalsActions = ({
     setPaymentTask, setShowDesignModal, showToast, selectedPM, sentToAccounts, setApproving 
 }) => {
 
-    const submitApproval = async ({ paymentTask, advancePct, paymentDueDate, paymentNotes }) => {
+    const submitApproval = async ({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId }) => {
+        if (!procurementManagerId) {
+            showToast('Please assign a Procurement Manager', 'error');
+            return;
+        }
         if (!paymentDueDate) {
             showToast('Please set a payment due date', 'error');
             return;
@@ -16,7 +20,8 @@ export const useApprovalsActions = ({
                 approved: true,
                 advancePercentage: advancePct,
                 paymentDueDate,
-                adminPaymentNotes: paymentNotes
+                adminPaymentNotes: paymentNotes,
+                procurementManagerId
             });
             if (response.success) {
                 setTasks(prev => prev.filter(t => t._id !== paymentTask._id));
@@ -24,7 +29,7 @@ export const useApprovalsActions = ({
                 setPaymentTask(null);
                 const quotTotal = paymentTask.quotation?.totalAmount || 0;
                 const amt = Math.round((quotTotal * advancePct) / 100);
-                showToast(`Design approved! ₹${amt.toLocaleString('en-IN')} collection request sent to Accounts Manager.`);
+                showToast(`Design approved! Assigned to Procurement Manager and sent ₹${amt.toLocaleString('en-IN')} collection request to Accounts Manager.`);
             } else {
                 showToast(response.message || 'Approval failed', 'error');
             }

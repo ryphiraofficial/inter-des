@@ -6,6 +6,7 @@ const ADVANCE_OPTIONS = [10, 20, 25, 30, 40, 50];
 const PaymentCollectionModal = ({ 
     paymentTask, setShowPaymentModal, advancePct, setAdvancePct, 
     paymentDueDate, setPaymentDueDate, paymentNotes, setPaymentNotes, 
+    procurementManagers = [], selectedProcurementManagerId, setSelectedProcurementManagerId,
     submitApproval, submittingApproval 
 }) => {
     const quotTotal = paymentTask.quotation?.totalAmount || 0;
@@ -65,6 +66,21 @@ const PaymentCollectionModal = ({
                     </div>
 
                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Assign Procurement Manager <span style={{ color: '#ef4444' }}>*</span></label>
+                        <select 
+                            value={selectedProcurementManagerId} 
+                            onChange={e => setSelectedProcurementManagerId(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: `1.5px solid ${selectedProcurementManagerId ? '#4f46e5' : '#e2e8f0'}`, fontSize: '14px', fontWeight: 600, color: '#0f172a', outline: 'none', cursor: 'pointer', boxSizing: 'border-box', backgroundColor: 'white' }}
+                        >
+                            <option value="">-- Choose a Procurement Manager --</option>
+                            {procurementManagers.map(m => (
+                                <option key={m._id} value={m._id}>{m.fullName} ({m.email})</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
                         <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Payment Due Date <span style={{ color: '#ef4444' }}>*</span></label>
                         <input type="date" value={paymentDueDate} onChange={e => setPaymentDueDate(e.target.value)} min={new Date().toISOString().split('T')[0]}
                             style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: `1.5px solid ${paymentDueDate ? '#4f46e5' : '#e2e8f0'}`, fontSize: '14px', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }} />
@@ -80,9 +96,9 @@ const PaymentCollectionModal = ({
                         <button onClick={() => setShowPaymentModal(false)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1.5px solid #e2e8f0', background: 'white', fontWeight: 700, fontSize: '14px', cursor: 'pointer', color: '#374151' }}>
                             Cancel
                         </button>
-                        <button onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes })} disabled={submittingApproval || !paymentDueDate}
-                            style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: submittingApproval || !paymentDueDate ? '#94a3b8' : 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white', fontWeight: 800, fontSize: '14px', cursor: submittingApproval || !paymentDueDate ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
-                            {submittingApproval ? 'Approving...' : <><CheckCircle size={17} /> Approve & Send to Accounts</>}
+                        <button onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId: selectedProcurementManagerId })} disabled={submittingApproval || !paymentDueDate || !selectedProcurementManagerId}
+                            style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? '#94a3b8' : 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white', fontWeight: 800, fontSize: '14px', cursor: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                            {submittingApproval ? 'Approving...' : <><CheckCircle size={17} /> Approve & Pushed to Procurement</>}
                         </button>
                     </div>
                 </div>

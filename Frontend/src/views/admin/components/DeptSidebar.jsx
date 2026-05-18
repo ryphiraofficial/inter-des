@@ -46,12 +46,12 @@ const NAV_CONFIG = {
     'Design Staff': {
         brandTitle:   'Design Staff',
         sidebarClass: 'design',
-        basePath:     '/staff/dashboard',
+        basePath:     '/',
         items: [
-            { name: 'My Dashboard',    icon: LayoutDashboard, path: '/staff/dashboard?tab=overview',    tab: 'overview' },
-            { name: 'My Tasks',        icon: CheckSquare,     path: '/staff/dashboard?tab=tasks',        tab: 'tasks' },
-            { name: 'Revisions',       icon: Target,          path: '/staff/dashboard?tab=revisions',    tab: 'revisions' },
-            { name: 'Submitted Tasks', icon: CheckSquare,     path: '/staff/dashboard?tab=submissions',  tab: 'submissions' },
+            { name: 'My Dashboard',    icon: LayoutDashboard, path: '/?tab=overview',    tab: 'overview' },
+            { name: 'My Tasks',        icon: CheckSquare,     path: '/?tab=tasks',        tab: 'tasks' },
+            { name: 'Revisions',       icon: Target,          path: '/?tab=revisions',    tab: 'revisions' },
+            { name: 'Submitted Tasks', icon: CheckSquare,     path: '/?tab=submissions',  tab: 'submissions' },
         ],
     },
 
@@ -72,13 +72,13 @@ const NAV_CONFIG = {
     'Procurement Staff': {
         brandTitle:   'Procurement Staff',
         sidebarClass: 'procurement',
-        basePath:     '/staff/dashboard',
+        basePath:     '/',
         items: [
-            { name: 'My Dashboard',     icon: LayoutDashboard, path: '/staff/dashboard?tab=overview', tab: 'overview' },
-            { name: 'Sourcing Hub',     icon: ShoppingCart,    path: '/staff/dashboard?tab=sourcing',  tab: 'sourcing' },
-            { name: 'My Tasks',         icon: CheckSquare,     path: '/staff/dashboard?tab=tasks',     tab: 'tasks' },
-            { name: 'Purchase History', icon: Package,         path: '/staff/dashboard?tab=history',   tab: 'history' },
-            { name: 'Vendors',          icon: Box,             path: '/staff/dashboard?tab=vendors',   tab: 'vendors' },
+            { name: 'My Dashboard',     icon: LayoutDashboard, path: '/?tab=overview', tab: 'overview' },
+            { name: 'Sourcing Hub',     icon: ShoppingCart,    path: '/?tab=sourcing',  tab: 'sourcing' },
+            { name: 'My Tasks',         icon: CheckSquare,     path: '/?tab=tasks',     tab: 'tasks' },
+            { name: 'Purchase History', icon: Package,         path: '/?tab=history',   tab: 'history' },
+            { name: 'Vendors',          icon: Box,             path: '/?tab=vendors',   tab: 'vendors' },
         ],
     },
 

@@ -4,10 +4,10 @@ export const useQuotationListActions = ({
     fetchQuotations, setSubmitting, setExpandedRow, expandedRow 
 }) => {
     
-    const handleApprove = async (id, procurementManagerId) => {
+    const handleApprove = async (id, designManagerId) => {
         setSubmitting(true);
         try {
-            const response = await quotationAPI.approve(id, { procurementManagerId });
+            const response = await quotationAPI.approve(id, { designManagerId });
             if (response.success) {
                 alert('Quotation approved successfully and project initialized');
                 fetchQuotations();

@@ -6,6 +6,7 @@ export const useApprovalsState = () => {
     const [procurementItems, setProcurementItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [productionManagers, setProductionManagers] = useState([]);
+    const [procurementManagers, setProcurementManagers] = useState([]);
     
     // Design Review Modal
     const [showDesignModal, setShowDesignModal] = useState(false);
@@ -17,6 +18,7 @@ export const useApprovalsState = () => {
     const [advancePct, setAdvancePct] = useState(30);
     const [paymentDueDate, setPaymentDueDate] = useState('');
     const [paymentNotes, setPaymentNotes] = useState('');
+    const [selectedProcurementManagerId, setSelectedProcurementManagerId] = useState('');
     const [submittingApproval, setSubmittingApproval] = useState(false);
 
     // Procurement State
@@ -30,6 +32,7 @@ export const useApprovalsState = () => {
         procurementItems, setProcurementItems,
         loading, setLoading,
         productionManagers, setProductionManagers,
+        procurementManagers, setProcurementManagers,
         showDesignModal, setShowDesignModal,
         selectedTask, setSelectedTask,
         showPaymentModal, setShowPaymentModal,
@@ -37,6 +40,7 @@ export const useApprovalsState = () => {
         advancePct, setAdvancePct,
         paymentDueDate, setPaymentDueDate,
         paymentNotes, setPaymentNotes,
+        selectedProcurementManagerId, setSelectedProcurementManagerId,
         submittingApproval, setSubmittingApproval,
         selectedPM, setSelectedPM,
         sentToAccounts, setSentToAccounts,

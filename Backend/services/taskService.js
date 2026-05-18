@@ -759,7 +759,7 @@ exports.managerSendToAdmin = async (reqData) => {
 
 exports.adminReviewDesign = async (reqData) => {
     try {
-        const { approved, rejectionReason, approvedBudget, advancePercentage, paymentDueDate, adminPaymentNotes } = reqData.body;
+        const { approved, rejectionReason, approvedBudget, advancePercentage, paymentDueDate, adminPaymentNotes, procurementManagerId } = reqData.body;
         const task = await Task.findById(reqData.params.id).populate('quotation');
         if (!task) return { status: 404, success: false, message: 'Task not found' };
         await healTaskReferences(task);
@@ -883,6 +883,8 @@ exports.adminReviewDesign = async (reqData) => {
 
         let materialRequest = null;
         if (task.project) {
+            const projectObj = await ProjectModel.findById(task.project);
+
             materialRequest = await MaterialRequest.create({
                 project: task.project,
                 quotation: task.quotation ? task.quotation._id : null,
@@ -905,8 +907,20 @@ exports.adminReviewDesign = async (reqData) => {
                 paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null,
                 adminPaymentNotes: adminPaymentNotes || '',
                 paymentCollectionStatus: 'Pending Assignment',
-                paymentStatus: 'Pending Advance'
+                paymentStatus: 'Pending Advance',
+                assignedProcurementManager: procurementManagerId || undefined
             });
+
+            if (procurementManagerId && projectObj) {
+                await notifyUser(procurementManagerId, {
+                    title: '📦 New Project Assigned for Procurement',
+                    description: `You have been assigned as the Procurement Manager for "${projectObj.name}". The design has been approved and you can start sourcing materials immediately.`,
+                    type: 'Info',
+                    relatedModel: 'Project',
+                    relatedId: task.project,
+                    createdBy: reqData.user.id
+                });
+            }
         }
 
         // Update quotation status

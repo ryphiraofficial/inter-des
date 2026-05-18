@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { quotationAPI, userAPI } from '../../../../../models/api';
 
 export const useQuotationListData = ({ 
-    setQuotations, setLoading, setError, setSearchTerm, setProcurementManagers 
+    setQuotations, setLoading, setError, setSearchTerm, setDesignManagers 
 }) => {
     
     const fetchQuotations = async () => {
@@ -19,20 +19,20 @@ export const useQuotationListData = ({
         }
     };
 
-    const fetchProcurementManagers = async () => {
+    const fetchDesignManagers = async () => {
         try {
-            const response = await userAPI.getAll({ role: 'Procurement Manager', status: 'Active', limit: 100 });
-            if (response.success && setProcurementManagers) {
-                setProcurementManagers(response.data || []);
+            const response = await userAPI.getAll({ role: 'Design Manager', status: 'Active', limit: 100 });
+            if (response.success && setDesignManagers) {
+                setDesignManagers(response.data || []);
             }
         } catch (err) {
-            console.error('Failed to fetch procurement managers:', err);
+            console.error('Failed to fetch design managers:', err);
         }
     };
 
     useEffect(() => {
         fetchQuotations();
-        fetchProcurementManagers();
+        fetchDesignManagers();
 
         const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
         window.addEventListener('header-search', handleHeaderSearch);
@@ -40,7 +40,7 @@ export const useQuotationListData = ({
         return () => {
             window.removeEventListener('header-search', handleHeaderSearch);
         };
-    }, [setQuotations, setLoading, setError, setSearchTerm, setProcurementManagers]);
+    }, [setQuotations, setLoading, setError, setSearchTerm, setDesignManagers]);
 
     return { fetchQuotations };
 };

@@ -8,7 +8,7 @@ export const useQuotationListState = () => {
     const [activeTab, setActiveTab] = useState('All');
     const [submitting, setSubmitting] = useState(false);
     const [expandedRow, setExpandedRow] = useState(null);
-    const [procurementManagers, setProcurementManagers] = useState([]);
+    const [designManagers, setDesignManagers] = useState([]);
 
     return {
         quotations, setQuotations,
@@ -18,6 +18,6 @@ export const useQuotationListState = () => {
         activeTab, setActiveTab,
         submitting, setSubmitting,
         expandedRow, setExpandedRow,
-        procurementManagers, setProcurementManagers
+        designManagers, setDesignManagers
     };
 };

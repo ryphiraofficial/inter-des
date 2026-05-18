@@ -26,6 +26,7 @@ const DesignApprovals = () => {
         setProcurementItems: state.setProcurementItems,
         setLoading: state.setLoading,
         setProductionManagers: state.setProductionManagers,
+        setProcurementManagers: state.setProcurementManagers,
         showToast
     });
 
@@ -114,6 +115,9 @@ const DesignApprovals = () => {
                     setPaymentDueDate={state.setPaymentDueDate}
                     paymentNotes={state.paymentNotes}
                     setPaymentNotes={state.setPaymentNotes}
+                    procurementManagers={state.procurementManagers}
+                    selectedProcurementManagerId={state.selectedProcurementManagerId}
+                    setSelectedProcurementManagerId={state.setSelectedProcurementManagerId}
                     submitApproval={actions.submitApproval}
                     submittingApproval={state.submittingApproval}
                 />

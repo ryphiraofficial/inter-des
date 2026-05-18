@@ -284,7 +284,7 @@ exports.approveQuotation = async (req, res) => {
             });
         }
 
-        const { procurementManagerId } = req.body;
+        const { designManagerId } = req.body;
 
         quotation.status = 'Approved';
         quotation.approvedBy = req.user.id;
@@ -309,11 +309,11 @@ exports.approveQuotation = async (req, res) => {
             name: quotation.projectName,
             description: `Project created from quotation ${quotation.quotationNumber}`,
             budget: quotation.totalAmount,
-            stage: 'Accounts',
+            stage: 'Design',
             status: 'Not Started',
             paymentStatus: 'Pending Advance',
             advanceAmount: quotation.totalAmount * 0.5,
-            assignedProcurementManager: procurementManagerId || undefined,
+            assignedDesignManager: designManagerId || undefined,
             createdBy: req.user.id
         });
 
@@ -348,25 +348,17 @@ exports.approveQuotation = async (req, res) => {
 
         await createNotification({
             title: 'Quotation Approved - Project Created',
-            description: `Quotation "${quotation.projectName || quotation.quotationNumber}" approved. Project "${project.name}" (${project.projectNumber}) created and moved to Accounts stage for Payment Clearance.`,
+            description: `Quotation "${quotation.projectName || quotation.quotationNumber}" approved. Project "${project.name}" (${project.projectNumber}) created and moved to Design stage.`,
             type: 'Quote',
             relatedModel: 'Project',
             relatedId: project._id,
             createdBy: req.user.id
         });
 
-        await notifyByRole('Accounts Manager', {
-            title: 'New Project Pending Payment Clearance',
-            description: `Project "${project.name}" requires advance payment collection. Please review and assign to Accounts Staff.`,
-            type: 'Info',
-            relatedModel: 'Project',
-            relatedId: project._id
-        });
-
-        if (procurementManagerId) {
-            await notifyUser(procurementManagerId, {
-                title: '📦 New Project Assigned for Procurement',
-                description: `You have been assigned as the Procurement Manager for "${project.name}". The project is currently awaiting advance payment clearance.`,
+        if (designManagerId) {
+            await notifyUser(designManagerId, {
+                title: '🎨 New Project Assigned for Design',
+                description: `You have been assigned as the Design Manager for "${project.name}". Please assign a team member to start design drawings.`,
                 type: 'Info',
                 relatedModel: 'Project',
                 relatedId: project._id,

@@ -23,7 +23,7 @@ const Quotations = ({ isStaff, user }) => {
         setLoading: state.setLoading,
         setError: state.setError,
         setSearchTerm: state.setSearchTerm,
-        setProcurementManagers: state.setProcurementManagers
+        setDesignManagers: state.setDesignManagers
     });
 
     const actions = useQuotationListActions({
@@ -38,9 +38,9 @@ const Quotations = ({ isStaff, user }) => {
         setIsApproveModalOpen(true);
     };
 
-    const handleConfirmApproval = async (id, procurementManagerId) => {
+    const handleConfirmApproval = async (id, designManagerId) => {
         setIsApproveModalOpen(false);
-        await actions.handleApprove(id, procurementManagerId);
+        await actions.handleApprove(id, designManagerId);
     };
 
     const canApprove = getRolePermissions(user?.role).canApproveQuotations;
@@ -97,7 +97,7 @@ const Quotations = ({ isStaff, user }) => {
                 onClose={() => setIsApproveModalOpen(false)}
                 onConfirm={handleConfirmApproval}
                 quotation={selectedQuotation}
-                procurementManagers={state.procurementManagers}
+                designManagers={state.designManagers}
                 submitting={state.submitting}
             />
         </div>

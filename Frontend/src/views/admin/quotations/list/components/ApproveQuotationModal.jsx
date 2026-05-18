@@ -6,7 +6,7 @@ const ApproveQuotationModal = ({
     onClose, 
     onConfirm, 
     quotation, 
-    procurementManagers = [],
+    designManagers = [],
     submitting 
 }) => {
     const [selectedManagerId, setSelectedManagerId] = useState('');
@@ -59,7 +59,7 @@ const ApproveQuotationModal = ({
                         </h3>
                     </div>
                     <button 
-                        onClick={onClose}
+                         onClick={onClose}
                         style={{
                             background: 'none',
                             border: 'none',
@@ -101,17 +101,17 @@ const ApproveQuotationModal = ({
                             </p>
                         </div>
                         <div>
-                            <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Total Budget (to Accounts stage)</p>
+                            <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Total Budget (to Design stage)</p>
                             <p style={{ margin: '2px 0 0', fontSize: '16px', fontWeight: 700, color: '#10b981' }}>
                                 ₹{(quotation.totalAmount || 0).toLocaleString('en-IN')}
                             </p>
                         </div>
                     </div>
 
-                    {/* Procurement Manager Select */}
+                    {/* Design Manager Select */}
                     <div style={{ marginBottom: '24px' }}>
                         <label 
-                            htmlFor="procurementManager"
+                            htmlFor="designManager"
                             style={{
                                 display: 'block',
                                 fontSize: '14px',
@@ -120,11 +120,11 @@ const ApproveQuotationModal = ({
                                 marginBottom: '8px'
                             }}
                         >
-                            Assign Procurement Manager <span style={{ color: '#ef4444' }}>*</span>
+                            Assign Design Manager <span style={{ color: '#ef4444' }}>*</span>
                         </label>
                         <div style={{ position: 'relative' }}>
                             <select
-                                id="procurementManager"
+                                id="designManager"
                                 required
                                 value={selectedManagerId}
                                 onChange={(e) => setSelectedManagerId(e.target.value)}
@@ -154,8 +154,8 @@ const ApproveQuotationModal = ({
                                     e.target.style.boxShadow = 'none';
                                 }}
                             >
-                                <option value="">-- Choose a Procurement Manager --</option>
-                                {procurementManagers.map(m => (
+                                <option value="">-- Choose a Design Manager --</option>
+                                {designManagers.map(m => (
                                     <option key={m._id} value={m._id}>
                                         {m.fullName} ({m.email})
                                     </option>
@@ -164,7 +164,7 @@ const ApproveQuotationModal = ({
                         </div>
                         <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <UserCheck size={14} style={{ color: '#4f46e5' }} /> 
-                            This assignment is mandatory to approve the quotation and release to accounts.
+                            This assignment is mandatory to approve the quotation and release to design.
                         </p>
                     </div>
 
