@@ -34,9 +34,6 @@ const AccountsNavbar = ({ user, onRefresh, isLoading }) => {
                 </div>
                 <div>
                     <span className="accounts-navbar-title">{currentTab.label}</span>
-                    <span className="accounts-navbar-subtitle">
-                        {user?.role?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                    </span>
                 </div>
             </div>
 
@@ -48,10 +45,8 @@ const AccountsNavbar = ({ user, onRefresh, isLoading }) => {
                     </button>
                 )}
                 <div className="accounts-navbar-user">
-                    <div className="accounts-navbar-avatar">{getInitials(user?.name)}</div>
-                    <div className="accounts-navbar-userinfo">
-                        <span className="accounts-navbar-name">{user?.name || 'Accounts Officer'}</span>
-                        <span className="accounts-navbar-role">{user?.role?.replace(/_/g, ' ')}</span>
+                    <div className="accounts-navbar-avatar" title={user?.name || 'Accounts User'}>
+                        {getInitials(user?.name)}
                     </div>
                 </div>
             </div>
