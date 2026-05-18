@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { reportAPI } from '../../../models/api';
+import { reportAPI, quotationAPI } from '../../../models/api';
 
 export const useAccountsReportLogic = () => {
     const [stats, setStats] = useState(null);
@@ -11,13 +11,28 @@ export const useAccountsReportLogic = () => {
         const fetchReports = async () => {
             try {
                 setLoading(true);
-                const response = await reportAPI.getDashboard();
-                if (response.success) {
-                    setStats(response.stats);
-                    setQuotations(response.quotations);
+                const [reportRes, quoteRes] = await Promise.all([
+                    reportAPI.getDashboard(),
+                    quotationAPI.getAll()
+                ]);
+
+                if (reportRes.success && quoteRes.success) {
+                    const dashboardData = reportRes.data;
+                    const quotesList = quoteRes.data;
+
+                    setStats({
+                        totalRevenue: dashboardData?.revenue?.approved || 0,
+                        pendingPayments: dashboardData?.revenue?.potential || 0,
+                        totalProjects: dashboardData?.quotations?.approved || 0,
+                        approvedQuotes: dashboardData?.quotations?.approved || 0
+                    });
+
+                    setQuotations(quotesList || []);
+                } else {
+                    setError('Failed to load report data from server.');
                 }
             } catch (err) {
-                setError(err.message);
+                setError(err.message || 'An error occurred while fetching reports.');
             } finally {
                 setLoading(false);
             }

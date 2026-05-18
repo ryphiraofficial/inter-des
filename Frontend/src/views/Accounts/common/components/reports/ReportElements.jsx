@@ -21,7 +21,7 @@ export const ReportMetrics = ({ stats }) => {
     );
 };
 
-export const ReportSummaryTable = ({ quotations }) => {
+export const ReportSummaryTable = ({ quotations = [] }) => {
     return (
         <div className="table-responsive-wrapper">
             <table className="accounts-table">
@@ -30,11 +30,18 @@ export const ReportSummaryTable = ({ quotations }) => {
                     {quotations.map(q => (
                         <tr key={q._id}>
                             <td>{q.quotationNumber}</td>
-                            <td>{q.client?.name}</td>
-                            <td>₹{(q.grandTotal || 0).toLocaleString()}</td>
-                            <td><span className={`badge-${q.status?.toLowerCase()}`}>{q.status}</span></td>
+                            <td>{q.client?.name || 'N/A'}</td>
+                            <td>₹{(q.grandTotal || q.totalAmount || 0).toLocaleString()}</td>
+                            <td><span className={`badge-${q.status?.toLowerCase().replace(/\s+/g, '-')}`}>{q.status}</span></td>
                         </tr>
                     ))}
+                    {quotations.length === 0 && (
+                        <tr>
+                            <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                                No recent activity to display
+                            </td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>
