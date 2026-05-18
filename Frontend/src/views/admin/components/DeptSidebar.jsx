@@ -18,7 +18,7 @@ import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Send,
     ShoppingCart, Building2, Box, ClipboardCheck, Target,
     Wrench, Clock, Image, LogOut, Menu, Plus, CheckCircle,
-    FolderOpen, CalendarOff, X
+    FolderOpen, CalendarOff, X, CreditCard, DollarSign, TrendingUp, BarChart2
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
 import '../css/Sidebar.css';
@@ -146,6 +146,37 @@ const NAV_CONFIG = {
             { name: 'Task Tracker',  icon: CheckSquare,     path: '/staff/tasks' },
             { name: 'Site Inventory', icon: Box,            path: '/inventory' },
             { name: 'Checklists',    icon: ClipboardCheck,  path: '/checklists' },
+        ],
+    },
+
+    'Accounts Manager': {
+        brandTitle:    'Accounts Hub',
+        brandSubtitle: 'FINANCIAL MANAGEMENT',
+        sidebarClass:  'accounts',
+        basePath:      '/',
+        items: [
+            { name: 'Dashboard',      icon: LayoutDashboard, path: '/?tab=overview',      tab: 'overview' },
+            { name: 'Projects',       icon: FolderOpen,      path: '/?tab=projects',      tab: 'projects' },
+            { name: 'Invoices',       icon: FileText,        path: '/?tab=invoices',      tab: 'invoices' },
+            { name: 'Payments',       icon: CreditCard,      path: '/?tab=payments',      tab: 'payments' },
+            { name: 'Expenses',       icon: DollarSign,      path: '/?tab=expenses',      tab: 'expenses' },
+            { name: 'Clients',        icon: Users,           path: '/?tab=clients',       tab: 'clients' },
+            { name: 'Vendors',        icon: Building2,       path: '/?tab=vendors',       tab: 'vendors' },
+            { name: 'Reports',        icon: BarChart2,       path: '/?tab=reports',       tab: 'reports' },
+        ],
+    },
+
+    'Accounts Staff': {
+        brandTitle:    'Accounts Portal',
+        brandSubtitle: 'STAFF WORKSPACE',
+        sidebarClass:  'accounts',
+        basePath:      '/',
+        items: [
+            { name: 'Overview',       icon: LayoutDashboard, path: '/?tab=overview',      tab: 'overview' },
+            { name: 'Invoices',       icon: FileText,        path: '/?tab=invoices',      tab: 'invoices' },
+            { name: 'Payments',       icon: CreditCard,      path: '/?tab=payments',      tab: 'payments' },
+            { name: 'Expenses',       icon: DollarSign,      path: '/?tab=expenses',      tab: 'expenses' },
+            { name: 'Vendors',        icon: Building2,       path: '/?tab=vendors',       tab: 'vendors' },
         ],
     },
 };

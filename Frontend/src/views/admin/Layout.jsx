@@ -26,7 +26,7 @@ const Layout = ({ user, onLogout }) => {
 
     const renderSidebar = () => {
         const props = { user, onLogout, isCollapsed, toggleSidebar, isMobileOpen, toggleMobileSidebar };
-        if (department === 'Design' || department === 'Procurement' || department === 'Production') {
+        if (department === 'Design' || department === 'Procurement' || department === 'Production' || department === 'Accounts') {
             return <DeptSidebar role={user?.role} {...props} />;
         }
         return <Sidebar {...props} />;
