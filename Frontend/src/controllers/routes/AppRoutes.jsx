@@ -69,57 +69,64 @@ const AppRoutes = ({ user, onLogout }) => {
     const shouldUseAdminLayout = isAdminLayout(userRole) || isProductionEngineer;
     const shouldUseSalesLayout = isStaffLayout(userRole) && !isProductionEngineer;
 
+    const isGeneralAdmin = ['super admin', 'admin', 'manager', 'superadmin'].includes(userRole?.toLowerCase());
+    const isDesignManager = userRole === 'Design Manager';
+
     return (
         <Routes>
             {/* Admin Layout - for Super Admin, Admin, Manager, and Department Managers */}
             {shouldUseAdminLayout && (
                 <Route path="/" element={<Layout user={user} onLogout={onLogout} />}>
                     <Route index element={<RoleDashboard user={user} onLogout={onLogout} />} />
-                    <Route path="quotations" element={<Quotations user={user} />} />
-                    <Route path="quotations/new" element={<NewQuotation />} />
-                    <Route path="quotations/edit/:id" element={<NewQuotation isEdit={true} />} />
-                    <Route path="quotations/view/:id" element={<QuotationView />} />
-                    <Route path="inventory" element={<Inventory />} />
-                    <Route path="purchase-orders" element={<PurchaseOrders />} />
-                    <Route path="po-inventory" element={<POInventory />} />
-                    <Route path="clients" element={<Clients />} />
-                    <Route path="staff" element={<Staff />} />
-                    <Route path="tasks" element={<Tasks />} />
-                    <Route path="reports" element={<Reports />} />
-                    <Route path="settings" element={<Settings />} />
-                    <Route path="users" element={<Users />} />
-                    <Route path="invoice" element={<Invoice />} />
-                    <Route path="projects" element={<Projects />} />
-                    <Route path="projects/:id" element={<Projects />} />
-                    <Route path="material-review" element={<MaterialReviewHub user={user} />} />
-                    <Route path="approvals" element={<DesignApprovals />} />
+                    
+                    {/* General Admin Only Routes */}
+                    <Route path="projects" element={isGeneralAdmin ? <Projects /> : <Navigate to="/" replace />} />
+                    <Route path="projects/:id" element={isGeneralAdmin ? <Projects /> : <Navigate to="/" replace />} />
+                    <Route path="inventory" element={isGeneralAdmin ? <Inventory /> : <Navigate to="/" replace />} />
+                    <Route path="purchase-orders" element={isGeneralAdmin ? <PurchaseOrders /> : <Navigate to="/" replace />} />
+                    <Route path="po-inventory" element={isGeneralAdmin ? <POInventory /> : <Navigate to="/" replace />} />
+                    <Route path="clients" element={isGeneralAdmin ? <Clients /> : <Navigate to="/" replace />} />
+                    <Route path="staff" element={isGeneralAdmin ? <Staff /> : <Navigate to="/" replace />} />
+                    <Route path="tasks" element={isGeneralAdmin ? <Tasks /> : <Navigate to="/" replace />} />
+                    <Route path="reports" element={isGeneralAdmin ? <Reports /> : <Navigate to="/" replace />} />
+                    <Route path="settings" element={isGeneralAdmin ? <Settings /> : <Navigate to="/" replace />} />
+                    <Route path="users" element={isGeneralAdmin ? <Users /> : <Navigate to="/" replace />} />
+                    <Route path="invoice" element={isGeneralAdmin ? <Invoice /> : <Navigate to="/" replace />} />
+                    <Route path="approvals" element={isGeneralAdmin ? <DesignApprovals /> : <Navigate to="/" replace />} />
+
+                    {/* Quotations & Material Review: General Admin & Design Manager Only */}
+                    <Route path="quotations" element={(isGeneralAdmin || isDesignManager) ? <Quotations user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="quotations/new" element={(isGeneralAdmin || isDesignManager) ? <NewQuotation /> : <Navigate to="/" replace />} />
+                    <Route path="quotations/edit/:id" element={(isGeneralAdmin || isDesignManager) ? <NewQuotation isEdit={true} /> : <Navigate to="/" replace />} />
+                    <Route path="quotations/view/:id" element={(isGeneralAdmin || isDesignManager) ? <QuotationView /> : <Navigate to="/" replace />} />
+                    <Route path="material-review" element={(isGeneralAdmin || isDesignManager) ? <MaterialReviewHub user={user} /> : <Navigate to="/" replace />} />
 
                     {/* Production Management Routes (Project Manager) */}
-                    <Route path="production-management/dashboard" element={<ProductionDashboard />} />
-                    <Route path="production-management/handoff" element={<ProjectHandoff />} />
-                    <Route path="production-management/projects" element={<ProductionProjectsList />} />
-                    <Route path="production-management/tasks" element={<ProductionTasksBoard user={user} />} />
-                    <Route path="production-management/team" element={<ProductionTeamOverview />} />
-                    <Route path="production-management/approvals" element={<ProductionApprovals />} />
-                    <Route path="production-management/reports" element={<ProductionReports />} />
+                    <Route path="production-management/dashboard" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionDashboard /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/handoff" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProjectHandoff /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/projects" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionProjectsList /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/tasks" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTasksBoard user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/team" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTeamOverview /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/approvals" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionApprovals /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/reports" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionReports /> : <Navigate to="/" replace />} />
 
                     {/* Engineer Routes (Project Engineer only) */}
-                    <Route path="engineer/dashboard" element={<EngineerDashboard user={user} />} />
-                    <Route path="engineer/projects" element={<EngineerProjects user={user} />} />
-                    <Route path="engineer/projects/:id" element={<ProjectDetail user={user} />} />
-                    <Route path="engineer/tasks" element={<EngineerTasks user={user} />} />
-                    <Route path="engineer/tasks/:id" element={<TaskDetail user={user} />} />
-                    <Route path="engineer/reports" element={<EngineerReports />} />
-                    <Route path="engineer/leave" element={<LeaveRequest user={user} />} />
-                    <Route path="engineer/approvals" element={<EngineerApprovals />} />
+                    <Route path="engineer/dashboard" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerDashboard user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/projects" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/projects/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/tasks/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/reports" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerReports /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/leave" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <LeaveRequest user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/approvals" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerApprovals /> : <Navigate to="/" replace />} />
 
                     {/* Site Portal Routes (Site Engineer & Site Supervisor) */}
-                    <Route path="site/dashboard" element={<SiteDashboard user={user} />} />
-                    <Route path="site/projects" element={<EngineerProjects user={user} />} />
-                    <Route path="site/projects/:id" element={<ProjectDetail user={user} />} />
-                    <Route path="site/tasks" element={<SiteTasks user={user} />} />
-                    <Route path="site/reports" element={<SiteReports user={user} />} />
-                    <Route path="site/leave" element={<SiteLeave user={user} />} />
+                    <Route path="site/dashboard" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteDashboard user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/projects" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/projects/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/tasks" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteTasks user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/reports" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteReports user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/leave" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteLeave user={user} /> : <Navigate to="/" replace />} />
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
