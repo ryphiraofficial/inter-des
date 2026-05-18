@@ -145,9 +145,36 @@ const ProjectSchema = new mongoose.Schema({
 
 ProjectSchema.pre('validate', async function (next) {
     if (!this.projectNumber) {
-        const count = await mongoose.model('Project').countDocuments();
         const year = new Date().getFullYear();
-        this.projectNumber = `PRJ-${year}-${String(count + 1).padStart(4, '0')}`;
+        let sequence = 1;
+        
+        // Find the project with the highest number for this year
+        const lastProject = await mongoose.model('Project')
+            .findOne({ projectNumber: new RegExp(`^PRJ-${year}-`) })
+            .sort({ projectNumber: -1 });
+            
+        if (lastProject) {
+            const parts = lastProject.projectNumber.split('-');
+            if (parts.length === 3) {
+                const lastSeq = parseInt(parts[2], 10);
+                if (!isNaN(lastSeq)) {
+                    sequence = lastSeq + 1;
+                }
+            }
+        }
+        
+        // Final safety check loop to guarantee absolute uniqueness
+        let unique = false;
+        while (!unique) {
+            const tempNumber = `PRJ-${year}-${String(sequence).padStart(4, '0')}`;
+            const exists = await mongoose.model('Project').findOne({ projectNumber: tempNumber });
+            if (!exists) {
+                this.projectNumber = tempNumber;
+                unique = true;
+            } else {
+                sequence++;
+            }
+        }
     }
     next();
 });

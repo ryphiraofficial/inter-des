@@ -191,9 +191,36 @@ const QuotationSchema = new mongoose.Schema({
 // Auto-generate quotation number
 QuotationSchema.pre('save', async function (next) {
     if (!this.quotationNumber) {
-        const count = await mongoose.model('Quotation').countDocuments();
         const year = new Date().getFullYear();
-        this.quotationNumber = `QT-${year}-${String(count + 1).padStart(4, '0')}`;
+        let sequence = 1;
+        
+        // Find the quotation with the highest number for this year
+        const lastQuotation = await mongoose.model('Quotation')
+            .findOne({ quotationNumber: new RegExp(`^QT-${year}-`) })
+            .sort({ quotationNumber: -1 });
+            
+        if (lastQuotation) {
+            const parts = lastQuotation.quotationNumber.split('-');
+            if (parts.length === 3) {
+                const lastSeq = parseInt(parts[2], 10);
+                if (!isNaN(lastSeq)) {
+                    sequence = lastSeq + 1;
+                }
+            }
+        }
+        
+        // Final safety check loop to guarantee absolute uniqueness
+        let unique = false;
+        while (!unique) {
+            const tempNumber = `QT-${year}-${String(sequence).padStart(4, '0')}`;
+            const exists = await mongoose.model('Quotation').findOne({ quotationNumber: tempNumber });
+            if (!exists) {
+                this.quotationNumber = tempNumber;
+                unique = true;
+            } else {
+                sequence++;
+            }
+        }
     }
     next();
 });

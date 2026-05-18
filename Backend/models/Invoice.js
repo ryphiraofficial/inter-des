@@ -115,9 +115,36 @@ const InvoiceSchema = new mongoose.Schema({
 // Auto-generate invoice number
 InvoiceSchema.pre('validate', async function (next) {
     if (!this.invoiceNumber) {
-        const count = await mongoose.model('Invoice').countDocuments();
         const year = new Date().getFullYear();
-        this.invoiceNumber = `INV-${year}-${String(count + 1).padStart(3, '0')}`;
+        let sequence = 1;
+        
+        // Find the invoice with the highest number for this year
+        const lastInvoice = await mongoose.model('Invoice')
+            .findOne({ invoiceNumber: new RegExp(`^INV-${year}-`) })
+            .sort({ invoiceNumber: -1 });
+            
+        if (lastInvoice) {
+            const parts = lastInvoice.invoiceNumber.split('-');
+            if (parts.length === 3) {
+                const lastSeq = parseInt(parts[2], 10);
+                if (!isNaN(lastSeq)) {
+                    sequence = lastSeq + 1;
+                }
+            }
+        }
+        
+        // Final safety check loop to guarantee absolute uniqueness
+        let unique = false;
+        while (!unique) {
+            const tempNumber = `INV-${year}-${String(sequence).padStart(3, '0')}`;
+            const exists = await mongoose.model('Invoice').findOne({ invoiceNumber: tempNumber });
+            if (!exists) {
+                this.invoiceNumber = tempNumber;
+                unique = true;
+            } else {
+                sequence++;
+            }
+        }
     }
     next();
 });
