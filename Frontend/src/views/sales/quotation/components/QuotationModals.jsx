@@ -3,9 +3,10 @@ import { X, Send, Save, AlertTriangle, Loader, CheckCircle, Package, User } from
 
 export const BillPreviewModal = ({ 
     show, setShow, formData, clients, lineItems, subtotal, discount, 
-    discountAmount, offerPrice, taxRate, taxAmount, grandTotal, 
+    discountAmount, offerPrice, taxRate, taxAmount, total, grandTotal, 
     handleFinalSave, isSaving, includeDiscount, includeTax 
 }) => {
+    const finalTotal = grandTotal ?? total;
     if (!show) return null;
     const clientData = clients.find(c => c._id === formData.client);
 
@@ -72,11 +73,11 @@ export const BillPreviewModal = ({
 
                         <div className="preview-summary-area">
                             <div className="preview-summary-col">
-                                <div className="summary-row"><span>Subtotal</span><span>₹{subtotal.toLocaleString()}</span></div>
-                                {includeDiscount && <div className="summary-row"><span>Discount ({discount}%)</span><span>- ₹{discountAmount.toLocaleString()}</span></div>}
-                                <div className="summary-row highlight"><span>Offer Price</span><span>₹{offerPrice.toLocaleString()}</span></div>
-                                {includeTax && <div className="summary-row"><span>GST ({taxRate}%)</span><span>₹{taxAmount.toLocaleString()}</span></div>}
-                                <div className="summary-row grand-total"><span>Grand Total</span><span>₹{grandTotal.toLocaleString()}</span></div>
+                                <div className="summary-row"><span>Subtotal</span><span>₹{(subtotal || 0).toLocaleString()}</span></div>
+                                {includeDiscount && <div className="summary-row"><span>Discount ({discount}%)</span><span>- ₹{(discountAmount || 0).toLocaleString()}</span></div>}
+                                <div className="summary-row highlight"><span>Offer Price</span><span>₹{(offerPrice || 0).toLocaleString()}</span></div>
+                                {includeTax && <div className="summary-row"><span>GST ({taxRate}%)</span><span>₹{(taxAmount || 0).toLocaleString()}</span></div>}
+                                <div className="summary-row grand-total"><span>Grand Total</span><span>₹{(finalTotal || 0).toLocaleString()}</span></div>
                             </div>
                         </div>
                     </div>
