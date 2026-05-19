@@ -104,6 +104,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
             '/engineer/reports': { title: 'Site Monitoring', subtitle: 'Review daily progress logs' },
             '/engineer/approvals': { title: 'Approvals', subtitle: 'Review and approve requests' },
             '/site/dashboard': { title: 'Dashboard', subtitle: 'Your site tasks at a glance' },
+            '/site/projects': { title: 'My Projects', subtitle: 'Projects assigned to you' },
             '/site/tasks': { title: 'My Tasks', subtitle: 'Tasks assigned from Engineer' },
             '/site/reports': { title: 'Site Reports', subtitle: 'Submit daily progress reports' },
             '/site/leave': { title: 'Leave Request', subtitle: 'Submit and track applications' }
@@ -119,6 +120,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
         if (path.startsWith('/production-management/handoff')) return { title: 'Project Handoff', subtitle: 'Review new projects' };
         if (path.startsWith('/production-management/reports')) return { title: 'Reports & Export', subtitle: 'Analytics data' };
         if (path.startsWith('/engineer/projects/')) return { title: 'Project Detail', subtitle: 'Project overview and tasks' };
+        if (path.startsWith('/site/projects/')) return { title: 'Project Detail', subtitle: 'Project overview and tasks' };
         if (path.startsWith('/engineer/tasks/')) return { title: 'Task Detail', subtitle: 'Full task view' };
 
         return {
