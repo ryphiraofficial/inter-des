@@ -22,11 +22,27 @@ const Projects = ({
     onHandoffInitiate,
     onAssignStaff,
 }) => {
+    const sortedProjects = [...projects].sort((a, b) => {
+        const aTasks = tasks.filter(t => 
+            (t.project?._id || t.project || t.quotation?._id || t.quotation)?.toString() === a._id?.toString()
+        );
+        const bTasks = tasks.filter(t => 
+            (t.project?._id || t.project || t.quotation?._id || t.quotation)?.toString() === b._id?.toString()
+        );
+
+        const aPending = a.stage !== 'Procurement' && aTasks.length === 0;
+        const bPending = b.stage !== 'Procurement' && bTasks.length === 0;
+
+        if (aPending && !bPending) return -1;
+        if (!aPending && bPending) return 1;
+        return 0;
+    });
+
     return (
         <div className="portfolio-modern fade-in" style={{ paddingTop: '1rem' }}>
 
             <div className="portfolio-grid">
-                {projects.map((project, idx) => {
+                {sortedProjects.map((project, idx) => {
                     const projectMaterials = materialRequests?.filter(r => 
                         (r.project?._id || r.project)?.toString() === project._id?.toString()
                     ) || [];
