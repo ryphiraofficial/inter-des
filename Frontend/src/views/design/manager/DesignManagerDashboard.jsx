@@ -108,6 +108,15 @@ const DesignManagerDashboard = ({ user }) => {
                         onReviewRequest={(pid) => navigate(`/material-review?project=${pid}`)}
                         onUpdateStatus={(pid, stat) => projectAPI.update(pid, { status: stat }).then(fetchData)}
                         onHandoffInitiate={(proj) => taskActions.handleProjectHandoff(proj._id)}
+                        onAssignStaff={(project) => {
+                            taskActions.resetTaskForm();
+                            taskActions.setTaskFormData(prev => ({
+                                ...prev,
+                                project: project.quotation?._id || project.quotation || '',
+                                title: `Design deliverables for ${project.name}`
+                            }));
+                            setShowAssignModal(true);
+                        }}
                     />
                 );
             case 'tasks':
