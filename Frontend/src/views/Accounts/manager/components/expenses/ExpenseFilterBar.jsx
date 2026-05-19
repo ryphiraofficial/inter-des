@@ -1,4 +1,4 @@
-import { SlidersHorizontal, ChevronDown, CheckCircle, Download } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, CheckCircle } from 'lucide-react';
 
 const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropdown, setShowCategoryDropdown }) => {
     const categories = [
@@ -67,9 +67,6 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
                         </>
                     )}
                 </div>
-                <button className="btn-secondary" style={{ height: '45px' }}>
-                    <Download size={16} /> Export
-                </button>
             </div>
         </div>
     );

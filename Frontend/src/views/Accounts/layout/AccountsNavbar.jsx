@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
     RefreshCw, Landmark, LayoutDashboard, CheckCircle,
     FileText, CreditCard, TrendingUp, Users, ShoppingBag,
-    Briefcase, PieChart, Bell, Search
+    Briefcase, PieChart, Bell, Search, Download
 } from 'lucide-react';
 import { useNotificationLogic } from '../../admin/header/hooks/useNotificationLogic';
 import NotificationPopup from '../../admin/header/components/NotificationPopup';
@@ -31,7 +31,7 @@ const SEARCH_CONFIGS = {
     vendors: { placeholder: 'Search by name or category...' }
 };
 
-const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch }) => {
+const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExport }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';
@@ -111,6 +111,32 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch }) => {
                             }}
                         />
                     </div>
+                )}
+
+                {onExport && (
+                    <button 
+                        onClick={onExport} 
+                        style={{ 
+                            height: '38px', 
+                            padding: '0 16px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            fontSize: '13px',
+                            background: '#fff',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            color: '#475569',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            outline: 'none',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                        onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                    >
+                        <Download size={15} /> Export
+                    </button>
                 )}
                 
                 {/* Notification bell */}

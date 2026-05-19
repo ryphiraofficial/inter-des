@@ -23,6 +23,11 @@ const ManagerDashboard = ({ user, onLogout }) => {
         setSearch('');
     }, [activeTab]);
 
+    const exportSupportedTabs = ['expenses', 'payments', 'vendors', 'clients', 'invoices'];
+    const handleExport = exportSupportedTabs.includes(activeTab) ? () => {
+        window.dispatchEvent(new CustomEvent('accounts-export-data', { detail: { tab: activeTab } }));
+    } : null;
+
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview user={user} />;
@@ -39,7 +44,7 @@ const ManagerDashboard = ({ user, onLogout }) => {
     };
 
     return (
-        <AccountsLayout role="manager" user={user} onLogout={onLogout} search={search} setSearch={setSearch}>
+        <AccountsLayout role="manager" user={user} onLogout={onLogout} search={search} setSearch={setSearch} onExport={handleExport}>
             <div className="role-dashboard accounts-manager-hub">
                 {renderContent()}
             </div>

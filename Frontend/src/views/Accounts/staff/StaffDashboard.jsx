@@ -21,6 +21,11 @@ const StaffDashboard = ({ user, onLogout }) => {
         setSearch('');
     }, [activeTab]);
 
+    const exportSupportedTabs = ['collections', 'invoices', 'payments', 'expenses', 'vendors'];
+    const handleExport = exportSupportedTabs.includes(activeTab) ? () => {
+        window.dispatchEvent(new CustomEvent('accounts-export-data', { detail: { tab: activeTab } }));
+    } : null;
+
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview user={user} />;
@@ -34,7 +39,7 @@ const StaffDashboard = ({ user, onLogout }) => {
     };
 
     return (
-        <AccountsLayout role="staff" user={user} onLogout={onLogout} search={search} setSearch={setSearch}>
+        <AccountsLayout role="staff" user={user} onLogout={onLogout} search={search} setSearch={setSearch} onExport={handleExport}>
             <div className="role-dashboard accounts-staff-hub">
                 {renderContent()}
             </div>
