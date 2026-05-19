@@ -1,5 +1,7 @@
 import React from 'react';
 import { DollarSign, X, AlertTriangle, CheckCircle } from 'lucide-react';
+import DatePicker from '../../../common/DatePicker';
+import CustomSelect from '../../../common/CustomSelect';
 
 const ADVANCE_OPTIONS = [10, 20, 25, 30, 40, 50];
 
@@ -13,92 +15,180 @@ const PaymentCollectionModal = ({
     const calcAmt = Math.round((quotTotal * advancePct) / 100);
 
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <div className="payment-modal-card" style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
-                <div className="payment-modal-header" style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', padding: '28px 32px', color: 'white' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                                <DollarSign size={22} />
-                                <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>Approve & Set Payment Collection</h2>
-                            </div>
-                            <p style={{ margin: 0, opacity: 0.85, fontSize: '0.9rem' }}>Configure advance payment before releasing to Accounts Manager</p>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <div className="payment-modal-card" style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
+                
+                {/* Header */}
+                <div className="payment-modal-header" style={{ padding: '24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <DollarSign size={20} style={{ color: '#4f46e5' }} />
+                            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: '#0f172a' }}>Approve & Set Payment Collection</h2>
                         </div>
-                        <button onClick={() => setShowPaymentModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}><X size={18} /></button>
+                        <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>Configure advance payment before releasing to Accounts Manager</p>
                     </div>
+                    <button 
+                        onClick={() => setShowPaymentModal(false)} 
+                        style={{ background: 'none', border: 'none', borderRadius: '6px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8', transition: 'all 0.15s' }}
+                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+                    >
+                        <X size={16} />
+                    </button>
                 </div>
 
-                <div className="payment-modal-body" style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px 20px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {/* Body */}
+                <div className="payment-modal-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    
+                    {/* Project & Client summary cards */}
+                    <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '16px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 12px' }}>
                             <div>
-                                <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Project</p>
-                                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{paymentTask.title}</p>
+                                <p style={{ margin: '0 0 2px', fontSize: '10px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Project</p>
+                                <p style={{ margin: 0, fontWeight: 500, color: '#0f172a', fontSize: '13px' }}>{paymentTask.title}</p>
                             </div>
                             <div>
-                                <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Client</p>
-                                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{paymentTask.client?.name || 'N/A'}</p>
+                                <p style={{ margin: '0 0 2px', fontSize: '10px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Client</p>
+                                <p style={{ margin: 0, fontWeight: 500, color: '#0f172a', fontSize: '13px' }}>{paymentTask.client?.name || 'N/A'}</p>
                             </div>
                             <div>
-                                <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Quotation Total</p>
-                                <p style={{ margin: 0, fontWeight: 800, color: '#4f46e5', fontSize: '16px' }}>₹{quotTotal.toLocaleString('en-IN')}</p>
+                                <p style={{ margin: '0 0 2px', fontSize: '10px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quotation Total</p>
+                                <p style={{ margin: 0, fontWeight: 600, color: '#0f172a', fontSize: '14px' }}>₹{quotTotal.toLocaleString('en-IN')}</p>
                             </div>
                             <div>
-                                <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Advance to Collect</p>
-                                <p style={{ margin: 0, fontWeight: 800, color: '#10b981', fontSize: '16px' }}>₹{calcAmt.toLocaleString('en-IN')}</p>
+                                <p style={{ margin: '0 0 2px', fontSize: '10px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Advance to Collect</p>
+                                <p style={{ margin: 0, fontWeight: 700, color: '#10b981', fontSize: '14px' }}>₹{calcAmt.toLocaleString('en-IN')}</p>
                             </div>
                         </div>
                     </div>
 
+                    {/* Advance Percentage */}
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '10px' }}>Advance Percentage (Locked for Accounts Manager)</label>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0f172a', marginBottom: '8px' }}>Advance Percentage (Locked for Accounts Manager)</label>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                             {ADVANCE_OPTIONS.map(pct => (
-                                <button key={pct} onClick={() => setAdvancePct(pct)} style={{ padding: '8px 18px', borderRadius: '100px', border: `2px solid ${advancePct === pct ? '#4f46e5' : '#e2e8f0'}`, background: advancePct === pct ? '#eef2ff' : 'white', color: advancePct === pct ? '#4f46e5' : '#64748b', fontWeight: 700, fontSize: '14px', cursor: 'pointer', transition: 'all 0.15s' }}>
+                                <button 
+                                    key={pct} 
+                                    onClick={() => setAdvancePct(pct)} 
+                                    style={{ 
+                                        padding: '6px 14px', 
+                                        borderRadius: '6px', 
+                                        border: `1px solid ${advancePct === pct ? '#0f172a' : '#e2e8f0'}`, 
+                                        background: advancePct === pct ? '#0f172a' : 'white', 
+                                        color: advancePct === pct ? 'white' : '#475569', 
+                                        fontWeight: 500, 
+                                        fontSize: '13px', 
+                                        cursor: 'pointer', 
+                                        transition: 'all 0.15s' 
+                                    }}
+                                >
                                     {pct}%
                                 </button>
                             ))}
                         </div>
-                        <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#64748b' }}>
-                            <AlertTriangle size={12} style={{ display: 'inline', marginRight: '4px', color: '#f59e0b' }} />
-                            This amount is locked and cannot be changed by the Accounts Manager
+                        <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertTriangle size={12} style={{ color: '#f59e0b', flexShrink: 0 }} />
+                            This percentage will be locked for the Accounts department
                         </p>
                     </div>
 
+                    {/* Assign Procurement Manager */}
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Assign Procurement Manager <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select 
-                            value={selectedProcurementManagerId} 
-                            onChange={e => setSelectedProcurementManagerId(e.target.value)}
+                        <CustomSelect
+                            label="Assign Procurement Manager"
                             required
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: `1.5px solid ${selectedProcurementManagerId ? '#4f46e5' : '#e2e8f0'}`, fontSize: '14px', fontWeight: 600, color: '#0f172a', outline: 'none', cursor: 'pointer', boxSizing: 'border-box', backgroundColor: 'white' }}
+                            options={procurementManagers.map(m => ({ value: m._id, label: `${m.fullName} (${m.email})` }))}
+                            value={selectedProcurementManagerId}
+                            onChange={(e) => setSelectedProcurementManagerId(e.target.value)}
+                            placeholder="Select a Procurement Manager"
+                        />
+                    </div>
+
+                    {/* Payment Due Date */}
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0f172a', marginBottom: '6px' }}>
+                            Payment Due Date <span style={{ color: '#ef4444' }}>*</span>
+                        </label>
+                        <DatePicker
+                            value={paymentDueDate}
+                            onChange={(dateStr) => setPaymentDueDate(dateStr)}
+                            placeholder="Pick a date"
+                            minDate={new Date()}
+                        />
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0f172a', marginBottom: '6px' }}>
+                            Notes for Accounts Manager <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+                        </label>
+                        <textarea 
+                            value={paymentNotes} 
+                            onChange={e => setPaymentNotes(e.target.value)} 
+                            placeholder="e.g. Client agreed to 30% advance via NEFT. Contact: Rahul — 9876543210"
+                            rows={3} 
+                            style={{ 
+                                width: '100%', 
+                                padding: '8px 12px', 
+                                borderRadius: '6px', 
+                                border: '1px solid #e2e8f0', 
+                                fontSize: '13px', 
+                                color: '#0f172a', 
+                                resize: 'none', 
+                                outline: 'none', 
+                                boxSizing: 'border-box', 
+                                fontFamily: 'inherit',
+                                transition: 'all 0.15s'
+                            }} 
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(148, 163, 184, 0.15)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; }}
+                        />
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div style={{ display: 'flex', gap: '10px', paddingTop: '4px' }}>
+                        <button 
+                            onClick={() => setShowPaymentModal(false)} 
+                            style={{ 
+                                flex: 1, 
+                                padding: '9px', 
+                                borderRadius: '6px', 
+                                border: '1px solid #e2e8f0', 
+                                background: 'white', 
+                                fontWeight: 500, 
+                                fontSize: '13px', 
+                                cursor: 'pointer', 
+                                color: '#374151',
+                                transition: 'all 0.15s'
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
                         >
-                            <option value="">-- Choose a Procurement Manager --</option>
-                            {procurementManagers.map(m => (
-                                <option key={m._id} value={m._id}>{m.fullName} ({m.email})</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Payment Due Date <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="date" value={paymentDueDate} onChange={e => setPaymentDueDate(e.target.value)} min={new Date().toISOString().split('T')[0]}
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: `1.5px solid ${paymentDueDate ? '#4f46e5' : '#e2e8f0'}`, fontSize: '14px', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }} />
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Notes for Accounts Manager <span style={{ color: '#94a3b8' }}>(optional)</span></label>
-                        <textarea value={paymentNotes} onChange={e => setPaymentNotes(e.target.value)} placeholder="e.g. Client agreed to 30% advance via NEFT. Contact: Rahul — 9876543210"
-                            rows={3} style={{ width: '100%', padding: '11px 14px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '14px', color: '#0f172a', resize: 'none', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
-                        <button onClick={() => setShowPaymentModal(false)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1.5px solid #e2e8f0', background: 'white', fontWeight: 700, fontSize: '14px', cursor: 'pointer', color: '#374151' }}>
                             Cancel
                         </button>
-                        <button onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId: selectedProcurementManagerId })} disabled={submittingApproval || !paymentDueDate || !selectedProcurementManagerId}
-                            style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? '#94a3b8' : 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white', fontWeight: 800, fontSize: '14px', cursor: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
-                            {submittingApproval ? 'Approving...' : <><CheckCircle size={17} /> Approve & Pushed to Procurement</>}
+                        <button 
+                            onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId: selectedProcurementManagerId })} 
+                            disabled={submittingApproval || !paymentDueDate || !selectedProcurementManagerId}
+                            style={{ 
+                                flex: 2, 
+                                padding: '9px', 
+                                borderRadius: '6px', 
+                                border: 'none', 
+                                background: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? '#94a3b8' : '#0f172a', 
+                                color: 'white', 
+                                fontWeight: 500, 
+                                fontSize: '13px', 
+                                cursor: submittingApproval || !paymentDueDate || !selectedProcurementManagerId ? 'not-allowed' : 'pointer', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                gap: '6px', 
+                                transition: 'all 0.15s' 
+                            }}
+                            onMouseOver={(e) => { if (!submittingApproval && paymentDueDate && selectedProcurementManagerId) e.currentTarget.style.backgroundColor = '#1e293b'; }}
+                            onMouseOut={(e) => { if (!submittingApproval && paymentDueDate && selectedProcurementManagerId) e.currentTarget.style.backgroundColor = '#0f172a'; }}
+                        >
+                            {submittingApproval ? 'Approving...' : <><CheckCircle size={15} /> Approve & Pushed to Procurement</>}
                         </button>
                     </div>
                 </div>
@@ -108,3 +198,4 @@ const PaymentCollectionModal = ({
 };
 
 export default PaymentCollectionModal;
+
