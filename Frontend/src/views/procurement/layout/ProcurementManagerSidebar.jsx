@@ -9,7 +9,7 @@ const NAV_ITEMS = [
     { tab: 'overview',         label: 'Dashboard',         icon: LayoutDashboard },
     { tab: 'handoffs',         label: 'Design Handoffs',   icon: Plus },
     { tab: 'requests',         label: 'Material Requests', icon: Package },
-    { tab: 'assignments',      label: 'Assignments',       icon: CheckSquare },
+    { tab: 'assignments',      label: 'Approvals & Assignments', icon: CheckSquare },
     { tab: 'vendors',          label: 'Vendors',           icon: Building2 },
     { tab: 'completed',        label: 'Completed & Handoff', icon: CheckCircle },
 ];

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Target, Truck, CheckCircle, AlertTriangle, TrendingUp, Package, ArrowRight } from 'lucide-react';
+import { Target, Truck, CheckCircle, AlertTriangle, TrendingUp, Package, ArrowRight, ClipboardCheck } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../css/ProcurementPremium.css';
 
@@ -173,8 +172,34 @@ const Overview = ({ pendingRequests, pendingReviews = [], designHandoffs, assign
                 </div>
             </div>
 
-            {/* Dual Lists */}
+            {/* Triple Queues List */}
             <div className="premium-list-grid">
+                <div className="list-panel">
+                    <div className="chart-header">
+                        <h4 className="chart-title">Pending Approvals</h4>
+                        <span className="banner-pill" style={{ margin: 0, border: '1px solid #fde047', background: '#fffdf5', color: '#854d0e' }}>{pendingReviews.length} Action Required</span>
+                    </div>
+                    <div>
+                        {pendingReviews.slice(0, 5).map(req => (
+                            <div key={req._id} className="list-item-modern">
+                                <div className="item-icon-box" style={{ background: '#fffdf5', borderColor: '#fef08a' }}>
+                                    <ClipboardCheck size={18} strokeWidth={1.5} color="#854d0e" />
+                                </div>
+                                <div className="item-details">
+                                    <div className="item-title">{req.requestNumber || req.title}</div>
+                                    <div className="item-subtitle">{req.project?.name} • By {req.assignedTo?.fullName || 'Staff'}</div>
+                                </div>
+                                <button className="btn-arrow-hover" onClick={() => navigate('?tab=assignments')} title="View Approvals">
+                                    <ArrowRight size={16} strokeWidth={1.5} />
+                                </button>
+                            </div>
+                        ))}
+                        {pendingReviews.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#a8a29e', fontSize: '0.875rem' }}>No pending reviews from staff</div>
+                        )}
+                    </div>
+                </div>
+
                 <div className="list-panel">
                     <div className="chart-header">
                         <h4 className="chart-title">Design Handoff Queue</h4>

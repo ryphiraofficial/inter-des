@@ -164,7 +164,7 @@
 /* Elegant Lists */
 .premium-list-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
 }
 
@@ -251,6 +251,9 @@
 @media (max-width: 1200px) {
     .premium-chart-grid {
         grid-template-columns: 1fr;
+    }
+    .premium-list-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
