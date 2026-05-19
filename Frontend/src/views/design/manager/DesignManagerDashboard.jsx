@@ -13,6 +13,7 @@ import TaskAssignModal from './components/TaskAssignModal';
 import SubmissionReviewModal from './components/SubmissionReviewModal';
 import TaskUpdatesModal from './components/TaskUpdatesModal';
 import SplitTaskModal from './components/SplitTaskModal';
+import StaffTasksModal from './components/StaffTasksModal';
 
 import { useManagerData } from './hooks/useManagerData';
 import { useTaskActions } from './hooks/useTaskActions';
@@ -42,6 +43,8 @@ const DesignManagerDashboard = ({ user }) => {
     const [showTaskUpdatesModal, setShowTaskUpdatesModal] = useState(false);
     const [showSplitModal, setShowSplitModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [showStaffTasksModal, setShowStaffTasksModal] = useState(false);
+    const [selectedStaff, setSelectedStaff] = useState(null);
 
     const getPriorityColor = (priority) => {
         const map = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' };
@@ -131,7 +134,12 @@ const DesignManagerDashboard = ({ user }) => {
                             {staffList.map(member => {
                                 const activeCount = tasks.filter(t => t.assignedTo?.some(s => s._id === member._id) && t.status !== 'Completed').length;
                                 return (
-                                    <div key={member._id} className="member-row" style={{ cursor: 'pointer', borderBottom: '1px solid #f1f5f9', padding: '1rem 0.5rem' }}>
+                                    <div 
+                                        key={member._id} 
+                                        className="member-row" 
+                                        style={{ cursor: 'pointer', borderBottom: '1px solid #f1f5f9', padding: '1rem 0.5rem' }}
+                                        onClick={() => { setSelectedStaff(member); setShowStaffTasksModal(true); }}
+                                    >
                                         <div className="member-info">
                                             <div className="member-name">{member.name}</div>
                                             <div className="member-role">{member.role}</div>
@@ -207,6 +215,13 @@ const DesignManagerDashboard = ({ user }) => {
                 splitTaskData={taskActions.splitTaskData} setSplitTaskData={taskActions.setSplitTaskData}
                 staffList={staffList}
                 onConfirm={async () => { const ok = await taskActions.handleSplitTask(selectedTask); if (ok) setShowSplitModal(false); }}
+            />
+
+            <StaffTasksModal
+                show={showStaffTasksModal}
+                onClose={() => { setShowStaffTasksModal(false); setSelectedStaff(null); }}
+                staffMember={selectedStaff}
+                tasks={tasks}
             />
         </div>
     );
