@@ -1,12 +1,21 @@
 import React from 'react';
-import { X, Users, Calendar, AlertCircle, CheckSquare, Clock } from 'lucide-react';
+import { X, Users, Calendar, CheckSquare, Briefcase, Award } from 'lucide-react';
 
 const StaffTasksModal = ({ show, onClose, staffMember, tasks = [] }) => {
     if (!show || !staffMember) return null;
 
     // Filter tasks assigned to this staff member
-    const activeTasks = tasks.filter(t => 
+    const assignedTasks = tasks.filter(t => 
         t.assignedTo?.some(s => s._id === staffMember._id)
+    );
+
+    // Split into Active and Completed/Finalized
+    const activeTasks = assignedTasks.filter(t => 
+        !['Completed', 'Approved', 'Pushed to Procurement'].includes(t.status)
+    );
+
+    const completedTasks = assignedTasks.filter(t => 
+        ['Completed', 'Approved', 'Pushed to Procurement'].includes(t.status)
     );
 
     const getPriorityStyle = (priority) => {
@@ -48,7 +57,7 @@ const StaffTasksModal = ({ show, onClose, staffMember, tasks = [] }) => {
                         <div>
                             <h3 style={{ margin: 0, fontWeight: 800, color: '#1e293b' }}>{staffMember.name}</h3>
                             <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                                {staffMember.role} • <span style={{ fontWeight: 600, color: '#4f46e5' }}>{activeTasks.length} Assigned Task{activeTasks.length !== 1 ? 's' : ''}</span>
+                                {staffMember.role} • <span style={{ fontWeight: 600, color: '#4f46e5' }}>{activeTasks.length} Active Task{activeTasks.length !== 1 ? 's' : ''}</span>
                             </p>
                         </div>
                     </div>
@@ -56,70 +65,120 @@ const StaffTasksModal = ({ show, onClose, staffMember, tasks = [] }) => {
                 </div>
 
                 <div style={{ padding: '1.5rem', maxHeight: '60vh', overflowY: 'auto' }}>
-                    <div style={{ display: 'grid', gap: '1rem' }}>
-                        {activeTasks.length > 0 ? (
-                            activeTasks.map((task) => (
-                                <div 
-                                    key={task._id} 
-                                    style={{
-                                        background: '#ffffff',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: '16px',
-                                        padding: '1.25rem',
-                                        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-                                        transition: 'all 0.2s ease'
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
-                                        <div>
-                                            <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>{task.title}</h4>
-                                            {task.project && (
-                                                <span style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 600 }}>
-                                                    💼 {task.project.projectName || task.project.name}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '6px' }}>
-                                            <span 
-                                                style={{ 
-                                                    padding: '3px 8px', 
-                                                    borderRadius: '6px', 
-                                                    fontSize: '0.65rem', 
-                                                    fontWeight: 700,
-                                                    ...getPriorityStyle(task.priority) 
-                                                }}
-                                            >
-                                                {task.priority?.toUpperCase()}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#64748b' }}>
-                                            <Calendar size={13} color="#94a3b8" />
-                                            <span>Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'TBD'}</span>
-                                        </div>
-                                        <span 
-                                            style={{ 
-                                                padding: '4px 10px', 
-                                                borderRadius: '20px', 
-                                                fontSize: '0.7rem', 
-                                                fontWeight: 700,
-                                                ...getStatusStyle(task.status)
+                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        {/* ── ACTIVE WORKLOAD ── */}
+                        <div>
+                            <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Active Tasks ({activeTasks.length})
+                            </h4>
+                            <div style={{ display: 'grid', gap: '0.75rem' }}>
+                                {activeTasks.length > 0 ? (
+                                    activeTasks.map((task) => (
+                                        <div 
+                                            key={task._id} 
+                                            style={{
+                                                background: '#ffffff',
+                                                border: '1px solid #e2e8f0',
+                                                borderRadius: '16px',
+                                                padding: '1.25rem',
+                                                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
                                             }}
                                         >
-                                            {task.status}
-                                        </span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                                                <div>
+                                                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>{task.title}</h4>
+                                                    {task.project && (
+                                                        <span style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 600 }}>
+                                                            💼 {task.project.projectName || task.project.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span 
+                                                    style={{ 
+                                                        padding: '3px 8px', 
+                                                        borderRadius: '6px', 
+                                                        fontSize: '0.65rem', 
+                                                        fontWeight: 700,
+                                                        ...getPriorityStyle(task.priority) 
+                                                    }}
+                                                >
+                                                    {task.priority?.toUpperCase()}
+                                                </span>
+                                            </div>
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#64748b' }}>
+                                                    <Calendar size={13} color="#94a3b8" />
+                                                    <span>Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'TBD'}</span>
+                                                </div>
+                                                <span 
+                                                    style={{ 
+                                                        padding: '4px 10px', 
+                                                        borderRadius: '20px', 
+                                                        fontSize: '0.7rem', 
+                                                        fontWeight: 700,
+                                                        ...getStatusStyle(task.status)
+                                                    }}
+                                                >
+                                                    {task.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{ textAlign: 'center', padding: '2rem 1rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                                        <CheckSquare size={28} color="#10b981" style={{ marginBottom: '8px', display: 'inline-block' }} />
+                                        <h5 style={{ margin: '0 0 2px 0', color: '#1e293b', fontWeight: 700 }}>No Active Workload</h5>
+                                        <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>
+                                            Available for new design assignments.
+                                        </p>
                                     </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ── COMPLETED & SUBMITTED HISTORY ── */}
+                        {completedTasks.length > 0 && (
+                            <div>
+                                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Completed & Handed Off ({completedTasks.length})
+                                </h4>
+                                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                                    {completedTasks.map((task) => (
+                                        <div 
+                                            key={task._id} 
+                                            style={{
+                                                background: '#f8fafc',
+                                                border: '1px solid #e2e8f0',
+                                                borderRadius: '16px',
+                                                padding: '1rem 1.25rem',
+                                                opacity: 0.85
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                                                <div>
+                                                    <h5 style={{ margin: '0 0 2px 0', fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>{task.title}</h5>
+                                                    {task.project && (
+                                                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                                            {task.project.projectName || task.project.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span 
+                                                    style={{ 
+                                                        padding: '4px 10px', 
+                                                        borderRadius: '20px', 
+                                                        fontSize: '0.7rem', 
+                                                        fontWeight: 700,
+                                                        ...getStatusStyle(task.status)
+                                                    }}
+                                                >
+                                                    {task.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-                                <CheckSquare size={36} color="#10b981" style={{ marginBottom: '12px', display: 'inline-block' }} />
-                                <h4 style={{ margin: '0 0 4px 0', color: '#1e293b', fontWeight: 700 }}>Fully Available</h4>
-                                <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0, padding: '0 1.5rem' }}>
-                                    This team member has no active design tasks and is available for new project assignments.
-                                </p>
                             </div>
                         )}
                     </div>

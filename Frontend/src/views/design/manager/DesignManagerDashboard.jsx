@@ -132,7 +132,7 @@ const DesignManagerDashboard = ({ user }) => {
                         <div className="section-header"><h3>Staff Workload & Availability</h3></div>
                         <div className="team-performance-list">
                             {staffList.map(member => {
-                                const activeCount = tasks.filter(t => t.assignedTo?.some(s => s._id === member._id) && t.status !== 'Completed').length;
+                                const activeCount = tasks.filter(t => t.assignedTo?.some(s => s._id === member._id) && !['Completed', 'Approved', 'Pushed to Procurement'].includes(t.status)).length;
                                 return (
                                     <div 
                                         key={member._id} 
