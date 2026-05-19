@@ -14,7 +14,7 @@ const PaymentCollectionModal = ({
 
     return (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <div className="payment-modal-card" style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
+            <div className="payment-modal-card" style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
                 <div className="payment-modal-header" style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', padding: '28px 32px', color: 'white' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
