@@ -11,6 +11,7 @@ import {
     ChevronRight,
     TrendingUp,
     X,
+    Menu,
 } from 'lucide-react';
 import './css/SalesSidebar.css';
 
@@ -56,13 +57,12 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
                         </div>
                     )}
                     
-                    {/* Relocated Collapse Button */}
                     <button
                         className="sales-collapse-btn-inline header-version"
                         onClick={() => setCollapsed(!collapsed)}
                         title={collapsed ? 'Expand' : 'Collapse'}
                     >
-                        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                        <Menu size={16} />
                     </button>
 
                     <button className="sales-close-mobile" onClick={toggleSidebar}>
