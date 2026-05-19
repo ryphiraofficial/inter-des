@@ -34,21 +34,6 @@ const DesignOverview = ({ stats, tasks, quotations, teamStats, materialRequests 
 
     return (
         <div className="design-overview fade-in">
-            {/* Creative Banner */}
-            <div className="welcome-banner" style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)', borderRadius: '24px', padding: '2.5rem', marginBottom: '2.5rem', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '100%', background: 'radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                        <div style={{ padding: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px' }}>
-                            <Sparkles size={20} color="#fff" />
-                        </div>
-                        <span style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Studio Intelligence</span>
-                    </div>
-                    <h3 style={{ fontSize: '2.25rem', fontWeight: 900, color: 'white', marginBottom: '8px' }}>Design Manager's Workspace</h3>
-                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', maxWidth: '600px' }}>Curate experiences, review aesthetics, and monitor the creative pulse of every project.</p>
-                </div>
-            </div>
-
             {/* Premium Stats Grid */}
             <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 <div className="stat-card premium">
