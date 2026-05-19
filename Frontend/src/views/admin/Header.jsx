@@ -130,7 +130,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
     };
 
     const { title, subtitle } = getPageDetails();
-    const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects'];
+    const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team'];
     const isSearchable = searchablePaths.includes(location.pathname);
 
     return (

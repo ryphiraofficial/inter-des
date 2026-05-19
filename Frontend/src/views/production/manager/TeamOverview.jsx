@@ -48,6 +48,14 @@ const TeamOverview = () => {
         return () => window.removeEventListener('open-create-production-member-modal', openCreateMemberModal);
     }, []);
 
+    useEffect(() => {
+        const handleHeaderSearch = (e) => {
+            setSearchTerm(e.detail || '');
+        };
+        window.addEventListener('header-search', handleHeaderSearch);
+        return () => window.removeEventListener('header-search', handleHeaderSearch);
+    }, []);
+
     const filteredTeam = teamData.filter(member => 
         member.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
         member.role.toLowerCase().includes(searchTerm.toLowerCase())
@@ -92,24 +100,8 @@ const TeamOverview = () => {
     };
 
     return (
-        <div className="pm-dashboard">
-            <div className="pm-toolbar">
-                <div className="pm-toolbar-left">
-                    <div className="pm-search-input-container" style={{ width: '300px' }}>
-                        <Search size={16} color="#64748b" />
-                        <input 
-                            type="text" 
-                            className="pm-search-input"
-                            placeholder="Search by name or role..." 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-                <button onClick={() => setIsModalOpen(true)} className="pm-quick-action-btn">
-                    <Plus size={16} /> <span>Add Member</span>
-                </button>
-            </div>
+        <div className="pm-dashboard" style={{ paddingTop: '1.5rem' }}>
+
 
             {error && <div className="pm-error-message">{error}</div>}
 
