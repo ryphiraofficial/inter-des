@@ -506,15 +506,22 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         const project = await Project.findById(projectId).populate('quotation');
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-        if (project.stage !== 'Pending Payment') {
-            return res.status(400).json({ success: false, message: 'Project is not in Pending Payment stage' });
+        if (project.stage !== 'Pending Payment' && project.stage !== 'Accounts') {
+            return res.status(400).json({ success: false, message: 'Project is not in a valid stage for payment verification' });
         }
 
         const paid = Number(collectedAmount) || project.advanceAmount;
         project.paymentStatus = paid >= project.advanceAmount ? 'Cleared' : 'Partial Payment';
         project.collectedAmount = paid;
         project.paymentCollectionStatus = 'Verified';
-        project.stage = 'Procurement';
+        
+        const originalStage = project.stage;
+        if (originalStage === 'Accounts') {
+            project.stage = 'Design';
+        } else {
+            project.stage = 'Procurement';
+        }
+
         if (paymentNotes) project.notes = (project.notes || '') + `\nPayment Note: ${paymentNotes}`;
         await project.save();
 
@@ -526,19 +533,29 @@ exports.verifyPaymentAndRelease = async (req, res) => {
             await invoice.save();
         }
 
-        // Since MRs are processed concurrently, we just notify Procurement that payment is cleared
+        // Notify respective department based on stage transition
         const { notifyByRole } = require('../utils/notificationHelper');
-        notifyByRole('Procurement Manager', {
-            title: '🚀 Advance Payment Cleared',
-            description: `Advance payment confirmed for "${project.name}". Procurement can proceed without holds.`,
-            type: 'Success',
-            relatedModel: 'Project',
-            relatedId: project._id
-        });
+        if (originalStage === 'Accounts') {
+            notifyByRole('Design Manager', {
+                title: '🎨 Onboarding Payment Cleared',
+                description: `Advance onboarding payment confirmed for "${project.name}". Ready for Design.`,
+                type: 'Success',
+                relatedModel: 'Project',
+                relatedId: project._id
+            });
+        } else {
+            notifyByRole('Procurement Manager', {
+                title: '🚀 Advance Payment Cleared',
+                description: `Advance payment confirmed for "${project.name}". Procurement can proceed without holds.`,
+                type: 'Success',
+                relatedModel: 'Project',
+                relatedId: project._id
+            });
+        }
 
         await createNotification({
             title: '✅ Advance Payment Verified',
-            description: `Accounts Manager confirmed advance payment for "${project.name}". Project moved to Procurement.`,
+            description: `Accounts Manager confirmed advance payment for "${project.name}". Project moved to ${originalStage === 'Accounts' ? 'Design' : 'Procurement'}.`,
             type: 'Success',
             relatedModel: 'Project',
             relatedId: project._id,
