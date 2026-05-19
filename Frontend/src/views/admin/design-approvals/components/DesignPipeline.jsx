@@ -21,11 +21,17 @@ const DesignPipeline = ({ tasks, setSelectedTask, setShowDesignModal, openApprov
                 <div key={task._id} className="approval-card" style={{ background: 'white', borderRadius: '24px', border: '1px solid #e2e8f0', overflow: 'hidden', transition: 'all 0.3s ease', position: 'relative' }}>
                     <div style={{ height: '200px', background: '#f1f5f9', position: 'relative', overflow: 'hidden' }}>
                         {task.submissions?.[task.submissions.length - 1]?.files?.some(f => f.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)) ? (
-                            <img 
-                                src={`${BASE_IMAGE_URL}${task.submissions[task.submissions.length - 1].files.find(f => f.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)).url}`} 
-                                alt="Design Preview"
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
+                            (() => {
+                                const file = task.submissions[task.submissions.length - 1].files.find(f => f.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+                                const srcUrl = file.url.startsWith('http') ? file.url : `${BASE_IMAGE_URL}${file.url}`;
+                                return (
+                                    <img 
+                                        src={srcUrl} 
+                                        alt="Design Preview"
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                );
+                            })()
                         ) : (
                             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: '#94a3b8' }}>
                                 <ImageIcon size={48} strokeWidth={1.5} />
