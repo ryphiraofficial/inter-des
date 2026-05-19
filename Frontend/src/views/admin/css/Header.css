@@ -14,12 +14,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2.5rem;
+    padding: 0 1.5rem;
     height: 80px;
     min-height: 80px;
     background-color: #ffffff;
     /* border-bottom: 1px solid #e8edf2; Removed unwanted underline */
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     position: sticky;
     top: 0;
     z-index: 100;

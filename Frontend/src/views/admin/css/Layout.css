@@ -56,11 +56,9 @@
 }
 
 .page-wrapper {
-    padding: 1rem 0 1.5rem 0;
-    width: 90%;
-    margin: 0 auto;
+    padding: 1.5rem;
+    width: 100%;
     box-sizing: border-box;
-    align-self: center; /* Prevent flex stretch from overriding width */
 }
 
 /* Mobile Responsive Layout */

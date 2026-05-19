@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Clock, FileText, MessageSquare, ExternalLink, Plus, Filter, X, Users, UserX, ChevronDown } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, FileText, MessageSquare, ExternalLink, Plus, Filter, X, Users, UserX, ChevronDown, AlertCircle } from 'lucide-react';
 import '../css/ProductionManagement.css';
 import { approvalAPI, productionAPI } from '../../../models/api';
 import LeaveApprovals from '../shared/LeaveApprovals';

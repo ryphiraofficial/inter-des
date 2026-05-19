@@ -27,7 +27,7 @@
 /* Page content below the header */
 .sales-page-content {
     flex: 1;
-    padding: 24px;
+    padding: 1.5rem;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
@@ -42,6 +42,6 @@
     }
 
     .sales-page-content {
-        padding: 16px;
+        padding: 1rem;
     }
 }

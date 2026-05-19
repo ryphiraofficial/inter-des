@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     FolderOpen, ArrowLeft, Calendar, Users, CheckSquare,
-    Activity, ClipboardList, Info, Plus, X, Loader2, UserX
+    Activity, ClipboardList, Info, Plus, X, Loader2, UserX,
+    User, TrendingUp, Clock
 } from 'lucide-react';
 import { engineerAPI } from '../../../models/api';
 import './Engineer.css';
@@ -98,29 +99,42 @@ const ProjectDetail = ({ user }) => {
         <div className="eng-tasks-page">
             {toast && <div className="eng-toast" style={{ background: toast.type==='success'?'#10b981':'#ef4444' }}>{toast.msg}</div>}
 
-            {/* Back + Title */}
+            {/* Back + Identity Banner */}
             <div className="eng-page-header">
                 <div>
                     <button className="eng-back-btn" onClick={() => navigate(`${basePath}/projects`)}>
                         <ArrowLeft size={16}/> Back to Projects
                     </button>
-                    <h1 className="eng-page-title">
-                        <FolderOpen size={22}/>{project.projectName}
-                    </h1>
-                    <p className="eng-page-sub">
-                        PM: {project.projectManager?.fullName} &nbsp;·&nbsp;
-                        Status: <strong>{project.status}</strong>
-                    </p>
+                    
+                    <div className="eng-project-banner-card">
+                        <div className="eng-banner-icon-box">
+                            <FolderOpen size={28}/>
+                        </div>
+                        <div className="eng-banner-text-details">
+                            <h1 className="eng-banner-title">{project.projectName}</h1>
+                            <div className="eng-banner-meta-row">
+                                <span className="eng-banner-meta-pill">
+                                    <strong>PM:</strong> {project.projectManager?.fullName || '—'}
+                                </span>
+                                <span className={`eng-banner-status-badge status-${(project.status || 'Active').toLowerCase().replace(' ', '-')}`}>
+                                    {project.status}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="eng-tabs">
-                {[['overview','Overview',<Info size={15}/>],['tasks','Tasks',<ClipboardList size={15}/>],['activity','Activity',<Activity size={15}/>]].map(([key,label,icon])=>(
-                    <button key={key} className={`eng-tab${tab===key?' active':''}`} onClick={()=>setTab(key)}>
-                        {icon}{label}
-                    </button>
-                ))}
+            {/* Tabs Segmented Control */}
+            <div className="eng-tabs-container">
+                <div className="eng-tabs-segmented">
+                    {[['overview','Overview',<Info size={16}/>],['tasks','Tasks',<ClipboardList size={16}/>],['activity','Activity',<Activity size={16}/>]].map(([key,label,icon])=>(
+                        <button key={key} className={`eng-tab-pill${tab===key?' active':''}`} onClick={()=>setTab(key)}>
+                            {icon}
+                            <span>{label}</span>
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Overview Tab */}
@@ -134,14 +148,17 @@ const ProjectDetail = ({ user }) => {
                             </div>
                             <div className="eng-info-rows">
                                 {[
-                                    ['Client',    project.clientId?.name || '—'],
-                                    ['Start Date', project.startDate ? new Date(project.startDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'],
-                                    ['End Date',   project.endDate   ? new Date(project.endDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'],
-                                    ['Status',     project.status],
-                                ].map(([k,v])=>(
-                                    <div key={k} className="eng-info-row">
-                                        <span className="eng-info-label">{k}</span>
-                                        <span className="eng-info-value">{v}</span>
+                                    { key: 'Client', value: project.clientId?.name || '—', icon: <User size={15} style={{ color: '#6366f1' }} /> },
+                                    { key: 'Start Date', value: project.startDate ? new Date(project.startDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—', icon: <Calendar size={15} style={{ color: '#10b981' }} /> },
+                                    { key: 'End Date', value: project.endDate ? new Date(project.endDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—', icon: <Calendar size={15} style={{ color: '#f59e0b' }} /> },
+                                    { key: 'Status', value: project.status, icon: <TrendingUp size={15} style={{ color: '#06b6d4' }} /> },
+                                ].map((item)=>(
+                                    <div key={item.key} className="eng-info-row">
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div className="eng-row-icon-box">{item.icon}</div>
+                                            <span className="eng-info-label">{item.key}</span>
+                                        </div>
+                                        <span className="eng-info-value">{item.value}</span>
                                     </div>
                                 ))}
                             </div>
@@ -156,16 +173,18 @@ const ProjectDetail = ({ user }) => {
                                 <div className="eng-progress-label">
                                     <span>Overall completion</span><span>{project.progress||0}%</span>
                                 </div>
-                                <div className="eng-progress-track">
-                                    <div className="eng-progress-fill" style={{ width:`${project.progress||0}%` }}/>
+                                <div className="eng-progress-track-glowing">
+                                    <div className="eng-progress-fill-glowing" style={{ width:`${project.progress||0}%` }}/>
                                 </div>
                                 <div className="eng-overview-stats">
-                                    {[['Total', allTasks.length,'#6366f1'], ['My Tasks', myTasks.length,'#3b82f6'],
-                                      ['Done',  allTasks.filter(t=>['Completed','Approved'].includes(t.status)).length,'#10b981']
-                                    ].map(([l,v,c])=>(
-                                        <div key={l} className="eng-ov-stat">
-                                            <span style={{ color:c }}>{v}</span>
-                                            <span>{l}</span>
+                                    {[
+                                        { label: 'Total Tasks', value: allTasks.length, bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', color: '#4f46e5' },
+                                        { label: 'My Tasks', value: myTasks.length, bg: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', color: '#2563eb' },
+                                        { label: 'Done', value: allTasks.filter(t=>['Completed','Approved'].includes(t.status)).length, bg: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', color: '#059669' }
+                                    ].map((stat)=>(
+                                        <div key={stat.label} className="eng-ov-stat-card" style={{ background: stat.bg }}>
+                                            <span style={{ color: stat.color }}>{stat.value}</span>
+                                            <span>{stat.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -177,28 +196,31 @@ const ProjectDetail = ({ user }) => {
                             <div className="eng-section-header">
                                 <div className="eng-section-title"><Users size={16}/>Team</div>
                             </div>
-                            <div className="eng-info-rows">
+                            <div className="eng-team-list">
                                 {[
-                                    ['Project Manager',  project.projectManager],
-                                    ['Project Engineer', project.projectEngineer],
-                                    ['Site Engineer',    project.siteEngineer],
-                                    ['Site Supervisor',  project.siteSupervisor],
-                                ].filter(([,v])=>v).map(([k,v])=>(
-                                    <div key={k} className="eng-info-row" style={{ alignItems: 'center' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <span className="eng-info-label">{k}</span>
-                                            <span className="eng-info-value">{v.fullName}</span>
+                                    { key: 'Project Manager', value: project.projectManager, grad: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', initial: 'PM' },
+                                    { key: 'Project Engineer', value: project.projectEngineer, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', initial: 'PE' },
+                                    { key: 'Site Engineer', value: project.siteEngineer, grad: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', initial: 'SE' },
+                                    { key: 'Site Supervisor', value: project.siteSupervisor, grad: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', initial: 'SS' },
+                                ].filter(item => item.value).map((item)=>(
+                                    <div key={item.key} className="eng-team-row">
+                                        <div className="eng-team-avatar" style={{ background: item.grad }}>
+                                            {item.value.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || item.initial}
                                         </div>
-                                        {((user?.role === 'Project Engineer' && (k === 'Site Engineer' || k === 'Site Supervisor')) || 
-                                          (user?.role === 'Site Engineer' && k === 'Site Supervisor')) && (
+                                        <div className="eng-team-details">
+                                            <span className="eng-team-name">{item.value.fullName}</span>
+                                            <span className="eng-team-role">{item.key}</span>
+                                        </div>
+                                        {((user?.role === 'Project Engineer' && (item.key === 'Site Engineer' || item.key === 'Site Supervisor')) || 
+                                          (user?.role === 'Site Engineer' && item.key === 'Site Supervisor')) && (
                                             <button 
                                                 className="eng-replace-btn"
                                                 title="Request Replacement"
                                                 onClick={() => {
                                                     setReplaceData({
-                                                        staffType: k,
-                                                        currentStaffId: v._id,
-                                                        currentStaffName: v.fullName,
+                                                        staffType: item.key,
+                                                        currentStaffId: item.value._id,
+                                                        currentStaffName: item.value.fullName,
                                                         reason: ''
                                                     });
                                                     setShowReplaceModal(true);

@@ -189,12 +189,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
                     />
                 </div>
 
-                <div className="header-profile-dropdown" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', marginLeft: '8px', padding: '4px', borderRadius: '8px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e7ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '13px' }}>
-                        {user?.fullName?.charAt(0) || 'U'}
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#94a3b8', marginLeft: '6px' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
+
             </div>
         </header>
     );
