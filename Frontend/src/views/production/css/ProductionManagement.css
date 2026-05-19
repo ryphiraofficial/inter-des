@@ -1044,7 +1044,7 @@
 
 .pm-kanban-column-header h3 {
     font-size: 1rem;
-    fontWeight: 600;
+    font-weight: 600;
     color: #1e293b;
     margin: 0;
     display: flex;
@@ -1398,7 +1398,7 @@
     color: white;
     border: none;
     border-radius: 8px;
-    fontWeight: 600;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -1471,7 +1471,7 @@
     padding: 4px 10px;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    borderRadius: 99px;
+    border-radius: 99px;
     font-size: 0.8rem;
     color: #1d4ed8;
     font-weight: 600;

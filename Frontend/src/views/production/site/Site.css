@@ -903,7 +903,7 @@ input[type="time"].site-form-input:disabled::-webkit-calendar-picker-indicator {
     gap: 4px;
     font-size: 0.78rem;
     color: #10b981;
-    fontWeight: 600;
+    font-weight: 600;
 }
 
 /* ===== LEAVE PAGE ===== */

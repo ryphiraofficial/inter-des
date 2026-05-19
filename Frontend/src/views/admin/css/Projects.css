@@ -824,7 +824,7 @@
 .info-card-premium {
     padding: 1.5rem;
     background: #f8fafc;
-    borderRadius: 16px;
+    border-radius: 16px;
 }
 
 .completion-bar-wrapper {
