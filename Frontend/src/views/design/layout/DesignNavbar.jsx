@@ -1,17 +1,41 @@
 import React from 'react';
-import { RefreshCw, LogOut, Palette } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { 
+    RefreshCw, Palette, LayoutDashboard, GitMerge, FileSpreadsheet, 
+    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle 
+} from 'lucide-react';
 
 const DesignNavbar = ({ user, onRefresh, isLoading }) => {
-    const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'D';
+    const [searchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'overview';
+
+    const isManager = user?.role === 'design_manager';
+
+    const tabMeta = isManager ? {
+        overview: { title: 'Studio Overview', icon: LayoutDashboard },
+        pipeline: { title: 'Design Pipeline', icon: GitMerge },
+        project_details: { title: 'Approved Specifications', icon: FileSpreadsheet },
+        project_management: { title: 'Project Management', icon: Briefcase },
+        tasks: { title: 'Tasks Management', icon: CheckSquare },
+        staff_overview: { title: 'Team Workload', icon: Users },
+        material_review: { title: 'Material Review Hub', icon: Eye }
+    } : {
+        overview: { title: 'Designer Workspace', icon: LayoutDashboard },
+        tasks: { title: 'My Active Tasks', icon: CheckSquare },
+        revisions: { title: 'Revision Requests', icon: AlertCircle },
+        submissions: { title: 'Finalized Submissions', icon: CheckCircle }
+    };
+
+    const { title, icon: Icon } = tabMeta[activeTab] || { title: 'Design Studio', icon: Palette };
 
     return (
         <header className="design-navbar">
             <div className="design-navbar-brand">
                 <div className="design-navbar-icon">
-                    <Palette size={20} />
+                    <Icon size={20} />
                 </div>
                 <div>
-                    <span className="design-navbar-title">Design Studio</span>
+                    <span className="design-navbar-title">{title}</span>
                     <span className="design-navbar-subtitle">
                         {user?.role?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                     </span>
@@ -25,13 +49,6 @@ const DesignNavbar = ({ user, onRefresh, isLoading }) => {
                         <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
                     </button>
                 )}
-                <div className="design-navbar-user">
-                    <div className="design-navbar-avatar">{getInitials(user?.name)}</div>
-                    <div className="design-navbar-userinfo">
-                        <span className="design-navbar-name">{user?.name || 'Designer'}</span>
-                        <span className="design-navbar-role">{user?.role?.replace(/_/g, ' ')}</span>
-                    </div>
-                </div>
             </div>
         </header>
     );
