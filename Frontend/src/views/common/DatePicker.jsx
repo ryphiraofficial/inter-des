@@ -23,6 +23,7 @@ const DatePicker = ({
     disabled = false,
     minDate,
     maxDate,
+    align = 'left',
 }) => {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
@@ -79,7 +80,7 @@ const DatePicker = ({
 
             {/* Popover */}
             {open && (
-                <div className="dp-popover">
+                <div className={`dp-popover align-${align}`}>
                     <DayPicker
                         mode="single"
                         selected={validDate}

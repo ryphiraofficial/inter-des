@@ -168,6 +168,7 @@ const TaskAssignModal = ({
                                 onChange={(dateStr) => setTaskFormData({ ...taskFormData, dueDate: dateStr })}
                                 placeholder="Pick a date"
                                 minDate={new Date()}
+                                align="right"
                             />
                         </div>
                     </div>
