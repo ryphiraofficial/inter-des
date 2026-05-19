@@ -518,6 +518,14 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         if (paymentNotes) project.notes = (project.notes || '') + `\nPayment Note: ${paymentNotes}`;
         await project.save();
 
+        const invoice = await Invoice.findOne({ project: projectId });
+        if (invoice) {
+            invoice.amountPaid = paid;
+            invoice.status = paid >= invoice.grandTotal ? 'Paid' : 'Partially Paid';
+            invoice.paymentDate = new Date();
+            await invoice.save();
+        }
+
         // Since MRs are processed concurrently, we just notify Procurement that payment is cleared
         const { notifyByRole } = require('../utils/notificationHelper');
         notifyByRole('Procurement Manager', {
@@ -560,6 +568,58 @@ exports.submitPaymentCollection = async (req, res) => {
         project.notes = (project.notes || '') + noteDetails;
         
         await project.save();
+
+        // 1. Find or create an invoice for this project so the Payment record can link to it
+        let invoice = await Invoice.findOne({ project: projectId });
+        if (!invoice) {
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 7);
+            invoice = await Invoice.create({
+                invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`, // unique fall-back
+                client: project.client,
+                project: project._id,
+                quotation: project.quotation,
+                dueDate: dueDate,
+                items: [{
+                    description: `Advance Payment Collection for ${project.name}`,
+                    quantity: 1,
+                    rate: Number(collectedAmount) || project.advanceAmount || 0,
+                    tax: 0,
+                    amount: Number(collectedAmount) || project.advanceAmount || 0
+                }],
+                subtotal: Number(collectedAmount) || project.advanceAmount || 0,
+                totalTax: 0,
+                grandTotal: Number(collectedAmount) || project.advanceAmount || 0,
+                amountPaid: 0,
+                status: 'Draft',
+                createdBy: req.user.id
+            });
+        }
+
+        // 2. Map frontend payment mode string to PaymentSchema enum option
+        let pMode = 'Other';
+        if (paymentMode) {
+            const lowerMode = paymentMode.toLowerCase();
+            if (lowerMode.includes('cash')) pMode = 'Cash';
+            else if (lowerMode.includes('transfer') || lowerMode.includes('bank') || lowerMode.includes('neft') || lowerMode.includes('rtgs')) pMode = 'Bank Transfer';
+            else if (lowerMode.includes('cheque')) pMode = 'Cheque';
+            else if (lowerMode.includes('upi') || lowerMode.includes('gpay') || lowerMode.includes('phone') || lowerMode.includes('paytm')) pMode = 'UPI';
+            else if (lowerMode.includes('card')) pMode = 'Card';
+        }
+
+        // 3. Create the Payment document
+        await Payment.create({
+            project: project._id,
+            invoice: invoice._id,
+            client: project.client,
+            amount: Number(collectedAmount) || project.advanceAmount || 0,
+            paymentDate: new Date(),
+            paymentMethod: pMode,
+            transactionId: referenceNumber || '',
+            reference: referenceNumber || '',
+            notes: paymentNotes || 'Advance payment collected by staff',
+            receivedBy: req.user.id
+        });
         
         // Notify Accounts Managers & Admins
         const User = require('../models/User');
