@@ -23,6 +23,12 @@ const AccountsStaffSidebar = ({ user, onLogout }) => {
 
     return (
         <aside className="accounts-sidebar">
+            <div style={{ padding: '0.5rem 1.75rem 1rem', borderBottom: '1px solid #f1f5f9', marginBottom: '1rem' }}>
+                <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>Interior Design</h1>
+                <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Staff Panel
+                </p>
+            </div>
             <div className="accounts-sidebar-nav-container">
                 <nav className="accounts-sidebar-nav">
                     <div className="accounts-sidebar-section-label">OPERATIONS</div>

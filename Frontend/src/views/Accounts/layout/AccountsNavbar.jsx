@@ -105,11 +105,6 @@ const AccountsNavbar = ({ user, onRefresh, isLoading }) => {
                     />
                 </div>
 
-                <div className="accounts-navbar-user">
-                    <div className="accounts-navbar-avatar" title={user?.name || 'Accounts User'}>
-                        {getInitials(user?.name)}
-                    </div>
-                </div>
             </div>
         </header>
     );
