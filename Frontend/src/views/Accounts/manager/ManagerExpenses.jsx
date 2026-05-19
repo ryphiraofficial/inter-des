@@ -65,15 +65,18 @@ const ManagerExpenses = ({ user, search, setSearch }) => {
                     {/* For now, focusing on the main structure */}
                 </div>
 
-                {/* Data Table & Controls */}
-                <div className="expenses-table-card">
+                {/* Data Table Filter Controls (Outside of the Card) */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
                     <ExpenseFilterBar 
                         filterCategory={filterCategory}
                         setFilterCategory={setFilterCategory}
                         showCategoryDropdown={showCategoryDropdown}
                         setShowCategoryDropdown={setShowCategoryDropdown}
                     />
+                </div>
 
+                {/* Data Table Card */}
+                <div className="expenses-table-card">
                     <ExpenseTable 
                         loading={loading}
                         filtered={filtered}

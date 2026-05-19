@@ -13,7 +13,7 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
     ];
 
     return (
-        <div className="table-controls" style={{ justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
             <div className="filter-group">
                 <div style={{ position: 'relative' }}>
                     <button
