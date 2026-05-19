@@ -1408,6 +1408,86 @@
     transform: translateY(-1px);
 }
 
+.pm-modal-body {
+    padding: 1rem 0;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.pm-input-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.35rem;
+}
+
+.pm-text-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    font-size: 0.875rem;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.pm-text-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.pm-text-input::placeholder {
+    color: #94a3b8;
+}
+
+.pm-modal-footer {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.pm-modal-btn {
+    flex: 1;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+}
+
+.pm-modal-btn.primary {
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid #0f172a;
+}
+
+.pm-modal-btn.primary:hover {
+    background: #1e293b;
+    border-color: #1e293b;
+}
+
+.pm-modal-btn.secondary {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.pm-modal-btn.secondary:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
 /* ── Toolbar & Filters (Projects List) ────────────────────────── */
 .pm-toolbar {
     padding: 0 1.5rem;
