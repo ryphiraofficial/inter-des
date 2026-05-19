@@ -14,8 +14,8 @@ const PaymentCollectionModal = ({
 
     return (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <div style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
-                <div style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', padding: '28px 32px', color: 'white' }}>
+            <div className="payment-modal-card" style={{ background: 'white', borderRadius: '28px', width: '100%', maxWidth: '560px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
+                <div className="payment-modal-header" style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', padding: '28px 32px', color: 'white' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
@@ -28,7 +28,7 @@ const PaymentCollectionModal = ({
                     </div>
                 </div>
 
-                <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="payment-modal-body" style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '16px 20px', border: '1px solid #e2e8f0' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                             <div>

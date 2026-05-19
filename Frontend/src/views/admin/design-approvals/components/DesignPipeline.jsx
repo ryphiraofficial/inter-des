@@ -66,7 +66,7 @@ const DesignPipeline = ({ tasks, setSelectedTask, setShowDesignModal, openApprov
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '12px' }}>
+                        <div className="approval-card-actions" style={{ display: 'flex', gap: '12px' }}>
                             <button 
                                 onClick={() => { setSelectedTask(task); setShowDesignModal(true); }}
                                 style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', background: '#f1f5f9', color: '#1e293b', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}

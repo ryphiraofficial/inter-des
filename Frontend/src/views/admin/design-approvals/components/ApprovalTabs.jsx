@@ -3,7 +3,7 @@ import { Image as ImageIcon, Package } from 'lucide-react';
 
 const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
     return (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e2e8f0' }}>
+        <div className="approval-tabs-container" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e2e8f0' }}>
             <button 
                 style={{ 
                     padding: '12px 24px', background: 'none', border: 'none', 
