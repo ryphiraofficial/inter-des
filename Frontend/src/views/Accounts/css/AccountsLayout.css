@@ -77,10 +77,10 @@
 }
 
 .accounts-sidebar-item.active {
-    background: linear-gradient(135deg, #059669, #10b981); /* Premium crisp emerald representation */
+    background: linear-gradient(135deg, #2563eb, #3b82f6); /* Premium crisp blue representation */
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .accounts-sidebar-item.active svg {
@@ -111,13 +111,13 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #059669, #10b981); /* Emerald representation */
+    background: linear-gradient(135deg, #2563eb, #3b82f6); /* Blue representation */
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .accounts-navbar-title {
@@ -336,7 +336,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: #10b981;
+    background: #2563eb;
     border: none;
     color: #ffffff;
     padding: 6px 12px;
@@ -348,8 +348,8 @@
 }
 
 .btn-primary-sm:hover {
-    background: #059669;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    background: #1d4ed8;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .btn-success-sm {
@@ -357,7 +357,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: #10b981;
+    background: #2563eb;
     border: none;
     color: #ffffff;
     padding: 8px 14px;
@@ -369,8 +369,8 @@
 }
 
 .btn-success-sm:hover:not(:disabled) {
-    background: #059669;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    background: #1d4ed8;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .btn-success-sm:disabled {
@@ -391,7 +391,7 @@
 }
 
 .form-control-sm:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 

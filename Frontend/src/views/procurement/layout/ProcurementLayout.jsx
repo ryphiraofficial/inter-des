@@ -23,7 +23,7 @@ const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, childre
         <div className="procurement-layout">
             <Sidebar user={user} onLogout={onLogout} />
             <div className="procurement-layout-main">
-                <ProcurementNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} />
+                <ProcurementNavbar role={role} user={user} onRefresh={onRefresh} isLoading={isLoading} />
                 <main className="procurement-layout-content">
                     {children || <Outlet />}
                 </main>

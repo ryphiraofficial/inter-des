@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, UserPlus, X, Target, FileText, MessageSquare, TrendingUp, ArrowRight } from 'lucide-react';
 import '../css/DesignHandoffs.css';
+import MaterialReviewModal from '../components/MaterialReviewModal';
 
 const DesignHandoffs = ({ 
     designHandoffs, 
@@ -69,71 +70,17 @@ const DesignHandoffs = ({
                 </div>
             </div>
 
-            {/* Review Handoff Modal */}
-            {selectedReviewItem && (
-                <div className="modal-backdrop-blur" onClick={() => setSelectedReviewItem(null)}>
-                    <div className="modal-card-premium" onClick={e => e.stopPropagation()}>
-                        <button className="modal-close-round" onClick={() => setSelectedReviewItem(null)}><X size={20} /></button>
-                        
-                        <div style={{ marginBottom: '2rem' }}>
-                            <div className="modal-project-badge">
-                                <span className="modal-project-label">Project Review</span>
-                                <span className="badge-lite" style={{ background: '#eef2ff', color: '#6366f1' }}>{selectedReviewItem.project?.projectNumber}</span>
-                            </div>
-                            <h2 className="modal-project-title">{selectedReviewItem.project?.name}</h2>
-                            <p className="modal-project-client">Client: {selectedReviewItem.project?.client?.name}</p>
-                        </div>
-
-                        <div className="modal-grid-2col">
-                            <div className="modal-info-box">
-                                <h4 className="modal-info-title"><Target size={16} /> Status Info</h4>
-                                <div className="modal-info-list">
-                                    <div><span className="modal-info-label">Project Stage:</span> <strong className="modal-info-val-highlight">{selectedReviewItem.project?.stage}</strong></div>
-                                    <div><span className="modal-info-label">Status:</span> <strong>{selectedReviewItem.project?.status}</strong></div>
-                                    <div><span className="modal-info-label">Budget:</span> <strong>{formatCurrency(selectedReviewItem.project?.budget)}</strong></div>
-                                </div>
-                            </div>
-                            <div className="modal-info-box">
-                                <h4 className="modal-info-title"><FileText size={16} /> Handoff Details</h4>
-                                <div className="modal-info-list">
-                                    <div><span className="modal-info-label">Type:</span> <strong>{selectedReviewItem.type === 'Task' ? 'Design Push' : 'Material Request'}</strong></div>
-                                    <div><span className="modal-info-label">Items:</span> <strong>{selectedReviewItem.items?.length || 0} items listed</strong></div>
-                                    <div><span className="modal-info-label">Date:</span> <strong>{new Date(selectedReviewItem.createdAt).toLocaleDateString()}</strong></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="modal-notes-box">
-                            <h4 className="modal-notes-title"><MessageSquare size={16} /> Designer's Notes</h4>
-                            <p className="modal-notes-text">
-                                {selectedReviewItem.type === 'Task' 
-                                    ? (selectedReviewItem.description || "No specific notes provided for this design push.")
-                                    : (selectedReviewItem.notes || "No specific notes provided for this material request.")
-                                }
-                            </p>
-                        </div>
-
-                        <div className="modal-actions-row">
-                            <button 
-                                className="btn-modal-assign"
-                                onClick={() => {
-                                    setSelectedRequest(selectedReviewItem);
-                                    setSelectedReviewItem(null);
-                                    setShowAssignModal(true);
-                                }}
-                            >
-                                Assign Staff Now
-                            </button>
-                            <button 
-                                className="btn-modal-close"
-                                onClick={() => setSelectedReviewItem(null)}
-                            >
-                                Close Review
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <MaterialReviewModal 
+                isOpen={!!selectedReviewItem} 
+                onClose={() => setSelectedReviewItem(null)} 
+                selectedReviewItem={selectedReviewItem} 
+                formatCurrency={formatCurrency} 
+                onAssignClick={() => {
+                    setSelectedRequest(selectedReviewItem);
+                    setSelectedReviewItem(null);
+                    setShowAssignModal(true);
+                }}
+            />
         </div>
     );
 };

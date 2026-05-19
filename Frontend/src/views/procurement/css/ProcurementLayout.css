@@ -78,13 +78,13 @@
 }
 
 .procurement-sidebar-item.active {
-    background: #ecfdf5; /* Elegant Emerald mint green representing Sourcing & Material Procurement */
-    color: #059669;
+    background: #eff6ff; /* Elegant Sourcing Blue */
+    color: #2563eb;
     font-weight: 700;
 }
 
 .procurement-sidebar-item.active svg {
-    color: #059669;
+    color: #2563eb;
 }
 
 /* ── Top Navbar ── */
@@ -110,7 +110,7 @@
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #059669, #10b981); /* Stunning green sourcing gradients */
+    background: linear-gradient(135deg, #2563eb, #3b82f6); /* Stunning blue sourcing gradients */
     color: white;
     display: flex;
     align-items: center;
@@ -174,7 +174,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #059669, #10b981);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
     font-size: 0.8rem;
     font-weight: 800;
@@ -232,7 +232,7 @@
     font-size: 0.95rem;
     font-weight: 850;
     letter-spacing: 2px;
-    background: linear-gradient(135deg, #059669, #10b981); /* Sleek Emerald theme */
+    background: linear-gradient(135deg, #2563eb, #3b82f6); /* Sleek Sourcing Blue theme */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -262,7 +262,7 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #059669, #10b981);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
     font-size: 0.8rem;
     font-weight: 800;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, Truck, CheckCircle, AlertTriangle, TrendingUp, Package, ArrowRight, Layers } from 'lucide-react';
+import { Target, Truck, CheckCircle, AlertTriangle, TrendingUp, Package, ArrowRight } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../css/ProcurementPremium.css';
 
@@ -22,18 +22,6 @@ const Overview = ({ pendingRequests, designHandoffs, assignedRequests, completed
 
     return (
         <div className="procurement-premium-wrapper fade-in">
-            {/* Elegant Minimalist Banner */}
-            <div className="premium-banner">
-                <div className="banner-pill">
-                    <Layers size={14} />
-                    Overview
-                </div>
-                <h1 className="banner-title">Procurement Center</h1>
-                <p className="banner-subtitle">
-                    Real-time supply chain visibility. Track handoffs, monitor pipeline velocity, and streamline vendor fulfillment.
-                </p>
-            </div>
-
             {/* Elegant Stat Cards */}
             <div className="glass-stats-grid">
                 <div className="glass-stat-card">
