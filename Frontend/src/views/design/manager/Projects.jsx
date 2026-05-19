@@ -14,19 +14,7 @@ import '../css/DesignStudio.css';
 
 const Projects = ({ projects = [], tasks = [], getImageUrl, materialRequests = [], onReviewRequest, onUpdateStatus, onHandoffInitiate }) => {
     return (
-        <div className="portfolio-modern fade-in">
-            <div className="portfolio-header">
-                <div>
-                    <h1>Project Portfolio</h1>
-                    <p>Track design progress and handoff status for all active developments.</p>
-                </div>
-                <div className="portfolio-stats">
-                    <div className="stat-bubble">
-                        <span className="stat-num">{projects.length}</span>
-                        <span className="stat-label">Active Projects</span>
-                    </div>
-                </div>
-            </div>
+        <div className="portfolio-modern fade-in" style={{ paddingTop: '1rem' }}>
 
             <div className="portfolio-grid">
                 {projects.map((project, idx) => {
