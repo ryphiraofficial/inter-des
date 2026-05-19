@@ -82,35 +82,35 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch }) => {
                 </div>
             </div>
 
-            {searchConfig && setSearch && (
-                <div style={{ position: 'relative', width: '100%', maxWidth: '320px', margin: '0 auto 0 2rem' }}>
-                    <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                    <input
-                        type="text"
-                        placeholder={searchConfig.placeholder}
-                        value={search || ''}
-                        onChange={e => setSearch(e.target.value)}
-                        style={{
-                            width: '100%',
-                            height: '38px',
-                            padding: '0 16px 0 36px',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px',
-                            fontSize: '13px',
-                            outline: 'none',
-                            background: '#f8fafc',
-                            transition: 'all 0.2s'
-                        }}
-                    />
-                </div>
-            )}
-
             <div className="accounts-navbar-right" style={{ overflow: 'visible' }}>
                 {onRefresh && (
                     <button className="accounts-navbar-refresh" onClick={onRefresh} disabled={isLoading} title="Refresh Data">
                         <RefreshCw size={16} className={isLoading ? 'spin' : ''} />
                         <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
                     </button>
+                )}
+
+                {searchConfig && setSearch && (
+                    <div style={{ position: 'relative', width: '100%', maxWidth: '280px', minWidth: '220px' }}>
+                        <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <input
+                            type="text"
+                            placeholder={searchConfig.placeholder}
+                            value={search || ''}
+                            onChange={e => setSearch(e.target.value)}
+                            style={{
+                                width: '100%',
+                                height: '38px',
+                                padding: '0 16px 0 36px',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '13px',
+                                outline: 'none',
+                                background: '#f8fafc',
+                                transition: 'all 0.2s'
+                            }}
+                        />
+                    </div>
                 )}
                 
                 {/* Notification bell */}
