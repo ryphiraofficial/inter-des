@@ -17,24 +17,29 @@ import AccountsReports from '../common/AccountsReports';
 const ManagerDashboard = ({ user, onLogout }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
+    const [search, setSearch] = React.useState('');
+
+    React.useEffect(() => {
+        setSearch('');
+    }, [activeTab]);
 
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview user={user} />;
-            case 'clearance': return <PaymentClearanceHub user={user} />;
-            case 'clients': return <ManagerClients user={user} />;
-            case 'invoices': return <AccountsInvoices user={user} />;
-            case 'payments': return <ManagerPayments user={user} />;
-            case 'expenses': return <ManagerExpenses user={user} />;
-            case 'vendors': return <ManagerVendors user={user} />;
-            case 'projects': return <AccountsProjects user={user} />;
-            case 'reports': return <AccountsReports user={user} />;
+            case 'clearance': return <PaymentClearanceHub user={user} search={search} setSearch={setSearch} />;
+            case 'clients': return <ManagerClients user={user} search={search} setSearch={setSearch} />;
+            case 'invoices': return <AccountsInvoices user={user} search={search} setSearch={setSearch} />;
+            case 'payments': return <ManagerPayments user={user} search={search} setSearch={setSearch} />;
+            case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} />;
+            case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
+            case 'projects': return <AccountsProjects user={user} search={search} setSearch={setSearch} />;
+            case 'reports': return <AccountsReports user={user} search={search} setSearch={setSearch} />;
             default: return <Overview user={user} />;
         }
     };
 
     return (
-        <AccountsLayout role="manager" user={user} onLogout={onLogout}>
+        <AccountsLayout role="manager" user={user} onLogout={onLogout} search={search} setSearch={setSearch}>
             <div className="role-dashboard accounts-manager-hub">
                 {renderContent()}
             </div>

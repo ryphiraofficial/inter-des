@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { accountsAPI, clientAPI } from '../../../models/api';
 
-export const usePaymentLogic = () => {
+export const usePaymentLogic = (parentSearch, parentSetSearch) => {
     const [payments, setPayments] = useState([]);
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [showModal, setShowModal] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Search, Wallet, Calendar, User, Phone, CheckCircle, CreditCard, ArrowRight, Clock, FileText, AlertCircle, RefreshCw } from 'lucide-react';
 import { accountsAPI } from '../../../../models/api';
 
-const MyCollections = ({ user }) => {
+const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch }) => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [collectingProject, setCollectingProject] = useState(null);
     
     // Modal Form State
@@ -111,12 +113,8 @@ const MyCollections = ({ user }) => {
 
     return (
         <div style={{ padding: '0 8px' }}>
-            {/* Header section with Stats */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <div>
-                    <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>My Collections</h2>
-                    <p style={{ margin: '4px 0 0', color: '#64748b' }}>Track and record advance payment collections assigned to you.</p>
-                </div>
+            {/* Header section with Refresh only (since title is in navbar) */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
                 <button onClick={fetchData} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#fff' }}>
                     <RefreshCw size={15} className={loading ? 'spin-anim' : ''} /> Refresh
                 </button>
@@ -157,18 +155,7 @@ const MyCollections = ({ user }) => {
 
             {/* Filter and Content Card */}
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
-                <div style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', width: '100%', maxWidth: '360px' }}>
-                        <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                        <input 
-                            type="text" 
-                            placeholder="Search project name, ID, or client..." 
-                            value={search} 
-                            onChange={e => setSearch(e.target.value)}
-                            style={{ width: '100%', height: '40px', padding: '0 16px 0 36px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontSize: '14px' }} 
-                        />
-                    </div>
-                </div>
+
 
                 {loading ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0' }}>

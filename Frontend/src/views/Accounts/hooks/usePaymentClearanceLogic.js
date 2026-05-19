@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { accountsAPI, staffAPI } from '../../../models/api';
 
-export const usePaymentClearanceLogic = () => {
+export const usePaymentClearanceLogic = (parentSearch, parentSetSearch) => {
     const [projects, setProjects] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [assigningId, setAssigningId] = useState(null);
     const [selectedStaff, setSelectedStaff] = useState('');
 

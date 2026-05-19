@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { clientAPI } from '../../../models/api';
 
-export const useClientLogic = () => {
+export const useClientLogic = (parentSearch, parentSetSearch) => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [showModal, setShowModal] = useState(false);
     const [editClient, setEditClient] = useState(null);
     const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', gstNumber: '' });

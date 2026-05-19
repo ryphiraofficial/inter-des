@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
     RefreshCw, Landmark, LayoutDashboard, CheckCircle,
     FileText, CreditCard, TrendingUp, Users, ShoppingBag,
-    Briefcase, PieChart, Bell
+    Briefcase, PieChart, Bell, Search
 } from 'lucide-react';
 import { useNotificationLogic } from '../../admin/header/hooks/useNotificationLogic';
 import NotificationPopup from '../../admin/header/components/NotificationPopup';
@@ -12,6 +12,7 @@ import '../../admin/css/Header.css';
 const TAB_META = {
     overview: { label: 'Overview', icon: LayoutDashboard },
     clearance: { label: 'Payment Clearance Hub', icon: CheckCircle },
+    collections: { label: 'My Collections', icon: CheckCircle },
     invoices: { label: 'Invoices', icon: FileText },
     payments: { label: 'Payments', icon: CreditCard },
     expenses: { label: 'Expenses', icon: TrendingUp },
@@ -21,13 +22,24 @@ const TAB_META = {
     reports: { label: 'Financial Reports', icon: PieChart }
 };
 
-const AccountsNavbar = ({ user, onRefresh, isLoading }) => {
+const SEARCH_CONFIGS = {
+    clearance: { placeholder: 'Search projects...' },
+    collections: { placeholder: 'Search project name, ID, or client...' },
+    clients: { placeholder: 'Search by name, email or phone...' },
+    payments: { placeholder: 'Search by client or reference...' },
+    expenses: { placeholder: 'Search by description or category...' },
+    vendors: { placeholder: 'Search by name or category...' }
+};
+
+const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';
 
     const currentTab = TAB_META[activeTab] || { label: 'Overview', icon: LayoutDashboard };
     const IconComponent = currentTab.icon;
+
+    const searchConfig = SEARCH_CONFIGS[activeTab];
 
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -69,6 +81,29 @@ const AccountsNavbar = ({ user, onRefresh, isLoading }) => {
                     <span className="accounts-navbar-title">{currentTab.label}</span>
                 </div>
             </div>
+
+            {searchConfig && setSearch && (
+                <div style={{ position: 'relative', width: '100%', maxWidth: '320px', margin: '0 auto 0 2rem' }}>
+                    <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    <input
+                        type="text"
+                        placeholder={searchConfig.placeholder}
+                        value={search || ''}
+                        onChange={e => setSearch(e.target.value)}
+                        style={{
+                            width: '100%',
+                            height: '38px',
+                            padding: '0 16px 0 36px',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            fontSize: '13px',
+                            outline: 'none',
+                            background: '#f8fafc',
+                            transition: 'all 0.2s'
+                        }}
+                    />
+                </div>
+            )}
 
             <div className="accounts-navbar-right" style={{ overflow: 'visible' }}>
                 {onRefresh && (
