@@ -12,7 +12,7 @@ router.route('/projects/assign')
     .post(authorize('Admin', 'Accounts Manager'), assignAccountsStaff);
 
 router.route('/projects/invoice/advance')
-    .post(authorize('Admin', 'Accounts Manager', 'Staff'), generateAdvanceInvoice);
+    .post(authorize('Admin', 'Accounts Manager', 'Accounts Staff'), generateAdvanceInvoice);
 
 router.route('/projects/clear')
     .post(authorize('Admin', 'Accounts Manager'), clearProjectPayment);
@@ -21,7 +21,7 @@ router.route('/projects/verify-payment')
     .post(authorize('Admin', 'Accounts Manager'), verifyPaymentAndRelease);
 
 router.route('/projects/collect')
-    .post(authorize('Admin', 'Accounts Manager', 'Staff'), submitPaymentCollection);
+    .post(authorize('Admin', 'Accounts Manager', 'Accounts Staff'), submitPaymentCollection);
 
 router.route('/expenses')
     .get(getExpenses)
