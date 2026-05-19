@@ -36,11 +36,7 @@ const PipelineTab = ({
     ) : null;
 
     return (
-        <div className="design-pipeline-workflow" style={{ padding: '0 10px' }}>
-            <div className="pipeline-header" style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>Project Status & Approvals</h2>
-                <p style={{ color: '#64748b' }}>Track designs from designer submission to final procurement push.</p>
-            </div>
+        <div className="design-pipeline-workflow" style={{ padding: '1rem 10px 0 10px' }}>
 
             <div className="pipeline-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', alignItems: 'flex-start' }}>
 
