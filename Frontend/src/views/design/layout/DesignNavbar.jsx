@@ -9,7 +9,7 @@ const DesignNavbar = ({ user, onRefresh, isLoading }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
-    const isManager = user?.role === 'design_manager';
+    const isManager = user?.role?.toLowerCase().replace(/_/g, ' ').includes('design manager') || user?.role?.toLowerCase().includes('admin');
 
     const tabMeta = isManager ? {
         overview: { title: 'Studio Overview', icon: LayoutDashboard },
