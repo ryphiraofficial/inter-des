@@ -45,13 +45,29 @@ export const usePaymentClearanceLogic = () => {
         }
     };
 
-    const handleClear = async (projectId) => {
-        if (!window.confirm('Clear payment and release this project to Design?')) return;
-        try {
-            await accountsAPI.clearProjectPayment({ projectId });
-            fetchData();
-        } catch (err) {
-            alert('Error clearing project: ' + err.message);
+    const handleClear = async (projectId, isVerification = false) => {
+        if (isVerification) {
+            const project = projects.find(p => p._id === projectId);
+            const collectedAmt = project?.collectedAmount || project?.advanceAmount || 0;
+            if (!window.confirm(`Verify and approve payment of ₹${collectedAmt.toLocaleString('en-IN')} and release project to Procurement?`)) return;
+            try {
+                await accountsAPI.verifyPaymentAndRelease({ 
+                    projectId, 
+                    collectedAmount: collectedAmt,
+                    paymentNotes: 'Verified and approved by Accounts Manager.' 
+                });
+                fetchData();
+            } catch (err) {
+                alert('Error verifying payment: ' + err.message);
+            }
+        } else {
+            if (!window.confirm('Clear payment and release this project to Design?')) return;
+            try {
+                await accountsAPI.clearProjectPayment({ projectId });
+                fetchData();
+            } catch (err) {
+                alert('Error clearing project: ' + err.message);
+            }
         }
     };
 

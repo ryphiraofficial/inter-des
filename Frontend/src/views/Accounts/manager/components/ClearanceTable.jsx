@@ -7,7 +7,9 @@ const ClearanceTable = ({
     loading, filtered, staffList, assigningId, setAssigningId, 
     selectedStaff, setSelectedStaff, handleAssign, handleClear 
 }) => {
-    const getStatusColor = (status) => {
+    const getStatusColor = (status, collectionStatus) => {
+        if (collectionStatus === 'Collected') return { bg: '#dbeafe', text: '#1d4ed8' };
+        if (collectionStatus === 'Verified') return { bg: '#dcfce3', text: '#16a34a' };
         switch(status) {
             case 'Pending Advance': return { bg: '#fef3c7', text: '#d97706' };
             case 'Invoice Sent': return { bg: '#e0e7ff', text: '#4f46e5' };
@@ -49,7 +51,7 @@ const ClearanceTable = ({
                 </thead>
                 <tbody>
                     {filtered.map(p => {
-                        const colors = getStatusColor(p.paymentStatus);
+                        const colors = getStatusColor(p.paymentStatus, p.paymentCollectionStatus);
                         return (
                             <tr key={p._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                                 <td style={{ padding: '16px 24px', fontWeight: 600, color: '#0f172a' }}>
@@ -61,7 +63,7 @@ const ClearanceTable = ({
                                 <td style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>₹{(p.advanceAmount || 0).toLocaleString('en-IN')}</td>
                                 <td style={{ padding: '16px 24px' }}>
                                     <span style={{ background: colors.bg, color: colors.text, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 600 }}>
-                                        {p.paymentStatus || 'Pending Advance'}
+                                        {p.paymentCollectionStatus === 'Collected' ? 'Collected' : (p.paymentStatus || 'Pending Advance')}
                                     </span>
                                 </td>
                                 <td style={{ padding: '16px 24px' }}>
@@ -144,9 +146,35 @@ const ClearanceTable = ({
                                     )}
                                 </td>
                                 <td style={{ padding: '16px 24px' }}>
-                                    <button onClick={() => handleClear(p._id)} disabled={p.paymentStatus === 'Cleared'} className="btn-success-sm">
-                                        <CheckCircle size={16} /> Clear & Release
-                                    </button>
+                                    {p.paymentCollectionStatus === 'Collected' ? (
+                                        <button 
+                                            onClick={() => handleClear(p._id, true)} 
+                                            className="btn-primary-sm" 
+                                            style={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '6px', 
+                                                background: '#2563eb', 
+                                                color: '#fff', 
+                                                border: 'none', 
+                                                padding: '6px 12px', 
+                                                borderRadius: '6px', 
+                                                fontSize: '13px', 
+                                                fontWeight: 600,
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <Shield size={14} /> Verify & Release
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            onClick={() => handleClear(p._id, false)} 
+                                            disabled={p.paymentStatus === 'Cleared'} 
+                                            className="btn-success-sm"
+                                        >
+                                            <CheckCircle size={16} /> Clear & Release
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         );
