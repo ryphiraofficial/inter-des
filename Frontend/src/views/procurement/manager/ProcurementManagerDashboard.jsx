@@ -45,6 +45,7 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
         updateProductRow,
         formatCurrency,
         pendingRequests,
+        pendingReviews,
         designHandoffs,
         assignedRequests,
         completedRequests,
@@ -67,6 +68,7 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
             case 'overview':
                 return <Overview 
                     pendingRequests={pendingRequests} 
+                    pendingReviews={pendingReviews}
                     designHandoffs={designHandoffs} 
                     assignedRequests={assignedRequests} 
                     completedRequests={completedRequests} 
@@ -95,7 +97,7 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
             case 'assignments':
                 return <Assignments 
                     assignedRequests={assignedRequests} 
-                    pendingReviews={completedRequests} // Maintain assignment review lists
+                    pendingReviews={pendingReviews} // Maintain assignment review lists
                     handleApproveToAdmin={handleApproveToAdmin}
                 />;
 

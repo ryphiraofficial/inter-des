@@ -270,6 +270,7 @@ export const useProcurementManagerLogic = () => {
         updateProductRow,
         formatCurrency,
         pendingRequests,
+        pendingReviews,
         designHandoffs,
         assignedRequests,
         completedRequests,

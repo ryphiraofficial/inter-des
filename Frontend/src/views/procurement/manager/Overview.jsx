@@ -3,7 +3,7 @@ import { Target, Truck, CheckCircle, AlertTriangle, TrendingUp, Package, ArrowRi
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../css/ProcurementPremium.css';
 
-const Overview = ({ pendingRequests, designHandoffs, assignedRequests, completedRequests, extensionRequests, materialRequests, navigate }) => {
+const Overview = ({ pendingRequests, pendingReviews = [], designHandoffs, assignedRequests, completedRequests, extensionRequests, materialRequests, navigate }) => {
     const chartData = [
         { name: 'Pending', value: pendingRequests.length + designHandoffs.length, color: '#1c1917' },
         { name: 'Active', value: assignedRequests.length, color: '#78716c' },
@@ -27,7 +27,7 @@ const Overview = ({ pendingRequests, designHandoffs, assignedRequests, completed
                 <div className="glass-stat-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <div className="glass-stat-value">{pendingRequests.length}</div>
+                            <div className="glass-stat-value">{pendingReviews.length}</div>
                             <div className="glass-stat-label">Pending Reviews</div>
                         </div>
                         <div className="glass-stat-icon-wrapper icon-purple">
