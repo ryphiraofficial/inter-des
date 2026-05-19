@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Mail, Phone, MapPin, MoreVertical, Award, Briefcase, Activity, Users, X } from 'lucide-react';
+import { Search, Mail, Phone, MapPin, MoreVertical, Award, Briefcase, Activity, Users, X, Plus, ChevronDown } from 'lucide-react';
 import '../css/ProductionManagement.css';
 import { teamMemberAPI } from '../../../models/api';
 

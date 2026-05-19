@@ -47,7 +47,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                                 e.currentTarget.style.transform = 'translateY(0)';
                                 e.currentTarget.style.boxShadow = '0 4px 20px -5px rgba(0,0,0,0.03)';
                             }}>
-                                <div style={{ position: 'absolute', left: 0, top: 0, width: '6px', height: '100%', background: hasEmergency ? '#ef4444' : overdue ? '#f59e0b' : getPriorityColor(task.priority) }}></div>
+                                <div style={{ position: 'absolute', left: 0, top: 0, width: '6px', height: '100%', background: hasEmergency ? '#ef4444' : overdue ? '#ef4444' : getPriorityColor(task.priority) }}></div>
 
                                 <div style={{ flex: 1, minWidth: '220px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>

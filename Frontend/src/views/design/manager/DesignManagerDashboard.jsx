@@ -56,7 +56,7 @@ const DesignManagerDashboard = ({ user }) => {
     }, [taskActions]);
 
     const getPriorityColor = (priority) => {
-        const map = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' };
+        const map = { high: '#ef4444', medium: '#3b82f6', low: '#10b981' };
         return map[priority?.toLowerCase()] || '#64748b';
     };
 
