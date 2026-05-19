@@ -14,26 +14,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
     };
 
     return (
-        <div className="design-tasks fade-in">
-            <div className="pipeline-section-header" style={{ marginBottom: '2.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', width: '45px', height: '45px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 8px 16px -4px rgba(99, 102, 241, 0.3)' }}>
-                                <List size={24} />
-                            </div>
-                            Creative Pipeline Management
-                        </h2>
-                        <p style={{ color: '#64748b', marginTop: '0.6rem', marginLeft: '57px', fontSize: '1rem' }}>
-                            Track daily designer reports, manage task splitting, and optimize studio bandwidth.
-                        </p>
-                    </div>
-                    <button className="btn-assign-staff" onClick={onOpenAssignModal} style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.3)' }}>
-                        <Plus size={20} /> Assign New Design
-                    </button>
-                </div>
-            </div>
-
+        <div className="design-tasks fade-in" style={{ paddingTop: '1rem' }}>
             <div className="dashboard-grid" style={{ gridTemplateColumns: '7fr 3fr', gap: '1.5fr' }}>
                 <div className="tasks-container" style={{ display: 'grid', gap: '1.25rem', paddingBottom: '300px' }}>
                     {tasks.filter(t => t.status !== 'Completed' && t.status !== 'Approved' && t.status !== 'Pushed to Procurement').map(task => {

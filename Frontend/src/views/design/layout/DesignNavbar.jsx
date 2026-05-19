@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, Palette, LayoutDashboard, GitMerge, FileSpreadsheet, 
-    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle 
+    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus
 } from 'lucide-react';
 
 const DesignNavbar = ({ user, onRefresh, isLoading }) => {
@@ -28,6 +28,10 @@ const DesignNavbar = ({ user, onRefresh, isLoading }) => {
 
     const { title, icon: Icon } = tabMeta[activeTab] || { title: 'Design Studio', icon: Palette };
 
+    const handleAssignClick = () => {
+        window.dispatchEvent(new CustomEvent('open-assign-modal'));
+    };
+
     return (
         <header className="design-navbar">
             <div className="design-navbar-brand">
@@ -43,6 +47,16 @@ const DesignNavbar = ({ user, onRefresh, isLoading }) => {
             </div>
 
             <div className="design-navbar-right">
+                {isManager && ['tasks', 'pipeline'].includes(activeTab) && (
+                    <button 
+                        className="design-navbar-action-btn" 
+                        onClick={handleAssignClick}
+                        title="Assign New Design"
+                    >
+                        <Plus size={16} />
+                        <span>Assign New Design</span>
+                    </button>
+                )}
                 {onRefresh && (
                     <button className="design-navbar-refresh" onClick={onRefresh} disabled={isLoading} title="Refresh Data">
                         <RefreshCw size={16} className={isLoading ? 'spin' : ''} />

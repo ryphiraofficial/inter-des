@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 
@@ -45,6 +45,15 @@ const DesignManagerDashboard = ({ user }) => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [showStaffTasksModal, setShowStaffTasksModal] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState(null);
+
+    useEffect(() => {
+        const handleOpen = () => {
+            taskActions.resetTaskForm();
+            setShowAssignModal(true);
+        };
+        window.addEventListener('open-assign-modal', handleOpen);
+        return () => window.removeEventListener('open-assign-modal', handleOpen);
+    }, [taskActions]);
 
     const getPriorityColor = (priority) => {
         const map = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' };
