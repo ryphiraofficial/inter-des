@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { vendorAPI } from '../../../models/api';
 
-export const useVendorLogic = () => {
+export const useVendorLogic = (parentSearch, parentSetSearch) => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [showModal, setShowModal] = useState(false);
     const [editVendor, setEditVendor] = useState(null);
     const [submitting, setSubmitting] = useState(false);

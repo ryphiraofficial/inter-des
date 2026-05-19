@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { accountsAPI } from '../../../models/api';
 
-export const useExpenseLogic = () => {
+export const useExpenseLogic = (parentSearch, parentSetSearch) => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const search = parentSearch !== undefined ? parentSearch : localSearch;
+    const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [filterCategory, setFilterCategory] = useState('All');
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);

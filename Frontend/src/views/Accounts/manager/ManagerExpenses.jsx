@@ -9,12 +9,12 @@ import ExpenseModal from './components/expenses/ExpenseModal';
 
 import '../css/Expenses.css';
 
-const ManagerExpenses = ({ user }) => {
+const ManagerExpenses = ({ user, search, setSearch }) => {
     const {
-        expenses, loading, search, setSearch, filterCategory, setFilterCategory,
+        expenses, loading, filterCategory, setFilterCategory,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete
-    } = useExpenseLogic();
+    } = useExpenseLogic(search, setSearch);
 
     return (
         <div className="expenses-dashboard-container">
@@ -32,8 +32,6 @@ const ManagerExpenses = ({ user }) => {
                 {/* Data Table & Controls */}
                 <div className="expenses-table-card">
                     <ExpenseFilterBar 
-                        search={search}
-                        setSearch={setSearch}
                         filterCategory={filterCategory}
                         setFilterCategory={setFilterCategory}
                         showCategoryDropdown={showCategoryDropdown}

@@ -1,7 +1,6 @@
-import React from 'react';
-import { Search, SlidersHorizontal, ChevronDown, CheckCircle, Download } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, CheckCircle, Download } from 'lucide-react';
 
-const ExpenseFilterBar = ({ search, setSearch, filterCategory, setFilterCategory, showCategoryDropdown, setShowCategoryDropdown }) => {
+const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropdown, setShowCategoryDropdown }) => {
     const categories = [
         { value: 'All', dot: '#94a3b8' },
         { value: 'Materials', dot: '#3b82f6' },
@@ -14,16 +13,7 @@ const ExpenseFilterBar = ({ search, setSearch, filterCategory, setFilterCategory
     ];
 
     return (
-        <div className="table-controls">
-            <div className="search-wrapper">
-                <Search size={18} />
-                <input 
-                    type="text" 
-                    placeholder="Search by description or vendor..." 
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                />
-            </div>
+        <div className="table-controls" style={{ justifyContent: 'flex-end' }}>
             <div className="filter-group">
                 <div style={{ position: 'relative' }}>
                     <button
