@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-    ClipboardCheck, Search, Filter, Eye, Loader, CheckCircle, 
-    AlertCircle, MessageSquare, User, Calendar, X 
+    ClipboardCheck, Search, Eye, Loader, CheckCircle, 
+    AlertCircle, MessageSquare, Briefcase, Calendar, X 
 } from 'lucide-react';
 import { taskAPI } from '../../models/api';
 import DesignPreviewModal from './components/DesignPreviewModal';
+import './css/SalesTasks.css';
 import './css/SalesApprovals.css';
 
 const SalesApprovals = ({ user }) => {
@@ -14,7 +15,7 @@ const SalesApprovals = ({ user }) => {
     const [priorityFilter, setPriorityFilter] = useState('');
     
     // Interactive feedback modal state
-    const [actionTask, setActionTask] = useState(null); // The task currently being approved/rejected
+    const [actionTask, setActionTask] = useState(null); 
     const [actionType, setActionType] = useState(null); // 'approve' | 'reject'
     const [salesNotes, setSalesNotes] = useState('');
     const [submittingAction, setSubmittingAction] = useState(false);
@@ -27,7 +28,6 @@ const SalesApprovals = ({ user }) => {
             setLoading(true);
             const res = await taskAPI.getAll();
             if (res.success) {
-                // Filter only designs ready for client review
                 const pendingReviews = res.data.filter(t => t.status === 'Pending Sales Review');
                 setTasks(pendingReviews);
             }
@@ -94,70 +94,60 @@ const SalesApprovals = ({ user }) => {
         }
     };
 
-    // Priority configuration helper
-    const getPriorityClass = (priority) => {
-        const mapping = {
-            'Critical': 'priority-critical',
-            'High': 'priority-high',
-            'Medium': 'priority-medium',
-            'Low': 'priority-low'
-        };
-        return mapping[priority] || 'priority-medium';
-    };
-
     const criticalCount = tasks.filter(t => t.priority === 'Critical' || t.priority === 'High').length;
 
     return (
-        <div className="approvals-page-container">
-            
-            {/* ── Statistics Summary ── */}
-            <div className="approvals-stats-banner">
-                <div className="stat-box">
-                    <div className="stat-icon primary">
-                        <ClipboardCheck size={24} />
+        <div className="st-tasks-container">
+            <div className="st-tasks-wrapper">
+                
+                {/* ── Statistics Summary Grid (Same layout as other pages) ── */}
+                <div className="st-stats-grid">
+                    <div className="st-stat-card">
+                        <div className="st-stat-info">
+                            <span className="st-stat-label">Pending Review</span>
+                            <span className="st-stat-value">{loading ? '...' : tasks.length}</span>
+                        </div>
                     </div>
-                    <div className="stat-info">
-                        <h4>Pending Review</h4>
-                        <p>{loading ? '...' : tasks.length}</p>
+                    <div className="st-stat-card">
+                        <div className="st-stat-info">
+                            <span className="st-stat-label">High Priority</span>
+                            <span className="st-stat-value">{loading ? '...' : criticalCount}</span>
+                        </div>
                     </div>
-                </div>
-                <div className="stat-box">
-                    <div className="stat-icon warning">
-                        <AlertCircle size={24} />
-                    </div>
-                    <div className="stat-info">
-                        <h4>High Priority</h4>
-                        <p>{loading ? '...' : criticalCount}</p>
-                    </div>
-                </div>
-                <div className="stat-box">
-                    <div className="stat-icon success">
-                        <CheckCircle size={24} />
-                    </div>
-                    <div className="stat-info">
-                        <h4>Action Required</h4>
-                        <p>{loading ? '...' : filteredTasks.length}</p>
+                    <div className="st-stat-card">
+                        <div className="st-stat-info">
+                            <span className="st-stat-label">Action Required</span>
+                            <span className="st-stat-value">{loading ? '...' : filteredTasks.length}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* ── Search & Filters ── */}
-            <div className="approvals-filter-bar">
-                <div className="filter-left">
-                    <div className="search-input-wrapper">
-                        <Search size={18} className="search-icon" />
+                {/* ── Search & Filter Controls (Same theme & structure) ── */}
+                <div className="st-tasks-controls" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="st-search-container" style={{ flex: 1, minWidth: '250px' }}>
+                        <Search size={18} className="st-search-icon" />
                         <input
                             type="text"
                             placeholder="Search by client, title, or project..."
-                            className="approvals-search"
+                            className="st-search-input"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                </div>
-                <div className="filter-right">
                     <select
                         className="filter-select"
+                        style={{
+                            padding: '0.85rem 1.5rem',
+                            borderRadius: '12px',
+                            border: '1px solid #e2e8f0',
+                            background: '#fcfdfe',
+                            fontSize: '0.95rem',
+                            color: '#334155',
+                            outline: 'none',
+                            cursor: 'pointer',
+                            minWidth: '180px',
+                            transition: 'all 0.2s'
+                        }}
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value)}
                     >
@@ -168,89 +158,93 @@ const SalesApprovals = ({ user }) => {
                         <option value="Low">Low</option>
                     </select>
                 </div>
-            </div>
 
-            {/* ── Approvals Content ── */}
-            {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
-                    <Loader className="spinner" size={40} color="#6366f1" />
-                </div>
-            ) : filteredTasks.length > 0 ? (
-                <div className="approvals-grid">
-                    {filteredTasks.map(task => {
-                        const designerName = task.assignedTo?.map(s => s.name).join(', ') || 'Design Team';
-                        const designerInitials = designerName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                        
-                        return (
-                            <div key={task._id} className="approval-card">
-                                <span className={`card-header-badge ${getPriorityClass(task.priority)}`}>
-                                    {task.priority || 'Medium'}
-                                </span>
-                                
-                                <div className="card-body">
-                                    <h3 className="card-title">{task.title}</h3>
-                                    
-                                    <div className="project-name-badge">
-                                        {task.project?.projectName || task.quotation?.projectName || 'Interior Project'}
+                {/* ── Client Approvals Grid ── */}
+                {loading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+                        <Loader className="spinner" size={40} />
+                    </div>
+                ) : filteredTasks.length > 0 ? (
+                    <div className="st-tasks-grid">
+                        {filteredTasks.map(task => {
+                            const designerName = task.assignedTo?.map(s => s.name).join(', ') || 'Design Team';
+                            const designerInitials = designerName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                            
+                            return (
+                                <div key={task._id} className="st-task-card">
+                                    <div className="st-task-card-header">
+                                        <h3 className="st-task-title">{task.title}</h3>
+                                        <span className={`st-priority-badge st-priority-${task.priority?.toLowerCase()}`}>
+                                            {task.priority || 'Medium'}
+                                        </span>
                                     </div>
                                     
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#64748b' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <div className="st-task-card-meta">
+                                        <div className="st-meta-item">
+                                            <Briefcase size={14} />
+                                            <span>{task.project?.projectName || task.quotation?.projectName || 'Interior Project'}</span>
+                                        </div>
+                                        <div className="st-meta-item">
                                             <Calendar size={14} />
                                             <span>Deadline: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
                                         </div>
-                                        {task.submissions?.[task.submissions.length - 1]?.designerNotes && (
-                                            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', background: '#f8fafc', padding: '10px', borderRadius: '10px', marginTop: '6px' }}>
-                                                <MessageSquare size={14} style={{ marginTop: '2px', flexShrink: 0, color: '#6366f1' }} />
-                                                <p style={{ margin: 0, fontSize: '0.8rem', color: '#475569', lineHeight: '1.4' }}>
-                                                    {task.submissions[task.submissions.length - 1].designerNotes}
-                                                </p>
-                                            </div>
-                                        )}
                                     </div>
 
-                                    <div className="designer-section">
-                                        <div className="designer-avatar">{designerInitials}</div>
-                                        <div className="designer-name-details">
-                                            <span className="designer-label">Designer</span>
-                                            <span className="designer-val">{designerName}</span>
+                                    {task.submissions?.[task.submissions.length - 1]?.designerNotes && (
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', background: '#f8fafc', padding: '12px', borderRadius: '12px', marginTop: '4px' }}>
+                                            <MessageSquare size={14} style={{ marginTop: '2px', flexShrink: 0, color: '#6366f1' }} />
+                                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.4' }}>
+                                                {task.submissions[task.submissions.length - 1].designerNotes}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="designer-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem', marginTop: 'auto' }}>
+                                        <div className="designer-avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', fontWeight: '600', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {designerInitials}
+                                        </div>
+                                        <div className="designer-name-details" style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase' }}>Designer</span>
+                                            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>{designerName}</span>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="card-footer-actions">
-                                    <button 
-                                        className="btn-action-ghost"
-                                        onClick={() => setPreviewTask(task)}
-                                    >
-                                        <Eye size={16} /> Preview
-                                    </button>
-                                    <button 
-                                        className="btn-action-reject"
-                                        onClick={() => triggerAction(task, 'reject')}
-                                    >
-                                        Revise
-                                    </button>
-                                    <button 
-                                        className="btn-action-approve"
-                                        onClick={() => triggerAction(task, 'approve')}
-                                    >
-                                        Approve
-                                    </button>
+                                    <div className="st-task-card-footer" style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                                        <button 
+                                            className="st-btn-action approve"
+                                            style={{ background: '#f1f5f9', color: '#475569' }}
+                                            onClick={() => setPreviewTask(task)}
+                                        >
+                                            Preview
+                                        </button>
+                                        <button 
+                                            className="st-btn-action reject"
+                                            onClick={() => triggerAction(task, 'reject')}
+                                        >
+                                            Revise
+                                        </button>
+                                        <button 
+                                            className="st-btn-action approve"
+                                            onClick={() => triggerAction(task, 'approve')}
+                                        >
+                                            Approve
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className="approvals-empty">
-                    <div className="approvals-empty-icon">
-                        <ClipboardCheck size={40} />
+                            );
+                        })}
                     </div>
-                    <h3>No Client Approvals Found</h3>
-                    <p>All submitted designs have been reviewed or matched no filters. Check back later when designers upload new concepts.</p>
-                </div>
-            )}
+                ) : (
+                    <div className="approvals-empty">
+                        <div className="approvals-empty-icon">
+                            <ClipboardCheck size={40} />
+                        </div>
+                        <h3>No Client Approvals Found</h3>
+                        <p>All submitted designs have been reviewed or matched no filters. Check back later when designers upload new concepts.</p>
+                    </div>
+                )}
+
+            </div>
 
             {/* ── CUSTOM DECISION POPUP/MODAL ── */}
             {actionTask && actionType && (
@@ -287,7 +281,8 @@ const SalesApprovals = ({ user }) => {
                         <div className="feedback-actions">
                             <button 
                                 type="button" 
-                                className="btn-action-ghost"
+                                className="st-btn-action approve"
+                                style={{ background: '#f1f5f9', color: '#475569', flex: 'none', width: '100px' }}
                                 onClick={() => { setActionTask(null); setActionType(null); }}
                                 disabled={submittingAction}
                             >
@@ -295,7 +290,8 @@ const SalesApprovals = ({ user }) => {
                             </button>
                             <button 
                                 type="submit" 
-                                className={actionType === 'approve' ? 'btn-action-approve' : 'btn-action-reject'}
+                                className={actionType === 'approve' ? 'st-btn-action approve' : 'st-btn-action reject'}
+                                style={{ flex: 1 }}
                                 disabled={submittingAction}
                             >
                                 {submittingAction 
