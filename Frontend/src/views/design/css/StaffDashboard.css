@@ -541,7 +541,7 @@
 .board-filters button.active { background: #f0f3ff; color: #4f46e5; }
 
 .board-lists { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-.board-column { background: #f1f5f9; padding: 1.5rem; border-radius: 24px; min-height: 600px; border: 2px solid transparent; transition: all 0.2s; }
+.board-column { background: #f1f5f9; padding: 1.5rem; border-radius: 24px; min-height: fit-content; border: 2px solid transparent; transition: all 0.2s; }
 .board-column:hover { border-color: #cbd5e1; }
 .col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-weight: 700; color: #475569; }
 .col-header .count { background: white; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }

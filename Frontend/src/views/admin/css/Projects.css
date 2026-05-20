@@ -53,6 +53,33 @@
     box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
+.btn-danger-ghost {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid #fee2e2;
+    background: #fff1f2;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-danger-ghost:hover {
+    background: #ffe4e6;
+    border-color: #fca5a5;
+    color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.15);
+}
+
+.btn-danger-ghost:active {
+    transform: translateY(0);
+}
+
 .projects-controls {
     display: flex;
     justify-content: space-between;
@@ -529,6 +556,12 @@
     border-color: #4f46e5;
 }
 
+.action-icon-btn.delete-btn:hover {
+    background: #fff1f2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
 .stage-projects {
     display: flex;
     flex-direction: column;
@@ -801,6 +834,12 @@
     gap: 20px;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .badge-premium {
     color: white;
     padding: 6px 16px;
@@ -1051,6 +1090,8 @@
         width: 100%;
         display: flex;
         justify-content: flex-start;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
     .btn-back-round {

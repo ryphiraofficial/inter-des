@@ -1,0 +1,182 @@
+/* Shadcn UI Inspired Alert Dialog */
+
+.alert-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.alert-dialog-content {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.alert-dialog-header {
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.alert-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.alert-icon-container.destructive {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.alert-icon-container.primary {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.alert-dialog-title-area h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.alert-dialog-title-area p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.alert-dialog-footer {
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.alert-btn-cancel,
+.alert-btn-confirm {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert-btn-cancel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.alert-btn-cancel:hover {
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+.alert-btn-confirm {
+    border: none;
+    color: white;
+}
+
+.alert-btn-confirm.destructive {
+    background: #ef4444;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.alert-btn-confirm.destructive:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.alert-btn-confirm.destructive:active {
+    transform: translateY(0);
+}
+
+.alert-btn-confirm.primary {
+    background: #0f172a;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.alert-btn-confirm.primary:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.alert-btn-confirm.primary:active {
+    transform: translateY(0);
+}
+
+.alert-btn-cancel:disabled,
+.alert-btn-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animations */
+.fade-in {
+    animation: dialogFadeIn 0.2s ease-out;
+}
+
+.slide-up {
+    animation: dialogSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dialogFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes dialogSlideUp {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 640px) {
+    .alert-dialog-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .alert-dialog-footer {
+        flex-direction: column-reverse;
+        padding: 1.25rem;
+    }
+    
+    .alert-btn-cancel,
+    .alert-btn-confirm {
+        width: 100%;
+        padding: 0.75rem;
+    }
+}

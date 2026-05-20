@@ -487,3 +487,38 @@ exports.getProjectsByStage = async (req, res) => {
         });
     }
 };
+
+exports.deleteProject = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: 'Project not found'
+            });
+        }
+        
+        await project.deleteOne();
+        
+        logAction({
+            userId: req.user.id,
+            action: 'Project Deleted',
+            module: 'Project',
+            referenceId: project._id,
+            referenceModel: 'Project',
+            description: `Project "${project.name}" was deleted`
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: {},
+            message: 'Project deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

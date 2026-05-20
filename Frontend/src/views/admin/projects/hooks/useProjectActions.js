@@ -13,6 +13,17 @@ export const useProjectActions = ({
         }
     };
 
+    const handleDeleteProject = async (projectId) => {
+        try {
+            await projectAPI.delete(projectId);
+            fetchProjects();
+            handleClose();
+        } catch (err) {
+            console.error('Error deleting project:', err);
+            throw err;
+        }
+    };
+
     const handleClose = () => {
         if (urlProjectId) {
             navigate(-1);
@@ -21,5 +32,5 @@ export const useProjectActions = ({
         }
     };
 
-    return { handleStageChange, handleClose };
+    return { handleStageChange, handleDeleteProject, handleClose };
 };

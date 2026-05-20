@@ -208,7 +208,7 @@ const Tasks = ({
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>Assigned Design Tasks</h2>
             </div>
 
-            <div className="board-lists" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', gap: '1.5rem' }}>
+            <div className="board-lists" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 450px), 1fr))', gap: '1.5rem' }}>
                 <div className="board-column" style={{ background: 'transparent', padding: 0 }}>
                     <div className="col-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 800, color: '#64748b', fontSize: '0.9rem', textTransform: 'uppercase' }}>Current Assignments</span>

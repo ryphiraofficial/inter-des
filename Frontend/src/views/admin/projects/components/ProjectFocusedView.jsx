@@ -1,6 +1,7 @@
-import React from 'react';
-import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock, Trash2 } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
+import AlertDialog from '../../components/AlertDialog';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -28,7 +29,24 @@ const formatCurrency = (amount) => {
     return `₹${amount.toLocaleString()}`;
 };
 
-const ProjectFocusedView = ({ project, loading, handleClose }) => {
+const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject }) => {
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const onConfirmDelete = async () => {
+        if (!handleDeleteProject) return;
+        setIsDeleting(true);
+        try {
+            await handleDeleteProject(project._id);
+            // Deletion handles navigation back, so we just let it run
+        } catch (error) {
+            console.error("Failed to delete project:", error);
+            setIsDeleting(false);
+            setShowDeleteAlert(false);
+            alert("Failed to delete project. Please try again.");
+        }
+    };
+
     if (loading) {
         return (
             <div className="projects-page focused-view">
@@ -56,6 +74,12 @@ const ProjectFocusedView = ({ project, loading, handleClose }) => {
                     </div>
                 </div>
                 <div className="header-actions">
+                    <button 
+                        className="btn-danger-ghost" 
+                        onClick={() => setShowDeleteAlert(true)}
+                    >
+                        <Trash2 size={16} /> Delete Project
+                    </button>
                     <span className="badge-premium" style={{ background: getStageColor(project.stage) }}>{project.stage} Stage</span>
                 </div>
             </div>
@@ -106,6 +130,18 @@ const ProjectFocusedView = ({ project, loading, handleClose }) => {
                     </div>
                 </div>
             </div>
+
+            <AlertDialog 
+                isOpen={showDeleteAlert}
+                onClose={() => setShowDeleteAlert(false)}
+                onConfirm={onConfirmDelete}
+                title="Delete Project?"
+                description={`Are you sure you want to delete the project "${project.name}"? This action cannot be undone and all associated data will be permanently removed.`}
+                confirmText="Delete Project"
+                cancelText="Cancel"
+                isDestructive={true}
+                isProcessing={isDeleting}
+            />
         </div>
     );
 };

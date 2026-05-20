@@ -11,7 +11,8 @@ const {
     getProjectsByStage,
     validateHandoff,
     performHandoff,
-    getWorkflowChecklist
+    getWorkflowChecklist,
+    deleteProject
 } = require('../controllers/projectController');
 
 router.use(protect);
@@ -28,7 +29,8 @@ router.route('/stage/:stage')
 
 router.route('/:id')
     .get(getProject)
-    .put(updateProject);
+    .put(updateProject)
+    .delete(authorize('Super Admin', 'Admin'), deleteProject);
 
 router.route('/:id/stage')
     .put(updateProjectStage);

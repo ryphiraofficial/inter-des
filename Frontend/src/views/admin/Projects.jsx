@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProjectState } from './projects/hooks/useProjectState';
 import { useProjectData } from './projects/hooks/useProjectData';
@@ -12,6 +12,7 @@ import ProjectTable from './projects/components/ProjectTable';
 import ProjectTimeline from './projects/components/ProjectTimeline';
 import ProjectDetailModal from './projects/components/ProjectDetailModal';
 import ProjectFocusedView from './projects/components/ProjectFocusedView';
+import AlertDialog from './components/AlertDialog';
 import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
 import './css/Projects.css';
@@ -20,6 +21,8 @@ const Projects = () => {
     const navigate = useNavigate();
     const { id: urlProjectId } = useParams();
     const state = useProjectState();
+    const [projectToDelete, setProjectToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     
     const { fetchProjects } = useProjectData({
         setProjects: state.setProjects,
@@ -38,6 +41,20 @@ const Projects = () => {
         urlProjectId
     });
 
+    const handleConfirmDeleteList = async () => {
+        if (!projectToDelete) return;
+        setIsDeleting(true);
+        try {
+            await actions.handleDeleteProject(projectToDelete._id);
+            setProjectToDelete(null);
+        } catch (error) {
+            console.error("Failed to delete project:", error);
+            alert("Failed to delete project. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     useEffect(() => {
         const handleOpenModal = () => state.setShowModal(true);
         window.addEventListener('open-create-project-modal', handleOpenModal);
@@ -49,13 +66,14 @@ const Projects = () => {
         p.projectNumber?.toLowerCase().includes(state.searchTerm.toLowerCase())
     );
 
-    // If ID is in URL, show Focused View
-    if (urlProjectId) {
+    if (urlProjectId || state.selectedProject) {
+        const projectToView = urlProjectId ? state.selectedProject : state.selectedProject;
         return (
             <ProjectFocusedView 
-                project={state.selectedProject} 
+                project={projectToView} 
                 loading={state.loading} 
-                handleClose={actions.handleClose} 
+                handleClose={actions.handleClose}
+                handleDeleteProject={actions.handleDeleteProject}
             />
         );
     }
@@ -74,12 +92,12 @@ const Projects = () => {
     const renderActiveView = () => {
         switch (state.activeView) {
             case 'table':
-                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} />;
+                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} onDeleteClick={setProjectToDelete} />;
             case 'timeline':
                 return <ProjectTimeline projects={filteredProjects} />;
             case 'archive':
                 const archivedProjects = filteredProjects.filter(p => p.stage === 'Completed');
-                return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} />;
+                return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} onDeleteClick={setProjectToDelete} />;
             case 'kanban':
             default:
                 const activeProjects = filteredProjects.filter(p => p.stage !== 'Completed');
@@ -144,6 +162,16 @@ const Projects = () => {
             <ProjectDetailModal 
                 selectedProject={state.selectedProject}
                 handleClose={actions.handleClose}
+            />
+
+            <AlertDialog 
+                isOpen={!!projectToDelete}
+                onClose={() => setProjectToDelete(null)}
+                onConfirm={handleConfirmDeleteList}
+                title="Delete Project"
+                description={`Are you sure you want to delete "${projectToDelete?.name}"? This action cannot be undone. This will permanently delete the project and all related tasks/data from the system.`}
+                confirmText="Delete Project"
+                isProcessing={isDeleting}
             />
         </div>
     );

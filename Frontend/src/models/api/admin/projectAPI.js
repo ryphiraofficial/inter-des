@@ -14,6 +14,10 @@ export const projectAPI = {
         body: JSON.stringify(data)
     }),
 
+    delete: (id) => apiCall(`/projects/${id}`, {
+        method: 'DELETE'
+    }),
+
     update: (id, data) => apiCall(`/projects/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data)

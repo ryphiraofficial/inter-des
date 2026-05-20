@@ -1,7 +1,7 @@
 import React from 'react';
-import { Eye, Edit3, MoreVertical } from 'lucide-react';
+import { Eye, Edit3, Trash2 } from 'lucide-react';
 
-const ProjectTable = ({ projects, onProjectClick }) => {
+const ProjectTable = ({ projects, onProjectClick, onDeleteClick }) => {
     const getStageColor = (stage) => {
         const colors = {
             'Design': '#8b5cf6',
@@ -58,8 +58,27 @@ const ProjectTable = ({ projects, onProjectClick }) => {
                             <td>{project.targetEndDate ? new Date(project.targetEndDate).toLocaleDateString() : 'No date'}</td>
                             <td>
                                 <div className="table-actions">
-                                    <button className="action-icon-btn"><Eye size={16} /></button>
-                                    <button className="action-icon-btn"><Edit3 size={16} /></button>
+                                    <button 
+                                        className="action-icon-btn" 
+                                        onClick={(e) => { e.stopPropagation(); onProjectClick(project); }}
+                                        title="View Project"
+                                    >
+                                        <Eye size={16} />
+                                    </button>
+                                    <button 
+                                        className="action-icon-btn" 
+                                        onClick={(e) => { e.stopPropagation(); onProjectClick(project); }}
+                                        title="Edit Project"
+                                    >
+                                        <Edit3 size={16} />
+                                    </button>
+                                    <button 
+                                        className="action-icon-btn delete-btn" 
+                                        onClick={(e) => { e.stopPropagation(); onDeleteClick(project); }}
+                                        title="Delete Project"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
                             </td>
                         </tr>

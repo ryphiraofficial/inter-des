@@ -12,7 +12,7 @@ const Workspace = ({ inventory, taggedMaterials, onAddMaterialTag, materialReque
                             <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Tag size={20} color="#4f46e5" /> Tag Materials for Review</h3>
                             <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>Select items from the catalog. Your manager will approve them before Procurement begins.</p>
                         </div>
-                        <div className="materials-catalog-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                        <div className="materials-catalog-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
                             {inventory.slice(0, 12).map(item => (
                                 <div key={item._id} className="inv-item-card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '12px', background: 'white', position: 'relative', cursor: 'pointer' }} onClick={() => onAddMaterialTag(item)}>
                                     <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
