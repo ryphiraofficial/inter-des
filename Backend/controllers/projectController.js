@@ -499,6 +499,36 @@ exports.deleteProject = async (req, res) => {
             });
         }
         
+        const projectId = project._id;
+        
+        // Cascade delete related records
+        try {
+            // Find and delete ProductionTasks first
+            const pp = await require('../models/ProductionProject').findOne({ sourceProject: projectId });
+            if (pp) {
+                await require('../models/ProductionTask').deleteMany({ projectId: pp._id });
+            }
+
+            await Promise.all([
+                require('../models/Task').deleteMany({ project: projectId }),
+                require('../models/MaterialRequest').deleteMany({ project: projectId }),
+                require('../models/ProductionProject').deleteMany({ sourceProject: projectId }),
+                require('../models/VendorComparison').deleteMany({ project: projectId }),
+                require('../models/VendorPurchase').deleteMany({ project: projectId }),
+                require('../models/Invoice').deleteMany({ project: projectId }),
+                require('../models/Payment').deleteMany({ project: projectId }),
+                require('../models/Expense').deleteMany({ project: projectId }),
+                require('../models/Checklist').deleteMany({ project: projectId }),
+                require('../models/SupervisorDailyReport').deleteMany({ project: projectId }),
+                require('../models/SiteProgressReport').deleteMany({ project: projectId }),
+                require('../models/SiteAttendance').deleteMany({ project: projectId }),
+                require('../models/SafetyLog').deleteMany({ project: projectId }),
+                require('../models/Notification').deleteMany({ relatedModel: 'Project', relatedId: projectId })
+            ]);
+        } catch (cascadeError) {
+            console.error('Cascade deletion failed:', cascadeError);
+        }
+        
         await project.deleteOne();
         
         logAction({
