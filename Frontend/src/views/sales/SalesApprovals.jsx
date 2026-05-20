@@ -32,8 +32,7 @@ const SalesApprovals = ({ user }) => {
             setLoading(true);
             const res = await taskAPI.getAll();
             if (res.success) {
-                const pendingReviews = res.data.filter(t => t.status === 'Pending Sales Review');
-                setTasks(pendingReviews);
+                setTasks(res.data);
             }
         } catch (error) {
             console.error('Error loading client approvals:', error);
@@ -46,8 +45,13 @@ const SalesApprovals = ({ user }) => {
         loadTasks();
     }, [loadTasks]);
 
+    const pendingTasks = tasks.filter(t => t.status === 'Pending Sales Review');
+    const approvedCount = tasks.filter(t => t.status === 'Sales Approved').length;
+    const revisionCount = tasks.filter(t => t.status === 'Revision Required').length;
+    const criticalCount = pendingTasks.filter(t => t.priority === 'Critical' || t.priority === 'High').length;
+
     // Handle Search & Filter logic
-    const filteredTasks = tasks.filter(task => {
+    const filteredTasks = pendingTasks.filter(task => {
         const titleMatch = task.title?.toLowerCase().includes(searchTerm.toLowerCase());
         const projectMatch = (task.project?.projectName || task.quotation?.projectName || '')
             .toLowerCase()
@@ -98,8 +102,6 @@ const SalesApprovals = ({ user }) => {
         }
     };
 
-    const criticalCount = tasks.filter(t => t.priority === 'Critical' || t.priority === 'High').length;
-
     return (
         <div className="st-tasks-container">
             <div className="st-tasks-wrapper">
@@ -109,13 +111,25 @@ const SalesApprovals = ({ user }) => {
                     <div className="st-stat-card">
                         <div className="st-stat-info">
                             <span className="st-stat-label">Pending Review</span>
-                            <span className="st-stat-value">{loading ? '...' : tasks.length}</span>
+                            <span className="st-stat-value">{loading ? '...' : pendingTasks.length}</span>
                         </div>
                     </div>
                     <div className="st-stat-card">
                         <div className="st-stat-info">
                             <span className="st-stat-label">High Priority</span>
                             <span className="st-stat-value">{loading ? '...' : criticalCount}</span>
+                        </div>
+                    </div>
+                    <div className="st-stat-card">
+                        <div className="st-stat-info">
+                            <span className="st-stat-label">Sales Approved</span>
+                            <span className="st-stat-value">{loading ? '...' : approvedCount}</span>
+                        </div>
+                    </div>
+                    <div className="st-stat-card">
+                        <div className="st-stat-info">
+                            <span className="st-stat-label">Revisions Needed</span>
+                            <span className="st-stat-value">{loading ? '...' : revisionCount}</span>
                         </div>
                     </div>
                     <div className="st-stat-card">
