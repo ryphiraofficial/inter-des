@@ -84,15 +84,20 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
         }
     };
 
-    // Filter staff list based on role/stage selection
+    // Filter staff list based on role/stage selection to only show assigned personnel
     const getFilteredStaff = (stageValue) => {
-        let roleName = '';
-        if (stageValue === 'PE') roleName = 'Project Engineer';
-        else if (stageValue === 'SE') roleName = 'Site Engineer';
-        else if (stageValue === 'SS') roleName = 'Site Supervisor';
-        else return staff; // PM or fallback sees everyone
+        let assignedId = null;
+        if (stageValue === 'PE') assignedId = project.projectEngineer?._id || project.projectEngineer;
+        else if (stageValue === 'SE') assignedId = project.siteEngineer?._id || project.siteEngineer;
+        else if (stageValue === 'SS') assignedId = project.siteSupervisor?._id || project.siteSupervisor;
+        else if (stageValue === 'PM') assignedId = project.projectManager?._id || project.projectManager;
 
-        return staff.filter(s => s.role === roleName);
+        if (assignedId) {
+            const assignedIdStr = assignedId.toString();
+            return staff.filter(s => s._id === assignedIdStr);
+        }
+        
+        return [];
     };
 
     // Team update handler
