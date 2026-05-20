@@ -36,14 +36,17 @@ const TaskDetail = ({ user }) => {
     const [showSubtaskModal, setShowSubtaskModal] = useState(false);
     const [subtaskSaving, setSubtaskSaving] = useState(false);
     const [siteTeam, setSiteTeam] = useState([]);
+    const [supervisors, setSupervisors] = useState([]);
     const [subform, setSubform] = useState({ title: '', description: '', assignedTo: '', priority: 'Medium', dueDate: '' });
 
     useEffect(() => { 
         load(); 
         if (user?.role === 'Project Engineer') {
             engineerAPI.getSiteTeam().then(res => { if (res.success) setSiteTeam(res.data); });
+        } else if (user?.role === 'Site Engineer') {
+            engineerAPI.getSupervisors().then(res => { if (res.success) setSupervisors(res.data); });
         }
-    }, [id]);
+    }, [id, user?.role]);
 
     const load = async () => {
         try {
@@ -97,6 +100,23 @@ const TaskDetail = ({ user }) => {
             showToast('Review action failed', 'error');
         } finally {
             setStatusSaving(false);
+        }
+    };
+
+    const handleReassignTask = async (newAssigneeId) => {
+        setSaving(true);
+        try {
+            const res = await engineerAPI.assignTask(id, newAssigneeId);
+            if (res.success) {
+                showToast('Task reassigned successfully!');
+                load(); // Reload task to get updated assignee details
+            } else {
+                showToast(res.message || 'Failed to reassign task', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to reassign task', 'error');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -388,7 +408,7 @@ const TaskDetail = ({ user }) => {
                             {[
                                 ['Project',     task.projectId?.projectName||'—'],
                                 ['Assigned By', task.assignedBy?.fullName||'—'],
-                                ['Assigned To', task.assignedTo?.fullName||'Unassigned'],
+                                ['Assigned To', 'dropdown'], // Marker for custom render
                                 ['Stage',       STAGE_LABELS[task.stage]||task.stage],
                                 ['Priority',    task.priority],
                                 ['Status',      task.status],
@@ -397,7 +417,26 @@ const TaskDetail = ({ user }) => {
                             ].map(([k,v])=>(
                                 <div key={k} className="eng-info-row">
                                     <span className="eng-info-label">{k}</span>
-                                    <span className="eng-info-value">{v}</span>
+                                    {v === 'dropdown' ? (
+                                        ['Project Engineer', 'Site Engineer'].includes(user?.role) ? (
+                                            <select 
+                                                className="eng-input" 
+                                                value={task.assignedTo?._id || task.assignedTo || ''}
+                                                onChange={(e) => handleReassignTask(e.target.value)}
+                                                disabled={saving}
+                                                style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '12px', width: 'auto', flex: 1, marginLeft: '10px' }}
+                                            >
+                                                <option value="">Unassigned</option>
+                                                {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m => (
+                                                    <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <span className="eng-info-value">{task.assignedTo?.fullName||'Unassigned'}</span>
+                                        )
+                                    ) : (
+                                        <span className="eng-info-value">{v}</span>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -446,12 +485,10 @@ const TaskDetail = ({ user }) => {
                             </div>
                             <div className="eng-form-row">
                                 <div className="eng-form-group">
-                                    <label>Assign To</label>
-                                    <select className="eng-input" required value={subform.assignedTo} onChange={e=>setSubform({...subform,assignedTo:e.target.value})}>
-                                        <option value="">Select Site Engineer...</option>
-                                        {siteTeam.map(t=>(
-                                            <option key={t._id} value={t._id}>{t.fullName} ({t.role})</option>
-                                        ))}
+                                    <label>Assign To *{user?.role === 'Site Engineer' ? ' (Site Supervisor)' : ''}</label>
+                                    <select className="eng-input" value={subform.assignedTo} onChange={e=>setSubform({...subform,assignedTo:e.target.value})} required>
+                                        <option value="">Select {user?.role === 'Site Engineer' ? 'supervisor' : 'engineer'}…</option>
+                                        {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
                                     </select>
                                 </div>
                                 <div className="eng-form-group">
