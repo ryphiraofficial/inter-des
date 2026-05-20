@@ -329,7 +329,7 @@ const TaskDetail = ({ user }) => {
                                     const sst = getStatusStyle(st.status);
                                     return (
                                         <div key={st._id} className="eng-task-row eng-task-row-clickable"
-                                            onClick={()=>navigate(`/engineer/tasks/${st._id}`)}>
+                                            onClick={()=>navigate(`/${['Site Engineer','Site Supervisor'].includes(user?.role) ? 'site' : 'engineer'}/tasks/${st._id}`)}>
                                             <div className="eng-task-dot" style={{ background:sst.dot }}/>
                                             <div className="eng-task-info">
                                                 <span className="eng-task-title">{st.title}</span>

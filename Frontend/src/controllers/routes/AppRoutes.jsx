@@ -140,6 +140,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="site/projects" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/projects/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/tasks" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteTasks user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/tasks/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/reports" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteReports user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/leave" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteLeave user={user} /> : <Navigate to="/" replace />} />
 
