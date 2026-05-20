@@ -21,6 +21,14 @@ export const engineerAPI = {
         method: 'POST',
         body: JSON.stringify(data)
     }),
+    createTask:     (data) => apiCall('/production-management/tasks/create', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    assignTask:     (taskId, assignedTo) => apiCall(`/production-management/tasks/${taskId}/assign`, {
+        method: 'PUT',
+        body: JSON.stringify({ assignedTo })
+    }),
     getProjectById:  (id) => apiCall(`/production-management/projects/${id}`),
     getProjectTasks: (id) => apiCall(`/production-management/tasks/project/${id}`),
     getActivity:     (id) => apiCall(`/production-management/projects/${id}/activity`),

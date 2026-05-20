@@ -24,8 +24,10 @@ const ProjectDetail = ({ user }) => {
     const [tab,      setTab]      = useState('overview');
     const [loading,  setLoading]  = useState(true);
     const [showSubtaskModal, setShowSubtaskModal] = useState(false);
+    const [showTaskModal, setShowTaskModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [subtask, setSubtask] = useState({ title:'', description:'', assignedTo:'', priority:'Medium', dueDate:'' });
+    const [newTask, setNewTask] = useState({ title:'', description:'', assignedTo:'', priority:'Medium', dueDate:'' });
     const [showReplaceModal, setShowReplaceModal] = useState(false);
     const [replaceData, setReplaceData] = useState({ staffType: '', currentStaffId: '', currentStaffName: '', reason: '' });
     const [saving, setSaving] = useState(false);
@@ -65,6 +67,25 @@ const ProjectDetail = ({ user }) => {
                 if (tRes.success) setTasks(tRes.data);
             }
         } catch (e) { showToast('Failed to create subtask','error'); }
+        finally { setSaving(false); }
+    };
+
+    const handleCreateTask = async (e) => {
+        e.preventDefault();
+        if (!newTask.title || !newTask.assignedTo) return showToast('Title and assignee are required','error');
+        setSaving(true);
+        try {
+            const res = await engineerAPI.createTask({ ...newTask, projectId: id });
+            if (res.success) {
+                showToast('Task created successfully!');
+                setShowTaskModal(false);
+                setNewTask({ title:'', description:'', assignedTo:'', priority:'Medium', dueDate:'' });
+                const tRes = await engineerAPI.getProjectTasks(id);
+                if (tRes.success) setTasks(tRes.data);
+            } else {
+                showToast(res.message || 'Failed to create task','error');
+            }
+        } catch (e) { showToast('Failed to create task','error'); }
         finally { setSaving(false); }
     };
 
@@ -240,6 +261,20 @@ const ProjectDetail = ({ user }) => {
             {/* Tasks Tab */}
             {tab === 'tasks' && (
                 <div className="eng-tab-content">
+                    {user?.role === 'Project Engineer' && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                            <button 
+                                className="eng-btn-primary" 
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '12px', fontWeight: 600, fontSize: '0.85rem' }}
+                                onClick={() => {
+                                    setNewTask({ title:'', description:'', assignedTo:'', priority:'Medium', dueDate:'' });
+                                    setShowTaskModal(true);
+                                }}
+                            >
+                                <Plus size={16}/> Create Task
+                            </button>
+                        </div>
+                    )}
                     {tasks.length === 0 ? (
                         <div className="eng-table-card">
                             <div className="eng-empty" style={{ padding:48 }}>
@@ -273,8 +308,38 @@ const ProjectDetail = ({ user }) => {
                                                         {t.isSubtask && <div className="eng-td-sub">↳ Subtask</div>}
                                                     </td>
                                                     <td><span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span></td>
-                                                    <td style={{ fontSize:13, color: isMine?'#3b82f6':'#475569', fontWeight: isMine?700:400 }}>
-                                                        {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
+                                                    <td style={{ fontSize:13 }} onClick={e => e.stopPropagation()}>
+                                                        {user?.role === 'Project Engineer' ? (
+                                                            <select 
+                                                                className="eng-assign-select" 
+                                                                value={t.assignedTo?._id || t.assignedTo || ''}
+                                                                onChange={async (e) => {
+                                                                    const targetAssigneeId = e.target.value;
+                                                                    try {
+                                                                        const res = await engineerAPI.assignTask(t._id, targetAssigneeId);
+                                                                        if (res.success) {
+                                                                            showToast('Task assigned successfully!');
+                                                                            const tRes = await engineerAPI.getProjectTasks(id);
+                                                                            if (tRes.success) setTasks(tRes.data);
+                                                                        } else {
+                                                                            showToast(res.message || 'Failed to assign task', 'error');
+                                                                        }
+                                                                    } catch (err) {
+                                                                        showToast('Failed to assign task', 'error');
+                                                                    }
+                                                                }}
+                                                                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', background: '#f8fafc', fontWeight: 500 }}
+                                                            >
+                                                                <option value="">Unassigned</option>
+                                                                {siteTeam.map(m => (
+                                                                    <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
+                                                                ))}
+                                                            </select>
+                                                        ) : (
+                                                            <span style={{ color: isMine?'#3b82f6':'#475569', fontWeight: isMine?700:400 }}>
+                                                                {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td><span className="eng-badge" style={{color:pr.color,background:pr.bg}}>{t.priority}</span></td>
                                                     <td><span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span></td>
@@ -311,10 +376,38 @@ const ProjectDetail = ({ user }) => {
                                                 <span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span>
                                                 <span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span>
                                             </div>
-                                            <div className="eng-mobile-task-info">
-                                                <span style={{ fontWeight: isMine?700:400, color: isMine?'#3b82f6':'inherit' }}>
-                                                    {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
-                                                </span>
+                                            <div className="eng-mobile-task-info" onClick={e => e.stopPropagation()}>
+                                                {user?.role === 'Project Engineer' ? (
+                                                    <select 
+                                                        className="eng-assign-select" 
+                                                        value={t.assignedTo?._id || t.assignedTo || ''}
+                                                        onChange={async (e) => {
+                                                            const targetAssigneeId = e.target.value;
+                                                            try {
+                                                                const res = await engineerAPI.assignTask(t._id, targetAssigneeId);
+                                                                if (res.success) {
+                                                                    showToast('Task assigned successfully!');
+                                                                    const tRes = await engineerAPI.getProjectTasks(id);
+                                                                    if (tRes.success) setTasks(tRes.data);
+                                                                } else {
+                                                                    showToast(res.message || 'Failed to assign task', 'error');
+                                                                }
+                                                            } catch (err) {
+                                                                showToast('Failed to assign task', 'error');
+                                                            }
+                                                        }}
+                                                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', background: '#f8fafc', fontWeight: 500 }}
+                                                    >
+                                                        <option value="">Unassigned</option>
+                                                        {siteTeam.map(m => (
+                                                            <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <span style={{ fontWeight: isMine?700:400, color: isMine?'#3b82f6':'inherit' }}>
+                                                        {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
+                                                    </span>
+                                                )}
                                                 {user?.role === 'Project Engineer' && !t.isSubtask && (
                                                     <button 
                                                         className="eng-subtask-btn" 
@@ -401,6 +494,53 @@ const ProjectDetail = ({ user }) => {
                                 <button type="button" className="eng-btn-ghost" onClick={()=>setShowSubtaskModal(false)}>Cancel</button>
                                 <button type="submit" className="eng-btn-primary" disabled={saving}>
                                     {saving?<><Loader2 size={14} className="eng-spin"/> Saving…</>:'Create Subtask'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Task Modal */}
+            {showTaskModal && (
+                <div className="eng-modal-overlay">
+                    <div className="eng-modal">
+                        <div className="eng-modal-header">
+                            <h3>Create Task</h3>
+                            <button className="eng-modal-close" onClick={()=>setShowTaskModal(false)}><X size={18}/></button>
+                        </div>
+                        <form onSubmit={handleCreateTask} className="eng-modal-form">
+                            <div className="eng-form-group">
+                                <label>Title *</label>
+                                <input className="eng-input" value={newTask.title} onChange={e=>setNewTask({...newTask,title:e.target.value})} required/>
+                            </div>
+                            <div className="eng-form-group">
+                                <label>Description</label>
+                                <textarea className="eng-input" rows={3} value={newTask.description} onChange={e=>setNewTask({...newTask,description:e.target.value})}/>
+                            </div>
+                            <div className="eng-form-row">
+                                <div className="eng-form-group">
+                                    <label>Assign To *</label>
+                                    <select className="eng-input" value={newTask.assignedTo} onChange={e=>setNewTask({...newTask,assignedTo:e.target.value})} required>
+                                        <option value="">Select engineer…</option>
+                                        {siteTeam.map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
+                                    </select>
+                                </div>
+                                <div className="eng-form-group">
+                                    <label>Priority</label>
+                                    <select className="eng-input" value={newTask.priority} onChange={e=>setNewTask({...newTask,priority:e.target.value})}>
+                                        {['Low','Medium','High','Urgent'].map(p=><option key={p}>{p}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="eng-form-group">
+                                <label>Due Date</label>
+                                <input type="date" className="eng-input" value={newTask.dueDate} onChange={e=>setNewTask({...newTask,dueDate:e.target.value})}/>
+                            </div>
+                            <div className="eng-modal-footer">
+                                <button type="button" className="eng-btn-ghost" onClick={()=>setShowTaskModal(false)}>Cancel</button>
+                                <button type="submit" className="eng-btn-primary" disabled={saving}>
+                                    {saving?<><Loader2 size={14} className="eng-spin"/> Saving…</>:'Create Task'}
                                 </button>
                             </div>
                         </form>

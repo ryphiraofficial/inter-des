@@ -47,6 +47,54 @@ exports.isProjectManager = async (req, res, next) => {
     }
 };
 
+exports.isProjectManagerOrEngineer = async (req, res, next) => {
+    try {
+        let projectId = req.params.id || req.body.projectId;
+        const taskId = req.params.taskId;
+        
+        if (!projectId && taskId) {
+            const task = await ProductionTask.findById(taskId);
+            if (!task) {
+                return res.status(404).json({ success: false, message: 'Task not found' });
+            }
+            projectId = task.projectId;
+        }
+
+        if (!projectId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Project ID is required'
+            });
+        }
+
+        const project = await ProductionProject.findById(projectId);
+        
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: 'Project not found'
+            });
+        }
+
+        const isPM = project.projectManager && project.projectManager.toString() === req.user.id;
+        const isPE = project.projectEngineer && project.projectEngineer.toString() === req.user.id;
+
+        if (!isPM && !isPE) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied: Only the assigned Project Manager or Project Engineer can perform this action'
+            });
+        }
+
+        next();
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error in authorization'
+        });
+    }
+};
+
 exports.isAssignedUser = async (req, res, next) => {
     try {
         const projectId = req.params.id || req.body.projectId;

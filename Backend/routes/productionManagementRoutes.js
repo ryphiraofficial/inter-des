@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { isProjectManager, isAssignedUser } = require('../middleware/productionAuth');
+const { isProjectManager, isAssignedUser, isProjectManagerOrEngineer } = require('../middleware/productionAuth');
 
 const {
     createProject,
@@ -74,8 +74,8 @@ router.put('/projects/:id/assign-team', isProjectManager, assignTeam);
 // =======================
 // TASK APIs
 // =======================
-router.post('/tasks/create', isProjectManager, createTask);
-router.put('/tasks/:taskId/assign', isProjectManager, assignTask);
+router.post('/tasks/create', isProjectManagerOrEngineer, createTask);
+router.put('/tasks/:taskId/assign', isProjectManagerOrEngineer, assignTask);
 router.put('/tasks/:taskId/update-status', isAssignedUser, updateTaskStatus);
 router.get('/tasks/project/:id', isAssignedUser, getTasksByProject);
 router.get('/tasks/all', getAllTasks);
