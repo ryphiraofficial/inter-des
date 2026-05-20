@@ -114,6 +114,14 @@ const ProjectSchema = new mongoose.Schema({
         enum: ['Not Required', 'Pending Assignment', 'Assigned', 'Collected', 'Verified'],
         default: 'Not Required'
     },
+    tempCollectionDetails: {
+        amount: { type: Number },
+        paymentMode: { type: String },
+        referenceNumber: { type: String },
+        paymentNotes: { type: String },
+        collectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        collectedAt: { type: Date, default: Date.now }
+    },
     notes: {
         type: String,
         trim: true

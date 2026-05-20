@@ -57,26 +57,21 @@ export const useApprovalsActions = ({
 
     const handleProcurementApprove = async (item) => {
         const pmId = selectedPM[item._id];
-        const shouldSendToAccounts = sentToAccounts[item._id];
 
         if (!pmId) {
             showToast('Please assign a Project Manager first', 'error');
             return;
-        }
-        if (!shouldSendToAccounts) {
-            const skip = window.confirm('You have not sent the quotation to Accounts. Approve anyway?');
-            if (!skip) return;
         }
 
         try {
             setApproving(prev => ({ ...prev, [item._id]: true }));
             await procurementAPI.adminApproveProcurement(item._id, {
                 productionManagerId: pmId,
-                sendToAccounts: !!shouldSendToAccounts,
+                sendToAccounts: false,
                 itemType: item.type || 'MaterialRequest'
             });
             setProcurementItems(prev => prev.filter(t => t._id !== item._id));
-            showToast('Procurement approved — PM assigned & quotation sent to accounts');
+            showToast('Procurement approved — PM assigned');
         } catch (err) {
             console.error(err);
             showToast('Action failed', 'error');

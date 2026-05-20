@@ -36,7 +36,7 @@ exports.getMaterialRequests = async (reqData) => {
         const skip = (page - 1) * limit;
 
         const requests = await MaterialRequest.find(query)
-            .populate('project', 'name projectNumber stage')
+            .populate('project', 'name projectNumber stage status paymentStatus paymentCollectionStatus advanceAmount collectedAmount tempCollectionDetails')
             .populate('requestedBy', 'fullName')
             .populate('assignedTo', 'fullName')
             .sort({ priority: -1, createdAt: -1 })

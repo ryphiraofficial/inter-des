@@ -1,8 +1,8 @@
 import React from 'react';
-import { Package, User, UserPlus, DollarSign, Send, BadgeCheck, CheckCircle } from 'lucide-react';
+import { Package, User, UserPlus, DollarSign, CheckCircle } from 'lucide-react';
 
 const ProcurementPipeline = ({ 
-    procurementItems, selectedPM, setSelectedPM, sentToAccounts, setSentToAccounts, 
+    procurementItems, selectedPM, setSelectedPM,
     productionManagers, handleProcurementApprove, approving 
 }) => {
     if (procurementItems.length === 0) {
@@ -17,16 +17,19 @@ const ProcurementPipeline = ({
         );
     }
 
-    const handleSendToAccounts = (itemId) => {
-        setSentToAccounts(prev => ({ ...prev, [itemId]: true }));
-    };
-
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 440px), 1fr))', gap: '2rem' }}>
             {procurementItems.map((item) => {
                 const pmAssigned = !!selectedPM[item._id];
-                const accountsSent = !!sentToAccounts[item._id];
                 const isApproving = !!approving[item._id];
+                
+                // Get project payment details
+                const project = item.project;
+                const advanceAmt = project?.advanceAmount || 0;
+                const paidAmt = project?.collectedAmount || 0;
+                const payStatus = project?.paymentStatus || 'Pending Advance';
+                const collStatus = project?.paymentCollectionStatus || 'Pending Assignment';
+
                 return (
                     <div key={item._id} className="approval-card" style={{ background: 'white', borderRadius: '24px', border: '1px solid #e2e8f0', overflow: 'hidden', transition: 'all 0.3s ease', position: 'relative' }}>
                         <div style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -65,7 +68,8 @@ const ProcurementPipeline = ({
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: '1rem', padding: '1rem', background: pmAssigned ? '#f0fdf4' : '#fffbeb', borderRadius: '14px', border: `1px solid ${pmAssigned ? '#bbf7d0' : '#fde68a'}` }}>
+                            {/* Step 1: Assign Project Manager */}
+                            <div style={{ marginBottom: '1.25rem', padding: '1rem', background: pmAssigned ? '#f0fdf4' : '#fffbeb', borderRadius: '14px', border: `1px solid ${pmAssigned ? '#bbf7d0' : '#fde68a'}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                                     <UserPlus size={16} color={pmAssigned ? '#16a34a' : '#d97706'} />
                                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: pmAssigned ? '#16a34a' : '#92400e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -84,31 +88,56 @@ const ProcurementPipeline = ({
                                 </select>
                             </div>
 
-                            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: accountsSent ? '#f0fdf4' : '#eff6ff', borderRadius: '14px', border: `1px solid ${accountsSent ? '#bbf7d0' : '#bfdbfe'}` }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                    <DollarSign size={16} color={accountsSent ? '#16a34a' : '#2563eb'} />
-                                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: accountsSent ? '#16a34a' : '#1e40af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                        {accountsSent ? '✓ Quotation Marked for Accounts' : 'Step 2: Send Quotation to Accounts'}
+                            {/* Client Payment Status Info Box (No separate action step needed) */}
+                            <div style={{ 
+                                marginBottom: '1.5rem', 
+                                padding: '1rem', 
+                                background: payStatus === 'Cleared' ? '#f0fdf4' : (collStatus === 'Collected' ? '#eff6ff' : '#fff5f5'), 
+                                borderRadius: '14px', 
+                                border: `1px solid ${payStatus === 'Cleared' ? '#bbf7d0' : (collStatus === 'Collected' ? '#bfdbfe' : '#fecaca')}` 
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                    <DollarSign size={16} color={payStatus === 'Cleared' ? '#16a34a' : (collStatus === 'Collected' ? '#2563eb' : '#dc2626')} />
+                                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: payStatus === 'Cleared' ? '#16a34a' : (collStatus === 'Collected' ? '#1e40af' : '#991b1b'), textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                        Client Payment Status
                                     </span>
                                 </div>
-                                {!accountsSent ? (
-                                    <button
-                                        onClick={() => handleSendToAccounts(item._id)}
-                                        style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', color: 'white', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}
-                                    >
-                                        <Send size={16} /> Send Quotation to Accounts for Collection
-                                    </button>
-                                ) : (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#dcfce7', borderRadius: '10px', color: '#166534', fontWeight: 600, fontSize: '0.85rem' }}>
-                                        <BadgeCheck size={16} /> Will be sent to accounts on approval
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                                        <span style={{ color: '#64748b' }}>Advance Required:</span>
+                                        <span style={{ fontWeight: 700, color: '#1e293b' }}>₹{advanceAmt.toLocaleString('en-IN')}</span>
                                     </div>
-                                )}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                                        <span style={{ color: '#64748b' }}>Amount Collected:</span>
+                                        <span style={{ fontWeight: 700, color: '#1e293b' }}>₹{paidAmt.toLocaleString('en-IN')}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '4px', paddingTop: '6px', borderTop: '1px dashed #cbd5e1' }}>
+                                        <span style={{ color: '#64748b' }}>Status:</span>
+                                        {payStatus === 'Cleared' ? (
+                                            <span style={{ padding: '2px 8px', background: '#dcfce7', color: '#15803d', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                Cleared
+                                            </span>
+                                        ) : collStatus === 'Collected' ? (
+                                            <span style={{ padding: '2px 8px', background: '#dbeafe', color: '#1d4ed8', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                Collected (Awaiting Clearance)
+                                            </span>
+                                        ) : paidAmt > 0 ? (
+                                            <span style={{ padding: '2px 8px', background: '#ffedd5', color: '#c2410c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                Partial Payment
+                                            </span>
+                                        ) : (
+                                            <span style={{ padding: '2px 8px', background: '#fee2e2', color: '#b91c1c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                                Pending Advance
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             <button 
                                 onClick={() => handleProcurementApprove(item)}
                                 disabled={isApproving}
-                                style={{ padding: '14px', background: (pmAssigned && accountsSent) ? '#10b981' : '#94a3b8', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: isApproving ? 'wait' : 'pointer', transition: 'all 0.2s', width: '100%', opacity: isApproving ? 0.7 : 1 }}
+                                style={{ padding: '14px', background: pmAssigned ? '#10b981' : '#94a3b8', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: isApproving ? 'wait' : 'pointer', transition: 'all 0.2s', width: '100%', opacity: isApproving ? 0.7 : 1 }}
                             >
                                 <CheckCircle size={18} /> {isApproving ? 'Approving...' : 'Approve Procurement'}
                             </button>

@@ -383,7 +383,7 @@ exports.getPendingAccountsProjects = async (req, res) => {
             $or: [
                 { stage: 'Accounts' },
                 { stage: 'Pending Payment' },
-                { paymentCollectionStatus: { $in: ['Pending Assignment', 'Assigned'] } }
+                { paymentCollectionStatus: { $in: ['Pending Assignment', 'Assigned', 'Collected'] } }
             ]
         })
             .populate('client', 'name email phone')
@@ -506,11 +506,72 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         const project = await Project.findById(projectId).populate('quotation');
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-        if (project.stage !== 'Pending Payment' && project.stage !== 'Accounts') {
+        // Relax stage check to allow clearance when paymentCollectionStatus is 'Collected'
+        if (project.stage !== 'Pending Payment' && project.stage !== 'Accounts' && project.paymentCollectionStatus !== 'Collected') {
             return res.status(400).json({ success: false, message: 'Project is not in a valid stage for payment verification' });
         }
 
-        const paid = Number(collectedAmount) || project.advanceAmount;
+        // Retrieve collection details from tempCollectionDetails if present, fallback to body params or advanceAmount
+        const tempDetails = project.tempCollectionDetails || {};
+        const paid = tempDetails.amount || Number(collectedAmount) || project.advanceAmount || 0;
+        const pMode = tempDetails.paymentMode || 'Bank Transfer';
+        const ref = tempDetails.referenceNumber || '';
+        const notes = tempDetails.paymentNotes || '';
+        const staffId = tempDetails.collectedBy || req.user.id;
+
+        // 1. Find or create an invoice for this project so the Payment record can link to it
+        let invoice = await Invoice.findOne({ project: projectId });
+        if (!invoice) {
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 7);
+            invoice = await Invoice.create({
+                invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+                client: project.client,
+                project: project._id,
+                quotation: project.quotation,
+                dueDate: dueDate,
+                items: [{
+                    description: `Advance Payment Collection for ${project.name}`,
+                    quantity: 1,
+                    rate: paid,
+                    tax: 0,
+                    amount: paid
+                }],
+                subtotal: paid,
+                totalTax: 0,
+                grandTotal: paid,
+                amountPaid: 0,
+                status: 'Draft',
+                createdBy: staffId
+            });
+        }
+
+        // 2. Map payment mode string to PaymentSchema enum option
+        let pModeVal = 'Other';
+        if (pMode) {
+            const lowerMode = pMode.toLowerCase();
+            if (lowerMode.includes('cash')) pModeVal = 'Cash';
+            else if (lowerMode.includes('transfer') || lowerMode.includes('bank') || lowerMode.includes('neft') || lowerMode.includes('rtgs')) pModeVal = 'Bank Transfer';
+            else if (lowerMode.includes('cheque')) pModeVal = 'Cheque';
+            else if (lowerMode.includes('upi') || lowerMode.includes('gpay') || lowerMode.includes('phone') || lowerMode.includes('paytm')) pModeVal = 'UPI';
+            else if (lowerMode.includes('card')) pModeVal = 'Card';
+        }
+
+        // 3. Create the official Payment document
+        await Payment.create({
+            project: project._id,
+            invoice: invoice._id,
+            client: project.client,
+            amount: paid,
+            paymentDate: new Date(),
+            paymentMethod: pModeVal,
+            transactionId: ref,
+            reference: ref,
+            notes: notes || 'Advance payment verified by manager',
+            receivedBy: staffId
+        });
+
+        // 4. Update project collection status and stage
         project.paymentStatus = paid >= project.advanceAmount ? 'Cleared' : 'Partial Payment';
         project.collectedAmount = paid;
         project.paymentCollectionStatus = 'Verified';
@@ -518,20 +579,26 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         const originalStage = project.stage;
         if (originalStage === 'Accounts') {
             project.stage = 'Design';
-        } else {
+        } else if (originalStage === 'Pending Payment') {
             project.stage = 'Procurement';
+        } // if stage is Procurement/etc., keep it as is
+
+        // Clear the temporary collection details
+        project.tempCollectionDetails = undefined;
+
+        if (paymentNotes) {
+            project.notes = (project.notes || '') + `\n[Payment Verified by Manager: ${req.user.fullName || 'Accounts Manager'}]\nNotes: ${paymentNotes}`;
+        } else {
+            project.notes = (project.notes || '') + `\n[Payment Verified by Manager: ${req.user.fullName || 'Accounts Manager'}]`;
         }
 
-        if (paymentNotes) project.notes = (project.notes || '') + `\nPayment Note: ${paymentNotes}`;
         await project.save();
 
-        const invoice = await Invoice.findOne({ project: projectId });
-        if (invoice) {
-            invoice.amountPaid = paid;
-            invoice.status = paid >= invoice.grandTotal ? 'Paid' : 'Partially Paid';
-            invoice.paymentDate = new Date();
-            await invoice.save();
-        }
+        // 5. Update Invoice status
+        invoice.amountPaid = paid;
+        invoice.status = paid >= invoice.grandTotal ? 'Paid' : 'Partially Paid';
+        invoice.paymentDate = new Date();
+        await invoice.save();
 
         // Notify respective department based on stage transition
         const { notifyByRole } = require('../utils/notificationHelper');
@@ -562,7 +629,7 @@ exports.verifyPaymentAndRelease = async (req, res) => {
             createdBy: req.user.id
         });
 
-        res.status(200).json({ success: true, data: project, message: 'Payment verified. Project released to Procurement.' });
+        res.status(200).json({ success: true, data: project, message: 'Payment verified. Project released.' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -581,62 +648,20 @@ exports.submitPaymentCollection = async (req, res) => {
         project.paymentCollectionStatus = 'Collected';
         project.collectedAmount = Number(collectedAmount) || project.advanceAmount;
         
+        // Save collection details temporarily on the project
+        project.tempCollectionDetails = {
+            amount: Number(collectedAmount) || project.advanceAmount || 0,
+            paymentMode: paymentMode,
+            referenceNumber: referenceNumber || '',
+            paymentNotes: paymentNotes || '',
+            collectedBy: req.user.id,
+            collectedAt: new Date()
+        };
+        
         const noteDetails = `\n[Payment Collected by Staff: ${req.user.fullName || 'Accounts Staff'}]\nMode: ${paymentMode || 'N/A'}\nReference: ${referenceNumber || 'N/A'}\nNotes: ${paymentNotes || 'None'}`;
         project.notes = (project.notes || '') + noteDetails;
         
         await project.save();
-
-        // 1. Find or create an invoice for this project so the Payment record can link to it
-        let invoice = await Invoice.findOne({ project: projectId });
-        if (!invoice) {
-            const dueDate = new Date();
-            dueDate.setDate(dueDate.getDate() + 7);
-            invoice = await Invoice.create({
-                invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`, // unique fall-back
-                client: project.client,
-                project: project._id,
-                quotation: project.quotation,
-                dueDate: dueDate,
-                items: [{
-                    description: `Advance Payment Collection for ${project.name}`,
-                    quantity: 1,
-                    rate: Number(collectedAmount) || project.advanceAmount || 0,
-                    tax: 0,
-                    amount: Number(collectedAmount) || project.advanceAmount || 0
-                }],
-                subtotal: Number(collectedAmount) || project.advanceAmount || 0,
-                totalTax: 0,
-                grandTotal: Number(collectedAmount) || project.advanceAmount || 0,
-                amountPaid: 0,
-                status: 'Draft',
-                createdBy: req.user.id
-            });
-        }
-
-        // 2. Map frontend payment mode string to PaymentSchema enum option
-        let pMode = 'Other';
-        if (paymentMode) {
-            const lowerMode = paymentMode.toLowerCase();
-            if (lowerMode.includes('cash')) pMode = 'Cash';
-            else if (lowerMode.includes('transfer') || lowerMode.includes('bank') || lowerMode.includes('neft') || lowerMode.includes('rtgs')) pMode = 'Bank Transfer';
-            else if (lowerMode.includes('cheque')) pMode = 'Cheque';
-            else if (lowerMode.includes('upi') || lowerMode.includes('gpay') || lowerMode.includes('phone') || lowerMode.includes('paytm')) pMode = 'UPI';
-            else if (lowerMode.includes('card')) pMode = 'Card';
-        }
-
-        // 3. Create the Payment document
-        await Payment.create({
-            project: project._id,
-            invoice: invoice._id,
-            client: project.client,
-            amount: Number(collectedAmount) || project.advanceAmount || 0,
-            paymentDate: new Date(),
-            paymentMethod: pMode,
-            transactionId: referenceNumber || '',
-            reference: referenceNumber || '',
-            notes: paymentNotes || 'Advance payment collected by staff',
-            receivedBy: req.user.id
-        });
         
         // Notify Accounts Managers & Admins
         const User = require('../models/User');

@@ -106,7 +106,7 @@ exports.getTasks = async (reqData) => {
             .populate('assignedTo', 'name role email phone staffId')
             .populate('client', 'name email phone')
             .populate('quotation', 'quotationNumber projectName totalAmount client items')
-            .populate('project', 'name projectNumber stage status')
+            .populate('project', 'name projectNumber stage status paymentStatus paymentCollectionStatus advanceAmount collectedAmount tempCollectionDetails')
             .populate('team', 'name')
             .populate('createdBy', 'fullName')
             .populate('comments.user', 'fullName email role')
