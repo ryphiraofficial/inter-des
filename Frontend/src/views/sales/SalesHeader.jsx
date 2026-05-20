@@ -50,7 +50,7 @@ const SalesHeader = ({ title, subtitle, toggleSidebar }) => {
 
             {/* Right */}
             <div className="sales-header-actions">
-                {['/staff/quotations', '/staff/clients', '/staff/tasks'].includes(location.pathname) && (
+                {['/staff/quotations', '/staff/clients', '/staff/tasks', '/staff/approvals'].includes(location.pathname) && (
                     <div className="sales-header-search">
                         <Search size={16} className="sales-search-icon" />
                         <input 
@@ -58,6 +58,7 @@ const SalesHeader = ({ title, subtitle, toggleSidebar }) => {
                             placeholder={
                                 location.pathname === '/staff/clients' ? "Search by name, email..." : 
                                 location.pathname === '/staff/tasks' ? "Search your tasks..." :
+                                location.pathname === '/staff/approvals' ? "Search client, title, or project..." :
                                 "Search quote, project..."
                             }
                             value={searchParams.get('q') || ''}

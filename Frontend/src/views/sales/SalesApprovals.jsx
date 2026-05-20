@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
     ClipboardCheck, Search, Eye, Loader, CheckCircle, 
     AlertCircle, MessageSquare, Briefcase, Calendar, X 
@@ -11,7 +12,7 @@ import './css/SalesApprovals.css';
 const SalesApprovals = ({ user }) => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams] = useSearchParams();
     const [priorityFilter, setPriorityFilter] = useState('');
     
     // Interactive feedback modal state
@@ -22,6 +23,8 @@ const SalesApprovals = ({ user }) => {
 
     // Preview modal state
     const [previewTask, setPreviewTask] = useState(null);
+
+    const searchTerm = searchParams.get('q') || '';
 
     const loadTasks = useCallback(async () => {
         try {
@@ -122,18 +125,8 @@ const SalesApprovals = ({ user }) => {
                     </div>
                 </div>
 
-                {/* ── Search & Filter Controls (Same theme & structure) ── */}
-                <div className="st-tasks-controls" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div className="st-search-container" style={{ flex: 1, minWidth: '250px' }}>
-                        <Search size={18} className="st-search-icon" />
-                        <input
-                            type="text"
-                            placeholder="Search by client, title, or project..."
-                            className="st-search-input"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                {/* ── Filter Controls (Same theme & structure) ── */}
+                <div className="st-tasks-controls" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                     <select
                         className="filter-select"
                         style={{
