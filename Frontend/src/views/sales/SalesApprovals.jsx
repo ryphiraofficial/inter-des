@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { taskAPI } from '../../models/api';
 import DesignPreviewModal from './components/DesignPreviewModal';
+import CustomSelect from './components/CustomSelect';
 import './css/SalesTasks.css';
 import './css/SalesApprovals.css';
 
@@ -126,30 +127,22 @@ const SalesApprovals = ({ user }) => {
                 </div>
 
                 {/* ── Filter Controls (Same theme & structure) ── */}
-                <div className="st-tasks-controls" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', background: 'transparent', padding: '0 0 1.5rem 0', border: 'none', boxShadow: 'none' }}>
-                    <select
-                        className="filter-select"
-                        style={{
-                            padding: '0.85rem 1.5rem',
-                            borderRadius: '12px',
-                            border: '1px solid #e2e8f0',
-                            background: '#fcfdfe',
-                            fontSize: '0.95rem',
-                            color: '#334155',
-                            outline: 'none',
-                            cursor: 'pointer',
-                            minWidth: '180px',
-                            transition: 'all 0.2s'
-                        }}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <CustomSelect
+                        variant="filter"
+                        options={[
+                            { value: '', label: 'All Priorities' },
+                            { value: 'Critical', label: 'Critical' },
+                            { value: 'High', label: 'High' },
+                            { value: 'Medium', label: 'Medium' },
+                            { value: 'Low', label: 'Low' }
+                        ]}
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value)}
-                    >
-                        <option value="">All Priorities</option>
-                        <option value="Critical">Critical</option>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
+                        placeholder="All Priorities"
+                        name="priority"
+                        searchable={false}
+                    />
                 </div>
 
                 {/* ── Client Approvals Grid ── */}
