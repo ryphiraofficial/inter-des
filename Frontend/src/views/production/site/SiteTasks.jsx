@@ -47,6 +47,18 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
     const [reviewImages, setReviewImages] = useState([]);
     const [uploadingReviewFile, setUploadingReviewFile] = useState(false);
 
+    // Reassignment States
+    const [supervisors, setSupervisors] = useState([]);
+    const [reassigning, setReassigning] = useState(false);
+
+    useEffect(() => {
+        if (user?.role === 'Site Engineer') {
+            engineerAPI.getSupervisors().then(res => {
+                if (res.success) setSupervisors(res.data);
+            });
+        }
+    }, [user?.role]);
+
     const showToast = (msg, type='success') => { setToast({msg,type}); setTimeout(()=>setToast(null),3000); };
 
     const handleStatus = async (status) => {
@@ -94,6 +106,25 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
             showToast('Failed to submit completion', 'error');
         } finally {
             setStatusSaving(false);
+        }
+    };
+
+    const handleReassign = async (newAssigneeId) => {
+        setReassigning(true);
+        try {
+            const res = await engineerAPI.assignTask(localTask._id, newAssigneeId);
+            if (res.success) {
+                showToast('Task reassigned successfully!');
+                const taskRes = await engineerAPI.getTaskById(localTask._id);
+                if (taskRes.success) setLocalTask(taskRes.data);
+                onUpdate();
+            } else {
+                showToast(res.message || 'Failed to reassign', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to reassign', 'error');
+        } finally {
+            setReassigning(false);
         }
     };
 
@@ -423,8 +454,38 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
                     <div className="site-card">
                         <div className="site-card-header"><div className="site-card-title">Details</div></div>
                         <div className="site-info-rows">
-                            {[['Project',localTask.projectId?.projectName||'—'],['Assigned By',localTask.assignedBy?.fullName||'—'],['Stage',STAGE_LABELS[localTask.stage]||localTask.stage],['Priority',localTask.priority],['Status',localTask.status],['Due',localTask.dueDate?new Date(localTask.dueDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—']].map(([k,v])=>(
-                                <div key={k} className="site-info-row"><span className="site-info-label">{k}</span><span className="site-info-value">{v}</span></div>
+                            {[
+                                ['Project',localTask.projectId?.projectName||'—'],
+                                ['Assigned By',localTask.assignedBy?.fullName||'—'],
+                                ['Assigned To', 'dropdown'],
+                                ['Stage',STAGE_LABELS[localTask.stage]||localTask.stage],
+                                ['Priority',localTask.priority],
+                                ['Status',localTask.status],
+                                ['Due',localTask.dueDate?new Date(localTask.dueDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—']
+                            ].map(([k,v])=>(
+                                <div key={k} className="site-info-row">
+                                    <span className="site-info-label">{k}</span>
+                                    {v === 'dropdown' ? (
+                                        user?.role === 'Site Engineer' ? (
+                                            <select 
+                                                className="site-input" 
+                                                value={localTask.assignedTo?._id || localTask.assignedTo || ''}
+                                                onChange={(e) => handleReassign(e.target.value)}
+                                                disabled={reassigning}
+                                                style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '12px', width: 'auto', flex: 1, marginLeft: '10px' }}
+                                            >
+                                                <option value="">Unassigned</option>
+                                                {supervisors.map(m => (
+                                                    <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <span className="site-info-value">{localTask.assignedTo?.fullName||'Unassigned'}</span>
+                                        )
+                                    ) : (
+                                        <span className="site-info-value">{v}</span>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     </div>
