@@ -12,7 +12,7 @@ const SalesApprovalsCard = ({ pendingReviews, loading, navigate, onPreviewTask }
                     {loading ? <Skeleton width="180px" height="24px" /> : `Pending Client Approvals (${pendingReviews.length})`}
                 </h2>
                 {!loading && (
-                    <button onClick={() => navigate('/staff/tasks')} className="view-all">
+                    <button onClick={() => navigate('/staff/approvals')} className="view-all">
                         View All <ArrowRight size={14} />
                     </button>
                 )}
@@ -45,18 +45,9 @@ const SalesApprovalsCard = ({ pendingReviews, loading, navigate, onPreviewTask }
                                 </button>
                                 <button 
                                     className="btn-pill-solid"
-                                    onClick={async () => {
-                                        const notes = prompt('Add optional notes for the Design Manager:');
-                                        try {
-                                            const res = await taskAPI.salesApprove(task._id, { approved: true, salesNotes: notes || '' });
-                                            if (res.success) {
-                                                alert('✅ Design approved and forwarded!');
-                                                window.location.reload();
-                                            }
-                                        } catch (err) { alert('Approval failed'); }
-                                    }}
+                                    onClick={() => navigate('/staff/approvals')}
                                 >
-                                    Approve
+                                    Review
                                 </button>
                             </div>
                         </div>

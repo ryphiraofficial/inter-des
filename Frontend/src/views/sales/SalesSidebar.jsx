@@ -12,15 +12,17 @@ import {
     TrendingUp,
     X,
     Menu,
+    ClipboardCheck,
 } from 'lucide-react';
 import './css/SalesSidebar.css';
 
 const NAV_ITEMS = [
-    { to: '/staff/dashboard',   icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/staff/tasks',       icon: ClipboardList,   label: 'My Tasks'   },
-    { to: '/staff/site-visits', icon: MapPin,          label: 'Site Visits' },
-    { to: '/staff/clients',     icon: Users,           label: 'Clients'    },
-    { to: '/staff/quotations',  icon: FileText,        label: 'Quotations' },
+    { to: '/staff/dashboard',   icon: LayoutDashboard,  label: 'Dashboard' },
+    { to: '/staff/tasks',       icon: ClipboardList,    label: 'My Tasks'   },
+    { to: '/staff/approvals',   icon: ClipboardCheck,   label: 'Client Approvals' },
+    { to: '/staff/site-visits', icon: MapPin,           label: 'Site Visits' },
+    { to: '/staff/clients',     icon: Users,            label: 'Clients'    },
+    { to: '/staff/quotations',  icon: FileText,         label: 'Quotations' },
 ];
 
 const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {

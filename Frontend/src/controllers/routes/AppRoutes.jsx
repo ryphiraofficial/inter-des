@@ -56,6 +56,7 @@ import SalesClients from '../../views/sales/SalesClients';
 import SalesQuotations from '../../views/sales/SalesQuotations';
 import SalesNewQuotation from '../../views/sales/SalesNewQuotation';
 import SalesQuotationView from '../../views/sales/SalesQuotationView';
+import SalesApprovals from '../../views/sales/SalesApprovals';
 
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
@@ -152,6 +153,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route index element={<Navigate to="/staff/dashboard" replace />} />
                     <Route path="dashboard" element={<RoleDashboard user={user} onLogout={onLogout} />} />
                     <Route path="tasks" element={<SalesTasks user={user} />} />
+                    <Route path="approvals" element={<SalesApprovals user={user} />} />
                     <Route path="all-tasks" element={<SalesTasks user={user} forceTable={true} />} />
                     <Route path="site-visits" element={<SiteVisit user={user} />} />
                     <Route path="clients" element={<SalesClients user={user} />} />

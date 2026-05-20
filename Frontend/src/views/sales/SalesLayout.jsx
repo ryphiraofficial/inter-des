@@ -7,6 +7,7 @@ import './css/SalesLayout.css';
 const PAGE_MAP = {
     '/staff/dashboard':   { title: 'Dashboard',   subtitle: "Welcome back! Here's your task overview." },
     '/staff/tasks':       { title: 'My Tasks',     subtitle: 'View and manage your assigned tasks.'     },
+    '/staff/approvals':   { title: 'Client Approvals', subtitle: 'Review and approve project designs before client presentation.' },
     '/staff/site-visits': { title: 'Site Visits',  subtitle: 'Document and track your site visit logs.' },
     '/staff/clients':     { title: 'Clients',      subtitle: 'View your assigned client details.'       },
     '/staff/quotations':  { title: 'Quotations',   subtitle: 'View project quotations assigned to you.' },
