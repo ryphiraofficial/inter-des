@@ -38,7 +38,7 @@ const PipelineTab = ({
     return (
         <div className="design-pipeline-workflow" style={{ padding: '1rem 10px 0 10px' }}>
 
-            <div className="pipeline-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', alignItems: 'flex-start' }}>
+            <div className="pipeline-grid">
 
                 {/* COLUMN 1: ACTIVE DESIGN */}
                 <div className="pipeline-column">

@@ -35,7 +35,7 @@ const DesignOverview = ({ stats, tasks, quotations, teamStats, materialRequests 
     return (
         <div className="design-overview fade-in">
             {/* Premium Stats Grid */}
-            <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="stats-grid" style={{ marginBottom: '2.5rem' }}>
                 <div className="stat-card premium">
                     <div className="stat-icon" style={{ background: '#f5f3ff', color: '#8b5cf6' }}>
                         <Palette size={24} />
@@ -75,7 +75,7 @@ const DesignOverview = ({ stats, tasks, quotations, teamStats, materialRequests 
             </div>
 
             {/* Visual Analytics Row */}
-            <div className="visuals-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="visuals-grid" style={{ marginBottom: '2.5rem' }}>
                 <div className="card-premium" style={{ background: 'white', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem', color: '#1e293b' }}>Creative Velocity</h4>
@@ -149,7 +149,7 @@ const DesignOverview = ({ stats, tasks, quotations, teamStats, materialRequests 
             </div>
 
             {/* Operational Lists */}
-            <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="dashboard-grid">
                 <div className="card-premium" style={{ background: 'white', borderRadius: '24px', padding: '1.5rem', border: '1px solid #f1f5f9' }}>
                     <div className="card-header" style={{ border: 'none', padding: 0, marginBottom: '1.5rem' }}>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '10px' }}>

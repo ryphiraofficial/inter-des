@@ -2,10 +2,10 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, Palette, LayoutDashboard, GitMerge, FileSpreadsheet, 
-    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus
+    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus, Menu
 } from 'lucide-react';
 
-const DesignNavbar = ({ user, onRefresh, isLoading }) => {
+const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
@@ -35,6 +35,9 @@ const DesignNavbar = ({ user, onRefresh, isLoading }) => {
     return (
         <header className="design-navbar">
             <div className="design-navbar-brand">
+                <button className="mobile-menu-btn" onClick={toggleSidebar} aria-label="Toggle Menu">
+                    <Menu size={20} />
+                </button>
                 <div className="design-navbar-icon">
                     <Icon size={20} />
                 </div>

@@ -55,7 +55,7 @@
 /* Grid Layout */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: 2rem;
 }
 
@@ -230,4 +230,14 @@
 .btn-alert:hover {
     background: #fef3c7;
     transform: rotate(15deg);
+}
+
+@media (max-width: 768px) {
+    .portfolio-modern {
+        padding: 1rem;
+    }
+    
+    .portfolio-grid {
+        gap: 1rem;
+    }
 }

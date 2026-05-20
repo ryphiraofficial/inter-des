@@ -2,23 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Target, User, Clock, AlertTriangle, Filter, LayoutGrid, X, ChevronDown, Search } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import '../css/ProductionManagement.css';
-import { kanbanAPI } from '../../../models/api';
+import { productionManagerAPI, productionAPI } from '../../../models/api';
 
-const COLUMN_ORDER = ['todo', 'in-progress', 'review', 'completed'];
+const COLUMN_ORDER = ['Pending', 'In Progress', 'Completed', 'Approved'];
 const COLUMN_TITLES = {
-    'todo': 'To Do',
-    'in-progress': 'In Progress',
-    'review': 'Review',
-    'completed': 'Completed'
+    'Pending': 'To Do',
+    'In Progress': 'In Progress',
+    'Completed': 'Review',
+    'Approved': 'Completed'
 };
 
 const TasksBoard = () => {
     const [tasks, setTasks] = useState({
-        'todo': [],
-        'in-progress': [],
-        'review': [],
-        'completed': []
+        'Pending': [],
+        'In Progress': [],
+        'Completed': [],
+        'Approved': []
     });
+    const [projects, setProjects] = useState([]);
+    const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,8 +29,10 @@ const TasksBoard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [newTask, setNewTask] = useState({
         title: '',
-        projectName: '',
+        description: '',
+        projectId: '',
         assignedTo: '',
+        stage: 'PE',
         priority: 'Medium',
         dueDate: ''
     });
@@ -36,17 +40,20 @@ const TasksBoard = () => {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const res = await kanbanAPI.getTasks();
+            const res = await productionManagerAPI.getAllTasks();
             if (res.success) {
                 const grouped = {
-                    'todo': [],
-                    'in-progress': [],
-                    'review': [],
-                    'completed': []
+                    'Pending': [],
+                    'In Progress': [],
+                    'Completed': [],
+                    'Approved': []
                 };
                 res.data.forEach(task => {
-                    if (grouped[task.status]) {
-                        grouped[task.status].push(task);
+                    const status = task.status || 'Pending';
+                    if (grouped[status]) {
+                        grouped[status].push(task);
+                    } else {
+                        grouped['Pending'].push(task);
                     }
                 });
                 setTasks(grouped);
@@ -61,6 +68,18 @@ const TasksBoard = () => {
     };
 
     useEffect(() => {
+        const fetchDependencies = async () => {
+            try {
+                const projRes = await productionManagerAPI.getProjects({ status: 'Active' });
+                if (projRes.success) setProjects(projRes.data);
+                
+                const staffRes = await productionAPI.getProductionStaff();
+                if (staffRes.success) setStaff(staffRes.data);
+            } catch (error) {
+                console.error("Failed to load dependencies", error);
+            }
+        };
+        fetchDependencies();
         fetchTasks();
     }, []);
 
@@ -73,14 +92,17 @@ const TasksBoard = () => {
     const handleCreateTask = async (e) => {
         e.preventDefault();
         try {
-            const res = await kanbanAPI.createTask(newTask);
+            const res = await productionManagerAPI.createTask(newTask);
             if (res.success) {
                 setIsModalOpen(false);
-                setNewTask({ title: '', projectName: '', assignedTo: '', priority: 'Medium', dueDate: '' });
+                setNewTask({ title: '', description: '', projectId: '', assignedTo: '', stage: 'PE', priority: 'Medium', dueDate: '' });
                 fetchTasks();
+            } else {
+                setError(res.message);
             }
         } catch (err) {
             console.error("Error creating task", err);
+            setError(err.message);
         }
     };
 
@@ -106,7 +128,7 @@ const TasksBoard = () => {
         });
 
         try {
-            await kanbanAPI.updateTask(removed._id, { status: destination.droppableId });
+            await productionManagerAPI.updateTaskStatus(removed._id, { status: destination.droppableId });
         } catch (err) {
             console.error("Failed to update task status", err);
             fetchTasks(); // Revert on failure
@@ -126,7 +148,12 @@ const TasksBoard = () => {
     // Apply front-end filters to the tasks
     const filterTask = (task) => {
         if (filterPriority !== 'All' && task.priority !== filterPriority) return false;
-        if (searchTerm && !task.title.toLowerCase().includes(searchTerm.toLowerCase()) && !task.projectName?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+        const searchTarget = searchTerm.toLowerCase();
+        if (searchTerm && 
+            !task.title.toLowerCase().includes(searchTarget) && 
+            !(task.projectId && task.projectId.projectName && task.projectId.projectName.toLowerCase().includes(searchTarget))) {
+            return false;
+        }
         return true;
     };
 
@@ -245,21 +272,21 @@ const TasksBoard = () => {
                                                                 }}
                                                             >
                                                                 <div className="pm-kanban-card-top">
-                                                                    <span className="pm-task-id">{task.taskId}</span>
+                                                                    <span className="pm-task-id">#{task._id.slice(-5).toUpperCase()}</span>
                                                                     <span className="pm-task-priority" style={{ background: prio.bg, color: prio.color }}>
                                                                         {task.priority}
                                                                     </span>
                                                                 </div>
                                                                 <h4 className="pm-task-title">{task.title}</h4>
                                                                 <p className="pm-task-project">
-                                                                    <Target size={12} /> {task.projectName}
+                                                                    <Target size={12} /> {task.projectId ? task.projectId.projectName : 'No Project'}
                                                                 </p>
                                                                 <div className="pm-kanban-card-footer">
                                                                     <div className="pm-task-assignee">
                                                                         <div className="pm-team-avatar">
-                                                                            {task.assignedTo ? task.assignedTo.split(' ').map(n=>n[0]).join('') : '?'}
+                                                                            {task.assignedTo ? task.assignedTo.fullName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : '?'}
                                                                         </div>
-                                                                        <span>{task.assignedTo || 'Unassigned'}</span>
+                                                                        <span>{task.assignedTo ? task.assignedTo.fullName : 'Unassigned'}</span>
                                                                     </div>
                                                                     <div className={`pm-task-date ${task.priority === 'Urgent' ? 'urgent' : ''}`}>
                                                                         <Clock size={12} /> {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) : 'No Date'}
@@ -293,12 +320,27 @@ const TasksBoard = () => {
                                 <input required type="text" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} placeholder="Task title" />
                             </div>
                             <div className="pm-form-group">
-                                <label>Project Name *</label>
-                                <input required type="text" value={newTask.projectName} onChange={e => setNewTask({...newTask, projectName: e.target.value})} placeholder="Project name" />
+                                <label>Project *</label>
+                                <select required value={newTask.projectId} onChange={e => setNewTask({...newTask, projectId: e.target.value})}>
+                                    <option value="">-- Select Project --</option>
+                                    {projects.map(p => <option key={p._id} value={p._id}>{p.projectName}</option>)}
+                                </select>
+                            </div>
+                            <div className="pm-form-group">
+                                <label>Stage / Category</label>
+                                <select value={newTask.stage} onChange={e => setNewTask({...newTask, stage: e.target.value})}>
+                                    <option value="PE">Project Engineer (PE)</option>
+                                    <option value="SE">Site Engineer (SE)</option>
+                                    <option value="SS">Site Supervisor (SS)</option>
+                                    <option value="PM">Project Manager (PM)</option>
+                                </select>
                             </div>
                             <div className="pm-form-group">
                                 <label>Assigned To</label>
-                                <input type="text" value={newTask.assignedTo} onChange={e => setNewTask({...newTask, assignedTo: e.target.value})} placeholder="Staff name" />
+                                <select value={newTask.assignedTo} onChange={e => setNewTask({...newTask, assignedTo: e.target.value})}>
+                                    <option value="">-- Select Assignee --</option>
+                                    {staff.map(s => <option key={s._id} value={s._id}>{s.fullName} ({s.role})</option>)}
+                                </select>
                             </div>
                             <div className="pm-form-group">
                                 <label>Priority</label>

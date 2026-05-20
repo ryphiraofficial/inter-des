@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckSquare, Send, Plus, Loader2, X, Clock } from 'lucide-react';
-import { engineerAPI } from '../../../models/api';
+import { engineerAPI, BASE_IMAGE_URL } from '../../../models/api';
 import './Engineer.css';
+
+const getImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+        return url;
+    }
+    return `${BASE_IMAGE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 const STAGE_LABELS = { PM:'Project Manager', PE:'Project Engineer', SE:'Site Engineer', SS:'Site Supervisor' };
 const PIPELINE = ['PM','PE','SE','SS'];
@@ -22,6 +30,7 @@ const TaskDetail = ({ user }) => {
     const [toast,      setToast]      = useState(null);
     const [showNote,   setShowNote]   = useState(false);
     const [note,       setNote]       = useState('');
+    const [reviewNote, setReviewNote] = useState('');
     
     // Subtask states
     const [showSubtaskModal, setShowSubtaskModal] = useState(false);
@@ -74,6 +83,23 @@ const TaskDetail = ({ user }) => {
         finally { setStatusSaving(false); }
     };
 
+    const handlePEReviewAction = async (nextStatus, actionType) => {
+        setStatusSaving(true);
+        try {
+            const noteText = reviewNote ? `${actionType} by Project Engineer: ${reviewNote}` : `${actionType} by Project Engineer`;
+            const res = await engineerAPI.updateStatus(id, nextStatus, noteText);
+            if (res.success) {
+                setTask(res.data);
+                setReviewNote('');
+                showToast(actionType === 'Approved' ? 'Task elevated to Project Manager!' : 'Task sent back to Site Engineer!');
+            }
+        } catch {
+            showToast('Review action failed', 'error');
+        } finally {
+            setStatusSaving(false);
+        }
+    };
+
     const handleComment = async (e) => {
         e.preventDefault();
         if (!comment.trim()) return;
@@ -110,6 +136,120 @@ const TaskDetail = ({ user }) => {
             <div className="eng-detail-grid">
                 {/* Main Column */}
                 <div className="eng-detail-main">
+                    {/* Project Engineer Review Portal */}
+                    {user?.role === 'Project Engineer' && task.status === 'Completed' && task.stage === 'PE' && (
+                        <div className="eng-section-card" style={{ borderLeft: '4px solid #10b981', marginBottom: 20 }}>
+                            <div className="eng-section-header" style={{ background: '#d1fae5', color: '#065f46', borderBottom: '1px solid #a7f3d0' }}>
+                                <div className="eng-section-title">🛡 Project Engineer Review Portal</div>
+                            </div>
+                            <div style={{ padding: 20 }}>
+                                <p style={{ margin: '0 0 16px', fontSize: 13.5, color: '#374151', lineHeight: 1.5 }}>
+                                    <strong>Site Engineer</strong> has reviewed and approved this task's completion. Please inspect the completion note, update logs, and attached photo gallery, then choose to elevate to Project Manager for final sign-off, or reject back to the Site Engineer.
+                                </p>
+                                
+                                {/* Submission Verification Details for PE */}
+                                <div style={{ 
+                                    background: '#f0fdf4', 
+                                    border: '1px dashed #10b981', 
+                                    borderRadius: '10px', 
+                                    padding: '16px', 
+                                    marginBottom: '20px' 
+                                }}>
+                                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#047857', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                        📋 Review & Submission Trail
+                                    </div>
+                                    
+                                    {/* Site Supervisor Completion details */}
+                                    <div style={{ marginBottom: '12px', borderBottom: '1px solid #d1fae5', paddingBottom: '10px' }}>
+                                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '3px' }}>Site Supervisor Note:</span>
+                                        <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#4b5563', fontStyle: 'italic', background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                                            "{task.updates?.slice().reverse().find(u => u.note && !u.note.includes('Approved by') && !u.note.includes('Rejected by'))?.note || 'No completion note provided.'}"
+                                        </p>
+                                    </div>
+
+                                    {/* Site Engineer Review details */}
+                                    <div style={{ marginBottom: '12px' }}>
+                                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '3px' }}>Site Engineer Feedback:</span>
+                                        <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#4b5563', fontStyle: 'italic', background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                                            "{task.updates?.slice().reverse().find(u => u.note && u.note.includes('Approved by Site Engineer'))?.note || 'No site engineer notes provided.'}"
+                                        </p>
+                                    </div>
+
+                                    {/* All Submission & Review Gallery */}
+                                    {task.updates?.some(up => up.images?.length > 0) ? (
+                                        <div>
+                                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>All Verification Photos:</span>
+                                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                {task.updates.flatMap((up) => 
+                                                    (up.images || []).map((img, imgIdx) => (
+                                                        <div key={imgIdx} style={{ width: '80px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', background: '#fff' }}>
+                                                            <img src={getImageUrl(img)} alt="Verification snap" style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }} onClick={() => window.open(getImageUrl(img), '_blank')} title="Click to view full size" />
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ fontSize: '12.5px', color: '#6b7280', fontStyle: 'italic' }}>
+                                            No photos uploaded.
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="eng-form-group" style={{ marginBottom: 16 }}>
+                                    <label className="eng-label" style={{ fontWeight: 600, color: '#475569', fontSize: 12, display: 'block', marginBottom: 6 }}>PE REVIEW COMMENTS / FEEDBACK</label>
+                                    <textarea 
+                                        className="eng-input" 
+                                        rows={2} 
+                                        value={reviewNote} 
+                                        onChange={e => setReviewNote(e.target.value)}
+                                        placeholder="Provide PE feedback or approval notes..."
+                                    />
+                                </div>
+                                
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                    <button 
+                                        className="eng-btn-primary" 
+                                        disabled={statusSaving}
+                                        onClick={() => handlePEReviewAction('Completed', 'Approved')}
+                                    >
+                                        {statusSaving ? 'Processing...' : '✔ Approve & Elevate to PM'}
+                                    </button>
+                                    <button 
+                                        className="eng-btn-danger" 
+                                        disabled={statusSaving}
+                                        onClick={() => handlePEReviewAction('In Progress', 'Rejected')}
+                                    >
+                                        {statusSaving ? 'Processing...' : '✘ Send Back to Site Engineer'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Completion Images Gallery Card */}
+                    {task.updates?.some(up => up.images?.length > 0) && (
+                        <div className="eng-section-card" style={{ marginBottom: 20 }}>
+                            <div className="eng-section-header">
+                                <div className="eng-section-title">📸 Completed Work Photos</div>
+                            </div>
+                            <div style={{ padding: 20 }}>
+                                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                                    {task.updates.flatMap((up, uIdx) => 
+                                        (up.images || []).map((img, imgIdx) => (
+                                            <div key={`${uIdx}-${imgIdx}`} style={{ width: 140, borderRadius: 10, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                                                <img src={getImageUrl(img)} alt="Completed Site Photo" style={{ width: '100%', height: 100, objectFit: 'cover' }} />
+                                                <div style={{ padding: '6px 10px', fontSize: 10.5, background: '#f8fafc', color: '#64748b', borderTop: '1px solid #f1f5f9' }}>
+                                                    {up.note || 'Site Photo'}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Header Card */}
                     <div className="eng-section-card" style={{ marginBottom:20 }}>
                         <div className="eng-detail-header-body">
@@ -290,23 +430,23 @@ const TaskDetail = ({ user }) => {
             {/* Create Subtask Modal */}
             {showSubtaskModal && (
                 <div className="eng-modal-overlay">
-                    <div className="eng-modal-content">
+                    <div className="eng-modal">
                         <div className="eng-modal-header">
-                            <h2 style={{ margin:0, fontSize:18 }}>Add Subtask</h2>
-                            <button onClick={()=>setShowSubtaskModal(false)} className="eng-icon-btn"><X size={20}/></button>
+                            <h3>Add Subtask</h3>
+                            <button onClick={()=>setShowSubtaskModal(false)} className="eng-modal-close"><X size={20}/></button>
                         </div>
-                        <form onSubmit={handleCreateSubtask} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                                <label className="eng-label">Title</label>
+                        <form onSubmit={handleCreateSubtask} className="eng-modal-form">
+                            <div className="eng-form-group">
+                                <label>Title</label>
                                 <input className="eng-input" required value={subform.title} onChange={e=>setSubform({...subform,title:e.target.value})} placeholder="E.g. Install false ceiling in Lobby"/>
                             </div>
-                            <div>
-                                <label className="eng-label">Description</label>
+                            <div className="eng-form-group">
+                                <label>Description</label>
                                 <textarea className="eng-input" rows={3} value={subform.description} onChange={e=>setSubform({...subform,description:e.target.value})} placeholder="Details..."/>
                             </div>
-                            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-                                <div>
-                                    <label className="eng-label">Assign To</label>
+                            <div className="eng-form-row">
+                                <div className="eng-form-group">
+                                    <label>Assign To</label>
                                     <select className="eng-input" required value={subform.assignedTo} onChange={e=>setSubform({...subform,assignedTo:e.target.value})}>
                                         <option value="">Select Site Engineer...</option>
                                         {siteTeam.map(t=>(
@@ -314,8 +454,8 @@ const TaskDetail = ({ user }) => {
                                         ))}
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="eng-label">Priority</label>
+                                <div className="eng-form-group">
+                                    <label>Priority</label>
                                     <select className="eng-input" value={subform.priority} onChange={e=>setSubform({...subform,priority:e.target.value})}>
                                         <option value="Low">Low</option>
                                         <option value="Medium">Medium</option>
@@ -324,12 +464,12 @@ const TaskDetail = ({ user }) => {
                                     </select>
                                 </div>
                             </div>
-                            <div>
-                                <label className="eng-label">Due Date</label>
+                            <div className="eng-form-group">
+                                <label>Due Date</label>
                                 <input type="date" className="eng-input" required value={subform.dueDate} onChange={e=>setSubform({...subform,dueDate:e.target.value})} />
                             </div>
-                            <div style={{ display:'flex', justifyContent:'flex-end', gap:12, marginTop: 16 }}>
-                                <button type="button" className="eng-btn-secondary" onClick={()=>setShowSubtaskModal(false)}>Cancel</button>
+                            <div className="eng-modal-footer">
+                                <button type="button" className="eng-btn-ghost" onClick={()=>setShowSubtaskModal(false)}>Cancel</button>
                                 <button type="submit" className="eng-btn-primary" disabled={subtaskSaving}>
                                     {subtaskSaving ? <Loader2 size={16} className="eng-spin"/> : null} Add Subtask
                                 </button>

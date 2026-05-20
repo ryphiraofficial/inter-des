@@ -110,6 +110,18 @@
     margin-bottom: 2rem;
 }
 
+.visuals-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
 .section-card {
     background: white;
     border-radius: 16px;
@@ -484,6 +496,23 @@
     transition: all 0.2s;
 }
 
+.btn-action-round:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.tasks-layout-grid {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    gap: 1.5rem;
+}
+
+.task-card-grid {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 2rem;
+}
+
 .action-btn:hover {
     background: #f1f5f9;
     border-color: #cbd5e1;
@@ -522,6 +551,13 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
+}
+
+.pipeline-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    align-items: flex-start;
 }
 
 .pipeline-column {
@@ -669,7 +705,7 @@
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .dashboard-sections {
+    .dashboard-sections, .visuals-grid, .dashboard-grid, .pipeline-grid, .tasks-layout-grid, .task-card-grid {
         grid-template-columns: 1fr;
     }
     
@@ -923,7 +959,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: 10000;
 }
 
 .modal-content-styled {

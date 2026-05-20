@@ -1012,3 +1012,152 @@ input[type="time"].site-form-input:disabled::-webkit-calendar-picker-indicator {
     gap: 24px;
     align-items: start;
 }
+
+/* ===== STATUS UPDATE BUTTONS ===== */
+.site-status-row {
+    padding: 16px 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.site-status-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.site-status-btn:hover {
+    border-color: #10b981;
+    color: #10b981;
+    background: #f0fdf4;
+}
+.site-status-btn.active {
+    border-color: #10b981;
+    background: #10b981;
+    color: white;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+.site-status-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===== BACK BUTTON ===== */
+.site-back-btn {
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px;
+    font-size: 13px; 
+    color: #64748b; 
+    font-weight: 600; 
+    background: none; 
+    border: 1.5px solid #e2e8f0;
+    padding: 7px 14px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    transition: all 0.15s;
+    margin-bottom: 16px;
+}
+.site-back-btn:hover { 
+    border-color: #10b981; 
+    color: #10b981; 
+    background: #f0fdf4; 
+}
+
+/* ===== COMPLETION MODAL & REVIEW CARDS ===== */
+.site-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: site-fade-in 0.2s ease-out;
+}
+
+.site-modal {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: site-zoom-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.site-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.site-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.site-modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.site-modal-close:hover {
+    color: #0f172a;
+}
+
+.site-modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.site-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+}
+
+.site-review-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes site-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes site-zoom-in {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

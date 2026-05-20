@@ -135,7 +135,25 @@ exports.assignTeam = async (reqData) => {
 
 exports.createTask = async (reqData) => {
     try {
-        const { title, description, projectId, assignedTo, stage, priority } = reqData.body;
+        const { title, description, projectId, assignedTo, priority, dueDate } = reqData.body;
+
+        // Auto-derive stage from assignee's role so the task always
+        // lands in the correct portal (PE/SE/SS), regardless of what
+        // the frontend sends.
+        let stage = reqData.body.stage || 'PE';
+        if (assignedTo) {
+            const User = require('../models/User');
+            const assignee = await User.findById(assignedTo);
+            const stageMap = {
+                'Project Engineer': 'PE',
+                'Site Engineer':    'SE',
+                'Site Supervisor':  'SS',
+                'Project Manager':  'PM'
+            };
+            if (assignee && stageMap[assignee.role]) {
+                stage = stageMap[assignee.role];
+            }
+        }
 
         const task = await ProductionTask.create({
             title,
@@ -144,7 +162,8 @@ exports.createTask = async (reqData) => {
             assignedBy: reqData.user.id,
             assignedTo,
             stage,
-            priority
+            priority,
+            dueDate
         });
 
         await logActivity(projectId, reqData.user.id, 'CREATE_TASK', `Task "${title}" created for stage ${stage}.`);
@@ -158,7 +177,29 @@ exports.createTask = async (reqData) => {
 exports.assignTask = async (reqData) => {
     try {
         const { assignedTo } = reqData.body;
-        const task = await ProductionTask.findByIdAndUpdate(reqData.params.taskId, { assignedTo }, { new: true });
+
+        // Re-derive stage from new assignee's role
+        let stage;
+        if (assignedTo) {
+            const User = require('../models/User');
+            const assignee = await User.findById(assignedTo);
+            const stageMap = {
+                'Project Engineer': 'PE',
+                'Site Engineer':    'SE',
+                'Site Supervisor':  'SS',
+                'Project Manager':  'PM'
+            };
+            stage = stageMap[assignee?.role] || undefined;
+        }
+
+        const updateFields = { assignedTo };
+        if (stage) updateFields.stage = stage;
+
+        const task = await ProductionTask.findByIdAndUpdate(
+            reqData.params.taskId,
+            updateFields,
+            { new: true }
+        );
 
         await logActivity(task.projectId, reqData.user.id, 'ASSIGN_TASK', `Task "${task.title}" reassigned.`);
 
@@ -172,20 +213,89 @@ exports.updateTaskStatus = async (reqData) => {
     try {
         const { status, note, images } = reqData.body;
         const task = await ProductionTask.findById(reqData.params.taskId);
+        if (!task) {
+            return { status: 404, success: false, message: 'Task not found' };
+        }
+        
+        const oldStatus = task.status;
+        const oldStage = task.stage;
         
         task.status = status;
         
+        // Option A Workflows: Dynamic Assignee Promoting on Task Completion
+        if (status === 'Completed') {
+            const project = await ProductionProject.findById(task.projectId);
+            if (task.stage === 'SS') {
+                // Elevate to SE (Site Engineer)
+                if (project && project.siteEngineer) {
+                    task.stage = 'SE';
+                }
+            } else if (task.stage === 'SE') {
+                // Elevate to PE (Project Engineer)
+                if (project && project.projectEngineer) {
+                    task.stage = 'PE';
+                }
+            } else if (task.stage === 'PE') {
+                // Elevate to PM (Project Manager)
+                if (project && project.projectManager) {
+                    task.stage = 'PM';
+                }
+            }
+        } else if (status === 'In Progress' && oldStatus === 'Completed') {
+            // Rejection / Send Back workflow
+            const project = await ProductionProject.findById(task.projectId);
+            if (task.stage === 'SE') {
+                // Send back to SS (Site Supervisor)
+                if (project && project.siteSupervisor) {
+                    task.stage = 'SS';
+                    task.assignedTo = project.siteSupervisor;
+                }
+            } else if (task.stage === 'PE') {
+                // Send back to SE (Site Engineer)
+                if (project && project.siteEngineer) {
+                    task.stage = 'SE';
+                    task.assignedTo = project.siteEngineer;
+                }
+            } else if (task.stage === 'PM') {
+                // Send back to PE (Project Engineer)
+                if (project && project.projectEngineer) {
+                    task.stage = 'PE';
+                    task.assignedTo = project.projectEngineer;
+                }
+            }
+        }
+        
         if (note || images) {
-            task.updates.push({
-                note,
-                images: images || [],
-                updatedBy: reqData.user.id
-            });
+            // Support updating existing completion log rather than creating duplicate entries if status hasn't changed
+            const existingIndex = task.updates.findIndex(u => 
+                u.updatedBy?.toString() === reqData.user.id && 
+                !u.note?.includes('Approved by') && 
+                !u.note?.includes('Rejected by') &&
+                status === 'Completed' &&
+                oldStatus === 'Completed'
+            );
+
+            if (existingIndex > -1) {
+                task.updates[existingIndex].note = note || task.updates[existingIndex].note;
+                task.updates[existingIndex].images = images || [];
+                task.updates[existingIndex].timestamp = Date.now();
+            } else {
+                task.updates.push({
+                    note: note || `Stage transition from ${oldStage} to ${task.stage}`,
+                    images: images || [],
+                    updatedBy: reqData.user.id
+                });
+            }
         }
         
         await task.save();
 
-        await logActivity(task.projectId, reqData.user.id, 'UPDATE_TASK', `Task "${task.title}" status changed to ${status}.`);
+        await logActivity(
+            task.projectId, 
+            reqData.user.id, 
+            'UPDATE_TASK', 
+            `Task "${task.title}" status changed to ${status} (Stage: ${oldStage} -> ${task.stage}).`
+        );
 
         return { status: 200, success: true, data: task };
     } catch (error) {
@@ -664,7 +774,7 @@ exports.getProductionStaff = async (reqData) => {
     try {
         const User = require('../models/User');
         const staff = await User.find({
-            role: { $in: ['Project Engineer', 'Site Engineer', 'Site Supervisor'] },
+            role: { $in: ['Project Manager', 'Project Engineer', 'Site Engineer', 'Site Supervisor'] },
             status: 'Active'
         }).select('fullName email role');
 

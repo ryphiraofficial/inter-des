@@ -770,18 +770,6 @@
         padding: 0;
     }
 
-    .review-hub-page .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        padding: 0 1rem;
-    }
-
-    .hub-stats {
-        width: 100%;
-        justify-content: space-between;
-    }
-
     .requests-table thead {
         display: none;
     }
@@ -841,5 +829,121 @@
         align-items: flex-start !important;
         gap: 12px;
         padding: 1.5rem 1rem !important;
+    }
+}
+/* ── Material Review Hub Header ── */
+.hub-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    margin-bottom: 2rem;
+    border: 1px solid #f1f5f9;
+}
+
+.hub-header-left h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.hub-icon-wrapper {
+    background: #eef2ff;
+    padding: 8px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hub-header-left p {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* ── Hub Stats ── */
+.hub-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.hub-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.hub-stat-item .stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.hub-stat-item .stat-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hub-stat-item.pending .stat-value {
+    color: #1e293b;
+}
+
+.hub-stat-item.approved .stat-value {
+    color: #10b981;
+}
+.hub-stat-item.approved {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+/* ── Mobile Layout ── */
+@media (max-width: 768px) {
+    .hub-page-header {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.25rem;
+        border-radius: 0 0 20px 20px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+        margin-bottom: 1.5rem;
+    }
+
+    .hub-header-left h1 {
+        font-size: 1.25rem;
+    }
+    
+    .hub-header-left p {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .hub-stats {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .hub-stat-item {
+        align-items: flex-start;
+        padding: 1rem;
     }
 }

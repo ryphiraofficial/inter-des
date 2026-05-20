@@ -16,7 +16,7 @@ const DesignSkeleton = () => {
             </div>
 
             {/* Premium Stats Grid Skeleton */}
-            <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="stats-grid" style={{ marginBottom: '2.5rem' }}>
                 {[1, 2, 3, 4].map(i => (
                     <div key={i} className="stat-card premium" style={{ background: 'white', padding: '1.5rem', borderRadius: '20px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                         <Skeleton width="56px" height="56px" borderRadius="16px" />
@@ -29,7 +29,7 @@ const DesignSkeleton = () => {
             </div>
 
             {/* Visual Analytics Row Skeleton */}
-            <div className="visuals-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="visuals-grid" style={{ marginBottom: '2.5rem' }}>
                 <div className="card-premium" style={{ background: 'white', padding: '2rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
                         <Skeleton width="180px" height="24px" />
@@ -47,7 +47,7 @@ const DesignSkeleton = () => {
             </div>
 
             {/* Operational Lists Skeleton */}
-            <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="dashboard-grid">
                 {[1, 2].map(panel => (
                     <div key={panel} className="card-premium" style={{ background: 'white', borderRadius: '24px', padding: '2rem', border: '1px solid #f1f5f9' }}>
                         <div style={{ marginBottom: '2rem' }}>

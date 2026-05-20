@@ -45,7 +45,7 @@ const Inventory = ({ materialRequests, projects, onReviewRequest }) => {
                                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#888' }}>{projectRequests.length} SPECIFICATIONS</span>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '2rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
                                     {projectRequests.map((req, rIdx) => (
                                         <div key={req._id} style={{ border: '1px solid #eee', padding: '2rem', background: '#fff', position: 'relative' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '2rem' }}>

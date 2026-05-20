@@ -36,15 +36,15 @@ const ProjectDetail = ({ user }) => {
     const load = async () => {
         try {
             const [pRes, tRes, aRes, sRes] = await Promise.all([
-                engineerAPI.getProjectById(id),
-                engineerAPI.getProjectTasks(id),
-                engineerAPI.getActivity(id),
-                engineerAPI.getSiteTeam()
+                engineerAPI.getProjectById(id).catch(e => ({ success: false, error: e })),
+                engineerAPI.getProjectTasks(id).catch(e => ({ success: false, error: e })),
+                engineerAPI.getActivity(id).catch(e => ({ success: false, error: e })),
+                engineerAPI.getSiteTeam().catch(e => ({ success: false, error: e }))
             ]);
-            if (pRes.success) setProject(pRes.data);
-            if (tRes.success) setTasks(tRes.data);
-            if (aRes.success) setActivity(aRes.data);
-            if (sRes.success) setSiteTeam(sRes.data);
+            if (pRes && pRes.success) setProject(pRes.data);
+            if (tRes && tRes.success) setTasks(tRes.data);
+            if (aRes && aRes.success) setActivity(aRes.data);
+            if (sRes && sRes.success) setSiteTeam(sRes.data);
         } catch (e) { console.error(e); }
         finally { setLoading(false); }
     };

@@ -7,6 +7,7 @@
 .design-layout {
     display: flex;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     background: #f8fafc;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -211,13 +212,68 @@
     animation: spin 1s linear infinite;
 }
 
+/* ── Mobile Menu Button ── */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #475569;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+/* ── Sidebar Overlay ── */
+.design-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 9990;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
+    .design-layout-content {
+        padding: 0.75rem;
+    }
     .design-sidebar {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 75vw;
+        max-width: 300px;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 9999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    }
+    .sidebar-open .design-sidebar {
+        left: 0;
+    }
+    .mobile-menu-btn {
+        display: flex;
     }
     .design-navbar-subtitle,
     .design-navbar-userinfo {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .design-sidebar-overlay {
         display: none;
     }
 }

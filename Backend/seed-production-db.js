@@ -3,23 +3,28 @@ require('dotenv').config();
 const ProductionProject = require('./models/ProductionProject');
 const ProductionTask = require('./models/ProductionTask');
 const ProductionActivityLog = require('./models/ProductionActivityLog');
+const User = require('./models/User');
 
 const seedDB = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Connected to DB for seeding...');
-
         // Clear existing just in case
         await ProductionProject.deleteMany({});
         await ProductionTask.deleteMany({});
         await ProductionActivityLog.deleteMany({});
 
-        const pmId = '69eef50b3c433ec5aa769ad0';
-        const peId = '69eef5ff3c433ec5aa769b21';
-        const seId = '69eef6773c433ec5aa769b4e';
-        const ssId = '69eef6db3c433ec5aa769b72';
+        // Query real users from database
+        const pmUser = await User.findOne({ email: 'project.manager@interiordesign.com' });
+        const peUser = await User.findOne({ email: 'project.engineer@interiordesign.com' });
+        const seUser = await User.findOne({ email: 'site.engineer@interiordesign.com' });
+        const ssUser = await User.findOne({ email: 'site.supervisor@interiordesign.com' });
+        const adminUser = await User.findOne({ email: 'admin@interiordesign.com' });
 
-        const adminId = '6921319728cb1748259b3bb8'; // An admin
+        const pmId = pmUser ? pmUser._id : '69eef50b3c433ec5aa769ad0';
+        const peId = peUser ? peUser._id : '69eef5ff3c433ec5aa769b21';
+        const seId = seUser ? seUser._id : '69eef6773c433ec5aa769b4e';
+        const ssId = ssUser ? ssUser._id : '69eef6db3c433ec5aa769b72';
+        const adminId = adminUser ? adminUser._id : '6921319728cb1748259b3bb8';
 
         // Create Projects
         const projects = await ProductionProject.create([

@@ -9,9 +9,9 @@ export const engineerAPI = {
         return apiCall(`/production-management/engineer/tasks?${query}`);
     },
     getTaskById:    (id) => apiCall(`/production-management/tasks/${id}`),
-    updateStatus:   (id, status, note) => apiCall(`/production-management/tasks/${id}/update-status`, {
+    updateStatus:   (id, status, note, images) => apiCall(`/production-management/tasks/${id}/update-status`, {
         method: 'PUT',
-        body: JSON.stringify({ status, note })
+        body: JSON.stringify({ status, note, images })
     }),
     addComment:     (id, text) => apiCall(`/production-management/tasks/${id}/comment`, {
         method: 'POST',

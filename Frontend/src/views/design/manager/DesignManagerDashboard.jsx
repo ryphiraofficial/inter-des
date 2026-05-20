@@ -89,7 +89,7 @@ const DesignManagerDashboard = ({ user }) => {
                         <div className="section-header" style={{ marginBottom: '1.5rem' }}>
                             <h3>Approved Project Specifications</h3>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '1.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
                             {quotations.filter(q => q.status === 'Approved').map(quote => (
                                 <div key={quote._id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '1.5rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>

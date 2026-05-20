@@ -98,26 +98,28 @@ const MaterialReviewHub = ({ user }) => {
 
     return (
         <div className="review-hub-page">
-            <div className="page-header" style={{ marginBottom: '2rem' }}>
-                <div className="header-left">
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <Package size={28} color="#4f46e5" /> 
+            <div className="hub-page-header">
+                <div className="hub-header-left">
+                    <h1>
+                        <div className="hub-icon-wrapper">
+                            <Package size={24} color="#4f46e5" />
+                        </div>
                         Material Review Hub
                     </h1>
-                    <p style={{ color: '#64748b' }}>
+                    <p>
                         {isManager 
                             ? 'Approve or reject material requests from the design team' 
                             : 'Track the status of your material submissions'}
                     </p>
                 </div>
-                <div className="hub-stats" style={{ display: 'flex', gap: '1.5rem' }}>
-                    <div className="hub-stat-item">
-                        <strong>{filteredRequests.filter(r => r.status === 'Pending').length}</strong>
-                        <span>Pending</span>
+                <div className="hub-stats">
+                    <div className="hub-stat-item pending">
+                        <span className="stat-value">{filteredRequests.filter(r => r.status === 'Pending').length}</span>
+                        <span className="stat-label">Pending</span>
                     </div>
-                    <div className="hub-stat-item">
-                        <strong style={{ color: '#10b981' }}>{filteredRequests.filter(r => r.status === 'Approved').length}</strong>
-                        <span>Approved</span>
+                    <div className="hub-stat-item approved">
+                        <span className="stat-value">{filteredRequests.filter(r => r.status === 'Approved').length}</span>
+                        <span className="stat-label">Approved</span>
                     </div>
                 </div>
             </div>

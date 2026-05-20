@@ -55,6 +55,15 @@ export const productionManagerAPI = {
         if (filters.search) queryParams.append('search', filters.search);
         return apiCall(`/production-management/projects?${queryParams.toString()}`);
     },
+    getAllTasks: () => apiCall('/production-management/tasks/all'),
+    createTask: (data) => apiCall('/production-management/tasks/create', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    updateTaskStatus: (taskId, data) => apiCall(`/production-management/tasks/${taskId}/update-status`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    }),
     getDashboardOverview: () => apiCall('/production-management/dashboard/overview'),
     getDashboardDeadlines: () => apiCall('/production-management/dashboard/deadlines'),
     getDashboardBudget: () => apiCall('/production-management/dashboard/budget'),

@@ -15,7 +15,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
 
     return (
         <div className="design-tasks fade-in" style={{ paddingTop: '1rem' }}>
-            <div className="dashboard-grid" style={{ gridTemplateColumns: '7fr 3fr', gap: '1.5fr' }}>
+            <div className="dashboard-grid tasks-layout-grid">
                 <div className="tasks-container" style={{ display: 'grid', gap: '1.25rem', paddingBottom: '300px' }}>
                     {tasks.filter(t => t.status !== 'Completed' && t.status !== 'Approved' && t.status !== 'Pushed to Procurement').map(task => {
                         const hasEmergency = task.dailyUpdates?.some(u => u.emergencies);
@@ -23,14 +23,12 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                         const updatesCount = task.dailyUpdates?.length || 0;
 
                         return (
-                            <div key={task._id} className="card-premium" style={{
+                            <div key={task._id} className="card-premium task-card-grid" style={{
+                                position: 'relative',
                                 background: '#fff', 
                                 border: `1px solid ${hasEmergency ? '#fee2e2' : '#f1f5f9'}`, 
                                 borderRadius: '24px',
                                 padding: '1.25rem 1.75rem', 
-                                display: 'grid', 
-                                gridTemplateColumns: '1fr auto auto', 
-                                gap: '2rem', 
                                 alignItems: 'center',
                                 zIndex: showReassignDropdown === task._id ? 3000 : 1,
                                 overflow: 'visible', // Changed to visible for popover

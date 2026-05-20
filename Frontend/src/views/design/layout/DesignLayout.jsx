@@ -1,28 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DesignNavbar from './DesignNavbar';
 import DesignManagerSidebar from './DesignManagerSidebar';
 import DesignStaffSidebar from './DesignStaffSidebar';
 import '../css/DesignLayout.css';
 
-/**
- * DesignLayout — shared wrapper for all Design module roles.
- * Renders the sidebar + navbar shell; page content goes in children.
- *
- * Props:
- *  - role: 'manager' | 'staff'
- *  - user: user object
- *  - onRefresh: optional callback for refresh button
- *  - isLoading: boolean for refresh spinner
- *  - children: page content
- */
 const DesignLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const Sidebar = role === 'staff' ? DesignStaffSidebar : DesignManagerSidebar;
 
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
     return (
-        <div className="design-layout">
-            <Sidebar user={user} onLogout={onLogout} />
+        <div className={`design-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+            {isSidebarOpen && <div className="design-sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
+            <Sidebar user={user} onLogout={onLogout} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             <div className="design-layout-main">
-                <DesignNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} />
+                <DesignNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} toggleSidebar={toggleSidebar} />
                 <main className="design-layout-content">
                     {children}
                 </main>

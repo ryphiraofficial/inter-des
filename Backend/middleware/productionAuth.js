@@ -3,8 +3,17 @@ const ProductionTask = require('../models/ProductionTask');
 
 exports.isProjectManager = async (req, res, next) => {
     try {
-        const projectId = req.params.id || req.body.projectId;
+        let projectId = req.params.id || req.body.projectId;
+        const taskId = req.params.taskId;
         
+        if (!projectId && taskId) {
+            const task = await ProductionTask.findById(taskId);
+            if (!task) {
+                return res.status(404).json({ success: false, message: 'Task not found' });
+            }
+            projectId = task.projectId;
+        }
+
         if (!projectId) {
             return res.status(400).json({
                 success: false,

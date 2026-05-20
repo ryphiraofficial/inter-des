@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, MoreVertical, Calendar, Target, Clock, CheckCircle, ChevronDown, X } from 'lucide-react';
 import '../css/ProductionManagement.css';
 import { productionManagerAPI } from '../../../models/api';
+import ProjectTasksAssignment from './ProjectTasksAssignment';
 
 const ProjectsList = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -11,6 +12,22 @@ const ProjectsList = () => {
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [expandedRows, setExpandedRows] = useState({});
 
+    const fetchProjects = async () => {
+        try {
+            const res = await productionManagerAPI.getProjects({
+                status: filterStatus !== 'All' ? filterStatus : '',
+                search: searchTerm
+            });
+            if (res?.success) {
+                setProjects(res.data);
+            }
+        } catch (error) {
+            console.error("Error fetching projects:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const toggleRow = (id) => {
         setExpandedRows(prev => ({
             ...prev,
@@ -19,23 +36,7 @@ const ProjectsList = () => {
     };
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            setLoading(true);
-            try {
-                const res = await productionManagerAPI.getProjects({
-                    status: filterStatus !== 'All' ? filterStatus : '',
-                    search: searchTerm
-                });
-                if (res?.success) {
-                    setProjects(res.data);
-                }
-            } catch (error) {
-                console.error("Error fetching projects:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
+        setLoading(true);
         const timeoutId = setTimeout(() => {
             fetchProjects();
         }, 300);
@@ -254,6 +255,10 @@ const ProjectsList = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <ProjectTasksAssignment 
+                                                        project={project} 
+                                                        onProjectUpdate={fetchProjects} 
+                                                    />
                                                 </div>
                                             </td>
                                         </tr>

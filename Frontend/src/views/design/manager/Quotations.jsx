@@ -17,7 +17,7 @@ const Quotations = ({ quotations, formatCurrency }) => {
                 </p>
             </div>
 
-            <div className="quotations-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '1.5rem' }}>
+            <div className="quotations-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '1.5rem' }}>
                 {quotations.length > 0 ? quotations.map(quote => (
                     <div key={quote._id} className="card-premium" style={{ background: 'white', borderRadius: '24px', border: '1px solid #f1f5f9', padding: '1.5rem', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100px', background: 'radial-gradient(circle at top right, rgba(79, 70, 229, 0.03), transparent)', pointerEvents: 'none' }}></div>
