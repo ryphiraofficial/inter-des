@@ -78,11 +78,12 @@ exports.isProjectManagerOrEngineer = async (req, res, next) => {
 
         const isPM = project.projectManager && project.projectManager.toString() === req.user.id;
         const isPE = project.projectEngineer && project.projectEngineer.toString() === req.user.id;
+        const isSE = project.siteEngineer && project.siteEngineer.toString() === req.user.id;
 
-        if (!isPM && !isPE) {
+        if (!isPM && !isPE && !isSE) {
             return res.status(403).json({
                 success: false,
-                message: 'Access denied: Only the assigned Project Manager or Project Engineer can perform this action'
+                message: 'Access denied: Only the assigned Project Manager, Project Engineer, or Site Engineer can perform this action'
             });
         }
 

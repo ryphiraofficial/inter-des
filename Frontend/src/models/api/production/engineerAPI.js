@@ -33,6 +33,7 @@ export const engineerAPI = {
     getProjectTasks: (id) => apiCall(`/production-management/tasks/project/${id}`),
     getActivity:     (id) => apiCall(`/production-management/projects/${id}/activity`),
     getSiteTeam:     () => apiCall('/production-management/team/site'),
+    getSupervisors:  () => apiCall('/production-management/team/supervisors'),
     requestReplacement: (projectId, data) => apiCall(`/production-management/projects/${projectId}/replacement-request`, {
         method: 'POST',
         body: JSON.stringify(data)

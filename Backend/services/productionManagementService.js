@@ -749,6 +749,19 @@ exports.getSiteTeam = async (reqData) => {
     }
 };
 
+exports.getSupervisors = async (reqData) => {
+    try {
+        const User = require('../models/User');
+        const members = await User.find({
+            role: 'Site Supervisor',
+            status: 'Active'
+        }).select('fullName email role');
+        return { status: 200, success: true, data: members };
+    } catch (error) {
+        return { status: 500, success: false, message: error.message };
+    }
+};
+
 exports.getHandoffProjects = async (reqData) => {
     try {
         let query = { status: 'Planning' };

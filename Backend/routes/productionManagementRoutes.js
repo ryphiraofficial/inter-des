@@ -29,6 +29,7 @@ const {
     createSubtask,
     getProjectActivity,
     getSiteTeam,
+    getSupervisors,
     getHandoffProjects,
     getProductionStaff,
     acceptHandoff,
@@ -100,6 +101,7 @@ router.get('/gantt/:projectId', getGanttData);
 // =======================
 router.get('/team/all', getTeamOverview);
 router.get('/team/site', getSiteTeam);
+router.get('/team/supervisors', getSupervisors);
 
 // =======================
 // ENGINEER APIs

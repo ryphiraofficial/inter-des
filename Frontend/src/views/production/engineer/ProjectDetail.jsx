@@ -21,6 +21,7 @@ const ProjectDetail = ({ user }) => {
     const [tasks,    setTasks]    = useState([]);
     const [activity, setActivity] = useState([]);
     const [siteTeam, setSiteTeam] = useState([]);
+    const [supervisors, setSupervisors] = useState([]);
     const [tab,      setTab]      = useState('overview');
     const [loading,  setLoading]  = useState(true);
     const [showSubtaskModal, setShowSubtaskModal] = useState(false);
@@ -37,16 +38,18 @@ const ProjectDetail = ({ user }) => {
 
     const load = async () => {
         try {
-            const [pRes, tRes, aRes, sRes] = await Promise.all([
+            const [pRes, tRes, aRes, sRes, svRes] = await Promise.all([
                 engineerAPI.getProjectById(id).catch(e => ({ success: false, error: e })),
                 engineerAPI.getProjectTasks(id).catch(e => ({ success: false, error: e })),
                 engineerAPI.getActivity(id).catch(e => ({ success: false, error: e })),
-                engineerAPI.getSiteTeam().catch(e => ({ success: false, error: e }))
+                engineerAPI.getSiteTeam().catch(e => ({ success: false, error: e })),
+                engineerAPI.getSupervisors().catch(e => ({ success: false, error: e }))
             ]);
             if (pRes && pRes.success) setProject(pRes.data);
             if (tRes && tRes.success) setTasks(tRes.data);
             if (aRes && aRes.success) setActivity(aRes.data);
             if (sRes && sRes.success) setSiteTeam(sRes.data);
+            if (svRes && svRes.success) setSupervisors(svRes.data);
         } catch (e) { console.error(e); }
         finally { setLoading(false); }
     };
@@ -261,7 +264,7 @@ const ProjectDetail = ({ user }) => {
             {/* Tasks Tab */}
             {tab === 'tasks' && (
                 <div className="eng-tab-content">
-                    {user?.role === 'Project Engineer' && (
+                    {['Project Engineer', 'Site Engineer'].includes(user?.role) && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
                             <button 
                                 className="eng-btn-primary" 
@@ -293,7 +296,7 @@ const ProjectDetail = ({ user }) => {
                                             <th>Assigned To</th>
                                             <th>Priority</th>
                                             <th>Status</th>
-                                            {user?.role === 'Project Engineer' && <th>Actions</th>}
+                                            {['Project Engineer','Site Engineer'].includes(user?.role) && <th>Actions</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -309,7 +312,7 @@ const ProjectDetail = ({ user }) => {
                                                     </td>
                                                     <td><span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span></td>
                                                     <td style={{ fontSize:13 }} onClick={e => e.stopPropagation()}>
-                                                        {user?.role === 'Project Engineer' ? (
+                                                        {['Project Engineer', 'Site Engineer'].includes(user?.role) ? (
                                                             <select 
                                                                 className="eng-assign-select" 
                                                                 value={t.assignedTo?._id || t.assignedTo || ''}
@@ -331,7 +334,7 @@ const ProjectDetail = ({ user }) => {
                                                                 style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', background: '#f8fafc', fontWeight: 500 }}
                                                             >
                                                                 <option value="">Unassigned</option>
-                                                                {siteTeam.map(m => (
+                                                                {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m => (
                                                                     <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
                                                                 ))}
                                                             </select>
@@ -343,7 +346,7 @@ const ProjectDetail = ({ user }) => {
                                                     </td>
                                                     <td><span className="eng-badge" style={{color:pr.color,background:pr.bg}}>{t.priority}</span></td>
                                                     <td><span className="eng-badge" style={{color:st.label,background:st.bg}}>{t.status}</span></td>
-                                                    {user?.role === 'Project Engineer' && (
+                                                    {['Project Engineer','Site Engineer'].includes(user?.role) && (
                                                         <td onClick={e=>e.stopPropagation()}>
                                                             {!t.isSubtask && (
                                                                 <button className="eng-subtask-btn" onClick={()=>{ setSelectedTask(t); setShowSubtaskModal(true); }}>
@@ -377,7 +380,7 @@ const ProjectDetail = ({ user }) => {
                                                 <span className="eng-stage-chip">{STAGE_LABELS[t.stage]||t.stage}</span>
                                             </div>
                                             <div className="eng-mobile-task-info" onClick={e => e.stopPropagation()}>
-                                                {user?.role === 'Project Engineer' ? (
+                                                {['Project Engineer', 'Site Engineer'].includes(user?.role) ? (
                                                     <select 
                                                         className="eng-assign-select" 
                                                         value={t.assignedTo?._id || t.assignedTo || ''}
@@ -399,7 +402,7 @@ const ProjectDetail = ({ user }) => {
                                                         style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', background: '#f8fafc', fontWeight: 500 }}
                                                     >
                                                         <option value="">Unassigned</option>
-                                                        {siteTeam.map(m => (
+                                                        {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m => (
                                                             <option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>
                                                         ))}
                                                     </select>
@@ -408,7 +411,7 @@ const ProjectDetail = ({ user }) => {
                                                         {t.assignedTo?.fullName||'Unassigned'}{isMine?' (You)':''}
                                                     </span>
                                                 )}
-                                                {user?.role === 'Project Engineer' && !t.isSubtask && (
+                                                {['Project Engineer','Site Engineer'].includes(user?.role) && !t.isSubtask && (
                                                     <button 
                                                         className="eng-subtask-btn" 
                                                         onClick={e=>{ e.stopPropagation(); setSelectedTask(t); setShowSubtaskModal(true); }}
@@ -473,10 +476,10 @@ const ProjectDetail = ({ user }) => {
                             </div>
                             <div className="eng-form-row">
                                 <div className="eng-form-group">
-                                    <label>Assign To *</label>
+                                    <label>Assign To *{user?.role === 'Site Engineer' ? ' (Site Supervisor)' : ''}</label>
                                     <select className="eng-input" value={subtask.assignedTo} onChange={e=>setSubtask({...subtask,assignedTo:e.target.value})} required>
-                                        <option value="">Select engineer…</option>
-                                        {siteTeam.map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
+                                        <option value="">Select{user?.role === 'Site Engineer' ? ' supervisor' : ' engineer'}…</option>
+                                        {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
                                     </select>
                                 </div>
                                 <div className="eng-form-group">
@@ -520,10 +523,10 @@ const ProjectDetail = ({ user }) => {
                             </div>
                             <div className="eng-form-row">
                                 <div className="eng-form-group">
-                                    <label>Assign To *</label>
+                                    <label>Assign To *{user?.role === 'Site Engineer' ? ' (Site Supervisor)' : ''}</label>
                                     <select className="eng-input" value={newTask.assignedTo} onChange={e=>setNewTask({...newTask,assignedTo:e.target.value})} required>
-                                        <option value="">Select engineer…</option>
-                                        {siteTeam.map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
+                                        <option value="">Select{user?.role === 'Site Engineer' ? ' supervisor' : ' engineer'}…</option>
+                                        {(user?.role === 'Site Engineer' ? supervisors : siteTeam).map(m=><option key={m._id} value={m._id}>{m.fullName} ({m.role})</option>)}
                                     </select>
                                 </div>
                                 <div className="eng-form-group">
