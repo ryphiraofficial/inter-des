@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Send, Save, AlertTriangle, Loader, CheckCircle, Package, User } from 'lucide-react';
+import { X, Send, Save, AlertTriangle, Loader, CheckCircle, Package, User, Printer } from 'lucide-react';
 
 export const BillPreviewModal = ({ 
     show, setShow, formData, clients, lineItems, subtotal, discount, 
@@ -83,8 +83,11 @@ export const BillPreviewModal = ({
                     </div>
                 </div>
                 <div className="preview-footer">
-                    <button className="btn-back" onClick={() => setShow(false)}>Edit Form</button>
-                    <button className="btn-confirm" onClick={handleFinalSave} disabled={isSaving}>
+                    <button className="btn-back" type="button" onClick={() => setShow(false)}>Edit Form</button>
+                    <button className="btn-print" type="button" onClick={() => { window.print(); handleFinalSave(); }}>
+                        <Printer size={18} /> Print & Submit
+                    </button>
+                    <button className="btn-confirm" type="button" onClick={handleFinalSave} disabled={isSaving}>
                         {isSaving ? <Loader size={18} className="spinner" /> : <><Send size={18} /> Confirm & Submit</>}
                     </button>
                 </div>
