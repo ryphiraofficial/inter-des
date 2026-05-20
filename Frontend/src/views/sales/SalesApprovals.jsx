@@ -126,7 +126,7 @@ const SalesApprovals = ({ user }) => {
                 </div>
 
                 {/* ── Filter Controls (Same theme & structure) ── */}
-                <div className="st-tasks-controls" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                <div className="st-tasks-controls" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', background: 'transparent', padding: '0 0 1.5rem 0', border: 'none', boxShadow: 'none' }}>
                     <select
                         className="filter-select"
                         style={{
