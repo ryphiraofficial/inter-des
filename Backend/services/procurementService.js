@@ -44,8 +44,9 @@ exports.getMaterialRequests = async (reqData) => {
             .limit(parseInt(limit));
 
         const total = await MaterialRequest.countDocuments(query);
+        const filteredRequests = requests.filter(r => r.project !== null);
 
-        return { status: 200, success: true, count: requests.length, total, page: parseInt(page), pages: Math.ceil(total / limit), data: requests };
+        return { status: 200, success: true, count: filteredRequests.length, total: filteredRequests.length, page: parseInt(page), pages: Math.ceil(filteredRequests.length / limit), data: filteredRequests };
     } catch (error) {
         return { status: 500, success: false, message: error.message };
     }

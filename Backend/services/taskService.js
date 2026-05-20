@@ -126,7 +126,13 @@ exports.getTasks = async (reqData) => {
             }
         }
 
-        return { status: 200, success: true, count: tasks.length, total, page: parseInt(page), pages: Math.ceil(total / limit), data: tasks };
+        const filteredTasks = tasks.filter(t => {
+            const rawObj = t.toObject();
+            const hasProjectRef = rawObj.hasOwnProperty('project') && rawObj.project !== undefined;
+            return !(hasProjectRef && t.project === null);
+        });
+
+        return { status: 200, success: true, count: filteredTasks.length, total: filteredTasks.length, page: parseInt(page), pages: Math.ceil(filteredTasks.length / limit), data: filteredTasks };
     } catch (error) {
         return { status: 500, success: false, message: error.message };
     }

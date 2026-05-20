@@ -34,13 +34,13 @@ export const useApprovalsData = ({
             ]);
             
             const tasksArray = Array.isArray(taskRes) ? taskRes : (taskRes?.data || []);
-            const designPending = tasksArray.filter(t => t.status === 'Pending Admin Review');
-            const procPendingTasks = tasksArray.filter(t => t.status === 'Pending Procurement Admin Review').map(t => ({ ...t, type: 'Task' }));
+            const designPending = tasksArray.filter(t => t.status === 'Pending Admin Review' && t.project);
+            const procPendingTasks = tasksArray.filter(t => t.status === 'Pending Procurement Admin Review' && t.project).map(t => ({ ...t, type: 'Task' }));
             
             setTasks(designPending);
             
             const mrsArray = Array.isArray(mrRes) ? mrRes : (mrRes?.data || []);
-            const procPendingMRs = mrsArray.map(m => ({ ...m, type: 'MaterialRequest' }));
+            const procPendingMRs = mrsArray.filter(m => m.project).map(m => ({ ...m, type: 'MaterialRequest' }));
             
             setProcurementItems([...procPendingTasks, ...procPendingMRs]);
         } catch (err) {
