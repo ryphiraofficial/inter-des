@@ -11,9 +11,14 @@ const EngineerProjects = ({ user }) => {
     const [projects, setProjects] = useState([]);
     const [loading,  setLoading]  = useState(true);
     const [filters,  setFilters]  = useState({ status: 'All', search: '' });
-    const [showFilters, setShowFilters] = useState(false);
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => { 
+        load(); 
+        
+        const handleSearch = (e) => setFilters(p => ({ ...p, search: e.detail }));
+        window.addEventListener('header-search', handleSearch);
+        return () => window.removeEventListener('header-search', handleSearch);
+    }, []);
 
     const load = async () => {
         try {
@@ -42,56 +47,29 @@ const EngineerProjects = ({ user }) => {
 
     return (
         <div className="eng-tasks-page">
-            <div className="eng-page-header" style={{ justifyContent: 'flex-end', marginBottom: 20 }}>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div className="eng-search-wrapper desktop-only" style={{ minWidth: 200 }}>
-                        <Search size={14} className="eng-search-icon" />
-                        <input
-                            type="text"
-                            className="eng-search-input"
-                            placeholder="Search..."
-                            value={filters.search}
-                            onChange={(e) => setFilters(p => ({ ...p, search: e.target.value }))}
-                        />
-                    </div>
-                    <button 
-                        className={`eng-filter-toggle ${showFilters ? 'active' : ''}`}
-                        onClick={() => setShowFilters(!showFilters)}
-                    >
-                        <Target size={16} /> 
-                        Filters
-                        {activeFilterCount > 0 && <span className="eng-filter-badge">{activeFilterCount}</span>}
-                    </button>
+            <div className="eng-page-header" style={{ justifyContent: 'space-between', marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {STATUS_FILTERS.map(tab => (
+                        <button 
+                            key={tab}
+                            onClick={() => setFilters(p => ({ ...p, status: tab }))}
+                            style={{
+                                background: filters.status === tab ? '#eff6ff' : 'transparent',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontSize: 14,
+                                fontWeight: filters.status === tab ? 600 : 500,
+                                color: filters.status === tab ? '#3b82f6' : '#64748b',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            {tab}
+                        </button>
+                    ))}
                 </div>
             </div>
-
-            {showFilters && (
-                <div className="eng-filters-panel">
-                    <div className="eng-filter-group mobile-only">
-                        <span className="eng-filter-label">Search</span>
-                        <input 
-                            className="eng-filter-input" 
-                            placeholder="Search by project name..." 
-                            value={filters.search}
-                            onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
-                        />
-                    </div>
-                    <div className="eng-filter-group">
-                        <span className="eng-filter-label">Status</span>
-                        <div className="eng-filter-options">
-                            {STATUS_FILTERS.map(o => (
-                                <button 
-                                    key={o} 
-                                    className={`eng-filter-chip ${filters.status===o?'active':''}`} 
-                                    onClick={() => setFilters(p => ({ ...p, status: o }))}
-                                >
-                                    {o}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {loading ? (
                 <div className="eng-loading">Loading projects…</div>

@@ -98,7 +98,7 @@ const NAV_CONFIG = {
     },
 
     'Site Supervisor': {
-        brandTitle:   'Site Portal',
+        brandTitle:   'Site Supervisor',
         sidebarClass: 'production',
         basePath:     '/site/dashboard',
         items: [

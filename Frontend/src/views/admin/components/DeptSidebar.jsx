@@ -89,16 +89,17 @@ const NAV_CONFIG = {
         sidebarClass: 'production',
         basePath:     '/site/dashboard',
         items: [
-            { name: 'Dashboard',     icon: LayoutDashboard, path: '/site/dashboard' },
-            { name: 'Projects',      icon: FolderOpen,      path: '/site/projects' },
-            { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
-            { name: 'Reports',       icon: FileText,        path: '/site/reports' },
-            { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
+            { name: 'Dashboard',         icon: LayoutDashboard, path: '/site/dashboard' },
+            { name: 'Projects',          icon: FolderOpen,      path: '/site/projects' },
+            { name: 'Tasks',             icon: CheckSquare,     path: '/site/tasks' },
+            { name: 'Transferred Tasks', icon: Users,           path: '/site/transferred-tasks' },
+            { name: 'Reports',           icon: FileText,        path: '/site/reports' },
+            { name: 'Leave Request',     icon: CalendarOff,     path: '/site/leave' },
         ],
     },
 
     'Site Supervisor': {
-        brandTitle:   'Site Portal',
+        brandTitle:   'Site Supervisor',
         sidebarClass: 'production',
         basePath:     '/site/dashboard',
         items: [

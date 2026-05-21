@@ -106,6 +106,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
             '/site/dashboard': { title: 'Dashboard', subtitle: 'Your site tasks at a glance' },
             '/site/projects': { title: 'My Projects', subtitle: 'Projects assigned to you' },
             '/site/tasks': { title: 'My Tasks', subtitle: 'Tasks assigned from Engineer' },
+            '/site/transferred-tasks': { title: 'Transferred Tasks', subtitle: 'Tasks delegated to supervisors' },
             '/site/reports': { title: 'Site Reports', subtitle: 'Submit daily progress reports' },
             '/site/leave': { title: 'Leave Request', subtitle: 'Submit and track applications' }
         };
@@ -122,6 +123,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
         if (path.startsWith('/engineer/projects/')) return { title: 'Project Detail', subtitle: 'Project overview and tasks' };
         if (path.startsWith('/site/projects/')) return { title: 'Project Detail', subtitle: 'Project overview and tasks' };
         if (path.startsWith('/engineer/tasks/')) return { title: 'Task Detail', subtitle: 'Full task view' };
+        if (path.startsWith('/site/tasks/')) return { title: 'Task Detail', subtitle: 'Full task view' };
 
         return {
             title: path.replace('/', '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
@@ -130,7 +132,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
     };
 
     const { title, subtitle } = getPageDetails();
-    const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team'];
+    const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team', '/engineer/projects', '/site/projects'];
     const isSearchable = searchablePaths.includes(location.pathname);
 
     return (

@@ -192,7 +192,7 @@ exports.assignTask = async (reqData) => {
             stage = stageMap[assignee?.role] || undefined;
         }
 
-        const updateFields = { assignedTo };
+        const updateFields = { assignedTo, assignedBy: reqData.user.id };
         if (stage) updateFields.stage = stage;
 
         const task = await ProductionTask.findByIdAndUpdate(
@@ -613,9 +613,16 @@ exports.getEngineerDashboard = async (reqData) => {
 exports.getEngineerTasks = async (reqData) => {
     try {
         const uid = reqData.user.id;
-        const { status, priority, stage, projectId } = reqData.query;
+        const { status, priority, stage, projectId, transferred } = reqData.query;
 
-        const query = { assignedTo: uid };
+        const query = {};
+        if (transferred === 'true') {
+            query.assignedBy = uid;
+            query.assignedTo = { $ne: uid };
+        } else {
+            query.assignedTo = uid;
+        }
+
         if (status)    query.status   = status;
         if (priority)  query.priority = priority;
         if (stage)     query.stage    = stage;

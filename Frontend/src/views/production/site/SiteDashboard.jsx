@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
     CheckSquare, Clock, CheckCircle2, AlertCircle,
     Flame, CalendarClock, TriangleAlert, ChevronRight,
-    Wrench, Target, Briefcase, MapPin, Users, ArrowRight
+    Wrench, Target, Briefcase, MapPin, Users, ArrowRight,
+    CloudRain, ClipboardCheck, FolderOpen, Zap
 } from 'lucide-react';
 import { engineerAPI } from '../../../models/api';
 import './Site.css';
@@ -146,36 +147,76 @@ const SiteDashboard = ({ user }) => {
     return (
         <div className="site-page">
             {/* Banner */}
-            <div className={`site-banner ${isSS?'ss':'se'}`}>
-                <div>
-                    <div className="site-banner-badge"><Wrench size={13}/>{user?.role}</div>
-                    <h1>
+            <div className="site-banner site-banner-light">
+                <div className="site-banner-left">
+                    <div className="site-banner-badge site-banner-badge-light"><Wrench size={13}/>{user?.role}</div>
+                    <h1 className="site-welcome-title-light">
                         Good {new Date().getHours()<12?'Morning':new Date().getHours()<17?'Afternoon':'Evening'},{' '}
-                        {user?.fullName?.split(' ')[0]} 👷
+                        <span className="site-name-highlight-light">{user?.fullName?.split(' ')[0]}</span> 👷
                     </h1>
-                    <p>
+                    <p className="site-welcome-sub-light">
                         {myProjects.length > 0
                             ? <><strong>{myProjects.length}</strong> active project{myProjects.length !== 1 ? 's' : ''} · <strong>{stats.inProgress}</strong> task{stats.inProgress!==1?'s':''} in progress</>
                             : 'No projects assigned yet. Check back soon.'
                         }
-                        {data?.overdue?.length>0 && <span style={{color:'#fca5a5'}}> · <strong>{data.overdue.length}</strong> overdue</span>}
+                        {data?.overdue?.length>0 && <span style={{color:'#ef4444'}}> · <strong>{data.overdue.length}</strong> overdue</span>}
                     </p>
                 </div>
-                <div className="site-ring-wrapper">
+                <div className="site-ring-wrapper site-ring-light">
                     <svg width="90" height="90" viewBox="0 0 90 90">
-                        <circle cx="45" cy="45" r="37" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8"/>
-                        <circle cx="45" cy="45" r="37" fill="none" stroke="white" strokeWidth="8"
+                        <circle cx="45" cy="45" r="37" fill="none" stroke="#e2e8f0" strokeWidth="8"/>
+                        <circle cx="45" cy="45" r="37" fill="none" stroke="#10b981" strokeWidth="8"
                             strokeDasharray={`${2*Math.PI*37}`}
                             strokeDashoffset={`${2*Math.PI*37*(1-doneRate/100)}`}
                             strokeLinecap="round" transform="rotate(-90 45 45)"
                             style={{transition:'stroke-dashoffset 1s ease'}}/>
                     </svg>
-                    <div className="site-ring-label">
+                    <div className="site-ring-label site-ring-label-light">
                         <span className="site-ring-pct">{doneRate}%</span>
                         <span className="site-ring-sub">Done</span>
                     </div>
                 </div>
             </div>
+
+            {/* Site Supervisor Specific Widgets */}
+            {isSS && (
+                <div className="ss-widgets-grid">
+                    {/* Quick Actions */}
+                    <div className="ss-widget-card">
+                        <div className="ss-widget-header">
+                            <h3 className="ss-widget-title"><Zap size={18}/> Quick Actions</h3>
+                        </div>
+                        <div className="ss-actions-grid">
+                            <button className="ss-action-btn" onClick={() => navigate('/site/tasks')}>
+                                <div className="ss-action-icon" style={{background: '#eff6ff', color: '#3b82f6'}}><CheckSquare size={20}/></div>
+                                <span>Tasks</span>
+                            </button>
+                            <button className="ss-action-btn" onClick={() => navigate('/site/reports')}>
+                                <div className="ss-action-icon" style={{background: '#fef3c7', color: '#d97706'}}><ClipboardCheck size={20}/></div>
+                                <span>Daily Report</span>
+                            </button>
+                            <button className="ss-action-btn" onClick={() => navigate('/site/projects')}>
+                                <div className="ss-action-icon" style={{background: '#f3e8ff', color: '#9333ea'}}><FolderOpen size={20}/></div>
+                                <span>Drawings</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Weather Widget (Mock) */}
+                    <div className="ss-widget-card ss-weather-widget">
+                        <div className="ss-weather-info">
+                            <CloudRain size={42} className="ss-weather-icon"/>
+                            <div>
+                                <h3 className="ss-weather-temp">24°C</h3>
+                                <p className="ss-weather-desc">Light Rain · Moderate Wind</p>
+                            </div>
+                        </div>
+                        <div className="ss-weather-alert">
+                            <TriangleAlert size={16}/> <span>Outdoor concreting not recommended today.</span>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Stats */}
             <div className="site-stats-grid">
@@ -215,7 +256,7 @@ const SiteDashboard = ({ user }) => {
             {/* Recent Tasks */}
             <div className="site-card" style={{marginTop:24}}>
                 <div className="site-card-header">
-                    <div className="site-card-title"><CheckSquare size={16}/>Recent Tasks</div>
+                    <div className="site-card-title"><CheckSquare size={16}/>Activity Feed</div>
                     <button style={{fontSize:13,color:'#10b981',fontWeight:600,background:'none',border:'none',cursor:'pointer'}}
                         onClick={()=>navigate('/site/tasks')}>View All</button>
                 </div>

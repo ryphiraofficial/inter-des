@@ -46,6 +46,143 @@
 .site-ring-pct  { font-size:22px; font-weight:800; color:white !important; }
 .site-ring-sub  { font-size:11px; color:rgba(255,255,255,0.7); margin-top:3px; }
 
+/* Light Theme Banner Overrides */
+.site-banner-light {
+    background: white;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    color: #0f172a;
+}
+.site-banner-light::before { display: none; }
+.site-welcome-title-light, 
+.site-banner-light p.site-welcome-sub-light,
+.site-banner-light p.site-welcome-sub-light span {
+    color: #0f172a !important;
+}
+.site-banner-light p.site-welcome-sub-light {
+    color: #64748b !important;
+}
+.site-banner-light p.site-welcome-sub-light strong {
+    color: #0f172a !important;
+}
+.site-name-highlight-light {
+    background: linear-gradient(90deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+.site-banner-badge-light {
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    color: #059669;
+}
+.site-ring-label-light .site-ring-pct {
+    color: #0f172a !important;
+}
+
+/* ===== SITE SUPERVISOR WIDGETS ===== */
+.ss-widgets-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 18px;
+    margin-bottom: 28px;
+}
+.ss-widget-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    padding: 20px 24px;
+}
+.ss-widget-header {
+    margin-bottom: 16px;
+}
+.ss-widget-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+.ss-widget-title svg { color: #10b981; }
+.ss-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+.ss-action-btn {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ss-action-btn:hover {
+    background: white;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+.ss-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ss-action-btn span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.ss-weather-widget {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: white;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.ss-weather-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.ss-weather-icon {
+    color: rgba(255,255,255,0.9);
+}
+.ss-weather-temp {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 4px 0;
+    color: white;
+}
+.ss-weather-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    margin: 0;
+}
+.ss-weather-alert {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-weight: 500;
+}
+
 /* ===== STAT CARDS ===== */
 .site-stats-grid {
     display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:28px;
@@ -82,7 +219,14 @@
 
 /* ===== DASH GRID ===== */
 .site-dash-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:24px; }
-@media(max-width:1024px) { .site-dash-grid { grid-template-columns:1fr; } }
+@media(max-width:1024px) { 
+    .site-dash-grid { grid-template-columns:1fr; } 
+    .ss-widgets-grid { grid-template-columns: 1fr; }
+    .ss-actions-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 600px) {
+    .ss-actions-grid { grid-template-columns: 1fr; }
+}
 
 /* ===== TASK ROWS ===== */
 .site-task-row {

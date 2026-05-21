@@ -46,6 +46,8 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
     const [uploadingFile, setUploadingFile] = useState(false);
     const [reviewImages, setReviewImages] = useState([]);
     const [uploadingReviewFile, setUploadingReviewFile] = useState(false);
+    
+    const [qaChecked, setQaChecked] = useState(false);
 
     // Reassignment States
     const [supervisors, setSupervisors] = useState([]);
@@ -511,130 +513,103 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
                                     placeholder="Describe the final status of this task for the Site Engineer's review..."
                                 />
                             </div>
-                            
-                            <div className="site-form-group" style={{marginBottom: 14}}>
-                                <label className="site-label" style={{fontWeight: 600, color: '#374151', fontSize: 13, marginBottom: 8}}>Select Completed Site Photos (Click to Toggle)</label>
-                                <div style={{display:'flex', gap:10, marginBottom:15}}>
-                                    {PRESET_IMAGES.map((img, idx) => {
-                                        const isSelected = selectedImages.includes(img.url);
-                                        return (
-                                            <div 
-                                                key={idx} 
-                                                onClick={() => {
-                                                    if (isSelected) {
-                                                        setSelectedImages(p => p.filter(u => u !== img.url));
-                                                    } else {
-                                                        setSelectedImages(p => [...p, img.url]);
-                                                    }
-                                                }}
-                                                style={{
-                                                    flex: 1,
-                                                    position: 'relative',
-                                                    borderRadius: 8,
-                                                    overflow: 'hidden',
-                                                    border: isSelected ? '3px solid #10b981' : '1px solid #e2e8f0',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s',
-                                                    transform: isSelected ? 'scale(0.98)' : 'none'
-                                                }}
-                                            >
-                                                <img src={img.url} alt={img.name} style={{width:'100%', height:65, objectFit:'cover'}}/>
-                                                <div style={{
-                                                    fontSize: 9.5,
-                                                    padding: '3px 4px',
-                                                    background: isSelected ? '#10b981' : '#0f172a',
-                                                    color: '#fff',
-                                                    textAlign: 'center',
-                                                    fontWeight: 600,
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis'
-                                                }}>
-                                                    {img.name}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div className="site-form-group" style={{marginBottom: 14}}>
-                                <label className="site-label" style={{fontWeight: 600, color: '#374151', fontSize: 13, marginBottom: 6, display: 'block'}}>Or Upload Local Photo File</label>
-                                <div style={{display:'flex', gap:8, alignItems: 'center'}}>
-                                    <input 
-                                        type="file" 
-                                        accept="image/*"
-                                        style={{display: 'none'}}
-                                        id="local-image-upload"
-                                        onChange={async (e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                setUploadingFile(true);
-                                                try {
-                                                    const formData = new FormData();
-                                                    formData.append('image', file);
-                                                    const res = await uploadAPI.image(formData);
-                                                    if (res.success) {
-                                                        setSelectedImages(p => [...p, res.url]);
-                                                        showToast('Image uploaded successfully!');
-                                                    } else {
-                                                        showToast(res.message || 'Upload failed', 'error');
-                                                    }
-                                                } catch (err) {
-                                                    showToast('Failed to upload image file', 'error');
-                                                } finally {
-                                                    setUploadingFile(false);
+                            <div className="site-form-group" style={{marginBottom: 20}}>
+                                <label className="site-label" style={{fontWeight: 600, color: '#374151', fontSize: 13, marginBottom: 10, display: 'block'}}>Upload Site Photos</label>
+                                
+                                <div 
+                                    style={{
+                                        border: '2px dashed #cbd5e1',
+                                        borderRadius: '12px',
+                                        padding: '32px 20px',
+                                        textAlign: 'center',
+                                        background: uploadingFile ? '#f8fafc' : '#ffffff',
+                                        cursor: uploadingFile ? 'default' : 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        position: 'relative',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '12px',
+                                        overflow: 'hidden'
+                                    }}
+                                    onDragOver={(e) => { e.preventDefault(); if (!uploadingFile) { e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.background = '#ecfdf5'; } }}
+                                    onDragLeave={(e) => { e.preventDefault(); if (!uploadingFile) { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#ffffff'; } }}
+                                    onDrop={async (e) => {
+                                        e.preventDefault();
+                                        if (uploadingFile) return;
+                                        e.currentTarget.style.borderColor = '#cbd5e1'; 
+                                        e.currentTarget.style.background = '#ffffff';
+                                        const file = e.dataTransfer.files[0];
+                                        if (file) {
+                                            setUploadingFile(true);
+                                            try {
+                                                const formData = new FormData();
+                                                formData.append('image', file);
+                                                const res = await uploadAPI.image(formData);
+                                                if (res.success) {
+                                                    setSelectedImages(p => [...p, res.url]);
+                                                    showToast('Image uploaded successfully!');
+                                                } else {
+                                                    showToast(res.message || 'Upload failed', 'error');
                                                 }
+                                            } catch (err) {
+                                                showToast('Failed to upload image', 'error');
+                                            } finally {
+                                                setUploadingFile(false);
                                             }
-                                        }}
-                                    />
-                                    <label 
-                                        htmlFor="local-image-upload"
-                                        className="site-btn-secondary"
-                                        style={{
-                                            cursor: 'pointer',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '12.5px',
-                                            fontWeight: 600,
-                                            border: '1.5px solid #cbd5e1',
-                                            borderRadius: '8px',
-                                            background: '#f8fafc',
-                                            color: '#475569',
-                                            transition: 'all 0.15s'
-                                        }}
-                                    >
-                                        {uploadingFile ? <Loader2 size={13} className="site-spin" /> : '📁 Select Local Image File'}
-                                    </label>
+                                        }
+                                    }}
+                                >
+                                    {uploadingFile ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '10px 0' }}>
+                                            <Loader2 size={36} className="site-spin" style={{ color: '#10b981' }} />
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span style={{ color: '#334155', fontSize: '14px', fontWeight: 600 }}>Uploading image...</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', transition: 'all 0.2s ease' }}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span style={{ color: '#334155', fontSize: '15px', fontWeight: 600 }}>Click or drag image to upload</span>
+                                                <span style={{ color: '#94a3b8', fontSize: '13px' }}>Supports JPG, PNG, WEBP (Max 10MB)</span>
+                                            </div>
+                                            <input 
+                                                type="file" 
+                                                accept="image/*"
+                                                style={{position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%'}}
+                                                onChange={async (e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setUploadingFile(true);
+                                                        try {
+                                                            const formData = new FormData();
+                                                            formData.append('image', file);
+                                                            const res = await uploadAPI.image(formData);
+                                                            if (res.success) {
+                                                                setSelectedImages(p => [...p, res.url]);
+                                                                showToast('Image uploaded successfully!');
+                                                            } else {
+                                                                showToast(res.message || 'Upload failed', 'error');
+                                                            }
+                                                        } catch (err) {
+                                                            showToast('Failed to upload image', 'error');
+                                                        } finally {
+                                                            setUploadingFile(false);
+                                                        }
+                                                    }
+                                                    e.target.value = '';
+                                                }}
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="site-form-group" style={{marginBottom: 14}}>
-                                <label className="site-label" style={{fontWeight: 600, color: '#374151', fontSize: 13}}>Or Paste Custom Photo URL</label>
-                                <div style={{display:'flex', gap:8}}>
-                                    <input 
-                                        className="site-input" 
-                                        type="text" 
-                                        value={customImageUrl} 
-                                        onChange={e => setCustomImageUrl(e.target.value)} 
-                                        placeholder="https://example.com/custom-photo.jpg"
-                                    />
-                                    <button 
-                                        type="button" 
-                                        className="site-btn-secondary"
-                                        onClick={() => {
-                                            if (customImageUrl.trim()) {
-                                                setSelectedImages(p => [...p, customImageUrl.trim()]);
-                                                setCustomImageUrl('');
-                                            }
-                                        }}
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
+
                             
                             {selectedImages.length > 0 && (
                                 <div style={{marginTop: 15}}>
@@ -671,13 +646,28 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
                                     </div>
                                 </div>
                             )}
+                            
+                            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                <input 
+                                    type="checkbox" 
+                                    id="qa-check"
+                                    checked={qaChecked}
+                                    onChange={(e) => setQaChecked(e.target.checked)}
+                                    style={{ marginTop: 4, width: 16, height: 16, cursor: 'pointer', accentColor: '#10b981' }}
+                                />
+                                <label htmlFor="qa-check" style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, cursor: 'pointer', userSelect: 'none' }}>
+                                    <strong style={{ color: '#334155', display: 'block' }}>Quality Assurance Confirmation</strong>
+                                    I confirm that all work associated with this task has been completed and meets the required quality standards.
+                                </label>
+                            </div>
+
                         </div>
                         <div className="site-modal-footer">
                             <button className="site-btn-secondary" onClick={() => setShowCompletionModal(false)}>Cancel</button>
                             <button 
                                 className="site-btn-primary" 
                                 onClick={submitCompletion}
-                                disabled={statusSaving || selectedImages.length === 0}
+                                disabled={statusSaving || selectedImages.length === 0 || !qaChecked}
                             >
                                 {statusSaving ? 'Submitting...' : 'Submit Completion'}
                             </button>
@@ -690,17 +680,21 @@ const SiteTaskDetail = ({ task, user, onBack, onUpdate }) => {
 };
 
 /* ── Tasks List ── */
-const SiteTasks = ({ user }) => {
+const SiteTasks = ({ user, isTransferred }) => {
     const [tasks,    setTasks]    = useState([]);
     const [loading,  setLoading]  = useState(true);
     const [filters,  setFilters]  = useState({ status:'All', priority:'All' });
     const [showFilters, setShowFilters] = useState(false);
+    const [activeTab, setActiveTab] = useState('All');
     const [selected, setSelected] = useState(null);
 
-    useEffect(()=>{ load(); },[]);
+    useEffect(()=>{ load(); },[isTransferred]);
 
     const load = async () => {
-        try { const res = await engineerAPI.getMyTasks(); if(res.success) setTasks(res.data); }
+        try { 
+            const res = isTransferred ? await engineerAPI.getTransferredTasks() : await engineerAPI.getMyTasks(); 
+            if(res.success) setTasks(res.data); 
+        }
         catch(e){ console.error(e); } finally { setLoading(false); }
     };
 
@@ -714,6 +708,8 @@ const SiteTasks = ({ user }) => {
     const activeFilterCount = (filters.status !== 'All' ? 1 : 0) + (filters.priority !== 'All' ? 1 : 0);
 
     const filtered = tasks.filter(t=>{
+        if(activeTab === 'Pending' && t.status === 'Completed') return false;
+        if(activeTab === 'Completed' && t.status !== 'Completed') return false;
         if(filters.status!=='All' && t.status!==filters.status) return false;
         if(filters.priority!=='All' && t.priority!==filters.priority) return false;
         return true;
@@ -727,7 +723,28 @@ const SiteTasks = ({ user }) => {
 
     return (
         <div className="site-page">
-            <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',marginBottom:24,flexWrap:'wrap',gap:12}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:12, borderBottom: '1px solid #e2e8f0', paddingBottom: 16}}>
+                <div style={{display:'flex', gap: 8}}>
+                    {['All', 'Pending', 'Completed'].map(tab => (
+                        <button 
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                background: activeTab === tab ? '#eff6ff' : 'transparent',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontSize: 14,
+                                fontWeight: activeTab === tab ? 600 : 500,
+                                color: activeTab === tab ? '#3b82f6' : '#64748b',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
                 <button 
                     className={`site-filter-toggle ${showFilters ? 'active' : ''}`}
                     onClick={() => setShowFilters(!showFilters)}

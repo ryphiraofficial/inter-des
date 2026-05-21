@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CheckSquare, Clock, CheckCircle2, AlertCircle, Zap,
-    Flame, CalendarClock, TriangleAlert, ChevronRight, Target
+    Flame, CalendarClock, TriangleAlert, ChevronRight, Target,
+    CloudRain, ClipboardCheck, FolderOpen
 } from 'lucide-react';
 import { engineerAPI } from '../../../models/api';
 import './Engineer.css';
@@ -16,6 +17,8 @@ const EngineerDashboard = ({ user }) => {
     const navigate = useNavigate();
     const [data, setData]     = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const isSiteSupervisor = user?.role === 'Site Supervisor';
 
     useEffect(() => { load(); }, []);
 
@@ -120,35 +123,75 @@ const EngineerDashboard = ({ user }) => {
     return (
         <div className="eng-dashboard">
             {/* Welcome Banner */}
-            <div className="eng-welcome-banner">
+            <div className="eng-welcome-banner eng-welcome-banner-light">
                 <div className="eng-welcome-left">
-                    <div className="eng-welcome-badge"><Zap size={14} />{user?.role}</div>
-                    <h1 className="eng-welcome-title">
+                    <div className="eng-welcome-badge eng-welcome-badge-light"><Zap size={14} />{user?.role}</div>
+                    <h1 className="eng-welcome-title eng-welcome-title-light">
                         Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'},{' '}
-                        <span className="eng-name-highlight">{user?.fullName?.split(' ')[0]}</span> 👋
+                        <span className="eng-name-highlight eng-name-highlight-light">{user?.fullName?.split(' ')[0]}</span> 👋
                     </h1>
-                    <p className="eng-welcome-sub">
+                    <p className="eng-welcome-sub eng-welcome-sub-light">
                         You have <strong>{stats.inProgress}</strong> task{stats.inProgress !== 1 ? 's' : ''} in progress
-                        {data?.overdue?.length > 0 && <span style={{ color:'#fca5a5' }}> · <strong>{data.overdue.length}</strong> overdue</span>}
+                        {data?.overdue?.length > 0 && <span style={{ color:'#ef4444' }}> · <strong>{data.overdue.length}</strong> overdue</span>}
                     </p>
                 </div>
                 <div className="eng-welcome-right">
-                    <div className="eng-progress-ring-wrapper">
+                    <div className="eng-progress-ring-wrapper eng-progress-ring-light">
                         <svg width="96" height="96" viewBox="0 0 96 96">
-                            <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8"/>
-                            <circle cx="48" cy="48" r="40" fill="none" stroke="white" strokeWidth="8"
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="#e2e8f0" strokeWidth="8"/>
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="#3b82f6" strokeWidth="8"
                                 strokeDasharray={`${2*Math.PI*40}`}
                                 strokeDashoffset={`${2*Math.PI*40*(1-doneRate/100)}`}
                                 strokeLinecap="round" transform="rotate(-90 48 48)"
                                 style={{ transition:'stroke-dashoffset 1s ease' }}/>
                         </svg>
-                        <div className="eng-ring-label">
+                        <div className="eng-ring-label eng-ring-label-light">
                             <span className="eng-ring-pct">{doneRate}%</span>
                             <span className="eng-ring-sub">Done</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Site Supervisor Specific Widgets */}
+            {isSiteSupervisor && (
+                <div className="ss-widgets-grid">
+                    {/* Quick Actions */}
+                    <div className="ss-widget-card">
+                        <div className="ss-widget-header">
+                            <h3 className="ss-widget-title"><Zap size={18}/> Quick Actions</h3>
+                        </div>
+                        <div className="ss-actions-grid">
+                            <button className="ss-action-btn" onClick={() => navigate('/site/tasks')}>
+                                <div className="ss-action-icon" style={{background: '#eff6ff', color: '#3b82f6'}}><CheckSquare size={20}/></div>
+                                <span>Tasks</span>
+                            </button>
+                            <button className="ss-action-btn" onClick={() => navigate('/site/reports')}>
+                                <div className="ss-action-icon" style={{background: '#fef3c7', color: '#d97706'}}><ClipboardCheck size={20}/></div>
+                                <span>Daily Report</span>
+                            </button>
+                            <button className="ss-action-btn" onClick={() => navigate('/site/projects')}>
+                                <div className="ss-action-icon" style={{background: '#f3e8ff', color: '#9333ea'}}><FolderOpen size={20}/></div>
+                                <span>Drawings</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Weather Widget (Mock) */}
+                    <div className="ss-widget-card ss-weather-widget">
+                        <div className="ss-weather-info">
+                            <CloudRain size={42} className="ss-weather-icon"/>
+                            <div>
+                                <h3 className="ss-weather-temp">24°C</h3>
+                                <p className="ss-weather-desc">Light Rain · Moderate Wind</p>
+                            </div>
+                        </div>
+                        <div className="ss-weather-alert">
+                            <TriangleAlert size={16}/> <span>Outdoor concreting not recommended today.</span>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Stat Cards */}
             <div className="eng-stats-grid">
@@ -170,10 +213,10 @@ const EngineerDashboard = ({ user }) => {
                 <Section icon={<TriangleAlert size={16}/>} title="High Priority" accentColor="#d97706" tasks={data?.highPriority} empty="No high priority tasks." />
             </div>
 
-            {/* Recent Activity */}
+            {/* Recent Activity Timeline */}
             <div className="eng-section-card" style={{ marginTop:24 }}>
                 <div className="eng-section-header">
-                    <div className="eng-section-title"><CheckSquare size={18}/>Recent Tasks</div>
+                    <div className="eng-section-title"><CheckSquare size={18}/>Activity Feed</div>
                     <button className="eng-see-all-btn" onClick={() => navigate('/engineer/tasks')}>View All</button>
                 </div>
                 {!data?.recentTasks?.length ? (

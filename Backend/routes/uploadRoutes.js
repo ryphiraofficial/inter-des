@@ -2,43 +2,29 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const { protect } = require('../middleware/auth');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const router = express.Router();
 
-const fs = require('fs');
-
-// Configure storage
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-    }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// File filter
-const fileFilter = (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|webp|gif|heic|heif|svg/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype || extname) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Only image files (jpeg, jpg, png, webp, gif, heic, heif, svg) are allowed!'), false);
-    }
-};
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'interior-design',
+    allowed_formats: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'heic', 'heif', 'svg']
+  }
+});
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-    fileFilter: fileFilter
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
 router.post('/', protect, (req, res, next) => {
@@ -58,13 +44,11 @@ router.post('/', protect, (req, res, next) => {
                 });
             }
 
-            // Return the relative path that can be used to access the file via static middleware
-            const filePath = `/uploads/${req.file.filename}`;
-
+            // Cloudinary URL is stored in req.file.path
             return res.status(200).json({
                 success: true,
-                data: filePath,
-                url: filePath
+                data: req.file.path,
+                url: req.file.path
             });
         } catch (catchErr) {
             next(catchErr);

@@ -39,6 +39,7 @@ function App() {
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUser(null);
+    window.location.href = '/';
   };
 
   if (loading) {

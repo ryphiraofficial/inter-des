@@ -8,6 +8,10 @@ export const engineerAPI = {
         const query = new URLSearchParams(params).toString();
         return apiCall(`/production-management/engineer/tasks?${query}`);
     },
+    getTransferredTasks: (params = {}) => {
+        const query = new URLSearchParams({ ...params, transferred: 'true' }).toString();
+        return apiCall(`/production-management/engineer/tasks?${query}`);
+    },
     getTaskById:    (id) => apiCall(`/production-management/tasks/${id}`),
     updateStatus:   (id, status, note, images) => apiCall(`/production-management/tasks/${id}/update-status`, {
         method: 'PUT',
