@@ -44,6 +44,7 @@ const HeaderActions = ({ isHome, tab, location, user }) => {
             <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />
             <ActionBtn show={location.pathname === '/users'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-user-modal'))} label="Add New User" variant="primary" />
             <ActionBtn show={location.pathname === '/projects'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-project-modal'))} label="New Project" variant="primary" />
+            <ActionBtn show={location.pathname === '/meetings'} onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))} label="Schedule Meeting" variant="primary" />
             {location.pathname === '/quotations' && (
                 <Link to="/quotations/new" className="no-underline">
                     <ActionBtn show={true} label="New Quotation" variant="primary" />

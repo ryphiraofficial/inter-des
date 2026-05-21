@@ -8,6 +8,7 @@ export { apiCall, getAuthHeaders, API_BASE_URL, BASE_IMAGE_URL } from './core/ap
 export { authAPI } from './shared/authAPI';
 export { notificationAPI } from './shared/notificationAPI';
 export { aiAPI } from './shared/aiAPI';
+export { meetingAPI } from './shared/meetingAPI';
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
 export { clientAPI } from './admin/clientAPI';
@@ -56,6 +57,7 @@ import { designDashboardAPI } from './design/designAPI';
 import { accountsAPI } from './admin/accountsAPI';
 import { reportAPI, settingsAPI } from './admin/reportAPI';
 import { aiAPI } from './shared/aiAPI';
+import { meetingAPI } from './shared/meetingAPI';
 import { checklistAPI } from './design/checklistAPI';
 import { kanbanAPI, approvalAPI } from './admin/miscAPI';
 
@@ -86,5 +88,6 @@ export default {
     checklists: checklistAPI,
     designDashboard: designDashboardAPI,
     engineer: engineerAPI,
-    productionManager: productionManagerAPI
+    productionManager: productionManagerAPI,
+    meetings: meetingAPI
 };

@@ -23,12 +23,7 @@ const SidebarNav = ({ navGroups }) => {
             if (hasActive) {
                 setCollapsedGroups(prev => ({ ...prev, [group.title]: false }));
             } else if (collapsedGroups[group.title] === undefined && group.title !== 'Main') {
-                 // Default other non-main groups to collapsed for cleaner look, unless they are the first operations group
-                 if (group.title === 'Financial' || group.title === 'Operations') {
-                     setCollapsedGroups(prev => ({ ...prev, [group.title]: false }));
-                 } else {
-                     setCollapsedGroups(prev => ({ ...prev, [group.title]: true }));
-                 }
+                 setCollapsedGroups(prev => ({ ...prev, [group.title]: false }));
             }
         });
     }, [navGroups, location]);

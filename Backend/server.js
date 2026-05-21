@@ -32,6 +32,7 @@ const accountsRoutes = require('./routes/accountsRoutes');
 const procurementRoutes = require('./routes/procurementRoutes');
 const productionRoutes = require('./routes/productionRoutes');
 const designRoutes = require('./routes/designRoutes');
+const meetingRoutes = require('./routes/meetingRoutes');
 
 const aiRoutes = require('./routes/aiRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
@@ -103,6 +104,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/site-visits', siteVisitRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/meetings', meetingRoutes);
 
 // Serve React build
 app.use(express.static(path.join(__dirname, "../Frontend/dist")));

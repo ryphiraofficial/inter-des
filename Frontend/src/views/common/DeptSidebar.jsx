@@ -18,7 +18,7 @@ import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Send,
     ShoppingCart, Building2, Box, ClipboardCheck, Target,
     Wrench, Clock, Image, LogOut, Menu, Plus, CheckCircle,
-    FolderOpen, CalendarOff, X
+    FolderOpen, CalendarOff, X, Video
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../models/api';
 import '../admin/css/Sidebar.css';
@@ -81,6 +81,7 @@ const NAV_CONFIG = {
             { name: 'Site Reports',  icon: FileText,        path: '/engineer/reports' },
             { name: 'Approvals',     icon: ClipboardCheck,  path: '/engineer/approvals' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/engineer/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -94,6 +95,7 @@ const NAV_CONFIG = {
             { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
             { name: 'Reports',       icon: FileText,        path: '/site/reports' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -107,6 +109,7 @@ const NAV_CONFIG = {
             { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
             { name: 'Reports',       icon: FileText,        path: '/site/reports' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
 

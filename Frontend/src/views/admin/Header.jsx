@@ -108,7 +108,8 @@ const Header = ({ user, toggleMobileSidebar }) => {
             '/site/tasks': { title: 'My Tasks', subtitle: 'Tasks assigned from Engineer' },
             '/site/transferred-tasks': { title: 'Transferred Tasks', subtitle: 'Tasks delegated to supervisors' },
             '/site/reports': { title: 'Site Reports', subtitle: 'Submit daily progress reports' },
-            '/site/leave': { title: 'Leave Request', subtitle: 'Submit and track applications' }
+            '/site/leave': { title: 'Leave Request', subtitle: 'Submit and track applications' },
+            '/meetings': { title: 'Meetings', subtitle: 'Schedule and manage Google Meet sessions.' },
         };
 
         if (staticMap[path]) return staticMap[path];

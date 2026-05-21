@@ -2,7 +2,7 @@ import {
     LayoutDashboard, FileText, Box, ShoppingCart, Package, Users, 
     CheckSquare, BarChart, Settings, Shield, Receipt, Briefcase, 
     Target, Palette, Wrench, ClipboardCheck, Calendar, FolderOpen, 
-    Bell, MessageSquare, Award, Clock, DollarSign, Building2 
+    Bell, MessageSquare, Award, Clock, DollarSign, Building2, Video
 } from 'lucide-react';
 import { getRoleDepartment, useRoleDashboard } from '../../hooks/useRoleDashboard';
 
@@ -14,6 +14,7 @@ export const useNavGroups = (user) => {
         const mainItems = [
             { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
             { name: 'Projects', icon: Target, path: '/projects' },
+            { name: 'Meetings', icon: Video, path: '/meetings' },
         ];
 
         const salesItems = [

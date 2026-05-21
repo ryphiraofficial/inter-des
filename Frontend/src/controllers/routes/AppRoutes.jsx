@@ -48,6 +48,10 @@ import SiteTasks from '../../views/production/site/SiteTasks';
 import SiteReports from '../../views/production/site/SiteReports';
 import SiteLeave from '../../views/production/site/SiteLeave';
 
+// Views — Meetings
+import AdminMeetings from '../../views/admin/Meetings';
+import MeetingsPage from '../../views/common/MeetingsPage';
+
 // Views — Staff
 import SalesDashboard from '../../views/sales/SalesDashboard';
 import SiteVisit from '../../views/sales/SiteVisit';
@@ -144,6 +148,9 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="site/tasks/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/reports" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteReports user={user} /> : <Navigate to="/" replace />} />
                     <Route path="site/leave" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteLeave user={user} /> : <Navigate to="/" replace />} />
+
+                    {/* Meetings — Admin manages, all production staff can view */}
+                    <Route path="meetings" element={isGeneralAdmin ? <AdminMeetings user={user} /> : <MeetingsPage user={user} />} />
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
