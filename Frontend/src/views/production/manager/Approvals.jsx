@@ -206,9 +206,55 @@ const Approvals = () => {
 
             <div className={activeTab !== 'leaves' ? "pm-card" : ""} style={{ padding: 0, overflow: 'hidden', border: activeTab === 'leaves' ? 'none' : undefined, background: activeTab === 'leaves' ? 'transparent' : undefined, boxShadow: activeTab === 'leaves' ? 'none' : undefined }}>
                 {loading && activeTab !== 'leaves' ? (
-                    <div className="pm-loading-state">
-                        <div className="pm-loading-spinner"></div>
-                        <span>Loading requests...</span>
+                    <div className="pm-table-container">
+                        <table className="pm-table">
+                            <thead>
+                                <tr>
+                                    <th>Request Details</th>
+                                    <th className="pm-desktop-only">Project</th>
+                                    <th className="pm-desktop-only">Submitted By</th>
+                                    <th className="pm-desktop-only">Stage / Value</th>
+                                    <th>Status</th>
+                                    <th className="pm-desktop-only" style={{ textAlign: 'right' }}>Actions</th>
+                                    <th className="pm-mobile-only"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Array.from({ length: 4 }).map((_, rowIdx) => (
+                                    <tr key={`skeleton-row-${rowIdx}`} className="pm-table-row">
+                                        <td>
+                                            <div className="pm-skeleton-line" style={{ width: '70%', height: '16px', marginBottom: '8px' }} />
+                                            <div className="pm-skeleton-line" style={{ width: '40%', height: '12px' }} />
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div className="pm-skeleton-line" style={{ width: '60%', height: '14px' }} />
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <div className="pm-skeleton-circle" style={{ width: '24px', height: '24px' }} />
+                                                <div className="pm-skeleton-line" style={{ width: '50px', height: '14px' }} />
+                                            </div>
+                                        </td>
+                                        <td className="pm-desktop-only">
+                                            <div className="pm-skeleton-line" style={{ width: '60px', height: '20px', borderRadius: '4px', marginBottom: '8px' }} />
+                                            <div className="pm-skeleton-line" style={{ width: '40px', height: '14px' }} />
+                                        </td>
+                                        <td>
+                                            <div className="pm-skeleton-line" style={{ width: '60px', height: '24px', borderRadius: '12px' }} />
+                                        </td>
+                                        <td className="pm-desktop-only" style={{ textAlign: 'right' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                <div className="pm-skeleton-circle" style={{ width: '28px', height: '28px' }} />
+                                                <div className="pm-skeleton-circle" style={{ width: '28px', height: '28px' }} />
+                                            </div>
+                                        </td>
+                                        <td className="pm-mobile-only">
+                                            <div className="pm-skeleton-circle" style={{ width: '18px', height: '18px', marginLeft: 'auto' }} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 ) : activeTab === 'general' ? (
                     <div className="pm-table-container">
