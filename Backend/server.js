@@ -43,6 +43,7 @@ const settingsRoutes = require('./routes/settingsRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -109,8 +110,19 @@ app.use('/api/meetings', meetingRoutes);
 // Serve React build
 app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+// Prevent SSL verification routes from being hijacked
+app.get("*", (req, res, next) => {
+    // Allow Let's Encrypt / Certbot verification
+    if (req.path.startsWith('/.well-known')) {
+        return next();
+    }
+
+    // Skip API routes
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+
+    res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
 });
 
 app.use(errorHandler);
