@@ -120,6 +120,7 @@ const MeetingsPage = ({ user }) => {
                     <Loader className="spin" size={24} /> Loading your meetings...
                 </div>
             ) : (
+                <>
                     {meetings.length === 0 ? (
                         <div className="meetings-empty">
                             <Video size={48} />
