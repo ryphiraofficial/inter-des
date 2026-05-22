@@ -26,6 +26,7 @@ import DesignApprovals from '../../views/admin/DesignApprovals';
 // Views — Production Manager
 import ProductionDashboard from '../../views/production/manager/Dashboard';
 import ProductionProjectsList from '../../views/production/manager/ProjectsList';
+import ProjectCompletion from '../../views/production/manager/ProjectCompletion';
 import ProductionTasksBoard from '../../views/production/manager/TasksBoard';
 import ProductionTeamOverview from '../../views/production/manager/TeamOverview';
 import ProductionApprovals from '../../views/production/manager/Approvals';
@@ -124,6 +125,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="production-management/dashboard" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionDashboard /> : <Navigate to="/" replace />} />
                     <Route path="production-management/handoff" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProjectHandoff /> : <Navigate to="/" replace />} />
                     <Route path="production-management/projects" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionProjectsList /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/projects/:id/complete" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProjectCompletion /> : <Navigate to="/" replace />} />
                     <Route path="production-management/tasks" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTasksBoard user={user} /> : <Navigate to="/" replace />} />
                     <Route path="production-management/team" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTeamOverview /> : <Navigate to="/" replace />} />
                     <Route path="production-management/approvals" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionApprovals /> : <Navigate to="/" replace />} />

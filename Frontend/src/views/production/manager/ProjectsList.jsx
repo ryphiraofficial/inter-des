@@ -1,16 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, Calendar, Target, Clock, CheckCircle, ChevronDown, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Filter, MoreVertical, Calendar, Target, Clock, CheckCircle, ChevronDown, X, CheckSquare } from 'lucide-react';
 import '../css/ProductionManagement.css';
 import { productionManagerAPI } from '../../../models/api';
 import ProjectTasksAssignment from './ProjectTasksAssignment';
 
 const ProjectsList = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [expandedRows, setExpandedRows] = useState({});
+    const [activeDropdown, setActiveDropdown] = useState(null);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const fetchProjects = async () => {
         try {
@@ -205,8 +220,59 @@ const ProjectsList = () => {
                                                 <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{project.projectEngineer?.fullName || project.projectManager?.fullName || 'Unassigned'}</span>
                                             </div>
                                         </td>
-                                        <td>
-                                            <button className="pm-icon-btn" onClick={(e) => e.stopPropagation()}><MoreVertical size={16} /></button>
+                                        <td style={{ position: 'relative' }}>
+                                            <button 
+                                                className="pm-icon-btn" 
+                                                onClick={(e) => { 
+                                                    e.stopPropagation(); 
+                                                    setActiveDropdown(activeDropdown === project._id ? null : project._id);
+                                                }}
+                                            >
+                                                <MoreVertical size={16} />
+                                            </button>
+                                            
+                                            {activeDropdown === project._id && (
+                                                <div 
+                                                    ref={dropdownRef}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: '40px',
+                                                        top: '30px',
+                                                        background: 'white',
+                                                        border: '1px solid #e2e8f0',
+                                                        borderRadius: '8px',
+                                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                                        zIndex: 100,
+                                                        minWidth: '180px',
+                                                        overflow: 'hidden'
+                                                    }}
+                                                >
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(`/production-management/projects/${project._id}/complete`);
+                                                        }}
+                                                        style={{
+                                                            width: '100%',
+                                                            padding: '10px 16px',
+                                                            textAlign: 'left',
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            fontSize: '13px',
+                                                            color: '#0f172a',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px'
+                                                        }}
+                                                        onMouseOver={(e) => e.currentTarget.style.background = '#f8fafc'}
+                                                        onMouseOut={(e) => e.currentTarget.style.background = 'white'}
+                                                    >
+                                                        <CheckSquare size={14} color="#10b981" />
+                                                        Project Completion
+                                                    </button>
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
 

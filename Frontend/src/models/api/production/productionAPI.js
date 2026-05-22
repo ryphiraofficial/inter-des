@@ -73,6 +73,10 @@ export const productionManagerAPI = {
     getBudgetAnalytics: () => apiCall('/production-management/dashboard/budget-analytics'),
     getKPIMetrics: () => apiCall('/production-management/dashboard/kpi'),
     getGanttData: (projectId = 'all') => apiCall(`/production-management/gantt/${projectId}`),
+    submitProjectCompletion: (projectId, data) => apiCall(`/production-management/projects/${projectId}/complete`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
 };
 
 // Site Management APIs
