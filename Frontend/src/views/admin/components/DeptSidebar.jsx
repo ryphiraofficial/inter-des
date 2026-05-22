@@ -40,6 +40,7 @@ const NAV_CONFIG = {
             { name: 'Task Assignment',   icon: CheckSquare,     path: '/?tab=tasks',                   tab: 'tasks' },
             { name: 'Staff Overview',    icon: Users,           path: '/?tab=staff_overview',          tab: 'staff_overview' },
             { name: 'Material Hub',      icon: Package,         path: '/material-review',              tab: null },
+            { name: 'Meetings',          icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -52,6 +53,7 @@ const NAV_CONFIG = {
             { name: 'My Tasks',        icon: CheckSquare,     path: '/?tab=tasks',        tab: 'tasks' },
             { name: 'Revisions',       icon: Target,          path: '/?tab=revisions',    tab: 'revisions' },
             { name: 'Submitted Tasks', icon: CheckSquare,     path: '/?tab=submissions',  tab: 'submissions' },
+            { name: 'Meetings',        icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -125,6 +127,7 @@ const NAV_CONFIG = {
             { name: 'Task Tracker',  icon: CheckSquare,     path: '/staff/tasks' },
             { name: 'Site Inventory', icon: Box,            path: '/inventory' },
             { name: 'Checklists',    icon: ClipboardCheck,  path: '/checklists' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -142,6 +145,7 @@ const NAV_CONFIG = {
             { name: 'Clients',        icon: Users,           path: '/?tab=clients',       tab: 'clients' },
             { name: 'Vendors',        icon: Building2,       path: '/?tab=vendors',       tab: 'vendors' },
             { name: 'Reports',        icon: BarChart2,       path: '/?tab=reports',       tab: 'reports' },
+            { name: 'Meetings',       icon: Video,           path: '/meetings' },
         ],
     },
 
@@ -156,6 +160,7 @@ const NAV_CONFIG = {
             { name: 'Payments',       icon: CreditCard,      path: '/?tab=payments',      tab: 'payments' },
             { name: 'Expenses',       icon: DollarSign,      path: '/?tab=expenses',      tab: 'expenses' },
             { name: 'Vendors',        icon: Building2,       path: '/?tab=vendors',       tab: 'vendors' },
+            { name: 'Meetings',       icon: Video,           path: '/meetings' },
         ],
     },
 };

@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Target,
     ShoppingCart, Building2, Box, ClipboardCheck, Clock, Plus, CheckCircle,
-    FolderOpen, CalendarOff
+    FolderOpen, CalendarOff, Video
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
 
@@ -20,6 +20,7 @@ const NAV_CONFIG = {
             { name: 'Task Assignment',   icon: CheckSquare,     path: '/?tab=tasks',                   tab: 'tasks' },
             { name: 'Staff Overview',    icon: Users,           path: '/?tab=staff_overview',          tab: 'staff_overview' },
             { name: 'Material Hub',      icon: Package,         path: '/material-review',              tab: null },
+            { name: 'Meetings',          icon: Video,           path: '/meetings' },
         ],
     },
     'Design Staff': {
@@ -31,6 +32,7 @@ const NAV_CONFIG = {
             { name: 'My Tasks',        icon: CheckSquare,     path: '/staff/dashboard?tab=tasks',        tab: 'tasks' },
             { name: 'Revisions',       icon: Target,          path: '/staff/dashboard?tab=revisions',    tab: 'revisions' },
             { name: 'Submitted Tasks', icon: CheckSquare,     path: '/staff/dashboard?tab=submissions',  tab: 'submissions' },
+            { name: 'Meetings',        icon: Video,           path: '/meetings' },
         ],
     },
     'Procurement Manager': {
@@ -44,6 +46,7 @@ const NAV_CONFIG = {
             { name: 'Assignments',       icon: CheckSquare,     path: '/?tab=assignments', tab: 'assignments' },
             { name: 'Vendors',           icon: Building2,       path: '/?tab=vendors',     tab: 'vendors' },
             { name: 'Completed & Handoff', icon: CheckCircle,   path: '/?tab=completed',   tab: 'completed' },
+            { name: 'Meetings',          icon: Video,           path: '/meetings' },
         ],
     },
     'Procurement Staff': {
@@ -56,6 +59,7 @@ const NAV_CONFIG = {
             { name: 'My Tasks',         icon: CheckSquare,     path: '/staff/dashboard?tab=tasks',     tab: 'tasks' },
             { name: 'Purchase History', icon: Package,         path: '/staff/dashboard?tab=history',   tab: 'history' },
             { name: 'Vendors',          icon: Box,             path: '/staff/dashboard?tab=vendors',   tab: 'vendors' },
+            { name: 'Meetings',         icon: Video,           path: '/meetings' },
         ],
     },
     'Project Manager': {
@@ -70,6 +74,7 @@ const NAV_CONFIG = {
             { name: 'Team',      icon: Users,           path: '/production-management/team' },
             { name: 'Approvals', icon: ClipboardCheck,  path: '/production-management/approvals' },
             { name: 'Reports',   icon: FileText,        path: '/production-management/reports' },
+            { name: 'Meetings',  icon: Video,           path: '/meetings' },
         ],
     },
     'Project Engineer': {
@@ -84,6 +89,7 @@ const NAV_CONFIG = {
             { name: 'Site Reports',  icon: FileText,        path: '/engineer/reports' },
             { name: 'Approvals',     icon: ClipboardCheck,  path: '/engineer/approvals' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/engineer/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
     'Site Engineer': {
@@ -96,6 +102,7 @@ const NAV_CONFIG = {
             { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
             { name: 'Reports',       icon: FileText,        path: '/site/reports' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
     'Site Supervisor': {
@@ -108,6 +115,7 @@ const NAV_CONFIG = {
             { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
             { name: 'Reports',       icon: FileText,        path: '/site/reports' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
     'Production Staff': {
@@ -119,6 +127,7 @@ const NAV_CONFIG = {
             { name: 'Task Tracker',  icon: CheckSquare,     path: '/staff/tasks' },
             { name: 'Site Inventory', icon: Box,            path: '/inventory' },
             { name: 'Checklists',    icon: ClipboardCheck,  path: '/checklists' },
+            { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
 };
