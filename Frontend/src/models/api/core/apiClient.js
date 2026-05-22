@@ -1,4 +1,4 @@
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://inter-des-backend.onrender.com/api';
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'https://api.mywoodaura.com/api';
 export const BASE_IMAGE_URL = API_BASE_URL.replace('/api', '');
 
 // Helper function to get auth token
