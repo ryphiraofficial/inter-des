@@ -2,10 +2,10 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, ShoppingCart, LayoutDashboard, Plus, 
-    Package, CheckSquare, Building2, CheckCircle, Box 
+    Package, CheckSquare, Building2, CheckCircle, Box, Menu 
 } from 'lucide-react';
 
-const ProcurementNavbar = ({ user, role, onRefresh, isLoading }) => {
+const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
@@ -31,6 +31,9 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading }) => {
     return (
         <header className="procurement-navbar">
             <div className="procurement-navbar-brand">
+                <button className="mobile-menu-btn" onClick={onMenuClick} aria-label="Toggle Menu">
+                    <Menu size={24} />
+                </button>
                 <div className="procurement-navbar-icon">
                     <Icon size={20} />
                 </div>

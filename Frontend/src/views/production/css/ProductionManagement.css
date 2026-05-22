@@ -260,6 +260,12 @@
     margin-bottom: 2rem;
 }
 
+@media (max-width: 1024px) {
+    .pm-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Project Progress */
 .pm-project-progress-list {
     display: flex;

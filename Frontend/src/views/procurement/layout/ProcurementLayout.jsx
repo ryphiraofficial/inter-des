@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import ProcurementNavbar from './ProcurementNavbar';
 import ProcurementManagerSidebar from './ProcurementManagerSidebar';
@@ -17,13 +17,25 @@ import '../css/ProcurementLayout.css';
  *  - children: page content
  */
 const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const Sidebar = role === 'staff' ? ProcurementStaffSidebar : ProcurementManagerSidebar;
 
     return (
         <div className="procurement-layout">
-            <Sidebar user={user} onLogout={onLogout} />
+            <Sidebar 
+                user={user} 
+                onLogout={onLogout} 
+                isMobileOpen={isMobileMenuOpen} 
+                onCloseMobile={() => setIsMobileMenuOpen(false)} 
+            />
             <div className="procurement-layout-main">
-                <ProcurementNavbar role={role} user={user} onRefresh={onRefresh} isLoading={isLoading} />
+                <ProcurementNavbar 
+                    role={role} 
+                    user={user} 
+                    onRefresh={onRefresh} 
+                    isLoading={isLoading} 
+                    onMenuClick={() => setIsMobileMenuOpen(true)}
+                />
                 <main className="procurement-layout-content">
                     {children || <Outlet />}
                 </main>

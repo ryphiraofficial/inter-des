@@ -1811,6 +1811,12 @@
     }
 }
 
+.vendors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
 /* ==================================================
    📱 RESPONSIVE DESIGN FOR MANAGER DASHBOARDS
    ================================================== */
@@ -1859,6 +1865,11 @@
         grid-template-columns: 1fr;
     }
     
+    .vendors-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .project-item, .quotation-item, .vendor-item, .po-item, .invoice-item, .payment-item {
         grid-template-columns: 1fr;
         gap: 8px;

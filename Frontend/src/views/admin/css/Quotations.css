@@ -217,6 +217,9 @@
     font-size: 0.75rem;
     font-weight: 700;
     display: inline-flex;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
 }
 
 .q-status-approved {
@@ -390,20 +393,23 @@
 
     .quotations-table {
         min-width: 100%;
+        table-layout: auto;
     }
 
     .quotations-table th, .quotations-table td {
-        padding: 1rem 0.5rem !important;
+        padding: 0.75rem 0.25rem !important;
     }
 
     .quotations-table th {
-        font-size: 0.65rem;
-        white-space: nowrap;
+        font-size: 0.6rem;
+        white-space: normal;
+        line-height: 1.2;
     }
 
     .q-row {
         cursor: pointer;
         transition: background 0.2s;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .q-row.expanded {
@@ -411,25 +417,34 @@
     }
 
     .quote-number-cell {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: #64748b;
         white-space: nowrap;
     }
 
     .project-client-cell {
-        min-width: 100px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-name {
+        font-size: 0.85rem;
+    }
+
+    .client-name {
+        font-size: 0.75rem;
     }
 
     .mobile-amount {
         font-weight: 800;
         color: #0f172a;
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         white-space: nowrap;
     }
 
     .toggle-cell {
-        width: 40px;
+        width: 24px;
         text-align: right;
     }
 
@@ -444,9 +459,26 @@
     }
 
     /* Expansion Row Styling */
-    .mobile-expansion-row td {
-        padding: 0 !important;
+    tr.mobile-expansion-row.mobile-show {
+        display: block !important;
+        width: 100%;
+        margin-top: -2rem !important; /* Pull up to attach to previous row */
+        margin-bottom: 2rem !important;
+        border: 1px solid #e2e8f0 !important;
         border-top: none !important;
+        border-radius: 0 0 16px 16px !important;
+        padding: 0 !important;
+        background: #f8fafc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        outline: none !important; /* Remove any focus outline */
+    }
+
+    tr.mobile-expansion-row.mobile-show td {
+        display: block !important;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 !important;
+        border: none !important;
     }
 
     .expansion-content {
@@ -454,6 +486,8 @@
         padding: 1.25rem;
         border-bottom: 1px solid #e2e8f0;
         animation: slideDown 0.3s ease-out;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     @keyframes slideDown {
@@ -462,20 +496,28 @@
     }
 
     .info-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
         margin-bottom: 1.5rem;
     }
 
     .info-item {
         display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
     }
 
     .info-item label {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: #94a3b8;
         text-transform: uppercase;
@@ -484,8 +526,9 @@
 
     .info-item span {
         font-size: 0.875rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #1e293b;
+        text-align: right;
     }
 
     .expansion-actions {
@@ -507,6 +550,7 @@
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
+        white-space: nowrap;
     }
 
     .btn-mobile-action.primary { background: #eff6ff; color: #2563eb; }

@@ -45,7 +45,7 @@ const StaffVendors = ({
                         {vendorSearch ? `No vendors matching "${vendorSearch}"` : 'No active vendors found.'}
                     </div>
                 ) : (
-                    <div className="vendors-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                    <div className="vendors-grid">
                         {filteredVendors.map(vendor => (
                             <div
                                 key={vendor._id}

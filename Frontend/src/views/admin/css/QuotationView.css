@@ -212,6 +212,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 3rem;
+    table-layout: fixed;
 }
 
 .qv-items-table th {

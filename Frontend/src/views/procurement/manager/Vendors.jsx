@@ -8,7 +8,7 @@ const Vendors = ({ vendors, setShowAddVendorModal, handleViewVendorDetails }) =>
                 <div className="section-header">
                     <h3><Users size={18} /> Verified Vendor Network</h3>
                 </div>
-                <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                <div className="vendors-grid">
                     {vendors.map(vendor => (
                         <div key={vendor._id} className="vendor-card-premium" style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '1.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>

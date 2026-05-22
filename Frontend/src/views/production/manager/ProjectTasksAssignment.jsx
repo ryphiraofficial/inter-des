@@ -242,12 +242,12 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
     return (
         <div style={{ marginTop: '1.5rem', background: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
             {/* Component Header Tabs */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', borderBottom: '1px solid #e2e8f0', padding: '0.75rem 1.5rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', background: 'white', borderBottom: '1px solid #e2e8f0', padding: '0.75rem 1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Briefcase size={18} color="#4f46e5" />
                     <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>Task Assignment & Team Roles</span>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     <button 
                         onClick={() => setActiveTab('tasks')}
                         style={{ 
@@ -337,7 +337,7 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
                                 </button>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
                                 {tasks.map(t => {
                                     const isActioning = actioningTaskId === t._id;
                                     
@@ -448,10 +448,10 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
                             Add New Production Task
                         </h4>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                             
                             {/* Title */}
-                            <div style={{ gridColumn: 'span 2' }}>
+                            <div style={{ gridColumn: '1 / -1' }}>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Task Title *</label>
                                 <input 
                                     type="text" 
@@ -464,7 +464,7 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
                             </div>
 
                             {/* Description */}
-                            <div style={{ gridColumn: 'span 2' }}>
+                            <div style={{ gridColumn: '1 / -1' }}>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Description</label>
                                 <textarea 
                                     rows="3"
@@ -563,7 +563,7 @@ const ProjectTasksAssignment = ({ project, onProjectUpdate }) => {
                             Assign or update the main team leads and staff members managing this active production workflow.
                         </p>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
                             
                             {/* Project Engineer */}
                             <div>
