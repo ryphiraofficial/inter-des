@@ -5,7 +5,7 @@ const AssignStaffModal = ({ isOpen, onClose, selectedRequest, staff, onAssign })
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" style={{ width: '500px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content" style={{ width: '100%', maxWidth: '500px', margin: '1rem' }} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <h3>Assign Procurement Task</h3>
                     <button className="close-btn" onClick={onClose}>×</button>
@@ -24,16 +24,16 @@ const AssignStaffModal = ({ isOpen, onClose, selectedRequest, staff, onAssign })
                                 key={member._id} 
                                 className="staff-option"
                                 onClick={() => onAssign(member._id)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', flexWrap: 'wrap' }}
                             >
-                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0f3ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0f3ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flexShrink: 0 }}>
                                     {member.fullName?.charAt(0)}
                                 </div>
-                                <div style={{ flex: 1 }}>
+                                <div style={{ flex: '1 1 150px', minWidth: 0 }}>
                                     <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{member.fullName}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{member.email}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#64748b', wordBreak: 'break-all' }}>{member.email}</div>
                                 </div>
-                                <button className="btn-select-staff" style={{ padding: '6px 12px', borderRadius: '8px', background: '#f0f3ff', color: '#4f46e5', border: 'none', fontSize: '0.75rem', fontWeight: 700 }}>Select</button>
+                                <button className="btn-select-staff" style={{ padding: '6px 12px', borderRadius: '8px', background: '#f0f3ff', color: '#4f46e5', border: 'none', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>Select</button>
                             </div>
                         ))}
                     </div>

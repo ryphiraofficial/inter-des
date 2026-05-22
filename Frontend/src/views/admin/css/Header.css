@@ -625,12 +625,11 @@
     }
 
     .page-header .header-notification-wrapper {
-        position: absolute !important;
-        right: 14px !important;
-        top: 13px !important;
+        position: relative !important;
         display: flex !important;
         align-items: center !important;
         z-index: 2 !important;
+        flex-shrink: 0 !important;
     }
 
 

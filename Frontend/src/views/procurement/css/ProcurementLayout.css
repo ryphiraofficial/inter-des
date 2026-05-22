@@ -166,6 +166,27 @@
     cursor: not-allowed;
 }
 
+.procurement-navbar-bell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.procurement-navbar-bell:hover {
+    background: #f8fafc;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
 .procurement-navbar-user {
     display: flex;
     align-items: center;
@@ -262,6 +283,14 @@
     .procurement-navbar-subtitle,
     .procurement-navbar-userinfo {
         display: none;
+    }
+
+    .procurement-layout-content {
+        padding: 1rem;
+    }
+
+    .procurement-navbar {
+        padding: 0 1rem;
     }
 }
 

@@ -17,23 +17,27 @@ const StaffTasks = ({
                 <div className="tasks-list">
                     {(pendingTasks.length > 0 || inProgressTasks.length > 0) ? (
                         [...pendingTasks, ...inProgressTasks].map(task => (
-                            <div key={task._id} className="task-item" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '1rem', alignItems: 'center', padding: '1rem', background: '#f8fafc', borderRadius: '12px', marginBottom: '0.5rem' }}>
-                                <div className="task-info">
+                            <div key={task._id} className="task-item" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '12px', marginBottom: '0.5rem' }}>
+                                <div className="task-info" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 min(100%, 150px)', gap: '4px' }}>
                                     <span className="task-number" style={{ fontSize: '1rem', fontWeight: 700 }}>{task.requestNumber}</span>
                                     <span className="task-project" style={{ fontSize: '0.8rem', color: '#64748b' }}>{task.project?.name}</span>
                                     <span className="task-items" style={{ color: '#6366f1', fontWeight: 600, fontSize: '0.8rem' }}>
                                         {task.items?.length || 0} items requested
                                     </span>
                                 </div>
-                                <div className="task-status">
+                                <div className="task-status" style={{ flexShrink: 0 }}>
                                     <span className={`status-pill ${task.status?.toLowerCase().replace(' ', '-')}`} style={{ 
                                         background: task.status === 'Assigned' ? '#fffbeb' : '#f0f9ff',
-                                        color: task.status === 'Assigned' ? '#d97706' : '#0ea5e9'
+                                        color: task.status === 'Assigned' ? '#d97706' : '#0ea5e9',
+                                        padding: '4px 10px',
+                                        borderRadius: '100px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600
                                     }}>
                                         {task.status}
                                     </span>
                                 </div>
-                                <div className="task-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div className="task-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', flex: '1 1 auto', justifyContent: 'flex-end' }}>
                                     <button 
                                         className="btn-details"
                                         style={{ padding: '8px 16px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}

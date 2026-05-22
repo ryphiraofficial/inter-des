@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, ShoppingCart, LayoutDashboard, Plus, 
-    Package, CheckSquare, Building2, CheckCircle, Box, Menu 
+    Package, CheckSquare, Building2, CheckCircle, Box, Menu, Bell
 } from 'lucide-react';
 
 const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) => {
@@ -34,9 +34,7 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) =>
                 <button className="mobile-menu-btn" onClick={onMenuClick} aria-label="Toggle Menu">
                     <Menu size={24} />
                 </button>
-                <div className="procurement-navbar-icon">
-                    <Icon size={20} />
-                </div>
+
                 <div>
                     <span className="procurement-navbar-title">{title}</span>
                     <span className="procurement-navbar-subtitle">
@@ -52,6 +50,9 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) =>
                         <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
                     </button>
                 )}
+                <button className="procurement-navbar-bell" aria-label="Notifications">
+                    <Bell size={19} strokeWidth={2.2} />
+                </button>
             </div>
         </header>
     );

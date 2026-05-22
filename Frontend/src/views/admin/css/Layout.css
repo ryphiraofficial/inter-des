@@ -50,6 +50,26 @@
 
 /* Mobile Responsive Layout */
 @media (max-width: 768px) {
+    :root {
+        --sidebar-width: 0px;
+    }
+    
+    .layout-container {
+        overflow: visible;
+        position: relative;
+    }
+
+    .main-content,
+    .layout-container .main-content,
+    .layout-container.sidebar-collapsed .main-content,
+    .layout-container.production-layout .main-content,
+    .layout-container.design-layout .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden;
+    }
+    
     .page-wrapper {
         padding: 1rem;
     }
@@ -59,20 +79,6 @@
     padding: 1.5rem;
     width: 100%;
     box-sizing: border-box;
-}
-
-/* Mobile Responsive Layout */
-@media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        overflow-x: hidden;
-    }
-    
-    .layout-container.sidebar-collapsed .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
 }
 
 .mobile-sidebar-overlay {

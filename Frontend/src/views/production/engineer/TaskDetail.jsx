@@ -317,7 +317,7 @@ const TaskDetail = ({ user }) => {
                                         {s}
                                     </button>
                                 ))}
-                                <button className="eng-status-btn" onClick={()=>setShowNote(!showNote)} style={{ marginLeft:'auto' }}>
+                                <button className="eng-status-btn" onClick={()=>setShowNote(!showNote)}>
                                     {showNote?'Hide Note':'+ Add Note'}
                                 </button>
                             </div>

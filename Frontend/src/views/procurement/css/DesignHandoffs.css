@@ -67,6 +67,7 @@
     margin-top: 10px;
     font-size: 0.8rem;
     color: #4338ca;
+    word-break: break-word;
 }
 
 .standard-request {
@@ -271,7 +272,8 @@
 @media (max-width: 768px) {
     .request-item-premium {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
+        padding: 1rem;
     }
 
     .request-actions-col {
@@ -281,6 +283,9 @@
     .btn-assign-primary, .btn-review-outline {
         width: 100%;
         justify-content: center;
+        white-space: normal;
+        text-align: center;
+        height: auto;
     }
 
     .modal-card-premium {
