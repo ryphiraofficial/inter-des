@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-    LayoutDashboard, CheckSquare, LogOut, Menu, HardHat, FolderOpen, CalendarOff, Users
+    LayoutDashboard, CheckSquare, LogOut, Menu, HardHat, FolderOpen, CalendarOff, Users, Video
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
 import '../../admin/css/Sidebar.css';
@@ -16,6 +16,7 @@ const EngineerSidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
                 { name: 'My Tasks',      icon: CheckSquare,     path: '/engineer/tasks' },
                 { name: 'Transferred Tasks', icon: Users,       path: '/engineer/transferred-tasks' },
                 { name: 'Leave Request', icon: CalendarOff,     path: '/engineer/leave' },
+                { name: 'Meetings',      icon: Video,           path: '/meetings' },
             ]
         }
     ];

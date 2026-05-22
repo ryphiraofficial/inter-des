@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, LogOut, ClipboardList
+    TrendingUp, Users, ShoppingBag, LogOut, ClipboardList, Video
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
     { tab: 'clients',    label: 'Clients',             icon: Users },
     { tab: 'vendors',    label: 'Vendors',             icon: ShoppingBag },
+    { tab: 'meetings',   label: 'Meetings',            icon: Video },
 ];
 
 const AccountsStaffSidebar = ({ user, onLogout }) => {

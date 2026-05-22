@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, Plus, Package, CheckSquare,
-    Building2, CheckCircle, LogOut
+    Building2, CheckCircle, LogOut, Video
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
     { tab: 'assignments',      label: 'Approvals & Assignments', icon: CheckSquare },
     { tab: 'vendors',          label: 'Vendors',           icon: Building2 },
     { tab: 'completed',        label: 'Completed & Handoff', icon: CheckCircle },
+    { tab: 'meetings',         label: 'Meetings',          icon: Video },
 ];
 
 const ProcurementManagerSidebar = ({ user, onLogout, isMobileOpen, onCloseMobile }) => {

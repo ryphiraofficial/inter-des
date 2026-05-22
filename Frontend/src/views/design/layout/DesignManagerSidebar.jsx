@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, GitBranch, FileText, Briefcase,
-    CheckSquare, Users, Package, LogOut
+    CheckSquare, Users, Package, LogOut, Video
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
     { tab: 'tasks',              label: 'Task Management',   icon: CheckSquare },
     { tab: 'staff_overview',     label: 'Staff Overview',    icon: Users },
     { tab: 'material_review',    label: 'Material Review',   icon: Package },
+    { tab: 'meetings',           label: 'Meetings',          icon: Video },
 ];
 
 const DesignManagerSidebar = ({ user, onLogout }) => {

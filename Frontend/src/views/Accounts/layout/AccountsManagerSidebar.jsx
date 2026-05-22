@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckCircle, FileText, CreditCard,
     TrendingUp, Users, ShoppingBag, Briefcase, PieChart,
-    LogOut
+    LogOut, Video
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
     { tab: 'vendors',    label: 'Vendors',             icon: ShoppingBag },
     { tab: 'projects',   label: 'Projects',            icon: Briefcase },
     { tab: 'reports',    label: 'Financial Reports',   icon: PieChart },
+    { tab: 'meetings',   label: 'Meetings',            icon: Video },
 ];
 
 const AccountsManagerSidebar = ({ user, onLogout }) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckSquare, RefreshCw,
-    CheckCircle, Package, LogOut
+    CheckCircle, Package, LogOut, Video
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
     { tab: 'revisions',    label: 'Revisions',      icon: RefreshCw },
     { tab: 'submissions',  label: 'Submissions',    icon: CheckCircle },
     { tab: 'materials',    label: 'Material Requests', icon: Package },
+    { tab: 'meetings',     label: 'Meetings',         icon: Video },
 ];
 
 const DesignStaffSidebar = ({ user, onLogout }) => {
