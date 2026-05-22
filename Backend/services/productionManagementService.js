@@ -1229,3 +1229,41 @@ exports.getProductionReports = async (reqData) => {
         return { status: 500, success: false, message: error.message };
     }
 };
+
+exports.submitProjectCompletion = async (reqData) => {
+    try {
+        const { completionDate, finalCost, clientRating, finalRemarks, photos } = reqData.body;
+        const project = await ProductionProject.findById(reqData.params.id);
+        
+        if (!project) {
+            return { status: 404, success: false, message: 'Project not found' };
+        }
+        
+        project.status = 'Completed';
+        project.progress = 100;
+        project.completionDetails = {
+            completionDate: completionDate || new Date(),
+            finalCost,
+            clientRating,
+            finalRemarks,
+            photos
+        };
+        
+        if (finalCost) {
+            project.spent = finalCost;
+        }
+
+        await project.save();
+
+        await logActivity(
+            project._id, 
+            reqData.user.id, 
+            'PROJECT_COMPLETED', 
+            `Project "${project.projectName}" marked as Completed.`
+        );
+
+        return { status: 200, success: true, data: project };
+    } catch (error) {
+        return { status: 500, success: false, message: error.message };
+    }
+};

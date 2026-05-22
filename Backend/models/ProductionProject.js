@@ -106,7 +106,14 @@ const ProductionProjectSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         }
-    }]
+    }],
+    completionDetails: {
+        completionDate: Date,
+        finalCost: Number,
+        clientRating: Number,
+        finalRemarks: String,
+        photos: [String]
+    }
 }, {
     timestamps: true
 });

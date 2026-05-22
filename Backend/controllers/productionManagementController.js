@@ -468,3 +468,16 @@ exports.getProductionReports = async (req, res) => {
         res.status(error.status || 500).json({ success: false, message: error.message });
     }
 };
+
+exports.submitProjectCompletion = async (req, res) => {
+    try {
+        const reqData = { user: req.user, body: req.body, params: req.params, query: req.query };
+        const result = await productionManagementService.submitProjectCompletion(reqData);
+        if (result && result.status) {
+            return res.status(result.status).json(result);
+        }
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.status || 500).json({ success: false, message: error.message });
+    }
+};

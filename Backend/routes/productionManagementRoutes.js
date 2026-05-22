@@ -42,7 +42,8 @@ const {
     getKPIMetrics,
     getGanttData,
     // Phase 6
-    getProductionReports
+    getProductionReports,
+    submitProjectCompletion
 } = require('../controllers/productionManagementController');
 
 const {
@@ -71,6 +72,7 @@ router.put('/projects/:id/accept-handoff', isProjectManager, acceptHandoff);
 router.get('/projects/:id', isAssignedUser, getProjectById);
 router.put('/projects/:id/update', isProjectManager, updateProject);
 router.put('/projects/:id/assign-team', isProjectManager, assignTeam);
+router.post('/projects/:id/complete', isProjectManager, submitProjectCompletion);
 
 // =======================
 // TASK APIs
