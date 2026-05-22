@@ -14,6 +14,7 @@ import SubmissionReviewModal from './components/SubmissionReviewModal';
 import TaskUpdatesModal from './components/TaskUpdatesModal';
 import SplitTaskModal from './components/SplitTaskModal';
 import StaffTasksModal from './components/StaffTasksModal';
+import MeetingsPage from '../../common/MeetingsPage';
 
 import { useManagerData } from './hooks/useManagerData';
 import { useTaskActions } from './hooks/useTaskActions';
@@ -177,6 +178,8 @@ const DesignManagerDashboard = ({ user }) => {
                 );
             case 'material_review':
                 return <MaterialReviewHub materialRequests={materialRequests} onApprove={handleApproveMaterialRequest} />;
+            case 'meetings':
+                return <MeetingsPage user={user} />;
             default:
                 return (
                     <div style={{ display: 'grid', gap: '2rem' }}>

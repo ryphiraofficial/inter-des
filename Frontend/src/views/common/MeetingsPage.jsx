@@ -120,35 +120,43 @@ const MeetingsPage = ({ user }) => {
                     <Loader className="spin" size={24} /> Loading your meetings...
                 </div>
             ) : (
-                <>
-                    {upcoming.length > 0 && (
-                        <>
-                            <p className="staff-meetings-section-title">Upcoming & Live</p>
-                            <div className="meetings-list">
-                                {upcoming.map(m => (
-                                    <MeetingCard key={m._id} meeting={m} userId={userId} onRead={fetchMeetings} />
-                                ))}
-                            </div>
-                        </>
-                    )}
-
-                    {past.length > 0 && (
-                        <>
-                            <p className="staff-meetings-section-title">Meeting History</p>
-                            <div className="meetings-list">
-                                {past.map(m => (
-                                    <MeetingCard key={m._id} meeting={m} userId={userId} onRead={fetchMeetings} />
-                                ))}
-                            </div>
-                        </>
-                    )}
-
-                    {meetings.length === 0 && (
+                    {meetings.length === 0 ? (
                         <div className="meetings-empty">
                             <Video size={48} />
                             <h3>No meetings scheduled</h3>
                             <p>Your admin will notify you when a Google Meet session is planned for you.</p>
                         </div>
+                    ) : (
+                        <>
+                            {upcoming.length > 0 && (
+                                <>
+                                    <p className="staff-meetings-section-title">Upcoming & Live</p>
+                                    <div className="meetings-list">
+                                        {upcoming.map(m => (
+                                            <MeetingCard key={m._id} meeting={m} userId={userId} onRead={fetchMeetings} />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                            
+                            {past.length > 0 ? (
+                                <>
+                                    <p className="staff-meetings-section-title">Meeting History</p>
+                                    <div className="meetings-list">
+                                        {past.map(m => (
+                                            <MeetingCard key={m._id} meeting={m} userId={userId} onRead={fetchMeetings} />
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="staff-meetings-section-title">Meeting History</p>
+                                    <div className="meetings-empty-mini">
+                                        <p>No past meetings found.</p>
+                                    </div>
+                                </>
+                            )}
+                        </>
                     )}
                 </>
             )}

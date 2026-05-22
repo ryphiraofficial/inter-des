@@ -34,6 +34,7 @@ const StaffDashboard = ({ user, onLogout }) => {
             case 'payments': return <ManagerPayments user={user} search={search} setSearch={setSearch} />;
             case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} />;
             case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
+            case 'meetings': return <MeetingsPage user={user} />;
             default: return <Overview user={user} />;
         }
     };

@@ -13,6 +13,7 @@ import { useProcurementManagerLogic } from '../hooks/useProcurementManagerLogic'
 import AssignStaffModal from '../components/AssignStaffModal';
 import AddVendorModal from '../components/AddVendorModal';
 import VendorDetailsModal from '../components/VendorDetailsModal';
+import MeetingsPage from '../../common/MeetingsPage';
 
 const ProcurementManagerDashboard = ({ user, onLogout }) => {
     const {
@@ -149,6 +150,9 @@ const ProcurementManagerDashboard = ({ user, onLogout }) => {
                         </div>
                     </div>
                 );
+
+            case 'meetings':
+                return <MeetingsPage user={user} />;
 
             default:
                 return null;

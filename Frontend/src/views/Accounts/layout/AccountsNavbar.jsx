@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
     RefreshCw, Landmark, LayoutDashboard, CheckCircle,
     FileText, CreditCard, TrendingUp, Users, ShoppingBag,
-    Briefcase, PieChart, Bell, Search, Download
+    Briefcase, PieChart, Bell, Search, Download, Video
 } from 'lucide-react';
 import { useNotificationLogic } from '../../admin/header/hooks/useNotificationLogic';
 import NotificationPopup from '../../admin/header/components/NotificationPopup';
@@ -19,7 +19,8 @@ const TAB_META = {
     clients: { label: 'Clients', icon: Users },
     vendors: { label: 'Vendors', icon: ShoppingBag },
     projects: { label: 'Projects', icon: Briefcase },
-    reports: { label: 'Financial Reports', icon: PieChart }
+    reports: { label: 'Financial Reports', icon: PieChart },
+    meetings: { label: 'Meetings', icon: Video }
 };
 
 const SEARCH_CONFIGS = {

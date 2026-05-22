@@ -771,6 +771,16 @@ textarea.sdcn-input {
 .meetings-empty h3 { font-size: 18px; color: #374151; margin: 0; }
 .meetings-empty p  { font-size: 14px; margin: 0; }
 
+.meetings-empty-mini {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
 /* ─── Staff Meetings Page ──────────────────────────────────────── */
 .staff-meetings-section-title {
     font-size: 13px;

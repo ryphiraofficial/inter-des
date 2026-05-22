@@ -11,6 +11,7 @@ import ProcurementSkeleton from '../manager/ProcurementSkeleton';
 import { useProcurementStaffLogic } from '../hooks/useProcurementStaffLogic';
 import TaskDetailsModal from '../components/TaskDetailsModal';
 import TimeExtensionModal from '../components/TimeExtensionModal';
+import MeetingsPage from '../../common/MeetingsPage';
 
 const ProcurementStaffDashboard = ({ user, onLogout }) => {
     const {
@@ -141,6 +142,9 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         vendorPurchaseCounts={vendorPurchaseCounts}
                     />
                 );
+
+            case 'meetings':
+                return <MeetingsPage user={user} />;
 
             default:
                 return null;

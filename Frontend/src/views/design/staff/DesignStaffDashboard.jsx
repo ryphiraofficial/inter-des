@@ -12,6 +12,7 @@ import Tasks from './Tasks';
 
 import UploadDesignModal from './components/UploadDesignModal';
 import MaterialRequestModal from './components/MaterialRequestModal';
+import MeetingsPage from '../../common/MeetingsPage';
 
 import { useStaffData } from './hooks/useStaffData';
 import { useUploadActions } from './hooks/useUploadActions';
@@ -223,6 +224,8 @@ const DesignStaffDashboard = ({ user }) => {
                 </div>
             );
         }
+
+        if (activeTab === 'meetings') return <MeetingsPage user={user} />;
 
         return null;
     };

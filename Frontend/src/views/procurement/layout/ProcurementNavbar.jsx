@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, ShoppingCart, LayoutDashboard, Plus, 
-    Package, CheckSquare, Building2, CheckCircle, Box, Menu, Bell
+    Package, CheckSquare, Building2, CheckCircle, Box, Menu, Bell, Video
 } from 'lucide-react';
 
 const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) => {
@@ -17,13 +17,15 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick }) =>
         requests: { title: 'Material Requests', icon: Package },
         assignments: { title: 'Assignments', icon: CheckSquare },
         vendors: { title: 'Vendors', icon: Building2 },
-        completed: { title: 'Completed & Handoff', icon: CheckCircle }
+        completed: { title: 'Completed & Handoff', icon: CheckCircle },
+        meetings: { title: 'Meetings', icon: Video }
     } : {
         overview: { title: 'My Dashboard', icon: LayoutDashboard },
         sourcing: { title: 'Sourcing Hub', icon: ShoppingCart },
         tasks: { title: 'My Tasks', icon: CheckSquare },
         history: { title: 'Purchase History', icon: Package },
-        vendors: { title: 'Vendors', icon: Box }
+        vendors: { title: 'Vendors', icon: Box },
+        meetings: { title: 'Meetings', icon: Video }
     };
 
     const { title, icon: Icon } = tabMeta[activeTab] || { title: 'Sourcing Hub', icon: ShoppingCart };

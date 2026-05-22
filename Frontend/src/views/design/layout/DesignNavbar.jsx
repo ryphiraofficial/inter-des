@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, Palette, LayoutDashboard, GitMerge, FileSpreadsheet, 
-    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus, Menu
+    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus, Menu, Video
 } from 'lucide-react';
 
 const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
@@ -18,12 +18,14 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
         project_management: { title: 'Project Management', icon: Briefcase },
         tasks: { title: 'Tasks Management', icon: CheckSquare },
         staff_overview: { title: 'Team Workload', icon: Users },
-        material_review: { title: 'Material Review Hub', icon: Eye }
+        material_review: { title: 'Material Review Hub', icon: Eye },
+        meetings: { title: 'Meetings', icon: Video }
     } : {
         overview: { title: 'Designer Workspace', icon: LayoutDashboard },
         tasks: { title: 'My Active Tasks', icon: CheckSquare },
         revisions: { title: 'Revision Requests', icon: AlertCircle },
-        submissions: { title: 'Finalized Submissions', icon: CheckCircle }
+        submissions: { title: 'Finalized Submissions', icon: CheckCircle },
+        meetings: { title: 'Meetings', icon: Video }
     };
 
     const { title, icon: Icon } = tabMeta[activeTab] || { title: 'Design Studio', icon: Palette };
