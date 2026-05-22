@@ -134,6 +134,7 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="engineer/projects" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
                     <Route path="engineer/projects/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
                     <Route path="engineer/tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/transferred-tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks user={user} isTransferred={true} /> : <Navigate to="/" replace />} />
                     <Route path="engineer/tasks/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
                     <Route path="engineer/reports" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerReports /> : <Navigate to="/" replace />} />
                     <Route path="engineer/leave" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <LeaveRequest user={user} /> : <Navigate to="/" replace />} />

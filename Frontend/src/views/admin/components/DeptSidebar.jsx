@@ -79,6 +79,7 @@ const NAV_CONFIG = {
             { name: 'Dashboard',     icon: LayoutDashboard, path: '/engineer/dashboard' },
             { name: 'Projects',      icon: FolderOpen,      path: '/engineer/projects' },
             { name: 'My Tasks',      icon: CheckSquare,     path: '/engineer/tasks' },
+            { name: 'Transferred Tasks', icon: Users,       path: '/engineer/transferred-tasks' },
             { name: 'Site Reports',  icon: FileText,        path: '/engineer/reports' },
             { name: 'Approvals',     icon: ClipboardCheck,  path: '/engineer/approvals' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/engineer/leave' },

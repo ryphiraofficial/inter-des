@@ -12,7 +12,7 @@ const STAGE_OPTIONS   = ['All','PM','PE','SE','SS'];
 const getPriorityStyle = (p) => ({ Low:{color:'#64748b',bg:'#f1f5f9'}, Medium:{color:'#2563eb',bg:'#dbeafe'}, High:{color:'#d97706',bg:'#fef3c7'}, Urgent:{color:'#dc2626',bg:'#fee2e2'} }[p]||{color:'#64748b',bg:'#f1f5f9'});
 const getStatusStyle   = (s) => ({ 'Pending':{label:'#92400e',bg:'#fef3c7'}, 'In Progress':{label:'#1e40af',bg:'#dbeafe'}, 'Completed':{label:'#065f46',bg:'#d1fae5'}, 'Approved':{label:'#5b21b6',bg:'#ede9fe'} }[s]||{label:'#374151',bg:'#f3f4f6'});
 
-const EngineerTasks = ({ user }) => {
+const EngineerTasks = ({ user, isTransferred }) => {
     const navigate = useNavigate();
     const [tasks,    setTasks]    = useState([]);
     const [loading,  setLoading]  = useState(true);
@@ -21,12 +21,12 @@ const EngineerTasks = ({ user }) => {
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [toast,    setToast]    = useState(null);
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => { load(); }, [isTransferred]);
 
     const load = async () => {
         try {
             const [tRes, pRes] = await Promise.all([
-                engineerAPI.getMyTasks(),
+                isTransferred ? engineerAPI.getTransferredTasks() : engineerAPI.getMyTasks(),
                 engineerAPI.getMyProjects()
             ]);
             if (tRes.success) setTasks(tRes.data);
