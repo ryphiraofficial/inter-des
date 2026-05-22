@@ -67,7 +67,14 @@ const ProjectsList = () => {
     const STATUS_OPTIONS = ['All', 'Active', 'Planning', 'On Hold', 'Completed'];
     const activeFilterCount = (filterStatus !== 'All' ? 1 : 0) + (searchTerm ? 1 : 0);
 
-    const displayProjects = projects;
+    const displayProjects = [...projects].sort((a, b) => {
+        if (a.status === 'Completed' && b.status !== 'Completed') return 1;
+        if (a.status !== 'Completed' && b.status === 'Completed') return -1;
+        
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA;
+    });
 
     return (
         <div className="pm-dashboard">
