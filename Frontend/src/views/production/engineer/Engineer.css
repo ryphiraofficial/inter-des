@@ -1682,3 +1682,31 @@ textarea.eng-input { resize:vertical; }
 .eng-btn-danger:hover { background:#dc2626; }
 .eng-btn-danger:disabled { opacity:0.5; cursor:not-allowed; }
 
+/* ===== TOAST NOTIFICATION ===== */
+.eng-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    animation: engToastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@keyframes engToastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
