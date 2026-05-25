@@ -106,7 +106,33 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                     </button>
                 )}
 
-                <div className="sales-navbar-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
+                <div className="sales-notif-wrapper desktop-only">
+                    <button 
+                        className="sales-notif-btn"
+                        onClick={() => {
+                            setIsProfileOpen(false);
+                            setShowNotifications(v => !v);
+                            if (!showNotifications) fetchNotifications();
+                        }}
+                    >
+                        <Bell size={18} />
+                        {unreadCount > 0 && <span className="sales-notif-badge">{unreadCount}</span>}
+                    </button>
+                    {showNotifications && (
+                        <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, zIndex: 100 }}>
+                            <SalesNotificationPopup
+                                notifications={notifications}
+                                unreadCount={unreadCount}
+                                onClose={() => setShowNotifications(false)}
+                                onMarkAllRead={handleMarkAllRead}
+                                onMarkAsRead={handleMarkAsRead}
+                                onDelete={handleDelete}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="sales-navbar-profile-wrapper desktop-hide" ref={profileRef} style={{ position: 'relative' }}>
                     <button 
                         className="sales-navbar-profile-btn"
                         onClick={() => {
