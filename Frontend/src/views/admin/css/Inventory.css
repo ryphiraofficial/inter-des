@@ -552,8 +552,8 @@
         transition: all 0.2s;
     }
 
-    .btn-mobile-action.primary { background: #eff6ff; color: #2563eb; }
-    .btn-mobile-action.danger { background: #fef2f2; color: #ef4444; }
+    .btn-mobile-action.primary { background: #eff6ff !important; color: #2563eb !important; }
+    .btn-mobile-action.danger { background: #fef2f2 !important; color: #ef4444 !important; }
 
     .btn-mobile-action:active {
         transform: scale(0.98);

@@ -603,9 +603,9 @@
         transition: all 0.2s;
     }
 
-    .btn-mobile-action.primary { background: #eef2ff; color: #4f46e5; }
-    .btn-mobile-action.success { background: #ecfdf5; color: #059669; }
-    .btn-mobile-action.danger { background: #fef2f2; color: #dc2626; }
+    .btn-mobile-action.primary { background: #eef2ff !important; color: #4f46e5 !important; }
+    .btn-mobile-action.success { background: #ecfdf5 !important; color: #059669 !important; }
+    .btn-mobile-action.danger { background: #fef2f2 !important; color: #dc2626 !important; }
 
     .btn-mobile-action:active {
         transform: scale(0.98);

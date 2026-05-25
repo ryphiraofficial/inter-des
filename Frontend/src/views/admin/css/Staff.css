@@ -941,8 +941,8 @@
     color: #059669;
 }
 .btn-mobile-action.salary {
-    background: #ecfdf5;
-    color: #10b981;
+    background: #ecfdf5 !important;
+    color: #10b981 !important;
     border: 1px solid #d1fae5;
 }
 
@@ -962,21 +962,23 @@
     min-height: 42px;
     font-family: inherit;
     text-decoration: none;
+    background: #f1f5f9 !important;
+    color: #475569 !important;
 }
 
 .btn-mobile-action.primary {
-    background: #f5f3ff;
-    color: #7c3aed;
+    background: #f5f3ff !important;
+    color: #7c3aed !important;
 }
 
 .btn-mobile-action.secondary {
-    background: #eff6ff;
-    color: #2563eb;
+    background: #eff6ff !important;
+    color: #2563eb !important;
 }
 
 .btn-mobile-action.danger {
-    background: #fef2f2;
-    color: #dc2626;
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
 }
 
 .btn-mobile-action:active {
@@ -1439,27 +1441,29 @@
         text-decoration: none;
         box-sizing: border-box;
         width: 100%;
+        background: #f1f5f9 !important;
+        color: #475569 !important;
     }
 
     .btn-mobile-action.salary {
-        background: #ecfdf5;
-        color: #10b981;
+        background: #ecfdf5 !important;
+        color: #10b981 !important;
         border: 1px solid #d1fae5;
     }
 
     .btn-mobile-action.primary {
-        background: #f5f3ff;
-        color: #7c3aed;
+        background: #f5f3ff !important;
+        color: #7c3aed !important;
     }
 
     .btn-mobile-action.secondary {
-        background: #eff6ff;
-        color: #2563eb;
+        background: #eff6ff !important;
+        color: #2563eb !important;
     }
 
     .btn-mobile-action.danger {
-        background: #fef2f2;
-        color: #dc2626;
+        background: #fef2f2 !important;
+        color: #dc2626 !important;
     }
 
     .btn-mobile-action:active {
