@@ -39,6 +39,8 @@
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.2s;
+    align-self: flex-start;
+    margin-top: 4px;
 }
 
 .sales-menu-toggle:hover {
