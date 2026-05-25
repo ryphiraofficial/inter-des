@@ -159,6 +159,15 @@
     border-collapse: collapse;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .invoice-table .desktop-hide { display: table-cell !important; }
+    .invoice-table .mobile-show { display: none !important; }
+    .invoice-table thead { display: table-header-group !important; }
+    .invoice-table tbody { display: table-row-group !important; }
+    .invoice-table td { display: table-cell !important; }
+}
+
 .invoice-table th {
     background: #f8fafc;
     padding: 1rem 1.5rem;

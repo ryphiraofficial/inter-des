@@ -161,6 +161,15 @@
     text-align: left;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .quotations-table .desktop-hide { display: table-cell !important; }
+    .quotations-table .mobile-show { display: none !important; }
+    .quotations-table thead { display: table-header-group !important; }
+    .quotations-table tbody { display: table-row-group !important; }
+    .quotations-table td { display: table-cell !important; }
+}
+
 .quotations-table th {
     padding: 1.25rem 1.5rem;
     font-size: 0.75rem;

@@ -136,6 +136,15 @@
     text-align: left;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .inventory-table .desktop-hide { display: table-cell !important; }
+    .inventory-table .mobile-show { display: none !important; }
+    .inventory-table thead { display: table-header-group !important; }
+    .inventory-table tbody { display: table-row-group !important; }
+    .inventory-table td { display: table-cell !important; }
+}
+
 .inventory-table th {
     background: #f8fafc;
     padding: 1rem 1.5rem;

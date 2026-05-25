@@ -93,6 +93,33 @@
     text-align: left;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .users-table .desktop-hide {
+        display: table-cell !important;
+    }
+
+    .users-table .mobile-show {
+        display: none !important;
+    }
+
+    .users-table thead {
+        display: table-header-group !important;
+    }
+
+    .users-table tbody {
+        display: table-row-group !important;
+    }
+
+    .user-row {
+        display: table-row !important;
+    }
+
+    .users-table td {
+        display: table-cell !important;
+    }
+}
+
 .users-table th {
     background: #f8fafc;
     padding: 1rem 1.5rem;
@@ -285,7 +312,7 @@
     display: none !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .desktop-hide {
         display: none !important;
     }

@@ -354,6 +354,15 @@
     text-align: left;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .tasks-table .desktop-hide { display: table-cell !important; }
+    .tasks-table .mobile-show { display: none !important; }
+    .tasks-table thead { display: table-header-group !important; }
+    .tasks-table tbody { display: table-row-group !important; }
+    .tasks-table td { display: table-cell !important; }
+}
+
 .tasks-table th {
     background: #f8fafc;
     padding: 1rem 1rem;

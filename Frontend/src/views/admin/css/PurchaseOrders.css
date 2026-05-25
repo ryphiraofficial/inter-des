@@ -161,6 +161,15 @@
     text-align: left;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .po-table .desktop-hide { display: table-cell !important; }
+    .po-table .mobile-show { display: none !important; }
+    .po-table thead { display: table-header-group !important; }
+    .po-table tbody { display: table-row-group !important; }
+    .po-table td { display: table-cell !important; }
+}
+
 .po-table th {
     padding: 1.25rem 1.5rem;
     background: #f8fafc;
