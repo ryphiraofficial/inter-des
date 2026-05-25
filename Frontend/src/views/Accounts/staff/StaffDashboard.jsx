@@ -11,6 +11,7 @@ import ManagerExpenses from '../manager/ManagerExpenses';
 import ManagerVendors from '../manager/ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
 import MyCollections from './components/MyCollections';
+import MeetingsPage from '../../common/MeetingsPage';
 
 const StaffDashboard = ({ user, onLogout }) => {
     const [searchParams] = useSearchParams();

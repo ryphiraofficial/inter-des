@@ -140,6 +140,32 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExpor
                     </button>
                 )}
                 
+                {activeTab === 'meetings' && ['accounts manager', 'admin', 'super admin', 'manager'].some(r => user?.role?.toLowerCase().includes(r)) && (
+                    <button 
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))}
+                        style={{ 
+                            height: '38px', 
+                            padding: '0 16px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            fontSize: '13px',
+                            background: '#3b82f6',
+                            border: 'none',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            outline: 'none',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
+                        onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}
+                    >
+                        <Video size={16} /> Schedule Meeting
+                    </button>
+                )}
+                
                 {/* Notification bell */}
                 <div className="header-notification-wrapper" ref={wrapperRef} style={{ marginRight: '8px', position: 'relative' }}>
                     <button
