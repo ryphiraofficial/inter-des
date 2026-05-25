@@ -1370,7 +1370,6 @@
         border-top: none;
         border-bottom-left-radius: 16px;
         border-bottom-right-radius: 16px;
-        overflow: hidden;
         background: #f8fafc;
     }
 
@@ -1381,23 +1380,16 @@
     }
 
     .expansion-content {
-        padding: 1rem;
+        padding: 1.25rem;
         box-sizing: border-box;
         animation: slideDown 0.25s ease-out;
     }
 
     .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem 1rem;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
         margin-bottom: 1rem;
-    }
-
-    /* Very small screens: single column */
-    @media (max-width: 380px) {
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
     }
 
     .info-item {
@@ -1411,17 +1403,15 @@
         color: #94a3b8;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         font-weight: 800;
     }
 
     .info-item span {
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         color: #1e293b;
         font-weight: 600;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-        hyphens: auto;
+        word-break: break-word;
     }
 
     .expansion-actions {
@@ -1437,14 +1427,18 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.6rem 0.75rem;
+        padding: 0.65rem 0.5rem;
         border-radius: 10px;
         border: none;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.15s;
-        min-height: 44px;
+        min-height: 42px;
+        font-family: inherit;
+        text-decoration: none;
+        box-sizing: border-box;
+        width: 100%;
     }
 
     .btn-mobile-action.salary {

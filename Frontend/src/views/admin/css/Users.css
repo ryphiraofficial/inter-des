@@ -528,7 +528,7 @@
         border-top: none;
         border-bottom-left-radius: 16px;
         border-bottom-right-radius: 16px;
-        overflow: hidden;
+        background: #fafbfc;
     }
 
     .mobile-expansion-row td {
@@ -541,7 +541,7 @@
 
     .expansion-content {
         background: #fafbfc;
-        padding: 1rem;
+        padding: 1.25rem;
         box-sizing: border-box;
         animation: slideDown 0.25s ease-out;
     }
@@ -553,8 +553,8 @@
 
     .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem 1rem;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
         margin-bottom: 0.75rem;
     }
 
@@ -576,7 +576,7 @@
         color: #94a3b8;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        margin-bottom: 0.35rem;
+        margin-bottom: 2px;
     }
 
     .info-item span {
@@ -614,6 +614,8 @@
         transition: all 0.15s;
         min-height: 44px;
         box-sizing: border-box;
+        font-family: inherit;
+        text-decoration: none;
     }
 
     .btn-mobile-action.primary { background: #eff6ff; color: #2563eb; }
