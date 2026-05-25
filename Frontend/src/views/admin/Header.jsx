@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { Bell, User, Settings, LogOut } from 'lucide-react';
 import { useHeaderState } from './header/hooks/useHeaderState';
 import { useNotificationLogic } from './header/hooks/useNotificationLogic';
 import { useSearchLogic } from './header/hooks/useSearchLogic';
@@ -12,12 +12,19 @@ import NotificationPopup from './header/components/NotificationPopup';
 
 import './css/Header.css';
 
-const Header = ({ user, toggleMobileSidebar }) => {
+const getInitials = (name) => {
+    if (!name) return 'A';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+};
+
+const Header = ({ user, toggleMobileSidebar, onLogout }) => {
     const location = useLocation();
     const state = useHeaderState();
     const popupRef = useRef(null);
     const wrapperRef = useRef(null);
     const searchInputRef = useRef(null);
+    const profileRef = useRef(null);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const notificationLogic = useNotificationLogic({
         setNotifications: state.setNotifications,
@@ -39,8 +46,11 @@ const Header = ({ user, toggleMobileSidebar }) => {
             if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
                 state.setShowNotifications(false);
             }
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setIsProfileOpen(false);
+            }
         };
-        if (state.showNotifications) {
+        if (state.showNotifications || isProfileOpen) {
             document.addEventListener('mousedown', handleClickOutside);
             document.addEventListener('touchstart', handleClickOutside);
         }
@@ -48,7 +58,7 @@ const Header = ({ user, toggleMobileSidebar }) => {
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('touchstart', handleClickOutside);
         };
-    }, [state.showNotifications]);
+    }, [state.showNotifications, isProfileOpen]);
 
     const getPageDetails = () => {
         const path = location.pathname;
@@ -195,6 +205,76 @@ const Header = ({ user, toggleMobileSidebar }) => {
                         setShowNotifications={state.setShowNotifications}
                         popupRef={popupRef}
                     />
+                </div>
+
+                <div className="mobile-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
+                    <button 
+                        className="header-profile-btn"
+                        onClick={() => {
+                            state.setShowNotifications(false);
+                            setIsProfileOpen(!isProfileOpen);
+                        }}
+                        style={{
+                            background: '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '36px',
+                            height: '36px',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                            position: 'relative'
+                        }}
+                    >
+                        {getInitials(user?.fullName || user?.name || 'Admin')}
+                    </button>
+
+                    {isProfileOpen && (
+                        <div className="header-profile-dropdown" style={{
+                            position: 'absolute',
+                            top: '48px',
+                            right: 0,
+                            background: '#ffffff',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '12px',
+                            padding: '0.5rem',
+                            width: '240px',
+                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                            zIndex: 50,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.25rem'
+                        }}>
+                            <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1e293b' }}>
+                                    {user?.fullName || user?.name || 'Admin'}
+                                </div>
+                                <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'capitalize' }}>
+                                    {user?.role?.replace(/_/g, ' ') || 'Administration'}
+                                </div>
+                            </div>
+                            <button className="header-dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.8rem', color: '#334155', cursor: 'pointer', borderRadius: '8px', transition: 'all 0.2s' }}>
+                                <User size={16} /> My Profile
+                            </button>
+                            <button className="header-dropdown-item" onClick={() => state.setShowNotifications(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.8rem', color: '#334155', cursor: 'pointer', borderRadius: '8px', transition: 'all 0.2s', position: 'relative' }}>
+                                <Bell size={16} /> Notifications
+                                {state.unreadCount > 0 && <span style={{ marginLeft: 'auto', background: '#eef2ff', color: '#4f46e5', padding: '2px 6px', borderRadius: '50px', fontSize: '0.7rem', fontWeight: 600 }}>{state.unreadCount}</span>}
+                            </button>
+                            <button className="header-dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.8rem', color: '#334155', cursor: 'pointer', borderRadius: '8px', transition: 'all 0.2s' }}>
+                                <Settings size={16} /> Settings
+                            </button>
+                            {onLogout && (
+                                <button className="header-dropdown-item" onClick={() => { setIsProfileOpen(false); onLogout(); }} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1rem', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.8rem', color: '#ef4444', cursor: 'pointer', borderRadius: '8px', transition: 'all 0.2s', marginTop: '0.25rem', borderTop: '1px solid #f1f5f9' }}>
+                                    <LogOut size={16} /> Log Out
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
 
