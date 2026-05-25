@@ -820,6 +820,20 @@
     max-width: none;
 }
 
+/* Override global sticky header styles inside focused view */
+.focused-view .page-header {
+    position: relative;
+    top: auto;
+    z-index: auto;
+    height: auto;
+    min-height: 80px;
+    box-shadow: none;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 0;
+    overflow: visible;
+}
+
 .detail-container-premium {
     background: white;
     border-radius: 24px;
@@ -1082,25 +1096,42 @@
         top: -18px;
     }
 
+    .focused-view {
+        padding: 1rem 0.75rem;
+        margin: 0;
+    }
+
     .focused-view .page-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
-        height: auto;
-        padding: 1rem 0;
+        gap: 0.75rem;
+        min-height: unset;
+        padding: 0.75rem 0;
+        margin-bottom: 1rem;
     }
 
-    .focused-view .page-header h1 {
-        font-size: 1.25rem;
+    .focused-view .header-title-section h1 {
+        font-size: 1.1rem;
+        word-break: break-word;
     }
 
     .focused-view .header-actions {
         width: 100%;
         display: flex;
+        align-items: center;
         justify-content: flex-start;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
-        margin-top: 0.5rem;
+    }
+
+    .focused-view .btn-danger-ghost {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .focused-view .badge-premium {
+        font-size: 0.75rem;
+        padding: 5px 12px;
     }
 
     .btn-back-round {
