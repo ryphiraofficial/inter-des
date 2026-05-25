@@ -133,8 +133,11 @@ const Header = ({ user, toggleMobileSidebar }) => {
     };
 
     const { title, subtitle } = getPageDetails();
+    const tab = new URLSearchParams(location.search).get('tab')?.toLowerCase();
+    const isDashboard = location.pathname === '/' && (!tab || tab === 'overview' || tab === 'dashboard');
+    
     const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team', '/engineer/projects', '/site/projects'];
-    const isSearchable = searchablePaths.includes(location.pathname);
+    const isSearchable = searchablePaths.includes(location.pathname) && !isDashboard;
 
     return (
         <header className="page-header">
