@@ -71,7 +71,7 @@ const UserTable = ({
                                 </td>
                             </tr>
                             {expandedRow === user._id && (
-                                <tr className="mobile-expansion-row mobile-show">
+                                <tr className="mobile-expansion-row mobile-only">
                                     <td colSpan="7">
                                         <div className="expansion-content">
                                             <div className="info-grid">

@@ -87,7 +87,7 @@ const InventoryTable = ({
                                 </td>
                             </tr>
                             {expandedRow === item._id && (
-                                <tr className="mobile-expansion-row mobile-show">
+                                <tr className="mobile-expansion-row mobile-only">
                                     <td colSpan="3">
                                         <div className="expansion-content">
                                             <div className="info-grid">

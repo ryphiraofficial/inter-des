@@ -75,8 +75,8 @@ const StaffTable = ({
                                 </td>
                             </tr>
                             {expandedRow === staff._id && (
-                                <tr className="mobile-expansion-row mobile-show">
-                                    <td colSpan="3">
+                                <tr className="mobile-expansion-row mobile-only">
+                                    <td colSpan="9">
                                         <div className="expansion-content">
                                             <div className="info-grid">
                                                 <div className="info-item"><label>Staff ID</label><span>{staff.staffId || '—'}</span></div>

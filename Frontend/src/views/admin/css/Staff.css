@@ -1207,6 +1207,10 @@ button.btn-mobile-action:active {
     display: none !important;
 }
 
+.mobile-only {
+    display: none !important;
+}
+
 @media (max-width: 640px) {
     .staff-container {
         padding: 1rem;
@@ -1227,6 +1231,10 @@ button.btn-mobile-action:active {
 
     tr.mobile-show {
         display: table-row !important;
+    }
+
+    .mobile-only {
+        display: block !important;
     }
 
     /* Strip table card wrapper */
@@ -1277,8 +1285,8 @@ button.btn-mobile-action:active {
         border-bottom-color: #e2e8f0;
     }
 
-    /* Reset all td inside cards */
-    .staff-table td {
+    /* Reset all td inside card rows (NOT the expansion row) */
+    .staff-row td {
         display: block;
         padding: 0 !important;
         border: none !important;
@@ -1363,14 +1371,13 @@ button.btn-mobile-action:active {
     }
 
     /* ══════════════════════════════════════════════════════════
-       EXPANSION PANEL — Mobile Accordion Detail View
+       EXPANSION PANEL — Mobile Accordion Detail View (div-based)
        ══════════════════════════════════════════════════════════ */
 
     /* The expansion <tr> sits below the card row */
     tr.mobile-expansion-row {
         display: block !important;
-        width: 100% !important;
-        min-width: 0;
+        width: 100%;
         box-sizing: border-box;
         margin-bottom: 0.75rem;
         border: 1px solid #4f46e5;
@@ -1378,17 +1385,15 @@ button.btn-mobile-action:active {
         border-bottom-left-radius: 16px;
         border-bottom-right-radius: 16px;
         background: #f8fafc;
+        overflow: hidden;
     }
 
-    /* The single <td> inside must fill the row */
-    tr.mobile-expansion-row > td,
-    .mobile-expansion-row td {
+    /* Force the td inside the expansion row to behave as a block, ignoring colSpan */
+    tr.mobile-expansion-row > td {
         display: block !important;
         width: 100% !important;
-        min-width: 0;
         padding: 0 !important;
         border: none !important;
-        text-align: left !important;
         box-sizing: border-box;
     }
 

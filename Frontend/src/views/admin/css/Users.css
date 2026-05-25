@@ -312,6 +312,10 @@
     display: none !important;
 }
 
+.mobile-only {
+    display: none !important;
+}
+
 @media (max-width: 640px) {
     .desktop-hide {
         display: none !important;
@@ -323,6 +327,10 @@
 
     tr.mobile-show {
         display: table-row !important;
+    }
+
+    .mobile-only {
+        display: block !important;
     }
 
     /* Root container: prevent horizontal overflow; page-wrapper handles padding */
@@ -518,22 +526,24 @@
         color: #2563eb;
     }
 
-    /* ── Expansion Row ── using tr. to beat tr.mobile-show specificity */
+    /* ── Expansion Row ── */
     tr.mobile-expansion-row {
         display: block !important;
-        margin-bottom: 0.75rem;
         width: 100%;
+        margin-bottom: 0.75rem;
         box-sizing: border-box;
         border: 1px solid #2563eb;
         border-top: none;
         border-bottom-left-radius: 16px;
         border-bottom-right-radius: 16px;
         background: #fafbfc;
+        overflow: hidden;
     }
 
-    .mobile-expansion-row td {
+    /* Force the td inside the expansion row to behave as a block, ignoring colSpan */
+    tr.mobile-expansion-row > td {
         display: block !important;
-        width: 100%;
+        width: 100% !important;
         padding: 0 !important;
         border: none !important;
         box-sizing: border-box;
