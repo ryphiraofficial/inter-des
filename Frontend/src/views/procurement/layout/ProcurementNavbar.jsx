@@ -6,13 +6,27 @@ import {
     User, Settings, LogOut, ChevronDown
 } from 'lucide-react';
 
+import { useNotifications } from '../../sales/hooks/useNotifications';
+import NotificationPopup from '../../sales/components/SalesNotificationPopup';
+import '../../sales/css/SalesHeader.css';
+
 const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLogout }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const profileRef = useRef(null);
 
     const isManager = role === 'manager' || user?.role === 'procurement_manager';
+
+    const {
+        notifications,
+        unreadCount,
+        fetchNotifications,
+        handleMarkAsRead,
+        handleMarkAllRead,
+        handleDelete
+    } = useNotifications();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -45,6 +59,12 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
 
     const { title, icon: Icon, description } = tabMeta[activeTab] || { title: 'Sourcing Hub', icon: ShoppingCart, description: 'Select a project to start curating materials.' };
 
+    const toggleNotif = () => {
+        setIsProfileOpen(false);
+        setShowNotifications(v => !v);
+        if (!showNotifications) fetchNotifications();
+    };
+
     return (
         <header className="procurement-navbar">
             <div className="procurement-navbar-brand">
@@ -69,14 +89,26 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                     </button>
                 )}
 
-                <div className="procurement-navbar-profile-wrapper" ref={profileRef}>
+                <div className="procurement-navbar-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
                     <button 
                         className="procurement-navbar-profile-btn"
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
+                        style={{ position: 'relative' }}
                     >
                         <div className="procurement-navbar-avatar" style={{ width: '38px', height: '38px' }}>
                             {getInitials(user?.fullName || user?.name)}
                         </div>
+                        {unreadCount > 0 && (
+                            <span style={{
+                                position: 'absolute', top: '-2px', right: '-2px',
+                                background: '#ef4444', color: 'white', fontSize: '0.65rem',
+                                fontWeight: 'bold', width: '18px', height: '18px',
+                                borderRadius: '50%', display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', border: '2px solid white'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
                     </button>
 
                     {isProfileOpen && (
@@ -92,8 +124,18 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                             <button className="procurement-navbar-dropdown-item" onClick={() => setIsProfileOpen(false)}>
                                 <User size={16} /> My Profile
                             </button>
-                            <button className="procurement-navbar-dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                                <Bell size={16} /> Notifications
+                            <button className="procurement-navbar-dropdown-item" onClick={toggleNotif} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Bell size={16} /> Notifications
+                                </div>
+                                {unreadCount > 0 && (
+                                    <span style={{
+                                        background: '#ef4444', color: 'white', fontSize: '0.65rem',
+                                        fontWeight: 'bold', padding: '2px 6px', borderRadius: '10px'
+                                    }}>
+                                        {unreadCount}
+                                    </span>
+                                )}
                             </button>
                             <button className="procurement-navbar-dropdown-item" onClick={() => setIsProfileOpen(false)}>
                                 <Settings size={16} /> Settings
@@ -104,6 +146,17 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                                 </button>
                             )}
                         </div>
+                    )}
+
+                    {showNotifications && (
+                        <NotificationPopup 
+                            notifications={notifications}
+                            unreadCount={unreadCount}
+                            onClose={() => setShowNotifications(false)}
+                            onMarkAsRead={handleMarkAsRead}
+                            onMarkAllRead={handleMarkAllRead}
+                            onDelete={handleDelete}
+                        />
                     )}
                 </div>
             </div>
