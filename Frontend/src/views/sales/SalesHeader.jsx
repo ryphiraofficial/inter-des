@@ -106,7 +106,7 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                     </button>
                 )}
 
-                <div className="sales-navbar-profile-wrapper desktop-hide" ref={profileRef} style={{ position: 'relative' }}>
+                <div className="sales-navbar-profile-wrapper mobile-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
                     <button 
                         className="sales-navbar-profile-btn"
                         onClick={() => {
@@ -155,7 +155,7 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                     {isProfileOpen && (
                         <div className="sales-navbar-profile-dropdown" style={{
                             position: 'absolute',
-                            top: '110%',
+                            top: '48px',
                             right: 0,
                             background: '#ffffff',
                             border: '1px solid #e2e8f0',
