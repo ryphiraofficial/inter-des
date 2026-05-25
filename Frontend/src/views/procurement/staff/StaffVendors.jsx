@@ -38,8 +38,8 @@ const StaffVendors = ({
     }, []);
 
     const searchInputEl = (
-        <div style={{ background: '#f1f5f9', borderRadius: '50px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '10px', width: '260px' }}>
-            <Search size={15} color="#94a3b8" />
+        <div className="procurement-search-input-wrapper">
+            <Search size={15} color="#94a3b8" style={{ flexShrink: 0 }} />
             <input
                 type="text"
                 placeholder="Search vendors..."
@@ -55,7 +55,7 @@ const StaffVendors = ({
             {portalContainer && ReactDOM.createPortal(searchInputEl, portalContainer)}
             <div className="section-card">
                 {loading ? (
-                    <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px' }}>
+                    <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))', gap: '24px' }}>
                         {[1, 2, 3, 4, 5, 6].map(idx => (
                             <div key={idx} style={{ background: '#ffffff', border: '1px solid #f5f5f4', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 20px -5px rgba(0, 0, 0, 0.02)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.25rem' }}>
@@ -81,7 +81,7 @@ const StaffVendors = ({
                         {vendorSearch ? `No vendors matching "${vendorSearch}"` : 'No active vendors found.'}
                     </div>
                 ) : (
-                    <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px' }}>
+                    <div className="vendors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))', gap: '24px' }}>
                         {filteredVendors.map(vendor => (
                             <div
                                 key={vendor._id}

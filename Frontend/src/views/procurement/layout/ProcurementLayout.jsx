@@ -35,6 +35,7 @@ const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, childre
                     onRefresh={onRefresh} 
                     isLoading={isLoading} 
                     onMenuClick={() => setIsMobileMenuOpen(true)}
+                    onLogout={onLogout}
                 />
                 <main className="procurement-layout-content">
                     {children || <Outlet />}

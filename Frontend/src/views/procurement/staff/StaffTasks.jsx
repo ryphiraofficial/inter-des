@@ -102,7 +102,7 @@ const StaffTasks = ({
     return (
         <div className="procurement-premium-wrapper fade-in" style={{ padding: 0 }}>
             {/* Two-column Kanban-style layout */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
+            <div className="staff-tasks-kanban">
                 
                 {/* Pending Tasks Column */}
                 <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>

@@ -24,15 +24,15 @@ const StaffHistory = ({
     }, []);
 
     const searchInputEl = (
-        <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '100px', padding: '6px 12px', width: '280px', border: '1px solid #e2e8f0', transition: 'all 0.3s' }}>
-            <Search size={16} color="#94a3b8" />
+        <div className="procurement-search-input-wrapper">
+            <Search size={16} color="#94a3b8" style={{ flexShrink: 0 }} />
             <input
                 type="text"
-                placeholder="Search historical products..."
+                placeholder="Search history..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                style={{ background: 'transparent', border: 'none', outline: 'none', width: '100%', fontSize: '0.85rem', marginLeft: '8px', color: '#1c1917' }}
+                style={{ background: 'transparent', border: 'none', outline: 'none', width: '100%', fontSize: '0.85rem', color: '#1c1917' }}
             />
         </div>
     );

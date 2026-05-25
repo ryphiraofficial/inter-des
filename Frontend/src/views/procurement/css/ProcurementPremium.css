@@ -480,3 +480,18 @@
     }
 }
 
+
+/* Staff Tasks Kanban Responsiveness */
+.staff-tasks-kanban {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .staff-tasks-kanban {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}

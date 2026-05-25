@@ -398,3 +398,92 @@
     border-color: #fca5a5;
     color: #b91c1c;
 }
+
+/* ── Navbar Profile Dropdown ── */
+.procurement-navbar-profile-wrapper {
+    position: relative;
+}
+
+.procurement-navbar-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.procurement-navbar-profile-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 220px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem;
+    z-index: 50;
+    animation: slideDown 0.2s ease-out;
+}
+
+.procurement-navbar-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.procurement-navbar-dropdown-item:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.procurement-navbar-dropdown-item.logout {
+    color: #ef4444;
+}
+
+.procurement-navbar-dropdown-item.logout:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Search Input in Navbar Actions */
+.procurement-search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    border-radius: 100px;
+    padding: 6px 12px;
+    width: 280px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .procurement-search-input-wrapper {
+        width: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .procurement-search-input-wrapper {
+        width: 135px;
+    }
+}
