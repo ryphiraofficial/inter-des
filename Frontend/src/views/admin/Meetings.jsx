@@ -494,29 +494,53 @@ const AdminMeetings = ({ user }) => {
             ) : (
                 <div className="meetings-content">
                     {filter === 'all' ? (
-                        <>
-                            {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length > 0 && (
-                                <div className="meetings-section">
-                                    <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b', marginBottom: '16px' }}>Upcoming & Live</h2>
+                        <div className="meetings-two-col-layout">
+                            {/* ── Upcoming & Live ── */}
+                            <div className="meetings-shift-section">
+                                <div className="meetings-shift-header upcoming-shift">
+                                    <span className="shift-dot upcoming-dot" />
+                                    <h2 className="shift-title">Upcoming & Live</h2>
+                                    <span className="shift-count">
+                                        {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length}
+                                    </span>
+                                </div>
+                                {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length > 0 ? (
                                     <div className="meetings-list">
                                         {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).map(m => (
                                             <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
                                         ))}
                                     </div>
+                                ) : (
+                                    <div className="meetings-shift-empty">
+                                        <Calendar size={28} />
+                                        <p>No upcoming meetings scheduled.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ── Completed ── */}
+                            <div className="meetings-shift-section">
+                                <div className="meetings-shift-header completed-shift">
+                                    <span className="shift-dot completed-dot" />
+                                    <h2 className="shift-title">Completed</h2>
+                                    <span className="shift-count">
+                                        {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length}
+                                    </span>
                                 </div>
-                            )}
-                            
-                            {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length > 0 && (
-                                <div className="meetings-section" style={{ marginTop: '32px' }}>
-                                    <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b', marginBottom: '16px' }}>Past Meetings</h2>
+                                {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length > 0 ? (
                                     <div className="meetings-list">
                                         {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).map(m => (
                                             <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
                                         ))}
                                     </div>
-                                </div>
-                            )}
-                        </>
+                                ) : (
+                                    <div className="meetings-shift-empty">
+                                        <CheckCircle size={28} />
+                                        <p>No completed meetings yet.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     ) : (
                         <div className="meetings-list">
                             {filtered.map(m => (
