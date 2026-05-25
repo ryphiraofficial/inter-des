@@ -53,7 +53,7 @@ const Layout = ({ user, onLogout }) => {
             {isMobileOpen && <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
             {renderSidebar()}
             <main className="main-content" style={mainContentStyle}>
-                <Header user={user} toggleMobileSidebar={toggleMobileSidebar} />
+                <Header user={user} toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />
                 <div className="page-wrapper">
                     <Outlet />
                 </div>

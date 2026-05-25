@@ -850,5 +850,7 @@
 }
 
 .mobile-profile-wrapper {
-    display: none;
+    display: block;
+    position: relative;
+    margin-left: 1rem;
 }
