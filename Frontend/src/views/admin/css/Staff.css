@@ -610,6 +610,7 @@
 }
 
 @media (max-width: 640px) {
+    .desktop-only {
         display: none !important;
     }
 
@@ -1134,6 +1135,7 @@
 }
 
 @media (max-width: 640px) {
+    .staff-container {
         padding: 1rem;
         overflow-x: hidden;
     }
