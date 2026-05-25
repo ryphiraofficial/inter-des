@@ -30,6 +30,9 @@ const SidebarFooter = ({ user, onLogout }) => {
                     </div>
                 </div>
             )}
+            <button className="btn-logout-icon mobile-hide" onClick={onLogout} title="Logout">
+                <LogOut size={18} />
+            </button>
         </div>
     );
 };

@@ -551,4 +551,8 @@
     .btn-close-sidebar-mobile {
         display: flex !important;
     }
+
+    .mobile-hide {
+        display: none !important;
+    }
 }

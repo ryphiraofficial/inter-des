@@ -222,6 +222,9 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
                         <p className="footer-role">{user?.role}</p>
                     </div>
                 </div>
+                <button className="btn-logout-icon mobile-hide" onClick={onLogout} title="Logout">
+                    <LogOut size={18} />
+                </button>
             </div>
         </div>
     );
