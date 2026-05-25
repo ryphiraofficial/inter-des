@@ -169,7 +169,7 @@
     border-radius: 24px;
     padding: 1.5rem;
     border: 1px solid #eef2ff;
-    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.05);
+    box-shadow: none;
 }
 
 .approval-item {
@@ -231,14 +231,17 @@
 }
 
 .btn-pill-ghost, .btn-pill-solid, .btn-pill-danger {
-    padding: 8px 16px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
     transition: all 0.2s;
     border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .btn-pill-ghost {

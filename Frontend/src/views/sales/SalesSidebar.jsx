@@ -49,9 +49,6 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
                 {/* Brand */}
                 <div className="sales-sidebar-brand">
-                    <div className="sales-brand-icon">
-                        <TrendingUp size={20} />
-                    </div>
                     {!collapsed && (
                         <div className="sales-brand-text">
                             <span className="sales-brand-name">Sales</span>

@@ -247,7 +247,7 @@ textarea:focus {
         border-radius: 20px;
     }
 
-    .form-grid {
+    .site-visit .form-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }

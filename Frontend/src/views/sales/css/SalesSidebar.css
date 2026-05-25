@@ -379,4 +379,8 @@
     .sales-collapse-btn-inline {
         display: none !important;
     }
+
+    .sales-sidebar-footer {
+        display: none;
+    }
 }

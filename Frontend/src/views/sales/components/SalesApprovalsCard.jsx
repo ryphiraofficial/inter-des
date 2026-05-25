@@ -41,7 +41,7 @@ const SalesApprovalsCard = ({ pendingReviews, loading, navigate, onPreviewTask }
                                     className="btn-pill-ghost"
                                     onClick={() => onPreviewTask(task)}
                                 >
-                                    <Eye size={16} /> Preview
+                                    <Eye size={14} /> Preview
                                 </button>
                                 <button 
                                     className="btn-pill-solid"

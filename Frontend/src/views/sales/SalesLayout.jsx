@@ -35,6 +35,8 @@ const SalesLayout = ({ user, onLogout }) => {
                     title={title}
                     subtitle={subtitle}
                     toggleSidebar={toggleSidebar}
+                    user={user}
+                    onLogout={onLogout}
                 />
                 <div className="sales-page-content">
                     <Outlet />

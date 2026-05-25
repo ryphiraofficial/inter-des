@@ -439,3 +439,8 @@
     .sales-new-btn span { display: none; }
     .sales-new-btn { padding: 8px 10px; }
 }
+
+/* Profile Dropdown Items Hover */
+.sales-navbar-dropdown-item:hover {
+    background: #f8fafc !important;
+}
