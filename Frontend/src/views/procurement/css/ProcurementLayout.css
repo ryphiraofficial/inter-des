@@ -300,8 +300,12 @@
 
 /* ── Procurement Sidebar Custom Header & Footer classes ── */
 .procurement-sidebar-header {
-    padding: 1.5rem 1.25rem 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    flex-shrink: 0;
 }
 
 .procurement-sidebar-logo-text {

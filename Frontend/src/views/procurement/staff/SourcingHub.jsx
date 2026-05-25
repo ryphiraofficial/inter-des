@@ -1,5 +1,6 @@
 import React from 'react';
 import { Target, MapPin, Users, ArrowRight, Package, ShoppingCart, Trash2, Save, Search, Filter, Plus, CheckSquare } from 'lucide-react';
+import Skeleton from '../../common/Skeleton';
 import '../css/SourcingHub.css';
 
 const SourcingHub = ({ 
@@ -17,7 +18,8 @@ const SourcingHub = ({
     handleSaveSourcing, 
     handleAddToBucket, 
     handleRemoveFromBucket, 
-    handleDeleteSaved 
+    handleDeleteSaved,
+    loading 
 }) => {
     const marketResults = vendors.filter(v => 
         v.status === 'Active' && (
@@ -28,26 +30,39 @@ const SourcingHub = ({
 
     return (
         <div className="fade-in sourcing-hub">
-            <div className="sourcing-header-row">
-                <div className="sourcing-title-area">
-                    <h3>Sourcing Hub</h3>
-                    <p>
-                        {selectedSourcingProject ? `Sourcing for: ${selectedSourcingProject.name}` : 'Select a project to start curating materials.'}
-                    </p>
-                </div>
-                {selectedSourcingProject && (
+            {selectedSourcingProject && (
+                <div className="sourcing-header-row" style={{ justifyContent: 'flex-end' }}>
                     <button 
                         onClick={() => setSelectedSourcingProject(null)}
                         className="btn-back-projects"
                     >
                         <ArrowRight size={16} /> Back to Projects
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             {!selectedSourcingProject ? (
                 <div className="sourcing-projects-grid">
-                    {projects.length === 0 ? (
+                    {loading ? (
+                        [1, 2, 3].map(idx => (
+                            <div key={idx} className="sourcing-project-card project-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
+                                <div className="card-header-row">
+                                    <div className="title-grp" style={{ width: '70%' }}>
+                                        <Skeleton width="80%" height="18px" style={{ marginBottom: '8px' }} />
+                                        <Skeleton width="50%" height="12px" />
+                                    </div>
+                                    <Skeleton width="40px" height="40px" borderRadius="12px" />
+                                </div>
+                                <div className="project-details-mini" style={{ flex: 1, marginTop: '20px' }}>
+                                    <Skeleton width="60%" height="12px" style={{ marginBottom: '8px' }} />
+                                    <Skeleton width="75%" height="12px" />
+                                </div>
+                                <div className="card-footer-action" style={{ justifyContent: 'flex-start' }}>
+                                    <Skeleton width="120px" height="14px" />
+                                </div>
+                            </div>
+                        ))
+                    ) : projects.length === 0 ? (
                         <div className="sourcing-empty-state">
                             <Target size={48} />
                             <h4>No Procurement Projects</h4>
@@ -94,12 +109,25 @@ const SourcingHub = ({
                         <div className="column-header">
                             <div className="title-grp">
                                 <h4><Package size={18} /> Project Item List</h4>
-                                <span className="item-count-badge">{sourcingBucket.length} Items</span>
+                                {!loading && <span className="item-count-badge">{sourcingBucket.length} Items</span>}
                             </div>
                         </div>
                         
                         <div className="sourcing-scroll-area">
-                            {sourcingBucket.length === 0 ? (
+                            {loading ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
+                                    {[1, 2, 3].map(idx => (
+                                        <div key={idx} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+                                            <Skeleton width="60%" height="16px" style={{ marginBottom: '8px' }} />
+                                            <Skeleton width="40%" height="12px" style={{ marginBottom: '16px' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Skeleton width="60px" height="24px" borderRadius="6px" />
+                                                <Skeleton width="80px" height="24px" borderRadius="6px" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : sourcingBucket.length === 0 ? (
                                 <div className="empty-bucket-state">
                                     <ShoppingCart size={48} />
                                     <p>Your sourcing bucket is empty.<br/>Search and add items from the market.</p>
@@ -156,7 +184,32 @@ const SourcingHub = ({
                         </div>
 
                         <div className="sourcing-scroll-area market-results-list">
-                            {marketResults.map(vendor => (
+                            {loading ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem' }}>
+                                    {[1, 2, 3].map(idx => (
+                                        <div key={idx} className="market-vendor-card" style={{ padding: '1.5rem' }}>
+                                            <div className="vendor-card-header" style={{ marginBottom: '1rem' }}>
+                                                <div className="vendor-info" style={{ flex: 1 }}>
+                                                    <Skeleton width="60%" height="16px" style={{ marginBottom: '8px' }} />
+                                                    <Skeleton width="40%" height="12px" />
+                                                </div>
+                                                <Skeleton width="60px" height="24px" borderRadius="12px" />
+                                            </div>
+                                            <div className="vendor-products-list">
+                                                {[1, 2].map(pIdx => (
+                                                    <div key={pIdx} className="product-row-premium" style={{ border: 'none', padding: '0.75rem 0' }}>
+                                                        <div className="product-info" style={{ flex: 1 }}>
+                                                            <Skeleton width="70%" height="14px" style={{ marginBottom: '6px' }} />
+                                                            <Skeleton width="30%" height="12px" />
+                                                        </div>
+                                                        <Skeleton width="32px" height="32px" borderRadius="8px" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : marketResults.map(vendor => (
                                 <div key={vendor._id} className="market-vendor-card">
                                     <div className="vendor-card-header">
                                         <div className="vendor-info">
@@ -184,7 +237,7 @@ const SourcingHub = ({
                                     </div>
                                 </div>
                             ))}
-                            {marketResults.length === 0 && (
+                            {!loading && marketResults.length === 0 && (
                                 <div className="no-results-state">
                                     No matches found for "{sourcingSearch}"
                                 </div>

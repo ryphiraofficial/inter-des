@@ -59,18 +59,9 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
         inProgressTasks,
         completedTasks,
         vendorPurchaseCounts,
+        vendorStats,
         fetchPurchaseHistory
     } = useProcurementStaffLogic(user);
-
-    if (loading) {
-        return (
-            <div className="role-dashboard fade-in">
-                <main style={{ flex: 1 }}>
-                    <ProcurementSkeleton role="staff" />
-                </main>
-            </div>
-        );
-    }
 
     const renderContent = () => {
         switch (activeTab) {
@@ -83,6 +74,7 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         purchaseHistory={purchaseHistory}
                         formatCurrency={formatCurrency}
                         setActiveTab={setActiveTab}
+                        loading={loading}
                     />
                 );
 
@@ -104,6 +96,7 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         handleAddToBucket={handleAddToBucket}
                         handleRemoveFromBucket={handleRemoveFromBucket}
                         handleDeleteSaved={handleDeleteSaved}
+                        loading={loading}
                     />
                 );
 
@@ -115,6 +108,7 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         setSelectedTask={setSelectedTask}
                         setShowTaskDetailsModal={setShowTaskDetailsModal}
                         setShowTimeExtension={setShowTimeExtension}
+                        loading={loading}
                     />
                 );
 
@@ -124,10 +118,11 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         searchQuery={searchQuery}
                         setSearchQuery={setSearchQuery}
                         handleSearch={handleSearch}
-                        vendorStats={[]} // Render list or stats
+                        vendorStats={vendorStats}
                         formatCurrency={formatCurrency}
                         handleComparePrices={handleComparePrices}
                         itemsToBuy={itemsToBuy}
+                        loading={loading}
                     />
                 );
 
@@ -140,6 +135,7 @@ const ProcurementStaffDashboard = ({ user, onLogout }) => {
                         setSelectedVendor={setSelectedVendor}
                         fetchPurchaseHistory={fetchPurchaseHistory}
                         vendorPurchaseCounts={vendorPurchaseCounts}
+                        loading={loading}
                     />
                 );
 

@@ -259,33 +259,53 @@ textarea.sdcn-input {
     color: white;
 }
 
+/* ─── Split Layout ─────────────────────────────────────────────── */
+.staff-meetings-split-layout {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .staff-meetings-split-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ─── Meeting Cards ────────────────────────────────────────────── */
 .meetings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
 }
 
 .meeting-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid #f1f5f9;
-    padding: 20px 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s, transform 0.2s;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .meeting-card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.07);
-    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+    border-color: #e2e8f0;
 }
 
 .meeting-card.cancelled {
-    opacity: 0.6;
+    opacity: 0.65;
+    background: #fafafa;
 }
 
 .meeting-card.ongoing {
     border-left: 4px solid #10b981;
+    background: linear-gradient(to right, #f0fdf4 0%, #ffffff 10%);
 }
 
 .meeting-card-header {
