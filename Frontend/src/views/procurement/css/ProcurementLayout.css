@@ -487,3 +487,9 @@
         width: 135px;
     }
 }
+
+@media (max-width: 768px) {
+    .procurement-sidebar-footer {
+        display: none;
+    }
+}
