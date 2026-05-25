@@ -100,6 +100,40 @@
     border-collapse: collapse;
 }
 
+/* ── Ensure all columns visible on desktop ── */
+@media (min-width: 641px) {
+    .staff-table .desktop-hide {
+        display: table-cell !important;
+    }
+
+    .staff-table .mobile-show {
+        display: none !important;
+    }
+
+    .staff-table thead {
+        display: table-header-group !important;
+    }
+
+    .staff-table tbody {
+        display: table-row-group !important;
+    }
+
+    .staff-table,
+    .staff-table tbody,
+    .staff-table thead {
+        width: 100%;
+    }
+
+    .staff-row {
+        display: table-row !important;
+    }
+
+    .staff-table td {
+        padding: 1.25rem 1.5rem !important;
+        display: table-cell !important;
+    }
+}
+
 .staff-table th {
     background: #f8fafc;
     padding: 1.25rem 1.5rem;
