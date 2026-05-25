@@ -492,15 +492,43 @@ const AdminMeetings = ({ user }) => {
                     </button>
                 </div>
             ) : (
-                <div className="meetings-list">
-                    {filtered.map(m => (
-                        <MeetingCard
-                            key={m._id}
-                            meeting={m}
-                            onEdit={handleEdit}
-                            onCancel={handleCancel}
-                        />
-                    ))}
+                <div className="meetings-content">
+                    {filter === 'all' ? (
+                        <>
+                            {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length > 0 && (
+                                <div className="meetings-section">
+                                    <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b', marginBottom: '16px' }}>Upcoming & Live</h2>
+                                    <div className="meetings-list">
+                                        {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).map(m => (
+                                            <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length > 0 && (
+                                <div className="meetings-section" style={{ marginTop: '32px' }}>
+                                    <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b', marginBottom: '16px' }}>Past Meetings</h2>
+                                    <div className="meetings-list">
+                                        {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).map(m => (
+                                            <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="meetings-list">
+                            {filtered.map(m => (
+                                <MeetingCard
+                                    key={m._id}
+                                    meeting={m}
+                                    onEdit={handleEdit}
+                                    onCancel={handleCancel}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
