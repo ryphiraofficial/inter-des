@@ -27,7 +27,7 @@ export const apiCall = async (endpoint, options = {}) => {
             }
         });
 
-        if (response.status === 401) {
+        if (response.status === 401 && !endpoint.includes('/auth/login')) {
             // Token is invalid or expired
             localStorage.removeItem('token');
             localStorage.removeItem('user');
