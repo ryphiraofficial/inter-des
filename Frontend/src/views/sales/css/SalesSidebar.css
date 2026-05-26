@@ -1,345 +1,214 @@
-/* ── Sales Sidebar ─────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* ── Sales Sidebar (Adapted from Procurement) ─────────────────────────────────────────────────────────── */
 
 :root {
-    --sales-sidebar-w:        240px;
-    --sales-sidebar-collapsed: 68px;
-    --sales-primary:          #6366f1;
-    --sales-primary-dark:     #4f46e5;
-    --sales-primary-light:    #e0e7ff;
-    --sales-accent:           #818cf8;
+    --sales-primary:          #4441cc;
+    --sales-primary-dark:     #332dbc;
+    --sales-primary-light:    #eff4ff;
+    --sales-accent:           #5e5ce6;
     --sales-bg:               #ffffff;
     --sales-bg-2:             #f8fafc;
-    --sales-text:             #0f172a;
-    --sales-muted:            #64748b;
+    --sales-text:             #0b1c30;
+    --sales-muted:            #464554;
     --sales-border:           #e2e8f0;
 }
 
-/* ── Base ────────────────────────────────────────────────────────────────── */
 .sales-sidebar {
-    font-family: 'Poppins', sans-serif;
-    width: var(--sales-sidebar-w);
-    min-height: 100vh;
-    height: 100%;
-    background: var(--sales-bg);
+    width: 230px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
     position: sticky;
     top: 0;
     left: 0;
-    z-index: 200;
-    flex-shrink: 0;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-right: 1px solid var(--sales-border);
-    overflow: visible;
+    z-index: 1000;
 }
 
-.sales-sidebar.collapsed {
-    width: var(--sales-sidebar-collapsed);
-}
-
-/* ── Brand ───────────────────────────────────────────────────────────────── */
-.sales-sidebar-brand {
+/* ── Custom Header & Footer classes ── */
+.sales-sidebar-header {
+    height: 75px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 20px 14px 16px;
-    border-bottom: 1px solid var(--sales-border);
-    position: relative;
-    min-height: 75px;
-    box-sizing: border-box;
-    overflow: visible; /* Allow toggle button to pop out */
-}
-
-.sales-sidebar:not(.collapsed) .sales-sidebar-brand {
+    padding: 0 1.5rem;
+    border-bottom: 1px solid #e8edf2;
+    flex-shrink: 0;
     justify-content: space-between;
+    box-sizing: border-box;
 }
 
-.sales-sidebar.collapsed .sales-sidebar-brand {
-    justify-content: center;
-}
-
-.sales-brand-icon {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--sales-primary), var(--sales-primary-dark));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    box-shadow: 0 4px 12px rgba(99,102,241,0.4);
-}
-
-.sales-brand-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-}
-
-.sales-brand-name {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--sales-text);
-    letter-spacing: 0.02em;
-}
-
-.sales-brand-sub {
-    font-size: 0.65rem;
-    font-weight: 500;
-    color: var(--sales-primary);
+.sales-sidebar-logo-text {
+    font-size: 0.95rem;
+    font-weight: 850;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #4441cc, #5e5ce6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 2px;
 }
 
-.sales-close-mobile {
-    display: none;
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: var(--sales-muted);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 6px;
-    transition: color 0.2s;
-}
-
-.sales-close-mobile:hover { color: var(--sales-text); }
-
-/* ── Collapse Button Inline ────────────────────────────────────────────────── */
-.sales-collapse-btn-inline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 10px;
-    background: var(--sales-bg-2);
-    border: 1.5px solid var(--sales-border);
-    color: var(--sales-muted);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex-shrink: 0;
-}
-
-.sales-collapse-btn-inline:hover {
-    background: white;
-    color: var(--sales-primary);
-    border-color: var(--sales-primary);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    transform: translateY(-1px);
-}
-
-.sales-collapse-btn-inline.header-version {
-    margin-left: auto;
-    z-index: 20;
-}
-
-.sales-sidebar.collapsed .header-version {
-    position: absolute;
-    right: -15px; /* Hang halfway over the edge */
-    top: 50%;
-    transform: translateY(-50%);
-    background: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    border: 1.5px solid var(--sales-primary);
-    color: var(--sales-primary);
-    border-radius: 50%; /* Make it round when collapsed for better visibility */
-}
-
-/* ── Nav ─────────────────────────────────────────────────────────────────── */
-.sales-sidebar-nav {
+.sales-sidebar-nav-container {
     flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 0;
+}
+
+.sales-sidebar-nav-container::-webkit-scrollbar {
+    width: 4px;
+}
+.sales-sidebar-nav-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sales-sidebar-nav-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.sales-sidebar-nav {
     display: flex;
     flex-direction: column;
-    padding: 8px 10px;
-    gap: 4px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    gap: 2px;
+    padding: 0 0.75rem;
 }
 
-.sales-sidebar-nav::-webkit-scrollbar { width: 0; }
-
-.sales-nav-section-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    color: var(--sales-muted);
-    letter-spacing: 0.12em;
-    padding: 8px 6px 4px;
-    display: block;
+.sales-sidebar-section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem 0.75rem;
+    margin-top: 0.5rem;
 }
 
-.sales-nav-item {
+.sales-sidebar-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: none;
     border-radius: 10px;
-    color: var(--sales-muted);
-    text-decoration: none;
+    background: transparent;
+    color: #64748b;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    text-decoration: none;
 }
 
-.sales-nav-item:hover {
-    background: rgba(99,102,241,0.08);
-    color: var(--sales-text);
+.sales-sidebar-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
-.sales-nav-item.active {
-    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(79,70,229,0.1));
-    color: var(--sales-primary);
-    font-weight: 600;
+.sales-sidebar-item.active {
+    background: #eff4ff;
+    color: #4441cc;
+    font-weight: 700;
 }
 
-.sales-nav-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 20px;
+.sales-sidebar-item.active svg {
+    color: #4441cc;
 }
 
-.sales-nav-label {
-    flex: 1;
-    transition: opacity 0.2s;
-}
-
-.sales-nav-indicator {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--sales-primary);
-    opacity: 0;
-    transition: opacity 0.2s;
-    flex-shrink: 0;
-}
-
-.sales-nav-item.active .sales-nav-indicator {
-    opacity: 1;
-}
-
-/* Active left border glow */
-.sales-nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 20%;
-    height: 60%;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: var(--sales-primary);
-    box-shadow: 0 0 8px var(--sales-primary);
-}
-
-/* Collapsed tooltip */
-.sales-sidebar.collapsed .sales-nav-item {
-    justify-content: center;
-    padding: 10px;
-    width: 44px;
-    height: 44px;
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-
-/* ── Footer ──────────────────────────────────────────────────────────────── */
 .sales-sidebar-footer {
-    padding: 12px 10px;
-    border-top: 1px solid var(--sales-border);
+    border-top: 1px solid #e2e8f0;
+    padding: 1.25rem 1rem;
+    background: #f8fafc;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.85rem;
 }
 
-.sales-user-card {
+.sales-sidebar-user-block {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px;
-    border-radius: 10px;
-    background: var(--sales-bg-2);
-    overflow: hidden;
+    gap: 0.75rem;
 }
 
-.sales-user-avatar {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--sales-primary), var(--sales-primary-dark));
+.sales-sidebar-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4441cc, #5e5ce6);
     color: white;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.8rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: 0.05em;
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    flex-shrink: 0;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.sales-user-info {
+.sales-sidebar-user-info {
     display: flex;
     flex-direction: column;
     min-width: 0;
 }
 
-.sales-user-name {
-    font-size: 0.95rem;
+.sales-sidebar-user-name {
+    font-size: 0.8rem;
     font-weight: 700;
-    color: var(--sales-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #0f172a;
     line-height: 1.2;
-}
-
-.sales-user-role {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--sales-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.sales-logout-btn {
+.sales-sidebar-user-role {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: capitalize;
+}
+
+.sales-sidebar-logout-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0.5rem;
     width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(239,68,68,0.25);
-    background: rgba(239,68,68,0.06);
+    padding: 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
     color: #ef4444;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.sales-sidebar-logout-btn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.sales-close-mobile {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 8px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s;
 }
 
-.sales-logout-btn:hover {
-    background: rgba(239,68,68,0.12);
-    border-color: rgba(239,68,68,0.4);
+.sales-close-mobile:hover {
+    background: #fee2e2;
     color: #ef4444;
-}
-
-/* Collapsed state */
-.sales-sidebar.collapsed .sales-user-card {
-    justify-content: center;
-    padding: 8px;
-}
-
-.sales-sidebar.collapsed .sales-logout-btn {
-    padding: 9px;
 }
 
 /* ── Overlay (mobile) ────────────────────────────────────────────────────── */
@@ -347,21 +216,29 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 199;
+    background: rgba(15, 23, 42, 0.4);
+    z-index: 9998;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .sales-sidebar {
         position: fixed;
         top: 0;
         left: 0;
         height: 100vh;
+        z-index: 9999;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        width: var(--sales-sidebar-w) !important;
-        z-index: 200;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+        width: 250px;
     }
 
     .sales-sidebar.mobile-open {
@@ -372,19 +249,7 @@
         display: block;
     }
 
-    .sales-collapse-btn {
-        display: none;
-    }
-
     .sales-close-mobile {
-        display: flex;
-    }
-
-    .sales-collapse-btn-inline {
-        display: none !important;
-    }
-
-    .sales-sidebar-footer {
-        display: none;
+        display: flex !important;
     }
 }
