@@ -54,6 +54,7 @@ export const ItemsTable = ({ items }) => (
                                     {item.finish && <span><strong>Finish:</strong> {item.finish}</span>}
                                     {item.material && <span><strong>Material:</strong> {item.material}</span>}
                                     {item.size && <span><strong>Size:</strong> {item.size}</span>}
+                                    {item.measurements && <span><strong>Measurements:</strong> {item.measurements}</span>}
                                 </div>
                             </td>
                             <td className="col-qty" data-label="Qty">{item.quantity} {item.unit}</td>

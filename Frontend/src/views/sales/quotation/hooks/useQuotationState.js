@@ -42,6 +42,7 @@ export const useQuotationState = () => {
             finishBrand: '',
             materialOrigin: '',
             size: '',
+            measurements: '',
             quantity: 1,
             unit: 'SCM',
             rate: 0,

@@ -152,6 +152,10 @@ const LineItemsSection = ({
                                             <label>Dimensions/Size</label>
                                             <input type="text" value={item.size} onChange={(e) => updateLineItem(item.id, 'size', e.target.value)} placeholder="e.g., 2400mm x 600mm" />
                                         </div>
+                                        <div className="form-group" style={{ marginTop: '1rem' }}>
+                                            <label>Measurements (Optional)</label>
+                                            <input type="text" value={item.measurements || ''} onChange={(e) => updateLineItem(item.id, 'measurements', e.target.value)} placeholder="e.g., L: 10ft, W: 5ft, H: 8ft" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

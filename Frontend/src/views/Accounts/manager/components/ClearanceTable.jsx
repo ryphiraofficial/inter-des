@@ -7,6 +7,22 @@ const ClearanceTable = ({
     loading, filtered, staffList, assigningId, setAssigningId, 
     selectedStaff, setSelectedStaff, handleAssign, handleClear 
 }) => {
+    const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, projectId: null, isVerified: false });
+
+    const handleConfirmOpen = (projectId, isVerified) => {
+        setConfirmDialog({ isOpen: true, projectId, isVerified });
+    };
+
+    const handleConfirmClose = () => {
+        setConfirmDialog({ isOpen: false, projectId: null, isVerified: false });
+    };
+
+    const handleConfirmSubmit = () => {
+        if (confirmDialog.projectId) {
+            handleClear(confirmDialog.projectId, confirmDialog.isVerified);
+        }
+        handleConfirmClose();
+    };
     const getStatusColor = (status, collectionStatus) => {
         if (collectionStatus === 'Collected') return { bg: '#dbeafe', text: '#1d4ed8' };
         if (collectionStatus === 'Verified') return { bg: '#dcfce3', text: '#16a34a' };
@@ -40,6 +56,7 @@ const ClearanceTable = ({
     }
 
     return (
+        <>
         <div className="table-responsive-wrapper">
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                 <thead>
@@ -148,7 +165,7 @@ const ClearanceTable = ({
                                 <td style={{ padding: '16px 24px' }}>
                                     {p.paymentCollectionStatus === 'Collected' ? (
                                         <button 
-                                            onClick={() => handleClear(p._id, true)} 
+                                            onClick={() => handleConfirmOpen(p._id, true)} 
                                             className="btn-primary-sm" 
                                             style={{ 
                                                 display: 'flex', 
@@ -168,7 +185,7 @@ const ClearanceTable = ({
                                         </button>
                                     ) : (
                                         <button 
-                                            onClick={() => handleClear(p._id, false)} 
+                                            onClick={() => handleConfirmOpen(p._id, false)} 
                                             disabled={p.paymentStatus === 'Cleared'} 
                                             className="btn-success-sm"
                                         >
@@ -182,6 +199,68 @@ const ClearanceTable = ({
                 </tbody>
             </table>
         </div>
+            {confirmDialog.isOpen && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 50,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backdropFilter: 'blur(4px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <div style={{
+                        width: '100%',
+                        maxWidth: '512px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '0.5rem',
+                        padding: '1.5rem',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', textAlign: 'left' }}>
+                            <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>Are you absolutely sure?</h2>
+                            <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+                                This action cannot be undone. This will clear the payment status and release the project for the next phase.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+                            <button 
+                                onClick={handleConfirmClose}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #e2e8f0',
+                                    backgroundColor: '#ffffff',
+                                    color: '#0f172a',
+                                    fontSize: '0.875rem',
+                                    fontWeight: 500,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleConfirmSubmit}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    backgroundColor: '#0f172a',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    fontSize: '0.875rem',
+                                    fontWeight: 500,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 

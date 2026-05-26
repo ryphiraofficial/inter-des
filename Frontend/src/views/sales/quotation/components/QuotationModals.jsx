@@ -62,6 +62,7 @@ export const BillPreviewModal = ({
                                         <td>
                                             <div style={{ fontWeight: 600 }}>{item.name}</div>
                                             <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{item.description}</div>
+                                            {item.measurements && <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>Measurements: {item.measurements}</div>}
                                         </td>
                                         <td>{item.quantity} {item.unit}</td>
                                         <td>₹{item.rate?.toLocaleString()}</td>
