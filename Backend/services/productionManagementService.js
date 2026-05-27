@@ -229,16 +229,22 @@ exports.updateTaskStatus = async (reqData) => {
                 // Elevate to SE (Site Engineer)
                 if (project && project.siteEngineer) {
                     task.stage = 'SE';
+                    task.assignedTo = project.siteEngineer;
+                    task.assignedBy = reqData.user.id;
                 }
             } else if (task.stage === 'SE') {
                 // Elevate to PE (Project Engineer)
                 if (project && project.projectEngineer) {
                     task.stage = 'PE';
+                    task.assignedTo = project.projectEngineer;
+                    task.assignedBy = reqData.user.id;
                 }
             } else if (task.stage === 'PE') {
                 // Elevate to PM (Project Manager)
                 if (project && project.projectManager) {
                     task.stage = 'PM';
+                    task.assignedTo = project.projectManager;
+                    task.assignedBy = reqData.user.id;
                 }
             }
         } else if (status === 'In Progress' && oldStatus === 'Completed') {
@@ -249,18 +255,21 @@ exports.updateTaskStatus = async (reqData) => {
                 if (project && project.siteSupervisor) {
                     task.stage = 'SS';
                     task.assignedTo = project.siteSupervisor;
+                    task.assignedBy = reqData.user.id;
                 }
             } else if (task.stage === 'PE') {
                 // Send back to SE (Site Engineer)
                 if (project && project.siteEngineer) {
                     task.stage = 'SE';
                     task.assignedTo = project.siteEngineer;
+                    task.assignedBy = reqData.user.id;
                 }
             } else if (task.stage === 'PM') {
                 // Send back to PE (Project Engineer)
                 if (project && project.projectEngineer) {
                     task.stage = 'PE';
                     task.assignedTo = project.projectEngineer;
+                    task.assignedBy = reqData.user.id;
                 }
             }
         }
