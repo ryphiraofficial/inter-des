@@ -1,32 +1,60 @@
 import { quotationAPI, uploadAPI, clientAPI } from '../../../../models/api';
 
-export const useQuotationActions = ({ 
-    formData, 
-    lineItems, 
-    taxRate, 
-    discount, 
-    includeDiscount, 
-    offerPrice, 
-    isEdit, 
-    id, 
-    isStaff, 
-    navigate, 
-    setError, 
-    setIsSaving, 
+export const useQuotationActions = ({
+    formData,
+    lineItems,
+    taxRate,
+    discount,
+    includeDiscount,
+    offerPrice,
+    isEdit,
+    id,
+    isStaff,
+    navigate,
+    setError,
+    setIsSaving,
     setShowBillPreview,
     setPendingStatus,
     setClients,
     setShowQuickAddModal,
-    setShowExitDialog
+    setShowExitDialog,
+    setFieldErrors
 }) => {
 
     const handlePreview = (e, status = 'Under Review') => {
         if (e) e.preventDefault();
-        if (!formData.client || !formData.projectName || lineItems.length === 0) {
-            setError('Please fill in required fields and add items.');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        const errors = {};
+        if (!formData.client) {
+            errors.client = 'Client is required.';
+        }
+        if (!formData.projectName) {
+            errors.projectName = 'Project name is required.';
+        }
+        if (!lineItems || lineItems.length === 0) {
+            errors.lineItems = 'Please add at least one line item.';
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setError('Please correct the highlighted fields before proceeding.');
+            
+            setTimeout(() => {
+                const firstErrorKey = Object.keys(errors)[0];
+                const element = document.getElementById(`${firstErrorKey}-field-group`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const input = element.querySelector('input, textarea, select');
+                    if (input) input.focus();
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 100);
             return;
         }
+
+        setFieldErrors({});
+        setError(null);
         setPendingStatus(status);
         setShowBillPreview(true);
     };

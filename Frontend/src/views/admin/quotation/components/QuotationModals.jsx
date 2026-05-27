@@ -21,7 +21,7 @@ export const BillPreviewModal = ({
                     <div className="doc-preview-paper">
                         <div className="preview-paper-header">
                             <div className="company-logo-section">
-                                <h1 style={{ color: '#1e293b', margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>RYPHIRA</h1>
+                                <h1 style={{ color: '#1e293b', margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>DESIGN STUDIO</h1>
                                 <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>INTERIOR & DESIGN SOLUTIONS</p>
                             </div>
                             <div className="doc-meta-section">

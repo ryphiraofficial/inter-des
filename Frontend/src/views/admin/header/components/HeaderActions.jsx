@@ -2,9 +2,18 @@ import React from 'react';
 import { Plus, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary', className = '' }) => {
+const ActionBtn = ({ show, onClick, label, icon: Icon = Plus, variant = 'primary', className = '', to }) => {
     if (!show) return null;
     
+    if (to) {
+        return (
+            <Link to={to} className={`btn-${variant} ${className}`.trim()}>
+                <Icon size={18} strokeWidth={2.4} />
+                <span className="nav-btn-text">{label}</span>
+            </Link>
+        );
+    }
+
     return (
         <button
             className={`btn-${variant} ${className}`.trim()}
@@ -27,6 +36,7 @@ const HeaderActions = ({ isHome, tab, location, user }) => {
             <ActionBtn show={isHome && tab === 'payments'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-payment-modal'))} label="Record Payment" variant="success" />
             <ActionBtn show={isHome && tab === 'clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add Client" variant="primary" />
             <ActionBtn show={isHome && tab === 'reports'} onClick={() => window.dispatchEvent(new CustomEvent('export-reports-pdf'))} label="Export PDF" icon={Download} variant="primary" />
+            <ActionBtn show={location.pathname === '/quotations'} to="/quotations/new" label="New Quotation" variant="primary" />
             <ActionBtn show={location.pathname === '/po-inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-po-inventory-modal'))} label="Add Item" variant="primary" />
             <ActionBtn show={location.pathname === '/purchase-orders'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-po-modal'))} label="Create PO" variant="primary" />
             <ActionBtn show={location.pathname === '/tasks'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-task-modal'))} label="Assign New Task" variant="primary" />

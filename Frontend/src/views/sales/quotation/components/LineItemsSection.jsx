@@ -1,15 +1,16 @@
 import React from 'react';
 import { Layers, Plus, Search, Trash2, ChevronDown, ChevronUp, Upload, Package } from 'lucide-react';
+import CustomSelect from '../../components/CustomSelect';
 
-const LineItemsSection = ({ 
-    lineItems, addLineItem, removeLineItem, updateLineItem, 
+const LineItemsSection = ({
+    lineItems, addLineItem, removeLineItem, updateLineItem,
     expandedItems, setExpandedItems, globalSearchQuery, setGlobalSearchQuery,
     globalSearchResults, handleGlobalSearch, addFromInventorySelect,
     activeSearchId, searchResults, handleProductSearch, selectProduct,
-    handleImageUpload
+    handleImageUpload, fieldErrors
 }) => {
     return (
-        <div className="form-section" style={{ marginTop: '1.5rem' }}>
+        <div className="form-section" id="lineItems-field-group" style={{ marginTop: '1.5rem' }}>
             <div className="section-header-row" style={{ borderBottom: 'none', marginBottom: '1rem' }}>
                 <div className="section-header-left">
                     <Layers className="section-icon" size={18} />
@@ -20,12 +21,18 @@ const LineItemsSection = ({
                 </button>
             </div>
 
+            {fieldErrors?.lineItems && (
+                <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '0.375rem', padding: '0.75rem', marginBottom: '1rem', color: '#ef4444', fontSize: '0.875rem', fontWeight: '500' }}>
+                    {fieldErrors.lineItems}
+                </div>
+            )}
+
             <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
                 <div style={{
                     background: '#ffffff',
                     padding: '0.4rem 1.25rem',
-                    borderRadius: '12px',
-                    border: '2px solid #e2e8f0',
+                    borderRadius: '4px',
+                    border: '2px solid #cbd5e1',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1rem',
@@ -66,6 +73,7 @@ const LineItemsSection = ({
                             <div className="item-number">{index + 1}</div>
                             <div className="item-primary-info">
                                 <div style={{ position: 'relative' }}>
+                                    <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Item</span>
                                     <input
                                         type="text"
                                         className="item-name-input"
@@ -89,13 +97,30 @@ const LineItemsSection = ({
                                 </div>
                             </div>
                             <div className="item-controls-compact">
-                                <div className="compact-val">
+                                <div className="compact-val" style={{ flexDirection: 'column', gap: '2px', alignItems: 'stretch' }}>
+                                    <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Qty</span>
                                     <input type="number" value={item.quantity} onChange={(e) => updateLineItem(item.id, 'quantity', e.target.value)} />
-                                    <span>{item.unit}</span>
                                 </div>
-                                <div className="compact-val">
-                                    <span className="currency-prefix">₹</span>
-                                    <input type="number" value={item.rate} onChange={(e) => updateLineItem(item.id, 'rate', e.target.value)} />
+                                <div className="unit-select-compact" style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'stretch' }}>
+                                    <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', paddingLeft: '0.75rem' }}>Unit</span>
+                                    <CustomSelect
+                                        value={item.unit}
+                                        onChange={(e) => updateLineItem(item.id, 'unit', e.target.value)}
+                                        options={[
+                                            { value: 'SCM', label: 'SCM' },
+                                            { value: 'SFT', label: 'SFT' },
+                                            { value: 'RFT', label: 'RFT' },
+                                            { value: 'Nos', label: 'Nos' },
+                                            { value: 'Lumpsum', label: 'Lumpsum' }
+                                        ]}
+                                    />
+                                </div>
+                                <div className="compact-val" style={{ flexDirection: 'column', gap: '2px', alignItems: 'stretch' }}>
+                                    <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Rate</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span className="currency-prefix">₹</span>
+                                        <input type="number" value={item.rate} onChange={(e) => updateLineItem(item.id, 'rate', e.target.value)} />
+                                    </div>
                                 </div>
                                 <div className="item-total-display">₹{item.amount?.toLocaleString()}</div>
                                 <div className="item-actions">

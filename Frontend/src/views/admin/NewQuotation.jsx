@@ -26,6 +26,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
     // Global UI states
     const [fetching, setFetching] = useState(isEdit && !!id);
     const [error, setError] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
     const [isSaving, setIsSaving] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showBillPreview, setShowBillPreview] = useState(false);
@@ -40,23 +41,23 @@ const NewQuotation = ({ isEdit, isStaff }) => {
 
     // Logic Hooks
     const state = useQuotationState();
-    
-    useQuotationData({ 
-        isEdit, id, setFormData: state.setFormData, setLineItems: state.setLineItems, 
-        setTaxRate: state.setTaxRate, setDiscount: state.setDiscount, 
-        setIncludeDiscount: state.setIncludeDiscount, setFetching, setError, 
-        setClients, setInventoryItems, clients 
+
+    useQuotationData({
+        isEdit, id, setFormData: state.setFormData, setLineItems: state.setLineItems,
+        setTaxRate: state.setTaxRate, setDiscount: state.setDiscount,
+        setIncludeDiscount: state.setIncludeDiscount, setFetching, setError,
+        setClients, setInventoryItems, clients
     });
 
-    const search = useQuotationSearch({ 
-        clients, inventoryItems, setFormData: state.setFormData, 
-        setLineItems: state.setLineItems, lineItems: state.lineItems 
+    const search = useQuotationSearch({
+        clients, inventoryItems, setFormData: state.setFormData,
+        setLineItems: state.setLineItems, lineItems: state.lineItems
     });
 
-    const calc = useQuotationCalculations({ 
-        lineItems: state.lineItems, includeDiscount: state.includeDiscount, 
-        discount: state.discount, includeTax: state.includeTax, 
-        taxRate: state.taxRate, formData: state.formData 
+    const calc = useQuotationCalculations({
+        lineItems: state.lineItems, includeDiscount: state.includeDiscount,
+        discount: state.discount, includeTax: state.includeTax,
+        taxRate: state.taxRate, formData: state.formData
     });
 
     const actions = useQuotationActions({
@@ -64,8 +65,39 @@ const NewQuotation = ({ isEdit, isStaff }) => {
         discount: state.discount, includeDiscount: state.includeDiscount,
         offerPrice: calc.offerPrice, isEdit, id, isStaff, navigate, setError,
         setIsSaving, setShowBillPreview, setPendingStatus, setClients,
-        setShowQuickAddModal, setShowExitDialog
+        setShowQuickAddModal, setShowExitDialog, setFieldErrors
     });
+
+    // Clear field-level error when user enters value
+    useEffect(() => {
+        if (state.formData.client) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.client;
+                return next;
+            });
+        }
+    }, [state.formData.client]);
+
+    useEffect(() => {
+        if (state.formData.projectName) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.projectName;
+                return next;
+            });
+        }
+    }, [state.formData.projectName]);
+
+    useEffect(() => {
+        if (state.lineItems.length > 0) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.lineItems;
+                return next;
+            });
+        }
+    }, [state.lineItems.length]);
 
     // Handle clicks outside for search suggestions
     useEffect(() => {
@@ -85,9 +117,9 @@ const NewQuotation = ({ isEdit, isStaff }) => {
             }}>
                 {error && <div className="error-banner">{error}</div>}
 
-                <form onSubmit={(e) => actions.handlePreview(e)}>
-                    <ProjectDetailsSection 
-                        formData={state.formData} 
+                <form onSubmit={(e) => actions.handlePreview(e)} noValidate>
+                    <ProjectDetailsSection
+                        formData={state.formData}
                         handleInputChange={state.handleInputChange}
                         clientSearchQuery={search.clientSearchQuery}
                         handleClientSearch={search.handleClientSearch}
@@ -96,15 +128,16 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                         selectClient={search.selectClient}
                         handleQuickAddClient={() => setShowQuickAddModal(true)}
                         setFormData={state.setFormData}
+                        fieldErrors={fieldErrors}
                     />
 
-                    <PaymentPoliciesSection 
-                        formData={state.formData} 
+                    <PaymentPoliciesSection
+                        formData={state.formData}
                         handleInputChange={state.handleInputChange}
                         depositAmount={calc.depositAmount}
                     />
 
-                    <LineItemsSection 
+                    <LineItemsSection
                         lineItems={state.lineItems}
                         addLineItem={state.addLineItem}
                         removeLineItem={state.removeLineItem}
@@ -121,9 +154,10 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                         handleProductSearch={search.handleProductSearch}
                         selectProduct={search.selectProduct}
                         handleImageUpload={(itemId, file) => actions.handleImageUpload(itemId, file, state.updateLineItem)}
+                        fieldErrors={fieldErrors}
                     />
 
-                    <QuotationSummary 
+                    <QuotationSummary
                         {...calc}
                         includeDiscount={state.includeDiscount}
                         setIncludeDiscount={state.setIncludeDiscount}
@@ -160,7 +194,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                 </form>
             </div>
 
-            <BillPreviewModal 
+            <BillPreviewModal
                 show={showBillPreview} setShow={setShowBillPreview}
                 formData={state.formData} clients={clients} lineItems={state.lineItems}
                 {...calc} includeDiscount={state.includeDiscount} discount={state.discount}
@@ -169,14 +203,14 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                 isSaving={isSaving}
             />
 
-            <QuickAddClientModal 
+            <QuickAddClientModal
                 show={showQuickAddModal} setShow={setShowQuickAddModal}
                 quickAddData={quickAddData} setQuickAddData={setQuickAddData}
                 confirmQuickAddClient={(e) => actions.confirmQuickAddClient(e, quickAddData, search.selectClient)}
                 isSubmitting={isSubmitting}
             />
 
-            <ExitConfirmationDialog 
+            <ExitConfirmationDialog
                 show={showExitDialog} setShow={setShowExitDialog}
                 handleSaveDraft={actions.handleSaveDraft} isSaving={isSaving}
                 onDiscard={() => navigate(isStaff ? '/staff/quotations' : '/quotations')}

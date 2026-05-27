@@ -26,6 +26,7 @@ const SalesNewQuotation = ({ isEdit, isStaff }) => {
     // Global UI states
     const [fetching, setFetching] = useState(isEdit && !!id);
     const [error, setError] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
     const [isSaving, setIsSaving] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showBillPreview, setShowBillPreview] = useState(false);
@@ -64,8 +65,39 @@ const SalesNewQuotation = ({ isEdit, isStaff }) => {
         discount: state.discount, includeDiscount: state.includeDiscount,
         offerPrice: calc.offerPrice, isEdit, id, isStaff, navigate, setError,
         setIsSaving, setShowBillPreview, setPendingStatus, setClients,
-        setShowQuickAddModal, setShowExitDialog
+        setShowQuickAddModal, setShowExitDialog, setFieldErrors
     });
+
+    // Clear field-level error when user enters value
+    useEffect(() => {
+        if (state.formData.client) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.client;
+                return next;
+            });
+        }
+    }, [state.formData.client]);
+
+    useEffect(() => {
+        if (state.formData.projectName) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.projectName;
+                return next;
+            });
+        }
+    }, [state.formData.projectName]);
+
+    useEffect(() => {
+        if (state.lineItems.length > 0) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next.lineItems;
+                return next;
+            });
+        }
+    }, [state.lineItems.length]);
 
     // Handle clicks outside for search suggestions
     useEffect(() => {
@@ -85,7 +117,7 @@ const SalesNewQuotation = ({ isEdit, isStaff }) => {
             }}>
                 {error && <div className="error-banner">{error}</div>}
 
-                <form onSubmit={(e) => actions.handlePreview(e)}>
+                <form onSubmit={(e) => actions.handlePreview(e)} noValidate>
                     <ProjectDetailsSection 
                         formData={state.formData} 
                         handleInputChange={state.handleInputChange}
@@ -96,6 +128,7 @@ const SalesNewQuotation = ({ isEdit, isStaff }) => {
                         selectClient={search.selectClient}
                         handleQuickAddClient={() => setShowQuickAddModal(true)}
                         setFormData={state.setFormData}
+                        fieldErrors={fieldErrors}
                     />
 
                     <PaymentPoliciesSection 
@@ -121,6 +154,7 @@ const SalesNewQuotation = ({ isEdit, isStaff }) => {
                         handleProductSearch={search.handleProductSearch}
                         selectProduct={(itemId, item) => search.selectProduct(itemId, item, state.setLineItems)}
                         handleImageUpload={(itemId, file) => actions.handleImageUpload(itemId, file, state.updateLineItem)}
+                        fieldErrors={fieldErrors}
                     />
 
                     <QuotationSummary 
