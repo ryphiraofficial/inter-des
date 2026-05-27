@@ -4,6 +4,7 @@ export const useApprovalsState = () => {
     const [activeTab, setActiveTab] = useState('design');
     const [tasks, setTasks] = useState([]);
     const [procurementItems, setProcurementItems] = useState([]);
+    const [productionProjects, setProductionProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [productionManagers, setProductionManagers] = useState([]);
     const [procurementManagers, setProcurementManagers] = useState([]);
@@ -26,10 +27,14 @@ export const useApprovalsState = () => {
     const [sentToAccounts, setSentToAccounts] = useState({});
     const [approving, setApproving] = useState({});
 
+    // Production Approval State
+    const [approvingProduction, setApprovingProduction] = useState({});
+
     return {
         activeTab, setActiveTab,
         tasks, setTasks,
         procurementItems, setProcurementItems,
+        productionProjects, setProductionProjects,
         loading, setLoading,
         productionManagers, setProductionManagers,
         procurementManagers, setProcurementManagers,
@@ -44,6 +49,7 @@ export const useApprovalsState = () => {
         submittingApproval, setSubmittingApproval,
         selectedPM, setSelectedPM,
         sentToAccounts, setSentToAccounts,
-        approving, setApproving
+        approving, setApproving,
+        approvingProduction, setApprovingProduction
     };
 };

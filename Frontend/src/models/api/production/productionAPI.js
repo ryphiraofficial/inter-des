@@ -77,6 +77,12 @@ export const productionManagerAPI = {
         method: 'POST',
         body: JSON.stringify(data)
     }),
+    // Admin Approval
+    getCompletedProductionProjects: () => apiCall('/production-management/admin/completed-projects'),
+    adminApproveProductionProject: (projectId, data) => apiCall(`/production-management/projects/${projectId}/admin-approve`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    }),
 };
 
 // Site Management APIs

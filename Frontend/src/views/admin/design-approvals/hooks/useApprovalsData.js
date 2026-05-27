@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { taskAPI, procurementAPI, userAPI } from '../../../../models/api';
+import { productionManagerAPI } from '../../../../models/api';
 
 export const useApprovalsData = ({ 
-    setTasks, setProcurementItems, setLoading, setProductionManagers, setProcurementManagers, showToast 
+    setTasks, setProcurementItems, setProductionProjects, setLoading, 
+    setProductionManagers, setProcurementManagers, showToast 
 }) => {
 
     const fetchProductionManagers = async () => {
@@ -22,6 +24,15 @@ export const useApprovalsData = ({
             }
         } catch (err) {
             console.error('Failed to fetch procurement managers:', err);
+        }
+    };
+
+    const fetchCompletedProductionProjects = async () => {
+        try {
+            const res = await productionManagerAPI.getCompletedProductionProjects();
+            setProductionProjects(res?.data || []);
+        } catch (err) {
+            console.error('Failed to fetch production projects:', err);
         }
     };
 
@@ -55,7 +66,8 @@ export const useApprovalsData = ({
         fetchPendingApprovals();
         fetchProductionManagers();
         fetchProcurementManagers();
+        fetchCompletedProductionProjects();
     }, []);
 
-    return { fetchPendingApprovals, fetchProductionManagers, fetchProcurementManagers };
+    return { fetchPendingApprovals, fetchProductionManagers, fetchProcurementManagers, fetchCompletedProductionProjects };
 };

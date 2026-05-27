@@ -1,8 +1,10 @@
 import { taskAPI, procurementAPI } from '../../../../models/api';
+import { productionManagerAPI } from '../../../../models/api';
 
 export const useApprovalsActions = ({ 
-    setTasks, setProcurementItems, setSubmittingApproval, setShowPaymentModal, 
-    setPaymentTask, setShowDesignModal, showToast, selectedPM, sentToAccounts, setApproving 
+    setTasks, setProcurementItems, setProductionProjects, setSubmittingApproval, 
+    setShowPaymentModal, setPaymentTask, setShowDesignModal, showToast, 
+    selectedPM, sentToAccounts, setApproving, setApprovingProduction
 }) => {
 
     const submitApproval = async ({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId }) => {
@@ -57,12 +59,10 @@ export const useApprovalsActions = ({
 
     const handleProcurementApprove = async (item) => {
         const pmId = selectedPM[item._id];
-
         if (!pmId) {
             showToast('Please assign a Project Manager first', 'error');
             return;
         }
-
         try {
             setApproving(prev => ({ ...prev, [item._id]: true }));
             await procurementAPI.adminApproveProcurement(item._id, {
@@ -80,5 +80,44 @@ export const useApprovalsActions = ({
         }
     };
 
-    return { submitApproval, handleReject, handleProcurementApprove };
+    const handleProductionApprove = async (projectId, remarks) => {
+        try {
+            setApprovingProduction(prev => ({ ...prev, [projectId]: true }));
+            const res = await productionManagerAPI.adminApproveProductionProject(projectId, { action: 'approve', remarks });
+            if (res.success) {
+                setProductionProjects(prev => prev.filter(p => p._id !== projectId));
+                showToast('Production project approved successfully!');
+            } else {
+                showToast(res.message || 'Approval failed', 'error');
+            }
+        } catch (err) {
+            showToast('Approval failed: ' + err.message, 'error');
+        } finally {
+            setApprovingProduction(prev => ({ ...prev, [projectId]: false }));
+        }
+    };
+
+    const handleProductionReject = async (projectId, remarks) => {
+        if (!remarks) {
+            const note = window.prompt('Please enter a reason for rejection:');
+            if (!note) return;
+            remarks = note;
+        }
+        try {
+            setApprovingProduction(prev => ({ ...prev, [projectId]: true }));
+            const res = await productionManagerAPI.adminApproveProductionProject(projectId, { action: 'reject', remarks });
+            if (res.success) {
+                setProductionProjects(prev => prev.filter(p => p._id !== projectId));
+                showToast('Project sent back to Project Manager for rework.');
+            } else {
+                showToast(res.message || 'Rejection failed', 'error');
+            }
+        } catch (err) {
+            showToast('Rejection failed: ' + err.message, 'error');
+        } finally {
+            setApprovingProduction(prev => ({ ...prev, [projectId]: false }));
+        }
+    };
+
+    return { submitApproval, handleReject, handleProcurementApprove, handleProductionApprove, handleProductionReject };
 };

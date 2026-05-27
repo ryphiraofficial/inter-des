@@ -1,15 +1,39 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
-    RefreshCw, Palette, LayoutDashboard, GitMerge, FileSpreadsheet, 
-    Briefcase, CheckSquare, Users, Eye, AlertCircle, CheckCircle, Plus, Menu, Video
+    RefreshCw, Plus, Menu, Bell
 } from 'lucide-react';
+
+import { useNotifications } from '../../sales/hooks/useNotifications';
+import NotificationPopup from '../../sales/components/SalesNotificationPopup';
+import '../../sales/css/SalesHeader.css';
 
 const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
+    const [showNotifications, setShowNotifications] = useState(false);
+    const notifRef = useRef(null);
 
     const isManager = user?.role?.toLowerCase().replace(/_/g, ' ').includes('design manager') || user?.role?.toLowerCase().includes('admin');
+
+    const {
+        notifications,
+        unreadCount,
+        fetchNotifications,
+        handleMarkAsRead,
+        handleMarkAllRead,
+        handleDelete
+    } = useNotifications();
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (notifRef.current && !notifRef.current.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const tabMeta = isManager ? {
         overview: { title: 'Overview', description: 'High-level studio performance and metrics' },
@@ -33,6 +57,11 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
 
     const handleAssignClick = () => {
         window.dispatchEvent(new CustomEvent('open-assign-modal'));
+    };
+
+    const toggleNotif = () => {
+        setShowNotifications(v => !v);
+        if (!showNotifications) fetchNotifications();
     };
 
     return (
@@ -66,6 +95,60 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
                         <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
                     </button>
                 )}
+
+                {/* Notification Bell */}
+                <div ref={notifRef} style={{ position: 'relative' }}>
+                    <button
+                        onClick={toggleNotif}
+                        title="Notifications"
+                        style={{
+                            position: 'relative',
+                            background: showNotifications ? '#f1f5f9' : 'transparent',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#475569',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Bell size={18} />
+                        {unreadCount > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-4px',
+                                right: '-4px',
+                                background: '#ef4444',
+                                color: 'white',
+                                fontSize: '0.6rem',
+                                fontWeight: 'bold',
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '2px solid white'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {showNotifications && (
+                        <NotificationPopup
+                            notifications={notifications}
+                            unreadCount={unreadCount}
+                            onClose={() => setShowNotifications(false)}
+                            onMarkAsRead={handleMarkAsRead}
+                            onMarkAllRead={handleMarkAllRead}
+                            onDelete={handleDelete}
+                        />
+                    )}
+                </div>
             </div>
         </header>
     );

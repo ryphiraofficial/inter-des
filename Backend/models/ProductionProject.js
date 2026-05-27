@@ -22,7 +22,7 @@ const ProductionProjectSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Planning', 'Active', 'On Hold', 'Completed'],
+        enum: ['Planning', 'Active', 'On Hold', 'Completed', 'Admin Approved'],
         default: 'Planning'
     },
     startDate: {
@@ -113,6 +113,14 @@ const ProductionProjectSchema = new mongoose.Schema({
         clientRating: Number,
         finalRemarks: String,
         photos: [String]
+    },
+    adminApproval: {
+        approved: { type: Boolean },
+        remarks: String,
+        approvedAt: Date,
+        rejectedAt: Date,
+        approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }
 }, {
     timestamps: true

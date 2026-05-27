@@ -1303,3 +1303,56 @@ exports.submitProjectCompletion = async (reqData) => {
         return { status: 500, success: false, message: error.message };
     }
 };
+exports.getCompletedProductionProjects = async (reqData) => {
+    try {
+        const projects = await ProductionProject.find({ status: 'Completed' })
+            .populate('projectManager', 'fullName email')
+            .populate('sourceProject', 'name projectNumber client')
+            .sort({ updatedAt: -1 });
+        return { status: 200, success: true, data: projects };
+    } catch (error) {
+        return { status: 500, success: false, message: error.message };
+    }
+};
+
+exports.adminApproveProductionProject = async (reqData) => {
+    try {
+        const { action, remarks } = reqData.body;
+        const project = await ProductionProject.findById(reqData.params.id);
+        if (!project) return { status: 404, success: false, message: 'Project not found' };
+
+        if (action === 'approve') {
+            project.status = 'Admin Approved';
+            project.adminApproval = { approved: true, remarks, approvedAt: new Date(), approvedBy: reqData.user.id };
+            await project.save();
+
+            // ── Propagate to the main Project ──────────────────────────────
+            // Setting handoverComplete = true triggers the pre-save hook which
+            // sets stage = 'Completed' and status = 'Completed' on the main project.
+            if (project.sourceProject) {
+                const Project = require('../models/Project');
+                const mainProject = await Project.findById(project.sourceProject);
+                if (mainProject) {
+                    mainProject.handoverComplete = true;
+                    mainProject.productionComplete = true; // ensure this is set too
+                    await mainProject.save();
+                }
+            }
+        } else {
+            // Rejection: send the production project back to Active for rework
+            project.status = 'Active';
+            project.adminApproval = { approved: false, remarks, rejectedAt: new Date(), rejectedBy: reqData.user.id };
+            await project.save();
+        }
+
+        await logActivity(
+            project._id, reqData.user.id,
+            action === 'approve' ? 'ADMIN_APPROVED' : 'ADMIN_REJECTED',
+            `Admin ${action === 'approve' ? 'approved' : 'rejected'} project "${project.projectName}".${remarks ? ' Remarks: ' + remarks : ''}`
+        );
+
+        return { status: 200, success: true, data: project };
+    } catch (error) {
+        return { status: 500, success: false, message: error.message };
+    }
+};

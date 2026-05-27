@@ -11,6 +11,7 @@ import { useApprovalsActions } from './design-approvals/hooks/useApprovalsAction
 import ApprovalTabs from './design-approvals/components/ApprovalTabs';
 import DesignPipeline from './design-approvals/components/DesignPipeline';
 import ProcurementPipeline from './design-approvals/components/ProcurementPipeline';
+import ProductionPipeline from './design-approvals/components/ProductionPipeline';
 import DesignPreviewModal from './design-approvals/components/DesignPreviewModal';
 import PaymentCollectionModal from './design-approvals/components/PaymentCollectionModal';
 import ApprovalSkeleton from './design-approvals/components/ApprovalSkeleton';
@@ -24,6 +25,7 @@ const DesignApprovals = () => {
     useApprovalsData({
         setTasks: state.setTasks,
         setProcurementItems: state.setProcurementItems,
+        setProductionProjects: state.setProductionProjects,
         setLoading: state.setLoading,
         setProductionManagers: state.setProductionManagers,
         setProcurementManagers: state.setProcurementManagers,
@@ -33,6 +35,7 @@ const DesignApprovals = () => {
     const actions = useApprovalsActions({
         setTasks: state.setTasks,
         setProcurementItems: state.setProcurementItems,
+        setProductionProjects: state.setProductionProjects,
         setSubmittingApproval: state.setSubmittingApproval,
         setShowPaymentModal: state.setShowPaymentModal,
         setPaymentTask: state.setPaymentTask,
@@ -40,7 +43,8 @@ const DesignApprovals = () => {
         showToast,
         selectedPM: state.selectedPM,
         sentToAccounts: state.sentToAccounts,
-        setApproving: state.setApproving
+        setApproving: state.setApproving,
+        setApprovingProduction: state.setApprovingProduction
     });
 
     const openApproveModal = (task) => {
@@ -54,6 +58,8 @@ const DesignApprovals = () => {
 
     if (state.loading) return <ApprovalSkeleton />;
 
+    const totalPending = state.tasks.length + state.procurementItems.length + state.productionProjects.length;
+
     return (
         <div className="tasks-container">
             <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
@@ -64,7 +70,7 @@ const DesignApprovals = () => {
                         </div>
                         <div>
                             <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Queue Strength</span>
-                            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5', display: 'block' }}>{state.tasks.length + state.procurementItems.length} Pending</span>
+                            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5', display: 'block' }}>{totalPending} Pending</span>
                         </div>
                     </div>
                 </div>
@@ -72,17 +78,23 @@ const DesignApprovals = () => {
                 <ApprovalTabs 
                     activeTab={state.activeTab} 
                     setActiveTab={state.setActiveTab} 
-                    counts={{ design: state.tasks.length, procurement: state.procurementItems.length }} 
+                    counts={{ 
+                        design: state.tasks.length, 
+                        procurement: state.procurementItems.length,
+                        production: state.productionProjects.length
+                    }} 
                 />
 
-                {state.activeTab === 'design' ? (
+                {state.activeTab === 'design' && (
                     <DesignPipeline 
                         tasks={state.tasks} 
                         setSelectedTask={state.setSelectedTask} 
                         setShowDesignModal={state.setShowDesignModal} 
                         openApproveModal={openApproveModal} 
                     />
-                ) : (
+                )}
+
+                {state.activeTab === 'procurement' && (
                     <ProcurementPipeline 
                         procurementItems={state.procurementItems}
                         selectedPM={state.selectedPM}
@@ -92,6 +104,15 @@ const DesignApprovals = () => {
                         productionManagers={state.productionManagers}
                         handleProcurementApprove={actions.handleProcurementApprove}
                         approving={state.approving}
+                    />
+                )}
+
+                {state.activeTab === 'production' && (
+                    <ProductionPipeline
+                        productionProjects={state.productionProjects}
+                        onApprove={actions.handleProductionApprove}
+                        onReject={actions.handleProductionReject}
+                        approving={state.approvingProduction}
                     />
                 )}
             </div>
@@ -135,44 +156,6 @@ const DesignApprovals = () => {
                     margin: 1.5rem !important;
                     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
                 }
-                @media (max-width: 1024px) {
-                    .modal-content-wide {
-                        max-width: 90vw !important;
-                        margin: 1rem !important;
-                    }
-                }
-                @media (max-width: 992px) {
-                    .preview-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
-                }
-                @media (max-width: 768px) {
-                    .t-tasks-header { flex-direction: column !important; align-items: stretch !important; gap: 1rem; }
-                    .queue-strength-box { width: 100% !important; justify-content: flex-start !important; }
-                    .modal-content-wide {
-                        max-width: 95vw !important;
-                        border-radius: 20px !important;
-                    }
-                    .modal-header {
-                        padding: 1.25rem 1.5rem !important;
-                    }
-                    .modal-body {
-                        padding: 1.5rem !important;
-                    }
-                    .modal-footer {
-                        flex-direction: column;
-                        padding: 1.25rem 1.5rem !important;
-                        gap: 0.75rem !important;
-                    }
-                    .modal-footer button { width: 100%; }
-                    .payment-info-grid { grid-template-columns: 1fr !important; }
-                    
-                    .payment-modal-header {
-                        padding: 20px 24px !important;
-                    }
-                    .payment-modal-body {
-                        padding: 20px 24px !important;
-                        gap: 16px !important;
-                    }
-                }
                 @media (max-width: 600px) {
                     .approval-tabs-container {
                         overflow-x: auto !important;
@@ -182,23 +165,16 @@ const DesignApprovals = () => {
                         padding-bottom: 2px;
                         border-bottom: 2px solid #e2e8f0;
                     }
-                    .approval-tabs-container::-webkit-scrollbar {
-                        display: none;
-                    }
+                    .approval-tabs-container::-webkit-scrollbar { display: none; }
                     .approval-tabs-container button {
                         flex-shrink: 0 !important;
-                        padding: 10px 16px !important;
-                        font-size: 0.9rem !important;
+                        padding: 10px 14px !important;
+                        font-size: 0.85rem !important;
                     }
                 }
                 @media (max-width: 480px) {
-                    .approval-card-actions {
-                        flex-direction: column !important;
-                        gap: 8px !important;
-                    }
-                    .approval-card-actions button {
-                        width: 100% !important;
-                    }
+                    .approval-card-actions { flex-direction: column !important; gap: 8px !important; }
+                    .approval-card-actions button { width: 100% !important; }
                 }
             `}</style>
         </div>

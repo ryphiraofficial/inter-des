@@ -4,7 +4,7 @@ import {
     Target, Palette, Wrench, ClipboardCheck, Calendar, FolderOpen, 
     Bell, MessageSquare, Award, Clock, DollarSign, Building2, Video
 } from 'lucide-react';
-import { getRoleDepartment, useRoleDashboard } from '../../hooks/useRoleDashboard';
+import { getRoleDepartment, useRoleDashboard, isSuperAdmin } from '../../hooks/useRoleDashboard';
 
 export const useNavGroups = (user) => {
     const dashboardType = useRoleDashboard(user?.role);
@@ -37,6 +37,8 @@ export const useNavGroups = (user) => {
             { name: 'Users', icon: Shield, path: '/users' },
             { name: 'Settings', icon: Settings, path: '/settings' },
         ];
+
+
 
         let roleSpecificItems = [];
         if (dashboardType === 'accounts_manager') {
@@ -105,8 +107,9 @@ export const useNavGroups = (user) => {
             { title: "System", items: systemItems }
         ];
 
+        if (isSuperAdmin(user?.role)) return groups;
+
         const roleLower = user?.role?.toLowerCase() || '';
-        if (roleLower === 'super admin' || roleLower === 'admin') return groups;
 
         return groups.map(group => {
             const filteredItems = group.items.filter(item => {

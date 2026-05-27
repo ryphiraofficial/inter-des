@@ -1,33 +1,54 @@
 import React from 'react';
-import { Image as ImageIcon, Package } from 'lucide-react';
+import { Image as ImageIcon, Package, Wrench } from 'lucide-react';
 
 const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
+    const tabs = [
+        { key: 'design',      label: 'Design Pipeline',      icon: ImageIcon, color: '#6366f1', count: counts.design },
+        { key: 'procurement', label: 'Procurement Pipeline',  icon: Package,   color: '#0ea5e9', count: counts.procurement },
+        { key: 'production',  label: 'Production Pipeline',   icon: Wrench,    color: '#f59e0b', count: counts.production },
+    ];
+
     return (
-        <div className="approval-tabs-container" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e2e8f0' }}>
-            <button 
-                style={{ 
-                    padding: '12px 24px', background: 'none', border: 'none', 
-                    borderBottom: activeTab === 'design' ? '3px solid #6366f1' : '3px solid transparent', 
-                    color: activeTab === 'design' ? '#4f46e5' : '#64748b', 
-                    fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', 
-                    display: 'flex', alignItems: 'center', gap: '8px' 
-                }}
-                onClick={() => setActiveTab('design')}
-            >
-                <ImageIcon size={18} /> Design Pipeline ({counts.design})
-            </button>
-            <button 
-                style={{ 
-                    padding: '12px 24px', background: 'none', border: 'none', 
-                    borderBottom: activeTab === 'procurement' ? '3px solid #6366f1' : '3px solid transparent', 
-                    color: activeTab === 'procurement' ? '#4f46e5' : '#64748b', 
-                    fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', 
-                    display: 'flex', alignItems: 'center', gap: '8px' 
-                }}
-                onClick={() => setActiveTab('procurement')}
-            >
-                <Package size={18} /> Procurement Pipeline ({counts.procurement})
-            </button>
+        <div className="approval-tabs-container" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '2px solid #e2e8f0' }}>
+            {tabs.map(({ key, label, icon: Icon, color, count }) => {
+                const isActive = activeTab === key;
+                return (
+                    <button
+                        key={key}
+                        onClick={() => setActiveTab(key)}
+                        style={{
+                            padding: '12px 20px',
+                            background: 'none',
+                            border: 'none',
+                            borderBottom: isActive ? `3px solid ${color}` : '3px solid transparent',
+                            color: isActive ? color : '#64748b',
+                            fontWeight: 700,
+                            fontSize: '0.95rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <Icon size={17} />
+                        {label}
+                        <span style={{
+                            background: isActive ? color : '#f1f5f9',
+                            color: isActive ? '#fff' : '#64748b',
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            padding: '2px 7px',
+                            borderRadius: '10px',
+                            minWidth: '20px',
+                            textAlign: 'center'
+                        }}>
+                            {count}
+                        </span>
+                    </button>
+                );
+            })}
         </div>
     );
 };

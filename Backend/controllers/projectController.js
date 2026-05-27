@@ -38,6 +38,9 @@ exports.getProjects = async (req, res) => {
             .populate('client', 'name email phone')
             .populate('quotation', 'quotationNumber totalAmount createdBy projectName')
             .populate('createdBy', 'fullName')
+            .populate('assignedDesignManager', 'fullName')
+            .populate('assignedProcurementManager', 'fullName')
+            .populate('assignedProductionManager', 'fullName')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));

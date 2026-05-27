@@ -121,17 +121,17 @@
 }
 
 .accounts-navbar-title {
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 800;
-    color: #0f172a;
+    color: #1e293b;
     display: block;
     line-height: 1.2;
 }
 
 .accounts-navbar-subtitle {
     font-size: 0.7rem;
-    color: #64748b;
-    font-weight: 600;
+    color: #94a3b8;
+    font-weight: 500;
     display: block;
 }
 

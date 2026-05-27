@@ -43,7 +43,10 @@ const {
     getGanttData,
     // Phase 6
     getProductionReports,
-    submitProjectCompletion
+    submitProjectCompletion,
+    // Admin Approval
+    getCompletedProductionProjects,
+    adminApproveProductionProject
 } = require('../controllers/productionManagementController');
 
 const {
@@ -138,5 +141,11 @@ router.post('/site/supervisor-reports', authorize('Site Supervisor', 'Project Ma
 router.get('/site/supervisor-reports/:projectId', getSupervisorReports);
 
 router.get('/reports', authorize('Project Manager', 'Admin'), getProductionReports);
+
+// =======================
+// ADMIN APPROVAL APIs
+// =======================
+router.get('/admin/completed-projects', authorize('Admin', 'Super Admin'), getCompletedProductionProjects);
+router.put('/projects/:id/admin-approve', authorize('Admin', 'Super Admin'), adminApproveProductionProject);
 
 module.exports = router;

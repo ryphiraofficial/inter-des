@@ -13,25 +13,7 @@
 
 /* Use global .page-header from Header.css */
 
-.header-left h1 {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 4px 0;
-}
-
-.header-left h1 svg {
-    color: #667eea;
-}
-
-.header-left p {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin: 0;
-}
+/* Removed .header-left overrides to use global .page-header from Header.css */
 
 .btn-primary {
     display: flex;
