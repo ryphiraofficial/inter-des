@@ -10,6 +10,7 @@ import {
     ClipboardCheck
 } from 'lucide-react';
 import './css/SalesSidebar.css';
+import { useCompanySettings } from '../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { to: '/staff/dashboard',   icon: LayoutDashboard,  label: 'Dashboard' },
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
 
 const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
     const navigate = useNavigate();
+    const { companyName } = useCompanySettings();
 
     const handleLogout = () => {
         onLogout?.();
@@ -37,9 +39,14 @@ const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
             )}
             <aside className={`sales-sidebar ${isOpen ? 'mobile-open' : ''}`}>
                 {/* Top Heading */}
-                <div className="sales-sidebar-header">
-                    <span className="sales-sidebar-logo-text">SALES</span>
-                    <button className="sales-close-mobile" onClick={toggleSidebar}>
+                <div className="sales-sidebar-header" style={{ height: '64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', marginBottom: '1rem', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+                        {companyName}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                        Sales Staff
+                    </span>
+                    <button className="sales-close-mobile" onClick={toggleSidebar} style={{ position: 'absolute', right: '1rem', top: '1rem' }}>
                         <LogOut size={18} style={{ transform: 'rotate(180deg)' }} />
                     </button>
                 </div>

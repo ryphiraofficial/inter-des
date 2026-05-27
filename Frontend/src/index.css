@@ -51,8 +51,8 @@
 }
 
 html {
-  font-size: 13px;
-  /* "Zoomed out" effect */
+  font-size: 15px;
+  /* Increased from 13px to 15px for improved global readability */
   overflow-x: hidden;
 }
 

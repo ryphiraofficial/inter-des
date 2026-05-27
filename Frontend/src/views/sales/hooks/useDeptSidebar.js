@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Target,
     ShoppingCart, Building2, Box, ClipboardCheck, Clock, Plus, CheckCircle,
-    FolderOpen, CalendarOff, Video
+    FolderOpen, CalendarOff, Video, ClipboardList, MapPin
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
 
@@ -130,6 +130,32 @@ const NAV_CONFIG = {
             { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
     },
+    'Sales Staff': {
+        brandTitle:   'Sales Portal',
+        sidebarClass: 'procurement', // Using procurement theme (blue)
+        basePath:     '/staff/dashboard',
+        items: [
+            { name: 'Dashboard',        icon: LayoutDashboard, path: '/staff/dashboard' },
+            { name: 'My Tasks',         icon: ClipboardList,   path: '/staff/tasks' },
+            { name: 'Client Approvals', icon: ClipboardCheck,  path: '/staff/approvals' },
+            { name: 'Site Visits',      icon: MapPin,          path: '/staff/site-visits' },
+            { name: 'Clients',          icon: Users,           path: '/staff/clients' },
+            { name: 'Quotations',       icon: FileText,        path: '/staff/quotations' },
+        ],
+    },
+    'Sales Manager': {
+        brandTitle:   'Sales Portal',
+        sidebarClass: 'procurement', // Using procurement theme (blue)
+        basePath:     '/staff/dashboard',
+        items: [
+            { name: 'Dashboard',        icon: LayoutDashboard, path: '/staff/dashboard' },
+            { name: 'My Tasks',         icon: ClipboardList,   path: '/staff/tasks' },
+            { name: 'Client Approvals', icon: ClipboardCheck,  path: '/staff/approvals' },
+            { name: 'Site Visits',      icon: MapPin,          path: '/staff/site-visits' },
+            { name: 'Clients',          icon: Users,           path: '/staff/clients' },
+            { name: 'Quotations',       icon: FileText,        path: '/staff/quotations' },
+        ],
+    },
 };
 
 const getImageUrl = (path) => {
@@ -143,7 +169,10 @@ export const useDeptSidebar = (role, user) => {
     const searchParams = new URLSearchParams(location.search);
     const currentTab = searchParams.get('tab') || 'overview';
 
-    const config = NAV_CONFIG[role];
+    let config = NAV_CONFIG[role];
+    if (!config && role && role.toLowerCase().includes('sales')) {
+        config = NAV_CONFIG['Sales Staff'];
+    }
 
     const userInitials = user?.fullName
         ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()

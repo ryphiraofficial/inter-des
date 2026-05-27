@@ -106,6 +106,37 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                     </button>
                 )}
 
+                <div className="sales-notif-wrapper">
+                    <button 
+                        className={`sales-notif-btn ${showNotifications ? 'active' : ''}`}
+                        onClick={() => {
+                            setIsProfileOpen(false);
+                            setShowNotifications(!showNotifications);
+                            if (!showNotifications) fetchNotifications();
+                        }}
+                        aria-label="Notifications"
+                    >
+                        <Bell size={18} />
+                        {unreadCount > 0 && (
+                            <span className="sales-notif-badge">
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </button>
+                    {showNotifications && (
+                        <div style={{ position: 'absolute', top: '115%', right: 0, zIndex: 100 }}>
+                            <SalesNotificationPopup
+                                notifications={notifications}
+                                unreadCount={unreadCount}
+                                onClose={() => setShowNotifications(false)}
+                                onMarkAllRead={handleMarkAllRead}
+                                onMarkAsRead={handleMarkAsRead}
+                                onDelete={handleDelete}
+                            />
+                        </div>
+                    )}
+                </div>
+
                 <div className="sales-navbar-profile-wrapper mobile-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
                     <button 
                         className="sales-navbar-profile-btn"
@@ -191,19 +222,6 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                                     <LogOut size={16} /> Log Out
                                 </button>
                             )}
-                        </div>
-                    )}
-                    
-                    {showNotifications && (
-                        <div style={{ position: 'absolute', top: '110%', right: 0, zIndex: 100 }}>
-                            <SalesNotificationPopup
-                                notifications={notifications}
-                                unreadCount={unreadCount}
-                                onClose={() => setShowNotifications(false)}
-                                onMarkAllRead={handleMarkAllRead}
-                                onMarkAsRead={handleMarkAsRead}
-                                onDelete={handleDelete}
-                            />
                         </div>
                     )}
                 </div>

@@ -4,6 +4,7 @@ import {
     LayoutDashboard, ShoppingCart, CheckSquare, Package,
     Box, LogOut, Video
 } from 'lucide-react';
+import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { tab: 'overview',     label: 'My Dashboard',     icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const ProcurementStaffSidebar = ({ user, onLogout, isMobileOpen, onCloseMobile }
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
+    const { companyName } = useCompanySettings();
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'P';
 
     const handleNav = (tab) => {
@@ -32,8 +34,13 @@ const ProcurementStaffSidebar = ({ user, onLogout, isMobileOpen, onCloseMobile }
             )}
             <aside className={`procurement-sidebar ${isMobileOpen ? 'mobile-open' : ''}`}>
                 {/* Top Heading */}
-                <div className="procurement-sidebar-header">
-                    <span className="procurement-sidebar-logo-text">PROCUREMENT</span>
+                <div style={{ height: '64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+                        {companyName}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                        Procurement Staff
+                    </span>
                 </div>
 
                 <div className="procurement-sidebar-nav-container">

@@ -12,7 +12,8 @@ const {
     validateHandoff,
     performHandoff,
     getWorkflowChecklist,
-    deleteProject
+    deleteProject,
+    approveFinalHandover
 } = require('../controllers/projectController');
 
 router.use(protect);
@@ -43,5 +44,8 @@ router.route('/:id/handoff')
 
 router.route('/:id/workflow-checklist')
     .get(getWorkflowChecklist);
+
+router.route('/:id/final-handover')
+    .post(approveFinalHandover);
 
 module.exports = router;

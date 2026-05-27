@@ -15,16 +15,16 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 1.5rem;
-    height: 80px;
-    min-height: 80px;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
     background-color: #ffffff;
-    /* border-bottom: 1px solid #e8edf2; Removed unwanted underline */
+    border-bottom: 1px solid #e8edf2;
     margin-bottom: 0;
     position: sticky;
     top: 0;
     z-index: 100;
     width: 100%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     overflow: visible;
     box-sizing: border-box;
 }

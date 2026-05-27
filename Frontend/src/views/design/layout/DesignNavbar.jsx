@@ -12,23 +12,24 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
     const isManager = user?.role?.toLowerCase().replace(/_/g, ' ').includes('design manager') || user?.role?.toLowerCase().includes('admin');
 
     const tabMeta = isManager ? {
-        overview: { title: 'Studio Overview', icon: LayoutDashboard },
-        pipeline: { title: 'Design Pipeline', icon: GitMerge },
-        project_details: { title: 'Approved Specifications', icon: FileSpreadsheet },
-        project_management: { title: 'Project Management', icon: Briefcase },
-        tasks: { title: 'Tasks Management', icon: CheckSquare },
-        staff_overview: { title: 'Team Workload', icon: Users },
-        material_review: { title: 'Material Review Hub', icon: Eye },
-        meetings: { title: 'Meetings', icon: Video }
+        overview: { title: 'Overview', description: 'High-level studio performance and metrics' },
+        pipeline: { title: 'Project Pipeline', description: 'Track all active design projects and statuses' },
+        project_details: { title: 'Project Details', description: 'View approved specifications and details' },
+        project_management: { title: 'Projects', description: 'Manage overall project timelines and resources' },
+        tasks: { title: 'Task Management', description: 'Assign and track design tasks' },
+        staff_overview: { title: 'Staff Overview', description: 'Monitor team workload and capacity' },
+        material_review: { title: 'Material Review', description: 'Review and approve material selections' },
+        meetings: { title: 'Meetings', description: 'Schedule and manage team meetings' }
     } : {
-        overview: { title: 'Designer Workspace', icon: LayoutDashboard },
-        tasks: { title: 'My Active Tasks', icon: CheckSquare },
-        revisions: { title: 'Revision Requests', icon: AlertCircle },
-        submissions: { title: 'Finalized Submissions', icon: CheckCircle },
-        meetings: { title: 'Meetings', icon: Video }
+        overview: { title: 'My Overview', description: 'Your personal design dashboard and metrics' },
+        tasks: { title: 'My Tasks', description: 'Manage your active design assignments' },
+        revisions: { title: 'Revisions', description: 'Handle requested design modifications' },
+        submissions: { title: 'Submissions', description: 'View your finalized and approved designs' },
+        materials: { title: 'Material Requests', description: 'Submit and track your material selections' },
+        meetings: { title: 'Meetings', description: 'View your scheduled meetings' }
     };
 
-    const { title, icon: Icon } = tabMeta[activeTab] || { title: 'Design Studio', icon: Palette };
+    const { title, description } = tabMeta[activeTab] || { title: 'Design Studio', description: 'Design management portal' };
 
     const handleAssignClick = () => {
         window.dispatchEvent(new CustomEvent('open-assign-modal'));
@@ -40,13 +41,10 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
                 <button className="mobile-menu-btn" onClick={toggleSidebar} aria-label="Toggle Menu">
                     <Menu size={20} />
                 </button>
-                <div className="design-navbar-icon">
-                    <Icon size={20} />
-                </div>
                 <div>
                     <span className="design-navbar-title">{title}</span>
                     <span className="design-navbar-subtitle">
-                        {user?.role?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                        {description}
                     </span>
                 </div>
             </div>

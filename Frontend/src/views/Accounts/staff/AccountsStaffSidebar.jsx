@@ -2,12 +2,14 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, CheckSquare, X, LogOut, TrendingUp } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
+import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import NavGroup from './components/NavGroup';
 import { primaryNav, secondaryNav, systemNav } from './components/SidebarConfig';
 import './css/AccountsStaffSidebar.css';
 
 const AccountsStaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
     const location = useLocation();
+    const { companyName } = useCompanySettings();
     const getImageUrl = (path) => path ? (path.startsWith('http') ? path : `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`) : null;
     const userInitials = user?.fullName ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'AS';
 
@@ -34,12 +36,11 @@ const AccountsStaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
 
     return (
         <div className={`acct-sidebar-container ${isOpen ? 'open' : ''}`}>
-            <div className="acct-sidebar-header">
-                <div className="acct-brand">
-                    <div className="acct-logo-box"><TrendingUp size={22} strokeWidth={2.5} /></div>
-                    <div className="acct-brand-text"><span className="acct-brand-title">Interior Design</span><span className="acct-brand-subtitle">Accounts Portal</span></div>
-                </div>
-                <button className="acct-close-btn" onClick={toggleSidebar}><X size={20} /></button>
+            <div style={{ height: '64px', display: 'flex', alignItems: 'center', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '24px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {companyName}
+                </span>
+                <button className="acct-close-btn" onClick={toggleSidebar} style={{ display: isOpen ? 'block' : 'none' }}><X size={20} /></button>
             </div>
 
             <div className="acct-user-card">

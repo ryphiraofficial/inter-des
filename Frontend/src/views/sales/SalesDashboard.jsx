@@ -48,7 +48,8 @@ const SalesDashboard = ({ user }) => {
             <div className="dashboard-bento">
                 {/* Left Column (Main Content) */}
                 <div className="bento-col">
-                    
+                    <SalesMonthlyTarget loading={loading} />
+
                     {user?.role === 'Sales' && (
                         <SalesApprovalsCard 
                             pendingReviews={pendingReviews}
@@ -57,8 +58,6 @@ const SalesDashboard = ({ user }) => {
                             onPreviewTask={handlePreviewTask}
                         />
                     )}
-
-                    <SalesMonthlyTarget loading={loading} />
 
                     <SalesVisitsGallery 
                         recentVisits={recentVisits} 

@@ -10,17 +10,17 @@ import NotificationPopup from '../../admin/header/components/NotificationPopup';
 import '../../admin/css/Header.css';
 
 const TAB_META = {
-    overview: { label: 'Overview', icon: LayoutDashboard },
-    clearance: { label: 'Payment Clearance Hub', icon: CheckCircle },
-    collections: { label: 'My Collections', icon: CheckCircle },
-    invoices: { label: 'Invoices', icon: FileText },
-    payments: { label: 'Payments', icon: CreditCard },
-    expenses: { label: 'Expenses', icon: TrendingUp },
-    clients: { label: 'Clients', icon: Users },
-    vendors: { label: 'Vendors', icon: ShoppingBag },
-    projects: { label: 'Projects', icon: Briefcase },
-    reports: { label: 'Financial Reports', icon: PieChart },
-    meetings: { label: 'Meetings', icon: Video }
+    overview: { label: 'Overview', description: 'High-level financial performance and metrics' },
+    clearance: { label: 'Payment Clearance Hub', description: 'Review and approve pending project payments' },
+    collections: { label: 'My Collections', description: 'Track and manage your payment collections' },
+    invoices: { label: 'Invoices', description: 'Manage billing and customer invoices' },
+    payments: { label: 'Payments', description: 'Track incoming and outgoing transactions' },
+    expenses: { label: 'Expenses', description: 'Monitor and categorize company spending' },
+    clients: { label: 'Clients', description: 'Manage financial records for all clients' },
+    vendors: { label: 'Vendors', description: 'Manage supplier and vendor accounts' },
+    projects: { label: 'Projects', description: 'Financial overview of active projects' },
+    reports: { label: 'Financial Reports', description: 'Generate detailed financial analytics' },
+    meetings: { label: 'Meetings', description: 'Schedule and manage finance meetings' }
 };
 
 const SEARCH_CONFIGS = {
@@ -75,11 +75,11 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExpor
     return (
         <header className="accounts-navbar" style={{ overflow: 'visible' }}>
             <div className="accounts-navbar-brand">
-                <div className="accounts-navbar-icon">
-                    <IconComponent size={20} />
-                </div>
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="accounts-navbar-title">{currentTab.label}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '2px', fontWeight: 500 }}>
+                        {currentTab.description}
+                    </span>
                 </div>
             </div>
 

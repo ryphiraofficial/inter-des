@@ -171,15 +171,18 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
                 <div className="brand-wrapper">
                     {role === 'Design Manager' ? (
                         <>
-                            <h1 className="brand-title" style={{ fontWeight: 300, letterSpacing: '3px', fontSize: '1rem' }}>
-                                STUDIO <span style={{ fontWeight: 800 }}>DESIGN</span>
+                            <h1 className="brand-title" style={{ fontWeight: 300, letterSpacing: '3px', fontSize: '24px', color: '#000000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {companyName}
                             </h1>
-                            <p className="brand-subtitle" style={{ fontSize: '0.6rem', color: '#c4a484', letterSpacing: '1px' }}>
-                                CREATIVE MANAGEMENT
+                            <p className="brand-subtitle" style={{ fontSize: '0.6rem', color: '#c4a484', letterSpacing: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {motto || defaultSubtitle}
                             </p>
                         </>
                     ) : (
-                        <h1 className="brand-title">{brandTitle}</h1>
+                        <>
+                            <h1 className="brand-title" style={{ fontSize: '24px', color: '#000000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{companyName}</h1>
+                            <p className="brand-subtitle" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{motto || defaultSubtitle}</p>
+                        </>
                     )}
                 </div>
                 <button className="btn-toggle-sidebar" onClick={toggleSidebar}>

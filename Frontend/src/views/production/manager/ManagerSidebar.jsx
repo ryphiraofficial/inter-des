@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../models/api';
 import '../../admin/css/Sidebar.css';
+import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const ManagerSidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
     const navGroups = [
@@ -28,6 +29,8 @@ const ManagerSidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
         }
     ];
 
+    const { companyName } = useCompanySettings();
+
     const userInitials = user?.fullName
         ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
         : '?';
@@ -41,8 +44,13 @@ const ManagerSidebar = ({ user, onLogout, isCollapsed, toggleSidebar }) => {
     return (
         <div className={`sidebar-container production ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
-                <div className="brand-wrapper">
-                    <h1 className="brand-title">Project Manager</h1>
+                <div className="brand-wrapper" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <h1 className="brand-title" style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2', margin: 0 }}>
+                        {companyName}
+                    </h1>
+                    <p className="brand-subtitle" style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '2px 0 0 0' }}>
+                        Project Manager
+                    </p>
                 </div>
                 <button className="btn-toggle-sidebar" onClick={toggleSidebar}>
                     <Menu size={20} />

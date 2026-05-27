@@ -22,12 +22,13 @@
 
 /* Header & Logo */
 .sidebar-header {
-    padding: 0 2rem;
+    padding: 0 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
-    min-height: 80px;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
     border-bottom: 1px solid #e8edf2;
     box-sizing: border-box;
 }
@@ -49,8 +50,8 @@
 }
 
 .brand-title {
-    font-size: 20px;
-    color: #0f172a;
+    font-size: 24px;
+    color: #000000;
     letter-spacing: -0.02em;
     margin: 0;
     font-family: inherit;
@@ -444,7 +445,8 @@
     }
 
     .brand-title {
-        font-size: 1.15rem;
+        font-size: 24px;
+        color: #000000;
         line-height: 1.2;
         font-weight: 700;
         white-space: nowrap;

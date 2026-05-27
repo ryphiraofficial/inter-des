@@ -4,6 +4,7 @@ import {
     LayoutDashboard, FileText, CreditCard,
     TrendingUp, Users, ShoppingBag, LogOut, ClipboardList, Video
 } from 'lucide-react';
+import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
@@ -20,15 +21,18 @@ const AccountsStaffSidebar = ({ user, onLogout }) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
+    const { companyName } = useCompanySettings();
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';
 
     return (
         <aside className="accounts-sidebar">
-            <div style={{ padding: '0.5rem 1.75rem 1rem', borderBottom: '1px solid #f1f5f9', marginBottom: '1rem' }}>
-                <h1 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>Interior Design</h1>
-                <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Staff Panel
-                </p>
+            <div style={{ height: '64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+                    {companyName}
+                </span>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                    Accounts Staff
+                </span>
             </div>
             <div className="accounts-sidebar-nav-container">
                 <nav className="accounts-sidebar-nav">

@@ -4,6 +4,7 @@ import {
     LayoutDashboard, CheckSquare, RefreshCw,
     CheckCircle, Package, LogOut, Video
 } from 'lucide-react';
+import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { tab: 'overview',     label: 'My Overview',    icon: LayoutDashboard },
@@ -18,13 +19,19 @@ const DesignStaffSidebar = ({ user, onLogout }) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
+    const { companyName } = useCompanySettings();
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'D';
 
     return (
         <aside className="design-sidebar">
             {/* Top Heading */}
-            <div className="design-sidebar-header">
-                <span className="design-sidebar-logo-text">DESIGN PORTAL</span>
+            <div className="design-sidebar-header" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
+                <span className="design-sidebar-logo-text" style={{ fontSize: '20px', color: '#000000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+                    {companyName}
+                </span>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                    Design Staff
+                </span>
             </div>
 
             <div className="design-sidebar-nav-container">

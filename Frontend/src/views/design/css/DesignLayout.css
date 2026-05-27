@@ -280,17 +280,17 @@
 
 /* ── Design Sidebar Custom Header & Footer classes ── */
 .design-sidebar-header {
-    padding: 1.5rem 1.25rem 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .design-sidebar-logo-text {
     font-size: 0.95rem;
     font-weight: 850;
     letter-spacing: 2px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5); /* Gorgeous Indigo gradient */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .design-sidebar-nav-container {

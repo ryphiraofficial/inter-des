@@ -11,6 +11,7 @@ const Login = ({ onLoginSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [keepSignedIn, setKeepSignedIn] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -29,7 +30,6 @@ const Login = ({ onLoginSuccess }) => {
             const identifier = formData.identifier.trim();
             const payload = { password: formData.password };
 
-            // Auto-detect: if it matches STF-XXXX pattern, use staffId; otherwise use email
             if (/^STF-\d+$/i.test(identifier)) {
                 payload.staffId = identifier.toUpperCase();
             } else {
@@ -58,106 +58,93 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-wrapper">
-
-                {/* Left Side: Editorial Content */}
-                <div className="content-side">
-                    <h1>The Future <br /> of Interior.</h1>
-                    <p>Curating exceptional spaces where architecture meets emotion. Access your private portfolio and start designing your next masterpiece.</p>
-
-                    <div className="stat-row">
-                        <div className="stat-item">
-                            <b>12k+</b>
-                            <span>Projects</span>
-                        </div>
-                        <div className="stat-item">
-                            <b>45</b>
-                            <span>Awards</span>
-                        </div>
-                        <div className="stat-item">
-                            <b>18</b>
-                            <span>Countries</span>
-                        </div>
-                    </div>
+        <div className="login-page-light">
+            <div className="login-card">
+                <div className="login-header">
+                    <h1>Sign In</h1>
+                    <p>Welcome back! Please enter your details.</p>
                 </div>
 
-                {/* Right Side: Floating Login Form */}
-                <div className="login-form-container">
-                    <div className="logo-container">
-                        <div className="logo-icon">
-                            <span></span><span></span><span></span>
-                            <span></span><span></span><span></span>
-                            <span></span><span></span><span></span>
-                        </div>
-                        <div className="logo-text">INTERIOR TECH</div>
+                <form onSubmit={handleSubmit} className="login-form">
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div className="input-group">
+                        <label>EMAIL ADDRESS</label>
+                        <input
+                            type="text"
+                            name="identifier"
+                            placeholder="Enter your email"
+                            value={formData.identifier}
+                            onChange={handleChange}
+                            required
+                            className="light-input"
+                        />
                     </div>
 
-                    <form onSubmit={handleSubmit}>
-                        {error && (
-                            <div className="error-message">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="input-group">
+                    <div className="input-group">
+                        <div className="label-row">
+                            <label>PASSWORD</label>
+                            <a href="#" className="forgot-link">Forgot password?</a>
+                        </div>
+                        <div className="input-wrapper">
                             <input
-                                type="text"
-                                name="identifier"
-                                placeholder="EMAIL OR ID"
-                                value={formData.identifier}
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                placeholder="Enter your password"
+                                value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className="modern-input"
+                                className="light-input"
                             />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
                         </div>
+                    </div>
 
-                        <div className="input-group">
-                            <div className="input-container">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    placeholder="PASSWORD"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    className="modern-input"
-                                />
-                                <button
-                                    type="button"
-                                    className="toggle-password-btn"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                <a href="#" className="sub-link">FORGOT PASSWORD?</a>
-                            </div>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="btn-login-dark"
-                            disabled={loading}
-                        >
-                            {loading ? "SIGNING IN..." : "SIGN IN"}
-                        </button>
-                    </form>
-
-                    <div className="signup-text">
-                        DON'T HAVE AN ACCOUNT? <a href="#" className="signup-link">JOIN US</a>
+                    <div className="checkbox-group">
+                        <input
+                            type="checkbox"
+                            id="keep-signed-in"
+                            checked={keepSignedIn}
+                            onChange={(e) => setKeepSignedIn(e.target.checked)}
+                        />
+                        <label htmlFor="keep-signed-in">Keep me signed in</label>
                     </div>
 
                     <button
+                        type="submit"
+                        className="btn-signin"
+                        disabled={loading}
+                    >
+                        {loading ? "SIGNING IN..." : "SIGN IN"}
+                    </button>
+                </form>
+
+                <div className="login-footer-links">
+                    <p className="signup-text">
+                        Don't have an account? <a href="#">Join Us</a>
+                    </p>
+                    <button
                         type="button"
-                        className="guest-access-btn"
+                        className="guest-btn"
                         onClick={fillDefaultCredentials}
                     >
-                        Guest Access
+                        ADMIN GUEST ACCESS
                     </button>
                 </div>
+            </div>
 
+            <div className="page-footer">
+                <a href="#">Privacy Policy</a>
+                <span className="dot">•</span>
+                <a href="#">Terms of Service</a>
+                <span className="dot">•</span>
+                <a href="#">Support</a>
             </div>
         </div>
     );

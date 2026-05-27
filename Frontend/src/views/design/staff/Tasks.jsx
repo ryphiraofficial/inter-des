@@ -112,90 +112,89 @@ const Tasks = ({
         const projectName = task.quotation?.projectName || task.project?.projectName || 'Internal Assignment';
 
         return (
-            <div className={`premium-task-card ${overdue ? 'overdue' : ''}`} style={{
-                background: 'white', borderRadius: '20px', padding: '1.25rem',
-                border: '1px solid #f1f5f9', boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                position: 'relative', marginBottom: '1rem', transition: 'all 0.3s ease'
-            }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: getPriorityColor(task.priority), borderRadius: '20px 0 0 20px' }}></div>
+            <div className={`premium-task-card ${overdue ? 'overdue' : ''}`}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '6px', height: '100%', background: getPriorityColor(task.priority), borderRadius: '20px 0 0 20px' }}></div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                     <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                            <strong style={{ fontSize: '1rem', color: '#1e293b' }}>{task.title}</strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                            <strong style={{ fontSize: '1.1rem', color: '#1e293b', fontWeight: 800 }}>{task.title}</strong>
                             {isReassigned && <span className="redo-badge">REASSIGNED</span>}
                             {isSplit && <span className="redo-badge" style={{ color: '#0ea5e9', background: '#f0f9ff', borderColor: '#bae6fd' }}>SPLIT</span>}
-                            {overdue && <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#ef4444', background: '#fee2e2', padding: '2px 8px', borderRadius: '6px' }}>OVERDUE</span>}
+                            {overdue && <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#ef4444', background: '#fee2e2', padding: '4px 10px', borderRadius: '8px' }}>OVERDUE</span>}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6366f1', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Briefcase size={12} /> {projectName}
+                        <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f0f3ff', padding: '4px 10px', borderRadius: '8px' }}>
+                                <Briefcase size={14} /> {projectName}
                             </div>
                             {task.quotation?.quotationNumber && (
-                                <div style={{ background: '#eef2ff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem' }}>
+                                <div style={{ background: '#eef2ff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem' }}>
                                     Quote: #{task.quotation.quotationNumber}
                                 </div>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+                        <span style={{ color: task.status === 'Revision Required' ? '#ef4444' : '#64748b', background: task.status === 'Revision Required' ? '#fef2f2' : '#f8fafc', padding: '4px 10px', borderRadius: '8px', border: task.status === 'Revision Required' ? '1px solid #fecaca' : '1px solid #e2e8f0' }}>
+                            {task.status === 'Revision Required' ? 'Revision Required' : task.status}
+                        </span>
+                        {isSplit && splitWith && <span style={{ marginLeft: '10px', opacity: 0.8 }}><Users size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {splitWith}</span>}
+                    </div>
                     <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}</span>
+                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Clock size={12} /> Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}
+                        </span>
                     </div>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '10px', fontWeight: 600 }}>
-                    <span style={{ color: task.status === 'Revision Required' ? '#ef4444' : '#64748b' }}>
-                        {task.status === 'Revision Required' ? 'Revision Required' : task.status}
-                    </span>
-                    {isSplit && splitWith && <span style={{ marginLeft: '8px', opacity: 0.8 }}><Users size={12} style={{ verticalAlign: 'middle' }} /> {splitWith}</span>}
-                </div>
-
                 {/* Progress */}
-                <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '3px', marginBottom: '12px', overflow: 'hidden' }}>
+                <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '4px', marginBottom: '16px', overflow: 'hidden' }}>
                     <div style={{
                         width: `${task.progress || 0}%`, height: '100%',
                         background: task.status === 'Revision Required' ? '#ef4444' : 'linear-gradient(90deg, #6366f1, #818cf8)',
-                        borderRadius: '3px'
+                        borderRadius: '4px',
+                        transition: 'width 0.5s ease-in-out'
                     }}></div>
                 </div>
 
                 {/* Creative Brief / Requirements */}
                 {task.creativeRequirements && (
-                    <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '10px', marginBottom: '12px', border: '1px solid #edf2f7' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontSize: '0.75rem', fontWeight: 800, color: '#6366f1', textTransform: 'uppercase' }}>
-                            <Palette size={12} /> Design Brief
+                    <div style={{ background: 'linear-gradient(to right, #f8fafc, #ffffff)', borderRadius: '14px', padding: '12px', marginBottom: '16px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontSize: '0.8rem', fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase' }}>
+                            <Palette size={14} /> Design Brief
                         </div>
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#475569', lineHeight: '1.4' }}>{task.creativeRequirements}</p>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.5' }}>{task.creativeRequirements}</p>
                     </div>
                 )}
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
                     <button
-                        className="btn-premium-staff-mini"
-                        style={{ background: task.status === 'To Do' ? '#1e293b' : '#6366f1', color: 'white' }}
+                        className="btn-glass-primary"
+                        style={{ background: task.status === 'To Do' ? 'linear-gradient(135deg, #1e293b, #334155)' : 'linear-gradient(135deg, #4f46e5, #6366f1)' }}
                         onClick={() => {
                             if (task.status === 'To Do') onUpdateTaskStatus(task._id, task.status);
                             onOpenUpload(task);
                         }}
                     >
-                        <Upload size={14} /> Upload Design
+                        <Upload size={16} /> {task.status === 'To Do' ? 'Start Task' : 'Upload Design'}
                     </button>
                     <button
-                        className="btn-premium-staff-mini"
-                        style={{ background: '#fff', border: '1px solid #e2e8f0', color: '#475569', marginLeft: 'auto' }}
+                        className="btn-glass-secondary"
                         onClick={() => { setSelectedTask(task); setShowDailyUpdateModal(true); }}
                         title="Daily Update"
                     >
-                        <RefreshCw size={14} />
+                        <RefreshCw size={16} />
                     </button>
                     <button
-                        className="btn-premium-staff-mini"
-                        style={{ background: '#fff', border: '1px solid #e2e8f0', color: '#475569' }}
+                        className="btn-glass-secondary"
                         onClick={() => handleOpenComments(task)}
                         title="Discussions"
                     >
-                        <MessageSquare size={14} />
+                        <MessageSquare size={16} />
                     </button>
                 </div>
             </div>
@@ -204,26 +203,26 @@ const Tasks = ({
 
     return (
         <div className="tasks-board-view fade-in">
-            <div className="task-board-header" style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>Assigned Design Tasks</h2>
+            <div className="premium-tasks-banner">
+                <div>
+                    <h2>My Active Tasks</h2>
+                    <p>Manage your daily design assignments, track progress, and submit your deliverables.</p>
+                </div>
+                <Target size={150} className="premium-tasks-icon" />
             </div>
 
-            <div className="board-lists" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 450px), 1fr))', gap: '1.5rem' }}>
-                <div className="board-column" style={{ background: 'transparent', padding: 0 }}>
-                    <div className="col-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 800, color: '#64748b', fontSize: '0.9rem', textTransform: 'uppercase' }}>Current Assignments</span>
-                        <span className="count" style={{ background: '#fff', padding: '4px 12px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, border: '1px solid #e2e8f0' }}>{myTasks.length}</span>
+            <div className="premium-tasks-grid">
+                {myTasks.length > 0 ? myTasks.map(task => (
+                    <TaskCard key={task._id} task={task} />
+                )) : (
+                    <div className="premium-empty-state">
+                        <div className="premium-empty-icon">
+                            <CheckCircle size={40} />
+                        </div>
+                        <h3>You're All Caught Up!</h3>
+                        <p>No active tasks assigned to you right now. Take a break or check back later.</p>
                     </div>
-                    <div className="queue-list" style={{ display: 'flex', flexDirection: 'column' }}>
-                        {myTasks.length > 0 ? myTasks.map(task => (
-                            <TaskCard key={task._id} task={task} />
-                        )) : (
-                            <div style={{ textAlign: 'center', padding: '3rem', background: '#fff', borderRadius: '20px', border: '1px dashed #e2e8f0' }}>
-                                <p style={{ color: '#94a3b8', margin: 0 }}>No active tasks found in this section.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                )}
             </div>
 
             {/* Daily Update Modal */}

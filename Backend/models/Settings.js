@@ -4,6 +4,7 @@ const SettingsSchema = new mongoose.Schema({
     // Company Profile
     company: {
         companyName: { type: String, default: 'Interior Design', trim: true },
+        motto: { type: String, default: 'Admin Dashboard', trim: true },
         companyLogo: { type: String, default: null },
         address: { type: String, default: '', trim: true },
         phone: { type: String, default: '', trim: true },

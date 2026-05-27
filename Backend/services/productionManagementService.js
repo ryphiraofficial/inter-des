@@ -625,7 +625,23 @@ exports.getEngineerTasks = async (reqData) => {
         const { status, priority, stage, projectId, transferred } = reqData.query;
 
         const query = {};
-        if (transferred === 'true') {
+        if (reqData.query.awaitingApproval === 'true') {
+            query.status = 'Completed';
+            const roleStageMap = { 'Project Engineer': 'PE', 'Site Engineer': 'SE', 'Site Supervisor': 'SS' };
+            if (roleStageMap[reqData.user.role]) {
+                query.stage = roleStageMap[reqData.user.role];
+            }
+            
+            // Find projects where user is part of the engineering team
+            const projects = await ProductionProject.find({
+                $or: [
+                    { projectEngineer: uid },
+                    { siteEngineer: uid },
+                    { siteSupervisor: uid }
+                ]
+            });
+            query.projectId = { $in: projects.map(p => p._id) };
+        } else if (transferred === 'true') {
             query.assignedBy = uid;
             query.assignedTo = { $ne: uid };
         } else {
@@ -1270,6 +1286,17 @@ exports.submitProjectCompletion = async (reqData) => {
             'PROJECT_COMPLETED', 
             `Project "${project.projectName}" marked as Completed.`
         );
+
+        // Link completion back to the main system Project
+        if (project.sourceProject) {
+            const Project = require('../models/Project');
+            const mainProject = await Project.findById(project.sourceProject);
+            if (mainProject) {
+                mainProject.productionComplete = true;
+                // Auto-advance stage if necessary, e.g., to Accounts for final billing or just save it to trigger pre-save hooks
+                await mainProject.save();
+            }
+        }
 
         return { status: 200, success: true, data: project };
     } catch (error) {

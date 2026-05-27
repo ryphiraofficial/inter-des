@@ -6,16 +6,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 75px;
-    min-height: 75px;
+    height: 64px;
+    min-height: 64px;
     padding: 0 1.5rem;
     background: #ffffff;
-    border-bottom: 1px solid #e8edf2;
+    border-bottom: 1px solid #e2e8f0;
     box-sizing: border-box;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 1px 12px rgba(16, 185, 129, 0.02);
 }
 
 /* ── Left ────────────────────────────────────────────────────────────────── */

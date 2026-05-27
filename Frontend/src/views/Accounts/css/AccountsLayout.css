@@ -33,7 +33,7 @@
     border-right: 1px solid #e2e8f0; /* Soft gray border line */
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 0 0;
+    padding: 0;
     overflow: hidden;
 }
 
@@ -93,7 +93,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1.75rem;
-    height: 68px;
+    height: 64px;
     background: #ffffff;
     border-bottom: 1px solid #e2e8f0;
     flex-shrink: 0;

@@ -15,7 +15,7 @@ const {
 
 exports.getProjects = async (req, res) => {
     try {
-        const { search, stage, status, client, page = 1, limit = 10 } = req.query;
+        const { search, stage, status, client, productionComplete, handoverComplete, page = 1, limit = 10 } = req.query;
         
         let query = {};
         
@@ -29,6 +29,8 @@ exports.getProjects = async (req, res) => {
         if (stage) query.stage = stage;
         if (status) query.status = status;
         if (client) query.client = client;
+        if (productionComplete !== undefined) query.productionComplete = productionComplete === 'true';
+        if (handoverComplete !== undefined) query.handoverComplete = handoverComplete === 'true';
         
         const skip = (page - 1) * limit;
         
@@ -544,6 +546,56 @@ exports.deleteProject = async (req, res) => {
             success: true,
             data: {},
             message: 'Project deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+exports.approveFinalHandover = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: 'Project not found'
+            });
+        }
+        
+        project.handoverComplete = true;
+        // The pre('save') hook in the Project model will automatically set:
+        // this.stage = 'Completed';
+        // this.status = 'Completed';
+        // this.actualEndDate = new Date();
+
+        await project.save();
+        
+        await createNotification({
+            title: 'Project Final Handover Complete',
+            description: `Project "${project.name}" has been officially completed.`,
+            type: 'Success',
+            relatedModel: 'Project',
+            relatedId: project._id,
+            createdBy: req.user.id
+        });
+        
+        logAction({
+            userId: req.user.id,
+            action: 'Project Final Handover',
+            module: 'Project',
+            referenceId: project._id,
+            referenceModel: 'Project',
+            description: `Project "${project.name}" handover complete and marked as finished`
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: project,
+            message: 'Project final handover approved successfully'
         });
     } catch (error) {
         res.status(500).json({
