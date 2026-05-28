@@ -74,7 +74,7 @@ export const useApprovalsActions = ({
             showToast('Procurement approved — PM assigned');
         } catch (err) {
             console.error(err);
-            showToast('Action failed', 'error');
+            showToast(err.message || 'Action failed', 'error');
         } finally {
             setApproving(prev => ({ ...prev, [item._id]: false }));
         }

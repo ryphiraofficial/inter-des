@@ -725,6 +725,10 @@ exports.adminApproveProcurement = async (reqData) => {
 
         // 1) Assign Production Manager to the project
         if (productionManagerId && project) {
+            if (project.paymentStatus !== 'Cleared' && project.paymentCollectionStatus !== 'Collected' && project.paymentCollectionStatus !== 'Verified') {
+                return { status: 400, success: false, message: 'Advance amount must be collected or cleared before moving to production.' };
+            }
+
             const pm = await User.findOne({ _id: productionManagerId, status: 'Active' });
             if (!pm) {
                 return { status: 400, success: false, message: 'Invalid production manager' };

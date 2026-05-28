@@ -677,7 +677,6 @@ exports.submitPaymentCollection = async (req, res) => {
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
         
         project.paymentCollectionStatus = 'Collected';
-        project.collectedAmount = Number(collectedAmount) || project.advanceAmount;
         
         // Save collection details temporarily on the project
         project.tempCollectionDetails = {
