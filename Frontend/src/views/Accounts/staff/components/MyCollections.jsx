@@ -61,9 +61,12 @@ const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch 
     };
 
     const handleOpenCollect = (project) => {
+        const isBal = project.paymentStatus !== 'Pending Advance';
+        const targetAmount = isBal ? (project.budget - (project.advanceAmount || project.collectedAmount || 0)) : (project.advanceAmount || 0);
+
         setCollectingProject(project);
         setFormData({
-            collectedAmount: project.advanceAmount || '',
+            collectedAmount: targetAmount || '',
             paymentMode: 'Bank Transfer',
             referenceNumber: '',
             paymentNotes: ''
@@ -103,7 +106,11 @@ const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch 
     // Calculate dynamic stats
     const pendingCollections = projects.filter(p => p.paymentCollectionStatus === 'Assigned');
     const collectedCollections = projects.filter(p => p.paymentCollectionStatus === 'Collected');
-    const totalPendingAmount = pendingCollections.reduce((acc, p) => acc + (p.advanceAmount || 0), 0);
+    const totalPendingAmount = pendingCollections.reduce((acc, p) => {
+        const isBal = p.paymentStatus !== 'Pending Advance';
+        const target = isBal ? (p.budget - (p.advanceAmount || p.collectedAmount || 0)) : (p.advanceAmount || 0);
+        return acc + target;
+    }, 0);
 
     const filtered = projects.filter(p => 
         p.name?.toLowerCase().includes(search.toLowerCase()) || 
@@ -174,6 +181,8 @@ const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch 
                     <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
                         {filtered.map(p => {
                             const isCollected = p.paymentCollectionStatus === 'Collected';
+                            const isBal = p.paymentStatus !== 'Pending Advance';
+                            const targetAmount = isBal ? (p.budget - (p.advanceAmount || p.collectedAmount || 0)) : (p.advanceAmount || 0);
                             
                             return (
                                 <div key={p._id} style={{ 
@@ -245,8 +254,8 @@ const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch 
 
                                         {/* Target Amount */}
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px dashed #e2e8f0' }}>
-                                            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Advance Due (50%):</span>
-                                            <span style={{ fontSize: '18px', fontWeight: 800, color: '#6366f1' }}>₹{p.advanceAmount?.toLocaleString('en-IN')}</span>
+                                            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>{isBal ? 'Balance Due:' : 'Advance Due (50%):'}</span>
+                                            <span style={{ fontSize: '18px', fontWeight: 800, color: '#6366f1' }}>₹{targetAmount.toLocaleString('en-IN')}</span>
                                         </div>
                                     </div>
 
@@ -315,8 +324,10 @@ const MyCollections = ({ user, search: parentSearch, setSearch: parentSetSearch 
                         <form onSubmit={handleSubmitCollection} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
                             {/* Target advance info card */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f5f3ff', borderRadius: '8px', border: '1px solid #ddd6fe' }}>
-                                <span style={{ fontSize: '13px', color: '#5b21b6', fontWeight: 600 }}>Target Advance Amount:</span>
-                                <span style={{ fontSize: '16px', fontWeight: 800, color: '#5b21b6' }}>₹{collectingProject.advanceAmount?.toLocaleString('en-IN')}</span>
+                                <span style={{ fontSize: '13px', color: '#5b21b6', fontWeight: 600 }}>Target Amount ({collectingProject?.paymentStatus !== 'Pending Advance' ? 'Balance' : 'Advance'}):</span>
+                                <span style={{ fontSize: '16px', fontWeight: 800, color: '#5b21b6' }}>
+                                    ₹{(collectingProject?.paymentStatus !== 'Pending Advance' ? (collectingProject.budget - (collectingProject.advanceAmount || collectingProject.collectedAmount || 0)) : (collectingProject.advanceAmount || 0)).toLocaleString('en-IN')}
+                                </span>
                             </div>
 
                             {/* Input: Collected Amount */}

@@ -196,7 +196,12 @@ ProjectSchema.pre('save', function (next) {
     
     this.progress = Math.round((completedCount / 4) * 100);
     
-    if (this.handoverComplete) {
+    if (this.status === 'Completed' || this.stage === 'Completed' || this.handoverComplete) {
+        this.progress = 100;
+        this.designComplete = true;
+        this.materialsReady = true;
+        this.productionComplete = true;
+        this.handoverComplete = true;
         this.stage = 'Completed';
         this.status = 'Completed';
         if (!this.actualEndDate) {

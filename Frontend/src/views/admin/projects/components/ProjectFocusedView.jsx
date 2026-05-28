@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock, Trash2, FileText, Clock3 } from 'lucide-react';
+import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock, Trash2, FileText, Clock3, Wallet } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
 import AlertDialog from '../../components/AlertDialog';
+import { projectAPI } from '../../../../models/api';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -32,6 +33,28 @@ const formatCurrency = (amount) => {
 const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject }) => {
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isCollecting, setIsCollecting] = useState(false);
+
+    const paidAmount = project ? Math.max(project.advanceAmount || 0, project.collectedAmount || 0) : 0;
+    const remainingBalance = project ? Math.max(0, project.budget - paidAmount) : 0;
+
+    const handleCollectBalance = async () => {
+        if (!project) return;
+        setIsCollecting(true);
+        try {
+            await projectAPI.update(project._id, { 
+                paymentCollectionStatus: 'Pending Assignment',
+                notes: (project.notes || '') + '\n[Admin Requested Balance Payment Collection]'
+            });
+            // Optimistic update
+            project.paymentCollectionStatus = 'Pending Assignment';
+        } catch (error) {
+            console.error("Failed to request collection:", error);
+            alert("Failed to send collection request.");
+        } finally {
+            setIsCollecting(false);
+        }
+    };
 
     const onConfirmDelete = async () => {
         if (!handleDeleteProject) return;
@@ -100,9 +123,42 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
                         <div className="stat-icon-wrapper budget">
                             <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>₹</span>
                         </div>
-                        <div className="stat-content">
-                            <label>Financial Overview</label>
-                            <h3 className="text-emerald">{formatCurrency(project.budget)}</h3>
+                        <div className="stat-content" style={{ flex: 1 }}>
+                            <label>Total Budget</label>
+                            <h3 className="text-emerald" style={{ marginBottom: '8px' }}>{formatCurrency(project.budget)}</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px dashed rgba(16, 185, 129, 0.3)', fontSize: '0.75rem' }}>
+                                <div>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '2px' }}>Total Paid</span>
+                                    <strong style={{ color: '#10b981' }}>{formatCurrency(paidAmount)}</strong>
+                                </div>
+                                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '2px' }}>Balance</span>
+                                    <strong style={{ color: '#f59e0b' }}>{formatCurrency(remainingBalance)}</strong>
+                                    {remainingBalance > 0 && (
+                                        <button 
+                                            onClick={handleCollectBalance}
+                                            disabled={isCollecting || project.paymentCollectionStatus === 'Pending Assignment'}
+                                            style={{ 
+                                                marginTop: '6px', 
+                                                padding: '4px 10px', 
+                                                fontSize: '0.65rem', 
+                                                background: project.paymentCollectionStatus === 'Pending Assignment' ? '#f1f5f9' : '#e0e7ff', 
+                                                color: project.paymentCollectionStatus === 'Pending Assignment' ? '#94a3b8' : '#4f46e5', 
+                                                border: 'none', 
+                                                borderRadius: '4px', 
+                                                cursor: project.paymentCollectionStatus === 'Pending Assignment' ? 'default' : 'pointer', 
+                                                fontWeight: 600,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            <Wallet size={12} />
+                                            {isCollecting ? 'Requesting...' : (project.paymentCollectionStatus === 'Pending Assignment' ? 'Requested' : 'Collect Balance')}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
 

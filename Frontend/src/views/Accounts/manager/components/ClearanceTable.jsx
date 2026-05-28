@@ -23,9 +23,10 @@ const ClearanceTable = ({
         }
         handleConfirmClose();
     };
-    const getStatusColor = (status, collectionStatus) => {
+    const getStatusColor = (status, collectionStatus, isBalance) => {
         if (collectionStatus === 'Collected') return { bg: '#dbeafe', text: '#1d4ed8' };
         if (collectionStatus === 'Verified') return { bg: '#dcfce3', text: '#16a34a' };
+        if (isBalance && status === 'Cleared' && collectionStatus !== 'Verified') return { bg: '#fef3c7', text: '#d97706' };
         switch(status) {
             case 'Pending Advance': return { bg: '#fef3c7', text: '#d97706' };
             case 'Invoice Sent': return { bg: '#e0e7ff', text: '#4f46e5' };
@@ -61,14 +62,24 @@ const ClearanceTable = ({
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                 <thead>
                     <tr style={{ background: '#f8fafc' }}>
-                        {['Project', 'Client', 'Total Budget', 'Advance (50%)', 'Status', 'Assigned Staff', 'Actions'].map(h => (
+                        {['Project', 'Client', 'Total Budget', 'Target Amount', 'Status', 'Assigned Staff', 'Actions'].map(h => (
                             <th key={h} style={{ padding: '14px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>{h}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
                     {filtered.map(p => {
-                        const colors = getStatusColor(p.paymentStatus, p.paymentCollectionStatus);
+                        const isBalance = p.paymentStatus !== 'Pending Advance';
+                        const colors = getStatusColor(p.paymentStatus, p.paymentCollectionStatus, isBalance);
+                        const targetAmount = isBalance ? (p.budget - (p.advanceAmount || p.collectedAmount || 0)) : (p.advanceAmount || 0);
+                        
+                        let displayStatus = p.paymentStatus || 'Pending Advance';
+                        if (p.paymentCollectionStatus === 'Collected') {
+                            displayStatus = 'Collected';
+                        } else if (isBalance && p.paymentStatus === 'Cleared' && p.paymentCollectionStatus !== 'Verified') {
+                            displayStatus = 'Pending Balance';
+                        }
+                        
                         return (
                             <tr key={p._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                                 <td style={{ padding: '16px 24px', fontWeight: 600, color: '#0f172a' }}>
@@ -77,14 +88,19 @@ const ClearanceTable = ({
                                 </td>
                                 <td style={{ padding: '16px 24px', color: '#475569' }}>{p.client?.name || '—'}</td>
                                 <td style={{ padding: '16px 24px', color: '#475569' }}>₹{(p.budget || 0).toLocaleString('en-IN')}</td>
-                                <td style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>₹{(p.advanceAmount || 0).toLocaleString('en-IN')}</td>
+                                <td style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>
+                                    <span style={{ color: isBalance ? '#f59e0b' : '#10b981', fontSize: '11px', display: 'block', textTransform: 'uppercase', marginBottom: '2px' }}>
+                                        {isBalance ? 'Balance' : 'Advance'}
+                                    </span>
+                                    ₹{targetAmount.toLocaleString('en-IN')}
+                                </td>
                                 <td style={{ padding: '16px 24px' }}>
                                     <span style={{ background: colors.bg, color: colors.text, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 600 }}>
-                                        {p.paymentCollectionStatus === 'Collected' ? 'Collected' : (p.paymentStatus || 'Pending Advance')}
+                                        {displayStatus}
                                     </span>
                                 </td>
                                 <td style={{ padding: '16px 24px' }}>
-                                    {p.assignedAccountsStaff ? (
+                                    {p.assignedAccountsStaff && p.paymentCollectionStatus !== 'Pending Assignment' ? (
                                         assigningId === p._id ? (
                                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', minWidth: '220px' }}>
                                                 <CustomSelect
@@ -186,7 +202,7 @@ const ClearanceTable = ({
                                     ) : (
                                         <button 
                                             onClick={() => handleConfirmOpen(p._id, false)} 
-                                            disabled={p.paymentStatus === 'Cleared'} 
+                                            disabled={p.paymentStatus === 'Cleared' && !isBalance} 
                                             className="btn-success-sm"
                                         >
                                             <CheckCircle size={16} /> Clear & Release

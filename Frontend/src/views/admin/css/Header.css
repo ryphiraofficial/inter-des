@@ -27,6 +27,7 @@
     width: 100%;
     overflow: visible;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 .header-left {
@@ -61,11 +62,12 @@
 }
 
 .welcome-text h1 {
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: #1e293b;
     margin: 0;
     line-height: 1.2;
+    letter-spacing: -0.01em;
 }
 
 /* Header Search Bar */
@@ -144,9 +146,9 @@
 
 .welcome-text p {
     color: #94a3b8;
-    font-size: 0.7rem;
+    font-size: 0.5rem;
     font-weight: 500;
-    margin: 0;
+    margin: 2px 0 0;
     line-height: 1.4;
 }
 
@@ -562,13 +564,14 @@
 
     .welcome-text h1 {
         margin: 0 !important;
-        font-size: 1.1rem !important;
+        font-size: 0.85rem !important;
         font-weight: 700 !important;
         line-height: 1.15 !important;
-        color: #0f172a !important;
+        color: #1e293b !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        letter-spacing: -0.01em !important;
     }
 
     .welcome-text p {
@@ -578,6 +581,7 @@
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        margin: 2px 0 0 !important;
     }
 
     .page-header-actions {

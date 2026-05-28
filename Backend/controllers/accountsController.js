@@ -572,8 +572,8 @@ exports.verifyPaymentAndRelease = async (req, res) => {
         });
 
         // 4. Update project collection status and stage
-        project.paymentStatus = paid >= project.advanceAmount ? 'Cleared' : 'Partial Payment';
-        project.collectedAmount = paid;
+        project.collectedAmount = (project.collectedAmount || 0) + paid;
+        project.paymentStatus = project.collectedAmount >= project.budget ? 'Cleared' : (project.collectedAmount >= project.advanceAmount ? 'Cleared' : 'Partial Payment');
         project.paymentCollectionStatus = 'Verified';
         
         const originalStage = project.stage;
