@@ -97,6 +97,37 @@ exports.updateExpense = async (req, res) => {
         });
     }
 };
+exports.deleteExpense = async (req, res) => {
+    try {
+        const expense = await Expense.findById(req.params.id);
+        
+        if (!expense) {
+            return res.status(404).json({
+                success: false,
+                message: 'Expense not found'
+            });
+        }
+        
+        if (expense.project) {
+            await Project.findByIdAndUpdate(expense.project, {
+                $inc: { spent: -expense.amount }
+            });
+        }
+        
+        await expense.remove();
+        
+        res.status(200).json({
+            success: true,
+            data: {}
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 
 exports.getPayments = async (req, res) => {
     try {

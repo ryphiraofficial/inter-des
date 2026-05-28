@@ -152,7 +152,7 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExpor
                             alignItems: 'center', 
                             gap: '8px', 
                             fontSize: '13px',
-                            background: '#10b981',
+                            background: '#0f172a',
                             border: 'none',
                             borderRadius: '8px',
                             color: 'white',
@@ -161,8 +161,8 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExpor
                             outline: 'none',
                             transition: 'all 0.2s'
                         }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#059669'}
-                        onMouseLeave={e => e.currentTarget.style.background = '#10b981'}
+                        onMouseEnter={e => e.currentTarget.style.background = '#1e293b'}
+                        onMouseLeave={e => e.currentTarget.style.background = '#0f172a'}
                     >
                         + Add Expense
                     </button>

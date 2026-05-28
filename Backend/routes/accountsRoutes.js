@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { getExpenses, createExpense, updateExpense, getPayments, createPayment, getProjectFinancials, getAccountsStats, getPendingAccountsProjects, assignAccountsStaff, generateAdvanceInvoice, clearProjectPayment, verifyPaymentAndRelease, submitPaymentCollection } = require('../controllers/accountsController');
+const { getExpenses, createExpense, updateExpense, deleteExpense, getPayments, createPayment, getProjectFinancials, getAccountsStats, getPendingAccountsProjects, assignAccountsStaff, generateAdvanceInvoice, clearProjectPayment, verifyPaymentAndRelease, submitPaymentCollection } = require('../controllers/accountsController');
 
 router.use(protect);
 
@@ -28,7 +28,8 @@ router.route('/expenses')
     .post(createExpense);
 
 router.route('/expenses/:id')
-    .put(updateExpense);
+    .put(updateExpense)
+    .delete(deleteExpense);
 
 router.route('/payments')
     .get(getPayments)

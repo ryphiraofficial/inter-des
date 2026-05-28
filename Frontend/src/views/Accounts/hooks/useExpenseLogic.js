@@ -16,10 +16,18 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
         description: '', amount: '', category: 'Materials',
         expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null
     });
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         fetchExpenses();
-        const handleOpenModal = () => setShowModal(true);
+        const handleOpenModal = () => {
+            setEditingId(null);
+            setForm({
+                description: '', amount: '', category: 'Materials',
+                expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null
+            });
+            setShowModal(true);
+        };
         window.addEventListener('open-create-expense-modal', handleOpenModal);
         return () => window.removeEventListener('open-create-expense-modal', handleOpenModal);
     }, []);
@@ -42,6 +50,22 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
         }
     };
 
+    const handleEdit = (expense) => {
+        setEditingId(expense._id);
+        setForm({
+            description: expense.description || '',
+            amount: expense.amount || '',
+            category: expense.type || expense.category || 'Materials',
+            expenseDate: expense.expenseDate ? new Date(expense.expenseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            vendor: expense.vendorName || (typeof expense.vendor === 'object' ? expense.vendor?.name : (expense.vendor || '')),
+            notes: expense.notes || '',
+            status: expense.status || expense.paymentStatus || 'Paid',
+            receiptFile: null,
+            existingReceipt: expense.receipt || null
+        });
+        setShowModal(true);
+    };
+
     const handleSubmit = async () => {
         if (!form.description || !form.amount) return alert('Description and amount are required');
         try {
@@ -49,7 +73,7 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
             let receiptUrl = '';
             if (form.receiptFile) {
                 const formData = new FormData();
-                formData.append('file', form.receiptFile);
+                formData.append('image', form.receiptFile);
                 const uploadRes = await uploadAPI.image(formData);
                 if (uploadRes && uploadRes.url) {
                     receiptUrl = uploadRes.url;
@@ -60,14 +84,30 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
                 ...form,
                 amount: parseFloat(form.amount),
                 type: form.category,
-                receipt: receiptUrl
+                vendorName: form.vendor
             };
-            delete payload.receiptFile; // Don't send file object in JSON payload
+            
+            if (receiptUrl) {
+                payload.receipt = receiptUrl;
+            } else if (form.existingReceipt) {
+                payload.receipt = form.existingReceipt;
+            }
 
-            const res = await accountsAPI.createExpense(payload);
+            delete payload.receiptFile; // Don't send file object in JSON payload
+            delete payload.existingReceipt;
+            delete payload.vendor; // vendor is an ObjectId, use vendorName for string
+
+            let res;
+            if (editingId) {
+                res = await accountsAPI.updateExpense(editingId, payload);
+            } else {
+                res = await accountsAPI.createExpense(payload);
+            }
+            
             if (res?.success) {
                 setShowModal(false);
                 fetchExpenses();
+                setEditingId(null);
                 setForm({ description: '', amount: '', category: 'Materials', expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null });
             }
         } catch (err) {
@@ -88,9 +128,10 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
     };
 
     const filtered = expenses.filter(e => {
+        const vendorText = e.vendorName || (e.vendor && e.vendor.name) || (typeof e.vendor === 'string' ? e.vendor : '');
         const matchesSearch = e.description?.toLowerCase().includes(search.toLowerCase()) || 
-                              e.vendor?.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = filterCategory === 'All' || e.category === filterCategory;
+                              vendorText.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = filterCategory === 'All' || e.category === filterCategory || e.type === filterCategory;
         
         let matchesMode = true;
         if (filterMode === 'company') {
@@ -103,6 +144,6 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
     return {
         expenses, loading, search, setSearch, filterCategory, setFilterCategory,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,
-        submitting, form, setForm, filtered, handleSubmit, handleDelete
+        submitting, form, setForm, filtered, handleSubmit, handleDelete, handleEdit, editingId, setEditingId
     };
 };

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckCircle, FileText, CreditCard,
     TrendingUp, Users, ShoppingBag, Briefcase, PieChart,
-    LogOut, Video
+    LogOut, Video, ChevronDown, ChevronRight
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
@@ -54,9 +54,15 @@ const AccountsManagerSidebar = ({ user, onLogout }) => {
                                 <button
                                     className={`accounts-sidebar-item ${isMainActive ? 'active' : ''}`}
                                     onClick={() => navigate(`?tab=${tab}`)}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}
                                 >
-                                    <Icon size={18} />
-                                    <span>{label}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <Icon size={18} />
+                                        <span>{label}</span>
+                                    </div>
+                                    {subItems && (
+                                        isMainActive ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                                    )}
                                 </button>
                                 {subItems && isMainActive && subItems.map(sub => (
                                     <button

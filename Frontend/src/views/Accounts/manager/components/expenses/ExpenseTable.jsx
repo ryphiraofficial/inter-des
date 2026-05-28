@@ -2,7 +2,7 @@ import React from 'react';
 import { FileText, Edit2, Trash2 } from 'lucide-react';
 import { TableSkeleton } from '../../../components/UI/Skeleton';
 
-const ExpenseTable = ({ loading, filtered, handleDelete }) => {
+const ExpenseTable = ({ loading, filtered, handleDelete, handleEdit }) => {
     const formatCurrency = (amount) => `₹${Number(amount || 0).toLocaleString('en-IN')}`;
     const catColor = {
         'Materials': '#3b82f6', 'Labour': '#10b981', 'Transport': '#f59e0b',
@@ -48,7 +48,7 @@ const ExpenseTable = ({ loading, filtered, handleDelete }) => {
                                 </span>
                             </td>
                             <td style={{ color: '#475569' }}>
-                                {typeof e.vendor === 'object' ? e.vendor?.name : (e.vendor || '—')}
+                                {e.vendorName || (typeof e.vendor === 'object' ? e.vendor?.name : (e.vendor || '—'))}
                             </td>
                             <td style={{ fontWeight: 700, color: '#0f172a' }}>
                                 {formatCurrency(e.amount)}
@@ -60,7 +60,7 @@ const ExpenseTable = ({ loading, filtered, handleDelete }) => {
                             </td>
                             <td>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <button className="action-btn" title="Edit"><Edit2 size={16} /></button>
+                                    <button className="action-btn" title="Edit" onClick={() => handleEdit(e)}><Edit2 size={16} /></button>
                                     <button className="action-btn delete" title="Delete" onClick={() => handleDelete(e._id)}><Trash2 size={16} /></button>
                                 </div>
                             </td>

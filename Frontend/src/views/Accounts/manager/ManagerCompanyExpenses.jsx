@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, FileText } from 'lucide-react';
 import { useExpenseLogic } from '../hooks/useExpenseLogic';
+import { Calendar } from '../../../components/ui/calendar';
 
 import ExpenseTable from './components/expenses/ExpenseTable';
 import ExpenseModal from './components/expenses/ExpenseModal';
@@ -11,11 +12,22 @@ import '../css/Expenses.css';
 const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
     const {
         expenses, loading, showModal, setShowModal,
-        submitting, form, setForm, handleDelete, handleSubmit
+        submitting, form, setForm, handleDelete, handleSubmit, handleEdit, editingId
     } = useExpenseLogic(search, setSearch, 'company');
 
-    // Default to today's date in YYYY-MM-DD format
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const calendarRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+                setShowCalendar(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Filter expenses specifically for the selected date
     const filteredByDate = expenses.filter(exp => {
@@ -32,38 +44,7 @@ const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
         <div className="expenses-dashboard-container">
             <div className="expenses-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
-                {/* Date Selector Header */}
-                <div style={{
-                    background: '#fff', padding: '24px', borderRadius: '12px',
-                    border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-                }}>
-                    <div>
-                        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#0f172a', margin: '0 0 4px 0' }}>Daily Ledger</h2>
-                        <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0 }}>Select a date to view company overhead expenses</p>
-                    </div>
-                    
-                    <div style={{ position: 'relative' }}>
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            background: '#f8fafc', border: '1px solid #cbd5e1',
-                            borderRadius: '8px', padding: '8px 16px',
-                            color: '#334155', fontWeight: 500, fontSize: '0.875rem'
-                        }}>
-                            <CalendarIcon size={18} style={{ color: '#64748b' }} />
-                            <input 
-                                type="date" 
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                                style={{
-                                    border: 'none', background: 'transparent',
-                                    outline: 'none', color: '#0f172a', fontWeight: 600,
-                                    fontFamily: 'inherit', cursor: 'pointer'
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
+
 
                 {/* Main Content Area */}
                 <div style={{
@@ -71,10 +52,46 @@ const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
                     border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
                     minHeight: '400px'
                 }}>
-                    <div style={{ marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>
-                            Expenses for {displayDate}
-                        </h3>
+                    <div style={{ marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>Daily Ledger</h3>
+                        <div style={{ position: 'relative' }} ref={calendarRef}>
+                            <button 
+                                onClick={() => setShowCalendar(!showCalendar)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '10px',
+                                    background: '#f8fafc', border: '1px solid #cbd5e1',
+                                    borderRadius: '8px', padding: '8px 16px',
+                                    color: '#0f172a', fontWeight: 600, fontSize: '0.875rem',
+                                    cursor: 'pointer', outline: 'none'
+                                }}
+                            >
+                                <CalendarIcon size={18} style={{ color: '#64748b' }} />
+                                {new Date(selectedDate).toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </button>
+                            
+                            {showCalendar && (
+                                <div style={{
+                                    position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                                    background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                                    zIndex: 50, padding: '16px'
+                                }}>
+                                    <Calendar
+                                        mode="single"
+                                        selected={new Date(selectedDate)}
+                                        onSelect={(date) => {
+                                            if (date) {
+                                                const year = date.getFullYear();
+                                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                                const day = String(date.getDate()).padStart(2, '0');
+                                                setSelectedDate(`${year}-${month}-${day}`);
+                                                setShowCalendar(false);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {loading ? (
@@ -84,6 +101,7 @@ const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
                             loading={false}
                             filtered={filteredByDate}
                             handleDelete={handleDelete}
+                            handleEdit={handleEdit}
                         />
                     ) : (
                         <div style={{
@@ -104,7 +122,7 @@ const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
 
             </div>
 
-            {/* Add Expense Modal */}
+            {/* Add/Edit Expense Modal */}
             <ExpenseModal 
                 show={showModal}
                 onClose={() => setShowModal(false)}
@@ -112,6 +130,7 @@ const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
                 setForm={setForm}
                 submitting={submitting}
                 onSubmit={handleSubmit}
+                editingId={editingId}
             />
         </div>
     );

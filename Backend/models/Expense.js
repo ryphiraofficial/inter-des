@@ -34,6 +34,10 @@ const ExpenseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor'
     },
+    vendorName: {
+        type: String,
+        trim: true
+    },
     purchaseOrder: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PurchaseOrder'

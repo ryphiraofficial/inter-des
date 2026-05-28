@@ -65,7 +65,7 @@ const CustomSelect = ({ value, options, onChange, placeholder }) => {
     );
 };
 
-const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit }) => {
+const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit, editingId }) => {
     if (!show) return null;
 
     const CATEGORIES = ['Materials', 'Labour', 'Transport', 'Tools & Equipment', 'Office', 'Utilities', 'Food', 'Stationery', 'Fuel', 'Travel', 'Company Overhead', 'Miscellaneous'];
@@ -83,7 +83,7 @@ const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit }) =>
         <div className="modal-overlay" onClick={onClose} style={{ zIndex: 100 }}>
             <div className="modal-content" onClick={e => e.stopPropagation()} style={{ borderRadius: '12px', padding: '24px', maxWidth: '500px' }}>
                 <div className="modal-header" style={{ marginBottom: '20px', borderBottom: 'none', padding: 0 }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#0f172a' }}>Add New Expense</h3>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#0f172a' }}>{editingId ? 'Edit Expense' : 'Add New Expense'}</h3>
                     <button className="action-btn" onClick={onClose} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', padding: '6px', color: '#64748b' }}>
                         <X size={18} />
                     </button>
@@ -179,7 +179,7 @@ const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit }) =>
                             opacity: submitting ? 0.7 : 1
                         }}
                     >
-                        {submitting ? 'Saving...' : 'Save Expense'}
+                        {submitting ? 'Saving...' : (editingId ? 'Save Changes' : 'Save Expense')}
                     </button>
                 </div>
             </div>
