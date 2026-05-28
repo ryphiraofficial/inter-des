@@ -79,6 +79,7 @@ export const useQuotationActions = ({
                     unit: item.unit,
                     quantity: item.quantity,
                     rate: item.rate,
+                    costPrice: item.costPrice || 0,
                     amount: item.amount,
                     image: item.image
                 }))
@@ -121,6 +122,7 @@ export const useQuotationActions = ({
                     unit: item.unit,
                     quantity: item.quantity,
                     rate: item.rate,
+                    costPrice: item.costPrice || 0,
                     amount: item.amount,
                     image: item.image
                 }))

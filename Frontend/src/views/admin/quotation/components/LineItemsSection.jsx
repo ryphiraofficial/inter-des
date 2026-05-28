@@ -1,6 +1,5 @@
 import React from 'react';
 import { Layers, Plus, Search, X, Trash2, ChevronUp, ChevronDown, Upload } from 'lucide-react';
-import CustomSelect from '../../components/CustomSelect';
 import AISuggestButton from '../../components/AISuggestButton';
 
 const LineItemsSection = ({
@@ -67,16 +66,28 @@ const LineItemsSection = ({
 
                 {globalSearchResults.length > 0 && (
                     <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
-                        {globalSearchResults.map(res => (
-                            <div key={res._id} className="search-result-item" onClick={() => addFromInventorySelect(res)}>
-                                <div className="res-info">
-                                    <span className="res-name">{res.itemName}</span>
-                                    <span className="res-cat">{res.section || 'General'}</span>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <span className="res-price">₹{res.price}</span>
-                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>Click to Add</div>
-                                </div>
+                        {Object.entries(
+                            globalSearchResults.reduce((groups, res) => {
+                                const section = res.section || 'General';
+                                if (!groups[section]) groups[section] = [];
+                                groups[section].push(res);
+                                return groups;
+                            }, {})
+                        ).map(([section, items]) => (
+                            <div key={section}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', padding: '0.5rem 0.75rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>{section}</div>
+                                {items.map(res => (
+                                    <div key={res._id} className="search-result-item" onClick={() => addFromInventorySelect(res)}>
+                                        <div className="res-info">
+                                            <span className="res-name">{res.itemName}</span>
+                                            <span className="res-cat">{res.section || 'General'}</span>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <span className="res-price">₹{res.price}</span>
+                                            <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>Click to Add</div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         ))}
                     </div>
@@ -122,20 +133,6 @@ const LineItemsSection = ({
                                     onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                                 />
                             </div>
-                            <div className="unit-select-compact" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Unit</span>
-                                <CustomSelect
-                                    value={item.unit}
-                                    onChange={(e) => updateLineItem(item.id, 'unit', e.target.value)}
-                                    options={[
-                                        { value: 'SCM', label: 'SCM' },
-                                        { value: 'SFT', label: 'SFT' },
-                                        { value: 'RFT', label: 'RFT' },
-                                        { value: 'Nos', label: 'Nos' },
-                                        { value: 'Lumpsum', label: 'Lumpsum' }
-                                    ]}
-                                />
-                            </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                 <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Rate</span>
                                 <input
@@ -146,8 +143,11 @@ const LineItemsSection = ({
                                     onChange={(e) => updateLineItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
                                 />
                             </div>
-                            <div className="line-item-amount">
-                                ₹{item.amount?.toLocaleString()}
+                            <div className="line-item-amount" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                <span>₹{item.amount?.toLocaleString()}</span>
+                                <div style={{ fontSize: '0.65rem', background: '#dcfce7', color: '#166534', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                                    Profit: ₹{(item.amount - ((Number(item.quantity) || 0) * (Number(item.costPrice) || 0))).toLocaleString()}
+                                </div>
                             </div>
                             <div className="line-item-actions">
                                 <button
@@ -162,6 +162,51 @@ const LineItemsSection = ({
                                 </button>
                             </div>
                         </div>
+
+                        {['sqft', 'sft', 'sq.ft'].includes(item.unit?.toLowerCase().replace(/\s/g, '')) && (
+                            <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
+                                <div className="line-item-detail-grid">
+                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                        <label style={{ fontSize: '0.75rem' }}>Dimensions (cm)</label>
+                                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                            <input type="number" className="input-styled" placeholder="L" style={{ padding: '0.4rem', fontSize: '0.85rem', width: '65px' }} value={item.cmL ?? ''} onChange={(e) => {
+                                                const v = e.target.value ? parseFloat(e.target.value) : null;
+                                                updateLineItem(item.id, 'cmL', v);
+                                                if (v && (item.cmH || 0) > 0) {
+                                                    const sqft = (v * (item.cmH || 0)) / 900;
+                                                    updateLineItem(item.id, 'quantity', Math.round(sqft * 100) / 100);
+                                                    updateLineItem(item.id, 'size', Math.round(sqft * 100) / 100 + ' SFT');
+                                                } else if (!v || !item.cmH) {
+                                                    updateLineItem(item.id, 'quantity', 1);
+                                                    updateLineItem(item.id, 'size', '');
+                                                }
+                                            }} />
+                                            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>×</span>
+                                            <input type="number" className="input-styled" placeholder="D" style={{ padding: '0.4rem', fontSize: '0.85rem', width: '65px' }} value={item.cmD ?? ''} onChange={(e) => {
+                                                const v = e.target.value ? parseFloat(e.target.value) : null;
+                                                updateLineItem(item.id, 'cmD', v);
+                                            }} />
+                                            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>×</span>
+                                            <input type="number" className="input-styled" placeholder="H" style={{ padding: '0.4rem', fontSize: '0.85rem', width: '65px' }} value={item.cmH ?? ''} onChange={(e) => {
+                                                const v = e.target.value ? parseFloat(e.target.value) : null;
+                                                updateLineItem(item.id, 'cmH', v);
+                                                if (v && (item.cmL || 0) > 0) {
+                                                    const sqft = ((item.cmL || 0) * v) / 900;
+                                                    updateLineItem(item.id, 'quantity', Math.round(sqft * 100) / 100);
+                                                    updateLineItem(item.id, 'size', Math.round(sqft * 100) / 100 + ' SFT');
+                                                } else if (!v || !item.cmL) {
+                                                    updateLineItem(item.id, 'quantity', 1);
+                                                    updateLineItem(item.id, 'size', '');
+                                                }
+                                            }} />
+                                            <div style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '0.5rem 0.75rem', minWidth: '90px', textAlign: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                                                {item.size || '— SFT'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {expandedItems[item.id] && (
                             <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #f1f5f9' }}>
@@ -181,16 +226,19 @@ const LineItemsSection = ({
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                         <div className="line-item-detail-grid">
                                             <div className="form-group">
+                                                <label style={{ fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between' }}>
+                                                    <span>Cost Price (Purchase)</span>
+                                                    <span style={{ color: '#166534', fontWeight: 600 }}>ADMIN ONLY</span>
+                                                </label>
+                                                <input type="number" className="input-styled" style={{ border: '1px solid #bbf7d0', background: '#f0fdf4' }} placeholder="Cost per unit" value={item.costPrice || ''} onChange={(e) => updateLineItem(item.id, 'costPrice', parseFloat(e.target.value) || 0)} />
+                                            </div>
+                                            <div className="form-group">
                                                 <label style={{ fontSize: '0.75rem' }}>Finish/Brand</label>
                                                 <input type="text" className="input-styled" placeholder="e.g., Duco Paint" value={item.finishBrand} onChange={(e) => updateLineItem(item.id, 'finishBrand', e.target.value)} />
                                             </div>
                                             <div className="form-group">
                                                 <label style={{ fontSize: '0.75rem' }}>Material/Origin</label>
                                                 <input type="text" className="input-styled" placeholder="e.g., Plywood" value={item.materialOrigin} onChange={(e) => updateLineItem(item.id, 'materialOrigin', e.target.value)} />
-                                            </div>
-                                            <div className="form-group">
-                                                <label style={{ fontSize: '0.75rem' }}>Size</label>
-                                                <input type="text" className="input-styled" placeholder="e.g., 8' x 4'" value={item.size} onChange={(e) => updateLineItem(item.id, 'size', e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="form-group">

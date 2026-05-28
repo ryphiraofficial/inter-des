@@ -10,7 +10,7 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
                 const clientRes = await clientAPI.getAll();
                 if (clientRes.success) setClients(clientRes.data);
 
-                const inventoryRes = await inventoryAPI.getAll();
+                const inventoryRes = await inventoryAPI.getAll({ limit: 1000 });
                 if (inventoryRes.success) setInventoryItems(inventoryRes.data);
 
                 if (isEdit && id) {

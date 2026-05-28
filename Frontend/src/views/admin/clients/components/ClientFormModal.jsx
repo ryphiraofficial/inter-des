@@ -33,6 +33,10 @@ const ClientFormModal = ({
                                 <input type="text" name="name" className="c-client-input" value={formData.name} onChange={handleInputChange} required />
                             </div>
                             <div className="form-field">
+                                <label>Project Name</label>
+                                <input type="text" name="projectName" className="c-client-input" value={formData.projectName} onChange={handleInputChange} placeholder="e.g., Omega Tower Kitchen" />
+                            </div>
+                            <div className="form-field">
                                 <label>Email <span>*</span></label>
                                 <input type="email" name="email" className="c-client-input" value={formData.email} onChange={handleInputChange} required />
                             </div>

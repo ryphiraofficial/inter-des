@@ -26,12 +26,27 @@ export const useQuotationCalculations = ({ lineItems, includeDiscount, discount,
         (total * formData.depositPercent) / 100
     , [total, formData.depositPercent]);
 
+    const totalCost = useMemo(() => 
+        lineItems.reduce((sum, item) => sum + ((Number(item.quantity) || 0) * (Number(item.costPrice) || 0)), 0)
+    , [lineItems]);
+
+    const totalProfit = useMemo(() => 
+        offerPrice - totalCost
+    , [offerPrice, totalCost]);
+
+    const profitMargin = useMemo(() => 
+        offerPrice > 0 ? (totalProfit / offerPrice) * 100 : 0
+    , [totalProfit, offerPrice]);
+
     return {
         subtotal,
         discountAmount,
         offerPrice,
         taxAmount,
         total,
-        depositAmount
+        depositAmount,
+        totalCost,
+        totalProfit,
+        profitMargin
     };
 };

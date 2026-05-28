@@ -343,7 +343,7 @@ input[type="date"].input-styled::-webkit-datetime-edit {
 
 .line-item-main-grid {
     display: grid;
-    grid-template-columns: 35px 2fr 80px 120px 100px 120px 80px;
+    grid-template-columns: 35px 2fr 80px 100px 120px 80px;
     gap: 1rem;
     align-items: center;
 }
@@ -1425,13 +1425,8 @@ input[type="date"].input-styled::-webkit-datetime-edit {
         grid-row: 2;
     }
 
-    .line-item-main-grid>*:nth-child(5) {
-        grid-column: 7 / span 3;
-        grid-row: 2;
-    }
-
     .line-item-amount {
-        grid-column: 10 / span 3;
+        grid-column: 7 / span 6;
         grid-row: 2;
         text-align: right;
     }
@@ -1520,11 +1515,6 @@ input[type="date"].input-styled::-webkit-datetime-edit {
 
     .line-item-main-grid>*:nth-child(4) {
         grid-column: 5 / span 4;
-        grid-row: 2;
-    }
-
-    .line-item-main-grid>*:nth-child(5) {
-        grid-column: 9 / span 4;
         grid-row: 2;
     }
 

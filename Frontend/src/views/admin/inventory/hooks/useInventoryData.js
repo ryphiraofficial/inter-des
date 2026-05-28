@@ -8,7 +8,7 @@ export const useInventoryData = ({
     const fetchItems = async () => {
         try {
             setLoading(true);
-            const response = await inventoryAPI.getAll();
+            const response = await inventoryAPI.getAll({ limit: 1000 });
             if (response.success) setItems(response.data);
         } catch (err) {
             setError(err.message);

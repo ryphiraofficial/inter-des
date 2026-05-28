@@ -49,7 +49,7 @@ export const useQuotationState = () => {
             amount: 0,
             image: null
         };
-        setLineItems(prev => [...prev, newItem]);
+        setLineItems(prev => [newItem, ...prev]);
     };
 
     const removeLineItem = (id) => {

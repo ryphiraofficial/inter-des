@@ -1,7 +1,7 @@
 import React from 'react';
 
-const DocSummary = ({ 
-    subtotal, discount, discountAmount, offerPrice, taxRate, taxAmount, grandTotal, depositPercent, notes, termsAndConditions 
+const DocSummary = ({
+    subtotal, discount, discountAmount, offerPrice, taxRate, taxAmount, grandTotal, depositPercent, notes, termsAndConditions
 }) => {
     return (
         <section className="summary-section">

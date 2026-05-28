@@ -4,7 +4,7 @@ import { Tag, Percent } from 'lucide-react';
 const QuotationSummary = ({ 
     subtotal, discount, setDiscount, includeDiscount, setIncludeDiscount,
     discountAmount, offerPrice, taxRate, setTaxRate, includeTax, setIncludeTax,
-    taxAmount, total 
+    taxAmount, total, totalCost, totalProfit, profitMargin
 }) => {
     return (
         <div className="quotation-summary-grid" style={{ marginTop: '2rem' }}>
@@ -61,6 +61,32 @@ const QuotationSummary = ({
                             </div>
                         </div>
                     )}
+                </div>
+
+                <div className="profit-control-card" style={{ marginTop: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '1.2rem' }}>
+                    <div className="control-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            <span style={{ fontWeight: 600, color: '#166534' }}>Internal Profit Analysis</span>
+                        </div>
+                        <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600, background: '#dcfce7', padding: '2px 6px', borderRadius: '4px' }}>ADMIN ONLY</span>
+                    </div>
+                    <div className="control-body" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                            <span style={{ color: '#15803d', fontSize: '0.85rem' }}>Total Cost</span>
+                            <span style={{ fontWeight: 600, color: '#166534' }}>₹{totalCost.toLocaleString()}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                            <span style={{ color: '#15803d', fontSize: '0.85rem' }}>Total Profit</span>
+                            <span style={{ fontWeight: 600, color: '#166534' }}>₹{totalProfit.toLocaleString()}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingTop: '8px', borderTop: '1px dashed #bbf7d0' }}>
+                            <span style={{ color: '#15803d', fontSize: '0.85rem', fontWeight: 600 }}>Profit Margin</span>
+                            <span style={{ fontWeight: 700, color: profitMargin > 20 ? '#16a34a' : profitMargin > 10 ? '#ca8a04' : '#dc2626' }}>
+                                {profitMargin.toFixed(1)}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

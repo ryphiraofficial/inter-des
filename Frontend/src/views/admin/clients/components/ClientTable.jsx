@@ -16,6 +16,7 @@ const ClientTable = ({
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Project Name</th>
                             <th className="desktop-hide">Contact Info</th>
                             <th className="desktop-hide">Site Address</th>
                             <th className="desktop-hide">Status</th>
@@ -38,6 +39,7 @@ const ClientTable = ({
                                             <span>{client.name}</span>
                                         </div>
                                     </td>
+                                    <td className="client-project-name">{client.projectName || '—'}</td>
                                     <td className="desktop-hide">
                                         <div className="client-contact-info">
                                             <div className="contact-item"><Mail size={12} /><span>{client.email}</span></div>
@@ -74,6 +76,7 @@ const ClientTable = ({
                                         <td colSpan="3">
                                             <div className="expansion-content">
                                                 <div className="info-grid">
+                                                    <div className="info-item"><label>Project Name</label><span>{client.projectName || 'N/A'}</span></div>
                                                     <div className="info-item"><label>Email</label><span>{client.email}</span></div>
                                                     <div className="info-item"><label>Site Address</label><span>{client.siteAddress || 'N/A'}</span></div>
                                                     <div className="info-item"><label>Status</label><span className={`c-status-badge ${client.status?.toLowerCase()}`}>{client.status}</span></div>

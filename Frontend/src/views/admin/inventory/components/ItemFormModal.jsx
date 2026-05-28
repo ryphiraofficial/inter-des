@@ -65,7 +65,11 @@ const ItemFormModal = ({
                             />
                         </div>
                         <div className="form-field">
-                            <label>Price (₹) <span>*</span></label>
+                            <label>Cost Price (Purchase) (₹) <span>*</span></label>
+                            <input type="number" name="costPrice" className="client-input" value={formData.costPrice || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="form-field">
+                            <label>Selling Price (₹) <span>*</span></label>
                             <input type="number" name="price" className="client-input" value={formData.price} onChange={handleInputChange} required />
                         </div>
                         <div className="form-field">
