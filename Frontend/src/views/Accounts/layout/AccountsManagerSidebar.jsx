@@ -12,7 +12,14 @@ const NAV_ITEMS = [
     { tab: 'clearance',  label: 'Payment Clearance',   icon: CheckCircle },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },
-    { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
+    { 
+        tab: 'expenses',   
+        label: 'Expenses',            
+        icon: TrendingUp,
+        subItems: [
+            { tab: 'company_expenses', label: 'Company Expenses' }
+        ]
+    },
     { tab: 'clients',    label: 'Clients',             icon: Users },
     { tab: 'vendors',    label: 'Vendors',             icon: ShoppingBag },
     { tab: 'projects',   label: 'Projects',            icon: Briefcase },
@@ -40,16 +47,39 @@ const AccountsManagerSidebar = ({ user, onLogout }) => {
             <div className="accounts-sidebar-nav-container">
                 <nav className="accounts-sidebar-nav">
                     <div className="accounts-sidebar-section-label">FINANCE CONTROL</div>
-                    {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
-                        <button
-                            key={tab}
-                            className={`accounts-sidebar-item ${activeTab === tab ? 'active' : ''}`}
-                            onClick={() => navigate(`?tab=${tab}`)}
-                        >
-                            <Icon size={18} />
-                            <span>{label}</span>
-                        </button>
-                    ))}
+                    {NAV_ITEMS.map(({ tab, label, icon: Icon, subItems }) => {
+                        const isMainActive = activeTab === tab || (subItems && subItems.some(s => s.tab === activeTab));
+                        return (
+                            <React.Fragment key={tab}>
+                                <button
+                                    className={`accounts-sidebar-item ${isMainActive ? 'active' : ''}`}
+                                    onClick={() => navigate(`?tab=${tab}`)}
+                                >
+                                    <Icon size={18} />
+                                    <span>{label}</span>
+                                </button>
+                                {subItems && isMainActive && subItems.map(sub => (
+                                    <button
+                                        key={sub.tab}
+                                        className={`accounts-sidebar-item ${activeTab === sub.tab ? 'active' : ''}`}
+                                        onClick={() => navigate(`?tab=${sub.tab}`)}
+                                        style={{ 
+                                            paddingLeft: '3.5rem', 
+                                            fontSize: '0.875rem', 
+                                            height: '38px',
+                                            color: activeTab === sub.tab ? '#3b82f6' : '#64748b',
+                                            fontWeight: activeTab === sub.tab ? 600 : 500,
+                                            background: activeTab === sub.tab ? '#eff6ff' : 'transparent',
+                                            borderLeft: activeTab === sub.tab ? '3px solid #3b82f6' : '3px solid transparent',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <span>{sub.label}</span>
+                                    </button>
+                                ))}
+                            </React.Fragment>
+                        );
+                    })}
                 </nav>
             </div>
 

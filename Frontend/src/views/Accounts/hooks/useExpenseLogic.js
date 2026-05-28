@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { accountsAPI } from '../../../models/api';
+import { uploadAPI } from '../../../models/api/admin/miscAPI';
 
-export const useExpenseLogic = (parentSearch, parentSetSearch) => {
+export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all') => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [localSearch, setLocalSearch] = useState('');
@@ -13,7 +14,7 @@ export const useExpenseLogic = (parentSearch, parentSetSearch) => {
     const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({
         description: '', amount: '', category: 'Materials',
-        expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid'
+        expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null
     });
 
     useEffect(() => {
@@ -45,11 +46,29 @@ export const useExpenseLogic = (parentSearch, parentSetSearch) => {
         if (!form.description || !form.amount) return alert('Description and amount are required');
         try {
             setSubmitting(true);
-            const res = await accountsAPI.createExpense({ ...form, amount: parseFloat(form.amount) });
+            let receiptUrl = '';
+            if (form.receiptFile) {
+                const formData = new FormData();
+                formData.append('file', form.receiptFile);
+                const uploadRes = await uploadAPI.image(formData);
+                if (uploadRes && uploadRes.url) {
+                    receiptUrl = uploadRes.url;
+                }
+            }
+
+            const payload = {
+                ...form,
+                amount: parseFloat(form.amount),
+                type: form.category,
+                receipt: receiptUrl
+            };
+            delete payload.receiptFile; // Don't send file object in JSON payload
+
+            const res = await accountsAPI.createExpense(payload);
             if (res?.success) {
                 setShowModal(false);
                 fetchExpenses();
-                setForm({ description: '', amount: '', category: 'Materials', expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid' });
+                setForm({ description: '', amount: '', category: 'Materials', expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null });
             }
         } catch (err) {
             alert('Error: ' + err.message);
@@ -72,7 +91,13 @@ export const useExpenseLogic = (parentSearch, parentSetSearch) => {
         const matchesSearch = e.description?.toLowerCase().includes(search.toLowerCase()) || 
                               e.vendor?.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = filterCategory === 'All' || e.category === filterCategory;
-        return matchesSearch && matchesCategory;
+        
+        let matchesMode = true;
+        if (filterMode === 'company') {
+            matchesMode = !e.project;
+        }
+
+        return matchesSearch && matchesCategory && matchesMode;
     }).sort((a, b) => new Date(b.expenseDate) - new Date(a.expenseDate));
 
     return {

@@ -42,7 +42,7 @@ export const ItemsTable = ({ items }) => (
             <tbody>
                 {items.map((item, idx) => (
                     <React.Fragment key={idx}>
-                        <tr className="item-row">
+                        <tr className="qv-item-row">
                             <td className="col-idx" data-label="#">{idx + 1}</td>
                             <td className="col-item" data-label="Item">
                                 <div className="item-main-info">

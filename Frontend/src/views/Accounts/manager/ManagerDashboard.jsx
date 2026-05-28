@@ -9,6 +9,7 @@ import PaymentClearanceHub from './PaymentClearanceHub';
 import ManagerClients from './ManagerClients';
 import ManagerPayments from './ManagerPayments';
 import ManagerExpenses from './ManagerExpenses';
+import ManagerCompanyExpenses from './ManagerCompanyExpenses';
 import ManagerVendors from './ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
 import AccountsProjects from '../common/AccountsProjects';
@@ -36,7 +37,8 @@ const ManagerDashboard = ({ user, onLogout }) => {
             case 'clients': return <ManagerClients user={user} search={search} setSearch={setSearch} />;
             case 'invoices': return <AccountsInvoices user={user} search={search} setSearch={setSearch} />;
             case 'payments': return <ManagerPayments user={user} search={search} setSearch={setSearch} />;
-            case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} />;
+            case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} filterMode="all" />;
+            case 'company_expenses': return <ManagerCompanyExpenses user={user} search={search} setSearch={setSearch} />;
             case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
             case 'projects': return <AccountsProjects user={user} search={search} setSearch={setSearch} />;
             case 'reports': return <AccountsReports user={user} search={search} setSearch={setSearch} />;

@@ -5,6 +5,7 @@ import { CheckCircle, Loader } from 'lucide-react';
 import { useSiteVisitForm } from './hooks/useSiteVisitForm';
 import SiteVisitDetailsForm from './components/SiteVisitDetailsForm';
 import SiteVisitImageUpload from './components/SiteVisitImageUpload';
+import Skeleton from './components/Skeleton';
 import './css/SiteVisit.css';
 
 const SiteVisit = () => {
@@ -16,12 +17,41 @@ const SiteVisit = () => {
         clients,
         tasks,
         uploading,
+        initialLoading,
         visitData,
         setVisitData,
         handleImageChange,
         removeImage,
         handleUpload
     } = useSiteVisitForm(showToast, navigate);
+
+    if (initialLoading) {
+        return (
+            <div className="site-visit">
+                <div className="visit-form">
+                    <div className="form-section">
+                        <Skeleton width="150px" height="24px" style={{ marginBottom: '16px' }} />
+                        <div className="form-group"><Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="48px" borderRadius="12px" /></div>
+                        <div className="form-group"><Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="48px" borderRadius="12px" /></div>
+                        <div className="form-row">
+                            <div className="form-group"><Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="48px" borderRadius="12px" /></div>
+                            <div className="form-group"><Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="48px" borderRadius="12px" /></div>
+                        </div>
+                        <div className="form-group"><Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="100px" borderRadius="12px" /></div>
+                    </div>
+                    
+                    <div className="form-section">
+                        <Skeleton width="150px" height="24px" style={{ marginBottom: '16px' }} />
+                        <Skeleton width="100%" height="160px" borderRadius="12px" />
+                    </div>
+                    
+                    <div className="form-actions">
+                        <Skeleton width="200px" height="48px" borderRadius="12px" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="site-visit">

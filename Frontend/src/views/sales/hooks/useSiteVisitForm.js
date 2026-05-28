@@ -6,6 +6,7 @@ export const useSiteVisitForm = (showToast, navigate) => {
     const [clients, setClients] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [visitData, setVisitData] = useState({
         client: '',
         task: '',
@@ -21,6 +22,8 @@ export const useSiteVisitForm = (showToast, navigate) => {
                 if (res.success) setClients(res.data);
             } catch (err) {
                 console.error('Error fetching clients:', err);
+            } finally {
+                setInitialLoading(false);
             }
         };
         fetchClients();
@@ -126,6 +129,7 @@ export const useSiteVisitForm = (showToast, navigate) => {
         clients,
         tasks,
         uploading,
+        initialLoading,
         visitData,
         setVisitData,
         handleImageChange,

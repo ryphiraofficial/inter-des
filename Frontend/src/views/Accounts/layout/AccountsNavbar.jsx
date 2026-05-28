@@ -15,7 +15,8 @@ const TAB_META = {
     collections: { label: 'My Collections', description: 'Track and manage your payment collections' },
     invoices: { label: 'Invoices', description: 'Manage billing and customer invoices' },
     payments: { label: 'Payments', description: 'Track incoming and outgoing transactions' },
-    expenses: { label: 'Expenses', description: 'Monitor and categorize company spending' },
+    expenses: { label: 'All Expenses', description: 'Monitor and categorize all spending' },
+    company_expenses: { label: 'Company Expenses', description: 'Monitor internal overhead and operational expenses' },
     clients: { label: 'Clients', description: 'Manage financial records for all clients' },
     vendors: { label: 'Vendors', description: 'Manage supplier and vendor accounts' },
     projects: { label: 'Projects', description: 'Financial overview of active projects' },
@@ -29,6 +30,7 @@ const SEARCH_CONFIGS = {
     clients: { placeholder: 'Search by name, email or phone...' },
     payments: { placeholder: 'Search by client or reference...' },
     expenses: { placeholder: 'Search by description or category...' },
+    company_expenses: { placeholder: 'Search company expenses...' },
     vendors: { placeholder: 'Search by name or category...' }
 };
 
@@ -137,6 +139,32 @@ const AccountsNavbar = ({ user, onRefresh, isLoading, search, setSearch, onExpor
                         onMouseLeave={e => e.currentTarget.style.background = '#fff'}
                     >
                         <Download size={15} /> Export
+                    </button>
+                )}
+
+                {['expenses', 'company_expenses'].includes(activeTab) && (
+                    <button 
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))}
+                        style={{ 
+                            height: '38px', 
+                            padding: '0 16px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            fontSize: '13px',
+                            background: '#10b981',
+                            border: 'none',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            outline: 'none',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#059669'}
+                        onMouseLeave={e => e.currentTarget.style.background = '#10b981'}
+                    >
+                        + Add Expense
                     </button>
                 )}
                 

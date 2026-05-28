@@ -9,12 +9,11 @@ const ExpenseSchema = new mongoose.Schema({
     },
     project: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project',
-        required: [true, 'Please link a project']
+        ref: 'Project'
     },
     type: {
         type: String,
-        enum: ['Material', 'Labor', 'Transport', 'Equipment', 'Permit', 'Consultation', 'Miscellaneous'],
+        enum: ['Material', 'Labor', 'Transport', 'Equipment', 'Permit', 'Consultation', 'Food', 'Stationery', 'Fuel', 'Travel', 'Office Supplies', 'Company Overhead', 'Miscellaneous'],
         required: [true, 'Please specify expense type']
     },
     category: {

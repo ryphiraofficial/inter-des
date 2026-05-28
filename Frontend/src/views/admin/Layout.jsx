@@ -44,6 +44,8 @@ const Layout = ({ user, onLogout }) => {
         return <Outlet />;
     }
 
+    const isQuotationView = location.pathname.includes('/quotations/view/');
+
     const mainContentStyle = isMobile
         ? { marginLeft: 0, width: '100%', maxWidth: '100vw' }
         : {};
@@ -53,8 +55,8 @@ const Layout = ({ user, onLogout }) => {
             {isMobileOpen && <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
             {renderSidebar()}
             <main className="main-content" style={mainContentStyle}>
-                <Header user={user} toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />
-                <div className="page-wrapper">
+                {!isQuotationView && <Header user={user} toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />}
+                <div className={`page-wrapper ${isQuotationView ? 'full-height' : ''}`}>
                     <Outlet />
                 </div>
             </main>

@@ -11,6 +11,7 @@ const PAGE_MAP = {
     '/staff/site-visits': { title: 'Site Visits',  subtitle: 'Document and track your site visit logs.' },
     '/staff/clients':     { title: 'Clients',      subtitle: 'View your assigned client details.'       },
     '/staff/quotations':  { title: 'Quotations',   subtitle: 'View project quotations assigned to you.' },
+    '/staff/meetings':    { title: 'Meetings',     subtitle: 'View and join your scheduled team and client meetings.' },
 };
 
 const SalesLayout = ({ user, onLogout }) => {
@@ -34,6 +35,8 @@ const SalesLayout = ({ user, onLogout }) => {
     const toggleSidebar = () => setIsCollapsed(v => !v);
     const toggleMobileSidebar = () => setIsMobileOpen(v => !v);
 
+    const isQuotationView = location.pathname.includes('/quotations/view/');
+
     const mainContentStyle = isMobile
         ? { marginLeft: 0, width: '100%', maxWidth: '100vw' }
         : {};
@@ -52,14 +55,16 @@ const SalesLayout = ({ user, onLogout }) => {
             />
 
             <main className="main-content sales-main" style={mainContentStyle}>
-                <SalesHeader
-                    title={title}
-                    subtitle={subtitle}
-                    toggleSidebar={isMobile ? toggleMobileSidebar : toggleSidebar}
-                    user={user}
-                    onLogout={onLogout}
-                />
-                <div className="sales-page-content page-wrapper">
+                {!isQuotationView && (
+                    <SalesHeader
+                        title={title}
+                        subtitle={subtitle}
+                        toggleSidebar={isMobile ? toggleMobileSidebar : toggleSidebar}
+                        user={user}
+                        onLogout={onLogout}
+                    />
+                )}
+                <div className={`sales-page-content page-wrapper ${isQuotationView ? 'full-height' : ''}`}>
                     <Outlet />
                 </div>
             </main>

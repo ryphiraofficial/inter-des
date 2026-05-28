@@ -9,12 +9,12 @@ import ExpenseModal from './components/expenses/ExpenseModal';
 
 import '../css/Expenses.css';
 
-const ManagerExpenses = ({ user, search, setSearch }) => {
+const ManagerExpenses = ({ user, search, setSearch, filterMode }) => {
     const {
         expenses, loading, filterCategory, setFilterCategory,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete
-    } = useExpenseLogic(search, setSearch);
+    } = useExpenseLogic(search, setSearch, filterMode);
 
     React.useEffect(() => {
         const handleExport = (e) => {

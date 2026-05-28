@@ -148,11 +148,14 @@
 .meta-item {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 1rem;
     font-size: 0.9rem;
 }
 
 .meta-item label {
+    width: 80px;
+    text-align: right;
     font-weight: 700;
     color: #94a3b8;
     text-transform: uppercase;
@@ -160,6 +163,8 @@
 }
 
 .meta-item span {
+    width: 130px;
+    text-align: left;
     color: #1e293b;
     font-weight: 700;
 }
@@ -479,9 +484,13 @@
     .doc-content {
         padding-bottom: 20mm;
     }
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
     .qv-wrapper {
         padding: 1rem;
     }

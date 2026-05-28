@@ -9,6 +9,11 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
         { value: 'Tools & Equipment', dot: '#8b5cf6' },
         { value: 'Office', dot: '#06b6d4' },
         { value: 'Utilities', dot: '#f97316' },
+        { value: 'Food', dot: '#ef4444' },
+        { value: 'Stationery', dot: '#eab308' },
+        { value: 'Fuel', dot: '#14b8a6' },
+        { value: 'Travel', dot: '#6366f1' },
+        { value: 'Company Overhead', dot: '#8b5cf6' },
         { value: 'Miscellaneous', dot: '#64748b' },
     ];
 
