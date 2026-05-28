@@ -9,7 +9,6 @@ import { useCompanySettings } from '../../../hooks/useCompanySettings';
 const NAV_ITEMS = [
     { tab: 'overview',           label: 'Overview',          icon: LayoutDashboard },
     { tab: 'pipeline',           label: 'Project Pipeline',  icon: GitBranch },
-    { tab: 'project_details',    label: 'Project Details',   icon: FileText },
     { tab: 'project_management', label: 'Projects',          icon: Briefcase },
     { tab: 'tasks',              label: 'Task Management',   icon: CheckSquare },
     { tab: 'staff_overview',     label: 'Staff Overview',    icon: Users },

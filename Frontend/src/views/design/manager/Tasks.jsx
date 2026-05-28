@@ -16,7 +16,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
     return (
         <div className="design-tasks fade-in" style={{ paddingTop: '1rem' }}>
             <div className="dashboard-grid tasks-layout-grid">
-                <div className="tasks-container" style={{ display: 'grid', gap: '1.25rem', paddingBottom: '300px' }}>
+                <div className="tasks-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '300px' }}>
                     {tasks.filter(t => t.status !== 'Completed' && t.status !== 'Approved' && t.status !== 'Pushed to Procurement').map(task => {
                         const hasEmergency = task.dailyUpdates?.some(u => u.emergencies);
                         const overdue = task.dueDate && new Date(task.dueDate) < new Date();
@@ -27,23 +27,22 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                                 position: 'relative',
                                 background: '#fff', 
                                 border: `1px solid ${hasEmergency ? '#fee2e2' : '#f1f5f9'}`, 
-                                borderRadius: '24px',
-                                padding: '1.25rem 1.75rem', 
+                                borderRadius: '16px',
+                                padding: '1rem 1.25rem', 
                                 alignItems: 'center',
                                 zIndex: showReassignDropdown === task._id ? 3000 : 1,
                                 overflow: 'visible', // Changed to visible for popover
-                                boxShadow: '0 4px 20px -5px rgba(0,0,0,0.03)',
+                                boxShadow: '0 2px 10px -3px rgba(0,0,0,0.03)',
                                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                marginBottom: '1rem',
                                 cursor: 'default'
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 12px 30px -10px rgba(0,0,0,0.08)';
+                                e.currentTarget.style.boxShadow = '0 8px 20px -5px rgba(0,0,0,0.06)';
                             }}
                             onMouseOut={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 20px -5px rgba(0,0,0,0.03)';
+                                e.currentTarget.style.boxShadow = '0 2px 10px -3px rgba(0,0,0,0.03)';
                             }}>
                                 <div style={{ position: 'absolute', left: 0, top: 0, width: '6px', height: '100%', background: hasEmergency ? '#ef4444' : overdue ? '#ef4444' : getPriorityColor(task.priority) }}></div>
 
@@ -138,7 +137,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                                                     </button>
                                                 </div>
                                                 <div style={{ maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
-                                                    {teamStats.filter(s => !task.assignedTo?.some(a => (a._id || a).toString() === s._id.toString())).map(staff => (
+                                                    {teamStats.filter(s => !task.assignedTo?.some(a => (a._id || a).toString() === s._id.toString()) && !s.role?.toLowerCase().includes('manager')).map(staff => (
                                                         <div 
                                                             key={staff._id} 
                                                             className="staff-select-item"
@@ -189,7 +188,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                                                             <ArrowRight size={14} color="#6366f1" style={{ opacity: 0.5 }} />
                                                         </div>
                                                     ))}
-                                                    {teamStats.filter(s => !task.assignedTo?.some(a => (a._id || a).toString() === s._id.toString())).length === 0 && (
+                                                    {teamStats.filter(s => !task.assignedTo?.some(a => (a._id || a).toString() === s._id.toString()) && !s.role?.toLowerCase().includes('manager')).length === 0 && (
                                                         <div style={{ padding: '2rem 1rem', textAlign: 'center' }}>
                                                             <div style={{ background: '#f8fafc', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                                                                 <Users size={20} color="#cbd5e1" />

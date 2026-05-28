@@ -38,7 +38,6 @@ const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
     const tabMeta = isManager ? {
         overview: { title: 'Overview', description: 'High-level studio performance and metrics' },
         pipeline: { title: 'Project Pipeline', description: 'Track all active design projects and statuses' },
-        project_details: { title: 'Project Details', description: 'View approved specifications and details' },
         project_management: { title: 'Projects', description: 'Manage overall project timelines and resources' },
         tasks: { title: 'Task Management', description: 'Assign and track design tasks' },
         staff_overview: { title: 'Staff Overview', description: 'Monitor team workload and capacity' },

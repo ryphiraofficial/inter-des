@@ -101,7 +101,7 @@ const TaskAssignModal = ({
                             gap: '8px',
                             backgroundColor: '#ffffff'
                         }}>
-                            {staffList.map(s => {
+                            {staffList.filter(s => !s.role?.toLowerCase().includes('manager')).map(s => {
                                 const isChecked = (taskFormData.assignedTo || []).includes(s._id);
                                 return (
                                     <label key={s._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#374151', cursor: 'pointer', userSelect: 'none' }}>
