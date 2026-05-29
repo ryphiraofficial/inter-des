@@ -11,6 +11,7 @@ import ProjectTabs from './projects/components/ProjectTabs';
 import ProjectTable from './projects/components/ProjectTable';
 import ProjectTimeline from './projects/components/ProjectTimeline';
 import ProjectDetailModal from './projects/components/ProjectDetailModal';
+import ProjectEditModal from './projects/components/ProjectEditModal';
 import ProjectFocusedView from './projects/components/ProjectFocusedView';
 import AlertDialog from './components/AlertDialog';
 import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
@@ -22,6 +23,7 @@ const Projects = () => {
     const { id: urlProjectId } = useParams();
     const state = useProjectState();
     const [projectToDelete, setProjectToDelete] = useState(null);
+    const [projectToEdit, setProjectToEdit] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     
     const { fetchProjects } = useProjectData({
@@ -92,14 +94,15 @@ const Projects = () => {
     const renderActiveView = () => {
         switch (state.activeView) {
             case 'table':
-                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} onDeleteClick={setProjectToDelete} />;
+                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
             case 'timeline':
                 return <ProjectTimeline projects={filteredProjects} />;
-            case 'archive':
+            case 'archive': {
                 const archivedProjects = filteredProjects.filter(p => p.stage === 'Completed');
-                return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} onDeleteClick={setProjectToDelete} />;
+                return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
+            }
             case 'kanban':
-            default:
+            default: {
                 const activeProjects = filteredProjects.filter(p => p.stage !== 'Completed');
                 return (
                     <ProjectWorkflow 
@@ -110,6 +113,7 @@ const Projects = () => {
                         groupBy={state.groupBy}
                     />
                 );
+            }
         }
     };
 
@@ -162,6 +166,13 @@ const Projects = () => {
             <ProjectDetailModal 
                 selectedProject={state.selectedProject}
                 handleClose={actions.handleClose}
+                onUpdate={fetchProjects}
+            />
+
+            <ProjectEditModal
+                project={projectToEdit}
+                onClose={() => setProjectToEdit(null)}
+                onUpdate={fetchProjects}
             />
 
             <AlertDialog 

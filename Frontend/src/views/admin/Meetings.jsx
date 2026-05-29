@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Calendar as CalendarUI } from '../../components/ui/calendar.jsx';
 import { TimePicker } from '../../components/ui/time-picker.jsx';
+import AlertDialog from './components/AlertDialog';
 import 'react-day-picker/style.css';
 import './css/Meetings.css';
 
@@ -338,7 +339,7 @@ const MeetingCard = ({ meeting, onEdit, onCancel }) => {
                         <button className="meeting-icon-btn" title="Edit" onClick={() => onEdit(meeting)}>
                             <Edit2 size={15} />
                         </button>
-                        <button className="meeting-icon-btn danger" title="Cancel" onClick={() => onCancel(meeting._id)}>
+                        <button className="meeting-icon-btn danger" title="Cancel" onClick={() => onCancel(meeting)}>
                             <XCircle size={15} />
                         </button>
                     </div>
@@ -386,6 +387,10 @@ const AdminMeetings = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     const [editMeeting, setEditMeeting] = useState(null);
     const [filter, setFilter] = useState('all');
+    
+    // Cancellation state
+    const [meetingToCancel, setMeetingToCancel] = useState(null);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const fetchData = useCallback(async () => {
         try {
@@ -412,13 +417,21 @@ const AdminMeetings = ({ user }) => {
         return () => window.removeEventListener('open-schedule-meeting-modal', handler);
     }, []);
 
-    const handleCancel = async (id) => {
-        if (!window.confirm('Cancel this meeting?')) return;
+    const handleCancel = (meeting) => {
+        setMeetingToCancel(meeting);
+    };
+
+    const handleConfirmCancel = async () => {
+        if (!meetingToCancel) return;
+        setIsCancelling(true);
         try {
-            await meetingAPI.cancel(id);
+            await meetingAPI.cancel(meetingToCancel._id);
             fetchData();
+            setMeetingToCancel(null);
         } catch (err) {
             alert('Failed to cancel: ' + err.message);
+        } finally {
+            setIsCancelling(false);
         }
     };
 
@@ -556,7 +569,6 @@ const AdminMeetings = ({ user }) => {
                 </div>
             )}
 
-            {/* Modal */}
             {showModal && (
                 <ScheduleModal
                     onClose={handleModalClose}
@@ -565,6 +577,16 @@ const AdminMeetings = ({ user }) => {
                     allUsers={allUsers}
                 />
             )}
+
+            <AlertDialog 
+                isOpen={!!meetingToCancel}
+                onClose={() => setMeetingToCancel(null)}
+                onConfirm={handleConfirmCancel}
+                title="Cancel Meeting"
+                description={`Are you sure you want to cancel the meeting "${meetingToCancel?.title}"? This action will notify all invitees and cannot be undone.`}
+                confirmText="Cancel Meeting"
+                isProcessing={isCancelling}
+            />
         </div>
     );
 };

@@ -10,6 +10,7 @@ export const useQuotationState = () => {
 
     const [formData, setFormData] = useState({
         client: '',
+        clientPhone: '',
         quoteNumber: `QT-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
         date: new Date().toISOString().split('T')[0],
         validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],

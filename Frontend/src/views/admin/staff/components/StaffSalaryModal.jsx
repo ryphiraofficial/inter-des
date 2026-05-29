@@ -49,6 +49,15 @@ const StaffSalaryModal = ({
                                         <div className="salary-summary-item red"><span>Deductions</span><strong>- {fmtINR(calcDeductions(salaryForm))}</strong></div>
                                         <div className="salary-summary-item blue"><span>Net Pay</span><strong>{fmtINR(calcGross(salaryForm) - calcDeductions(salaryForm))}</strong></div>
                                     </div>
+                                    <div className="salary-section-title" style={{ marginTop: '0.5rem' }}>Details</div>
+                                    <div className="salary-form-grid" style={{ marginBottom: '1.5rem' }}>
+                                        <div className="salary-form-group">
+                                            <label>Effective From</label>
+                                            <div className="salary-input-wrap">
+                                                <input type="date" value={salaryForm.effectiveFrom} onChange={e => setSalaryForm(p => ({ ...p, effectiveFrom: e.target.value }))} className="salary-date-input" style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.6rem 0.75rem' }} />
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="modal-footer" style={{ paddingTop: 0 }}>
                                         <button type="button" className="btn-cancel" onClick={() => setSalaryEditMode(false)} disabled={salarySubmitting}>Cancel</button>
                                         <button type="submit" className="btn-submit" disabled={salarySubmitting}>{salarySubmitting ? <Loader size={16} className="spinner" /> : 'Save Salary'}</button>
@@ -56,33 +65,29 @@ const StaffSalaryModal = ({
                                 </form>
                             ) : (
                                 <>
-                                    {salaryStaff.salary?.effectiveFrom ? (
-                                        <>
-                                            <div className="salary-view-section">
-                                                <div className="salary-view-title">Earnings</div>
-                                                <div className="salary-view-grid">
-                                                    {[{ l: 'Basic Salary', v: salaryStaff.salary?.baseSalary }, { l: 'HRA', v: salaryStaff.salary?.hra }, { l: 'Travel Allowance', v: salaryStaff.salary?.travelAllowance }, { l: 'Other Allowances', v: salaryStaff.salary?.otherAllowances }].map(x => (
-                                                        <div className="salary-view-row" key={x.l}><span>{x.l}</span><span className="salary-view-val green">{fmtINR(x.v)}</span></div>
-                                                    ))}
-                                                </div>
+                                    <div className="salary-view-container">
+                                        <div className="salary-view-section earnings-card">
+                                            <div className="salary-view-title earnings">Earnings</div>
+                                            <div className="salary-view-grid">
+                                                {[{ l: 'Basic Salary', v: salaryStaff.salary?.baseSalary }, { l: 'HRA', v: salaryStaff.salary?.hra }, { l: 'Travel Allowance', v: salaryStaff.salary?.travelAllowance }, { l: 'Other Allowances', v: salaryStaff.salary?.otherAllowances }].map(x => (
+                                                    <div className="salary-view-row" key={x.l}><span>{x.l}</span><span className="salary-view-val green">{fmtINR(x.v)}</span></div>
+                                                ))}
                                             </div>
-                                            <div className="salary-view-section">
-                                                <div className="salary-view-title">Deductions</div>
-                                                <div className="salary-view-grid">
-                                                    {[{ l: 'Provident Fund (PF)', v: salaryStaff.salary?.providentFund }, { l: 'TDS / Income Tax', v: salaryStaff.salary?.taxDeduction }, { l: 'Other Deductions', v: salaryStaff.salary?.otherDeductions }].map(x => (
-                                                        <div className="salary-view-row" key={x.l}><span>{x.l}</span><span className="salary-view-val red">{fmtINR(x.v)}</span></div>
-                                                    ))}
-                                                </div>
+                                        </div>
+                                        <div className="salary-view-section deductions-card">
+                                            <div className="salary-view-title deductions">Deductions</div>
+                                            <div className="salary-view-grid">
+                                                {[{ l: 'Provident Fund (PF)', v: salaryStaff.salary?.providentFund }, { l: 'TDS / Income Tax', v: salaryStaff.salary?.taxDeduction }, { l: 'Other Deductions', v: salaryStaff.salary?.otherDeductions }].map(x => (
+                                                    <div className="salary-view-row" key={x.l}><span>{x.l}</span><span className="salary-view-val red">{fmtINR(x.v)}</span></div>
+                                                ))}
                                             </div>
-                                            <div className="salary-summary-bar" style={{ marginTop: '1rem' }}>
-                                                <div className="salary-summary-item green"><span>Gross</span><strong>{fmtINR(calcGross(salaryStaff.salary || {}))}</strong></div>
-                                                <div className="salary-summary-item red"><span>Deductions</span><strong>- {fmtINR(calcDeductions(salaryStaff.salary || {}))}</strong></div>
-                                                <div className="salary-summary-item blue"><span>Net Pay</span><strong>{fmtINR(calcGross(salaryStaff.salary || {}) - calcDeductions(salaryStaff.salary || {}))}</strong></div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="salary-not-set"><IndianRupee size={32} strokeWidth={1.5} /><p>Salary not configured</p></div>
-                                    )}
+                                        </div>
+                                        <div className="salary-summary-bar">
+                                            <div className="salary-summary-item green"><span>Gross Pay</span><strong>{fmtINR(calcGross(salaryStaff.salary || {}))}</strong></div>
+                                            <div className="salary-summary-item red"><span>Deductions</span><strong>- {fmtINR(calcDeductions(salaryStaff.salary || {}))}</strong></div>
+                                            <div className="salary-summary-item blue"><span>Net Pay</span><strong>{fmtINR(calcGross(salaryStaff.salary || {}) - calcDeductions(salaryStaff.salary || {}))}</strong></div>
+                                        </div>
+                                    </div>
                                 </>
                             )}
                         </>

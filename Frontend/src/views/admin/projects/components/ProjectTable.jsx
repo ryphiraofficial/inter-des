@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, Edit3, Trash2 } from 'lucide-react';
 
-const ProjectTable = ({ projects, onProjectClick, onDeleteClick }) => {
+const ProjectTable = ({ projects, onProjectClick, onEditClick, onDeleteClick }) => {
     const getStageColor = (stage) => {
         const colors = {
             'Design': '#8b5cf6',
@@ -67,7 +67,7 @@ const ProjectTable = ({ projects, onProjectClick, onDeleteClick }) => {
                                     </button>
                                     <button 
                                         className="action-icon-btn" 
-                                        onClick={(e) => { e.stopPropagation(); onProjectClick(project); }}
+                                        onClick={(e) => { e.stopPropagation(); onEditClick(project); }}
                                         title="Edit Project"
                                     >
                                         <Edit3 size={16} />

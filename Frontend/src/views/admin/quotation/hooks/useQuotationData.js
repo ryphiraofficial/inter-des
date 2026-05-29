@@ -20,6 +20,7 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
                         const clientData = q.client?._id || q.client;
                         setFormData({
                             client: clientData,
+                            clientPhone: q.clientPhone || '',
                             quoteNumber: q.quotationNumber,
                             date: new Date(q.createdAt).toISOString().split('T')[0],
                             validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',

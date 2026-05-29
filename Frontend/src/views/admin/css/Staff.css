@@ -1101,22 +1101,60 @@ button.btn-mobile-action:active {
 }
 
 /* View Mode */
+.salary-view-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.salary-view-section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.salary-view-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.salary-view-title.earnings {
+    color: #10b981;
+    border-bottom-color: #d1fae5;
+}
+
+.salary-view-title.deductions {
+    color: #ef4444;
+    border-bottom-color: #fee2e2;
+}
+
 .salary-view-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: 0;
 }
 
 .salary-view-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    padding: 0.6rem 0;
     border-bottom: 1px dashed #e2e8f0;
 }
 
 .salary-view-row:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
 .salary-view-row span:first-child {

@@ -217,6 +217,27 @@ ProjectSchema.pre('save', function (next) {
     // We shouldn't auto-downgrade to Design/Accounts just based on booleans unless we want to,
     // so let's only auto-advance if it reaches the end states.
     
+    if (['Design', 'Procurement', 'Production'].includes(this.stage) && this.status === 'Not Started') {
+        this.status = 'In Progress';
+    }
+    
+    next();
+});
+
+ProjectSchema.pre('findOneAndUpdate', function (next) {
+    const update = this.getUpdate();
+    if (update) {
+        const updateObj = update.$set || update;
+        if (updateObj.stage && !updateObj.status) {
+            if (['Design', 'Procurement', 'Production'].includes(updateObj.stage)) {
+                if (update.$set) {
+                    update.$set.status = 'In Progress';
+                } else {
+                    update.status = 'In Progress';
+                }
+            }
+        }
+    }
     next();
 });
 

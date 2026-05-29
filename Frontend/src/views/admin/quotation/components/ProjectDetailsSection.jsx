@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, Calendar } from 'lucide-react';
+import { Briefcase, Calendar, Phone } from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
 import DatePicker from '../../components/DatePicker';
 import AISuggestButton from '../../components/AISuggestButton';
@@ -83,6 +83,18 @@ const ProjectDetailsSection = ({
                         ]}
                     />
                 </div>
+            </div>
+            <div className="form-group" style={{ marginTop: '1.25rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Phone size={14} /> Client Phone Number</label>
+                <input
+                    type="tel"
+                    name="clientPhone"
+                    className="input-styled"
+                    placeholder="e.g., +91 98765 43210"
+                    value={formData.clientPhone}
+                    onChange={handleInputChange}
+                    style={{ borderRadius: '4px' }}
+                />
             </div>
             <div className="form-group" id="projectName-field-group" style={{ marginTop: '1.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

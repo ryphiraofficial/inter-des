@@ -109,6 +109,10 @@ const QuotationSchema = new mongoose.Schema({
         enum: ['Residential', 'Commercial', 'Hospitality', 'Retail', 'Other'],
         default: 'Residential'
     },
+    clientPhone: {
+        type: String,
+        trim: true
+    },
     items: [QuotationItemSchema],
     subtotal: {
         type: Number,

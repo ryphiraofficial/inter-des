@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, CreditCard, Tag, FileText, Info, CheckCircle2, MoreHorizontal, ExternalLink } from 'lucide-react';
-import { taskAPI } from '../../../../models/api';
+import { Calendar, User, CreditCard, Tag, FileText, Info, CheckCircle2, MoreHorizontal, ExternalLink, Edit3 } from 'lucide-react';
+import { taskAPI, projectAPI } from '../../../../models/api';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -70,13 +70,19 @@ const TeamPopover = ({ managerType, manager, staff, loading, onClose }) => {
     );
 };
 
-const ProjectDetailModal = ({ selectedProject, handleClose }) => {
+const ProjectDetailModal = ({ selectedProject, handleClose, onUpdate }) => {
     const [popover, setPopover] = useState(null); // { type, manager, staff, loading }
     const [allTasks, setAllTasks] = useState([]);
+    
+    const [isEditingDeadline, setIsEditingDeadline] = useState(false);
+    const [deadlineValue, setDeadlineValue] = useState('');
+    const [isSavingDeadline, setIsSavingDeadline] = useState(false);
 
     useEffect(() => {
         if (selectedProject) {
             fetchProjectTasks();
+            setDeadlineValue(selectedProject.targetEndDate ? new Date(selectedProject.targetEndDate).toISOString().split('T')[0] : '');
+            setIsEditingDeadline(false);
         }
     }, [selectedProject]);
 
@@ -88,6 +94,25 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
             }
         } catch (err) {
             console.error('Error fetching project tasks:', err);
+        }
+    };
+
+    const handleSaveDeadline = async () => {
+        if (!deadlineValue) {
+            setIsEditingDeadline(false);
+            return;
+        }
+        setIsSavingDeadline(true);
+        try {
+            await projectAPI.update(selectedProject._id, { targetEndDate: deadlineValue });
+            selectedProject.targetEndDate = deadlineValue; // Optimistic update
+            if (onUpdate) onUpdate();
+            setIsEditingDeadline(false);
+        } catch (err) {
+            console.error('Failed to update deadline:', err);
+            alert('Failed to update deadline');
+        } finally {
+            setIsSavingDeadline(false);
         }
     };
 
@@ -174,7 +199,45 @@ const ProjectDetailModal = ({ selectedProject, handleClose }) => {
                         <div className="detail-group">
                             <h4 className="section-title"><Calendar size={16} /> Timeline</h4>
                             <div className="info-row"><label>Start Date</label><span>{formatDate(selectedProject.startDate)}</span></div>
-                            <div className="info-row"><label>Target End</label><span>{formatDate(selectedProject.targetEndDate)}</span></div>
+                            
+                            <div className="info-row">
+                                <label>Target End</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    {isEditingDeadline ? (
+                                        <>
+                                            <input 
+                                                type="date" 
+                                                value={deadlineValue} 
+                                                onChange={e => setDeadlineValue(e.target.value)} 
+                                                className="form-input" 
+                                                style={{ padding: '4px 8px', width: 'auto', fontSize: '0.85rem' }} 
+                                                disabled={isSavingDeadline}
+                                            />
+                                            <button 
+                                                className="btn-icon approve" 
+                                                onClick={handleSaveDeadline} 
+                                                disabled={isSavingDeadline}
+                                                style={{ padding: '2px', color: '#10b981', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                                title="Save Deadline"
+                                            >
+                                                <CheckCircle2 size={16} />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>{formatDate(selectedProject.targetEndDate)}</span>
+                                            <button 
+                                                className="btn-icon" 
+                                                onClick={() => setIsEditingDeadline(true)}
+                                                style={{ padding: '2px', color: '#64748b', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                                title="Edit Deadline"
+                                            >
+                                                <Edit3 size={14} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                             <div className="info-row"><label>Progress</label><span>{selectedProject.progress}%</span></div>
                         </div>
 
