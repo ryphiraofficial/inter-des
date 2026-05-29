@@ -37,6 +37,7 @@ export const useClientActions = ({
         setEditingClient(client);
         setFormData({
             name: client.name || '',
+            projectName: client.projectName || '',
             email: client.email || '',
             phone: client.phone || '',
             address: client.address || '',

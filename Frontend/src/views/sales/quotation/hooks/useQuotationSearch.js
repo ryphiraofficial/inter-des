@@ -29,7 +29,7 @@ export const useQuotationSearch = ({
     };
 
     const selectClient = (client) => {
-        setFormData(prev => ({ ...prev, client: client._id }));
+        setFormData(prev => ({ ...prev, client: client._id, projectName: client.projectName || '' }));
         setClientSearchQuery(client.name);
         setShowClientSuggestions(false);
     };
@@ -58,6 +58,7 @@ export const useQuotationSearch = ({
                 size: item.size || '',
                 unit: item.unit || 'SCM',
                 rate: item.price || 0,
+                costPrice: item.costPrice || 0,
                 image: item.image || null,
                 amount: (Number(li.quantity) || 1) * (Number(item.price) || 0)
             };
@@ -92,10 +93,11 @@ export const useQuotationSearch = ({
             quantity: 1,
             unit: item.unit || 'SCM',
             rate: item.price || 0,
+            costPrice: item.costPrice || 0,
             amount: item.price || 0,
             image: item.image || null
         };
-        setLineItems([...lineItems, newItem]);
+        setLineItems([newItem, ...lineItems]);
         setGlobalSearchQuery('');
         setGlobalSearchResults([]);
     };

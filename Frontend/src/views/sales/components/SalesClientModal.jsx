@@ -22,6 +22,10 @@ const SalesClientModal = ({ showModal, closeModal, handleSubmit, formData, handl
                                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="Client name" />
                             </div>
                             <div className="sc-input-group">
+                                <label>Project Name</label>
+                                <input type="text" name="projectName" value={formData.projectName} onChange={handleInputChange} placeholder="e.g., Omega Tower Kitchen" />
+                            </div>
+                            <div className="sc-input-group">
                                 <label>Email *</label>
                                 <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="email@example.com" />
                             </div>

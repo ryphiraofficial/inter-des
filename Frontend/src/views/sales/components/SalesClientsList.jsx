@@ -10,6 +10,7 @@ const SalesClientsList = ({ loading, filteredClients }) => {
                     <thead>
                         <tr>
                             <th>Client Profile</th>
+                            <th>Project Name</th>
                             <th>Contact Information</th>
                             <th>Site Address</th>
                         </tr>
@@ -41,7 +42,7 @@ const SalesClientsList = ({ loading, filteredClients }) => {
                             ))
                         ) : filteredClients.length === 0 ? (
                             <tr>
-                                <td colSpan="3">
+                                <td colSpan="4">
                                     <div className="sc-empty">
                                         <User size={40} />
                                         <p>No clients found in directory</p>
@@ -56,6 +57,7 @@ const SalesClientsList = ({ loading, filteredClients }) => {
                                         <span className="sc-client-name">{client.name}</span>
                                     </div>
                                 </td>
+                                <td data-label="Project Name">{client.projectName || '—'}</td>
                                 <td data-label="Contact">
                                     <div className="sc-contact-info">
                                         <div className="sc-contact-item">

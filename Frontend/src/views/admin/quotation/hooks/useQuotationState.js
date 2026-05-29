@@ -60,7 +60,7 @@ export const useQuotationState = () => {
         image: null
     });
 
-    const addLineItem = () => setLineItems(prev => [...prev, createNewItem()]);
+    const addLineItem = () => setLineItems(prev => [createNewItem(), ...prev]);
     const removeLineItem = (id) => setLineItems(prev => prev.filter(item => item.id !== id));
 
     return {

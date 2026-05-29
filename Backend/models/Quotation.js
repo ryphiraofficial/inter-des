@@ -40,6 +40,11 @@ const QuotationItemSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    costPrice: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     rate: {
         type: Number,
         required: true,
@@ -49,6 +54,10 @@ const QuotationItemSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
+    },
+    profit: {
+        type: Number,
+        default: 0
     },
     image: {
         type: String,
@@ -104,6 +113,18 @@ const QuotationSchema = new mongoose.Schema({
     subtotal: {
         type: Number,
         required: true,
+        default: 0
+    },
+    totalCost: {
+        type: Number,
+        default: 0
+    },
+    totalProfit: {
+        type: Number,
+        default: 0
+    },
+    profitMargin: {
+        type: Number,
         default: 0
     },
     taxRate: {
@@ -231,11 +252,29 @@ QuotationSchema.pre('save', async function (next) {
 
 // Calculate totals before saving
 QuotationSchema.pre('save', function (next) {
-    this.subtotal = this.items.reduce((sum, item) => sum + item.amount, 0);
+    let totalCost = 0;
+    this.subtotal = this.items.reduce((sum, item) => {
+        item.amount = (item.quantity || 0) * (item.rate || 0);
+        item.profit = item.amount - ((item.quantity || 0) * (item.costPrice || 0));
+        totalCost += (item.quantity || 0) * (item.costPrice || 0);
+        return sum + item.amount;
+    }, 0);
+
+    this.totalCost = totalCost;
 
     // Discount is a percentage
     const discountAmount = (this.subtotal * (this.discount || 0)) / 100;
     this.offerPrice = this.subtotal - discountAmount;
+
+    // Total Profit (Offer Price - Total Cost)
+    this.totalProfit = this.offerPrice - this.totalCost;
+    
+    // Profit Margin %
+    if (this.offerPrice > 0) {
+        this.profitMargin = (this.totalProfit / this.offerPrice) * 100;
+    } else {
+        this.profitMargin = 0;
+    }
 
     // Tax is applied on the Offer Price (discounted amount)
     this.taxAmount = (this.offerPrice * (this.taxRate || 0)) / 100;

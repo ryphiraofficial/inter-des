@@ -46,6 +46,7 @@ const Inventory = () => {
             size: item.size || '',
             stock: item.stock || 0,
             reorderLevel: item.reorderLevel || 5,
+            costPrice: item.costPrice || 0,
             price: item.price || 0,
             image: item.image || null
         });

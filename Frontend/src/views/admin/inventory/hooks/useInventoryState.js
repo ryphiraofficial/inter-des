@@ -19,6 +19,7 @@ export const useInventoryState = () => {
         size: '',
         stock: 0,
         reorderLevel: 5,
+        costPrice: 0,
         price: 0,
         image: null
     };

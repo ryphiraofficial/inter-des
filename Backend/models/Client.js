@@ -17,6 +17,10 @@ const ClientSchema = new mongoose.Schema({
             'Please provide a valid email'
         ]
     },
+    projectName: {
+        type: String,
+        trim: true
+    },
     phone: {
         type: String,
         trim: true

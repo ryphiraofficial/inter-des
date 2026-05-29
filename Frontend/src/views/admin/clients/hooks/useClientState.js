@@ -13,6 +13,7 @@ export const useClientState = () => {
 
     const initialFormData = {
         name: '',
+        projectName: '',
         email: '',
         phone: '',
         address: '',

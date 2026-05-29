@@ -25,11 +25,11 @@ const InventoryTable = ({
             <table className="inventory-table">
                 <thead>
                     <tr>
-                        <th>Item Details</th>
-                        <th className="desktop-hide">Category</th>
-                        <th className="desktop-hide">Stock Level</th>
-                        <th className="desktop-hide">Price</th>
-                        <th className="desktop-hide">Actions</th>
+                        <th style={{ width: '40%' }}>Item Details</th>
+                        <th className="desktop-hide" style={{ width: '15%' }}>Category</th>
+                        <th className="desktop-hide" style={{ width: '15%' }}>Stock Level</th>
+                        <th className="desktop-hide" style={{ width: '15%' }}>Price</th>
+                        <th className="desktop-hide" style={{ width: '15%' }}>Actions</th>
                         <th className="mobile-show">Price</th>
                         <th className="mobile-show"></th>
                     </tr>

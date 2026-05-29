@@ -4,6 +4,7 @@ import { clientAPI } from '../../../models/api';
 
 const initialFormData = {
     name: '',
+    projectName: '',
     email: '',
     phone: '',
     address: '',

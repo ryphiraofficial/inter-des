@@ -10,7 +10,7 @@ const PaymentPoliciesSection = ({ formData, handleInputChange, depositAmount }) 
                     <h3>Payment & Policies</h3>
                 </div>
             </div>
-            <div style={{ background: '#f0fdf4', border: '1px solid #dcfce7', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ background: '#f0fdf4', border: '1px solid #dcfce7', borderRadius: '4px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <label style={{ color: '#166534', fontWeight: 600, margin: 0 }}>Deposit / Advance</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <input

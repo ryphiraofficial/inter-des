@@ -4,16 +4,17 @@ import CustomSelect from '../../components/CustomSelect';
 import DatePicker from '../../components/DatePicker';
 import AISuggestButton from '../../components/AISuggestButton';
 
-const ProjectDetailsSection = ({ 
-    formData, 
-    handleInputChange, 
-    clientSearchQuery, 
-    handleClientSearch, 
-    showClientSuggestions, 
-    filteredClients, 
-    selectClient, 
+const ProjectDetailsSection = ({
+    formData,
+    handleInputChange,
+    clientSearchQuery,
+    handleClientSearch,
+    showClientSuggestions,
+    filteredClients,
+    selectClient,
     handleQuickAddClient,
-    setFormData
+    setFormData,
+    fieldErrors
 }) => {
     return (
         <div className="form-section">
@@ -24,18 +25,24 @@ const ProjectDetailsSection = ({
                 </div>
             </div>
             <div className="form-grid">
-                <div className="form-group" style={{ position: 'relative' }}>
+                <div className="form-group" id="client-field-group" style={{ position: 'relative' }}>
                     <label>Client *</label>
                     <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
                         <input
                             type="text"
-                            className="input-styled"
+                            className={`input-styled ${fieldErrors?.client ? 'error-field' : ''}`}
                             placeholder="Type to search client..."
                             value={clientSearchQuery}
                             onChange={(e) => handleClientSearch(e.target.value)}
                             onFocus={() => clientSearchQuery.trim() && handleClientSearch(clientSearchQuery)}
                             required
+                            style={{ borderRadius: '4px' }}
                         />
+                        {fieldErrors?.client && (
+                            <span className="field-error-msg" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.4rem', display: 'block', fontWeight: '500' }}>
+                                {fieldErrors.client}
+                            </span>
+                        )}
                         {showClientSuggestions && (
                             <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
                                 {filteredClients.map(c => (
@@ -64,20 +71,20 @@ const ProjectDetailsSection = ({
                     </div>
                 </div>
                 <div className="form-group">
-                    <CustomSelect 
+                    <CustomSelect
                         label="Document Type"
-                        name="documentType" 
-                        value={formData.documentType} 
-                        onChange={handleInputChange} 
+                        name="documentType"
+                        value={formData.documentType}
+                        onChange={handleInputChange}
                         options={[
                             { value: 'Quotation', label: 'Quotation' },
                             { value: 'Estimate', label: 'Estimate' },
                             { value: 'Proposal', label: 'Proposal' }
-                        ]} 
+                        ]}
                     />
                 </div>
             </div>
-            <div className="form-group" style={{ marginTop: '1.25rem' }}>
+            <div className="form-group" id="projectName-field-group" style={{ marginTop: '1.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <label>Project Name *</label>
                     <AISuggestButton
@@ -86,7 +93,21 @@ const ProjectDetailsSection = ({
                         onSuggest={(v) => setFormData(prev => ({ ...prev, projectName: v }))}
                     />
                 </div>
-                <input type="text" name="projectName" className="input-styled" placeholder="e.g., Living Room Interior Design" value={formData.projectName} onChange={handleInputChange} required />
+                <input
+                    type="text"
+                    name="projectName"
+                    className={`input-styled ${fieldErrors?.projectName ? 'error-field' : ''}`}
+                    placeholder="e.g., Living Room Interior Design"
+                    value={formData.projectName}
+                    onChange={handleInputChange}
+                    required
+                    style={{ borderRadius: '4px' }}
+                />
+                {fieldErrors?.projectName && (
+                    <span className="field-error-msg" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.4rem', display: 'block', fontWeight: '500' }}>
+                        {fieldErrors.projectName}
+                    </span>
+                )}
             </div>
             <div className="form-group" style={{ marginTop: '1.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -97,21 +118,21 @@ const ProjectDetailsSection = ({
                         onSuggest={(v) => setFormData(prev => ({ ...prev, projectDescription: v }))}
                     />
                 </div>
-                <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2"></textarea>
+                <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2" style={{ borderRadius: '4px' }}></textarea>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
                 <div className="form-group">
-                    <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project Start</label>
-                    <DatePicker 
-                        value={formData.projectStart} 
-                        onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val }})} 
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> Project Start</label>
+                    <DatePicker
+                        value={formData.projectStart}
+                        onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val } })}
                     />
                 </div>
                 <div className="form-group">
-                    <label><Calendar size={14} style={{ marginRight: '4px' }} /> Project End</label>
-                    <DatePicker 
-                        value={formData.projectEnd} 
-                        onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val }})} 
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> Project End</label>
+                    <DatePicker
+                        value={formData.projectEnd}
+                        onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val } })}
                     />
                 </div>
             </div>

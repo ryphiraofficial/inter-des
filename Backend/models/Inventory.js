@@ -26,6 +26,11 @@ const InventorySchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    costPrice: {
+        type: Number,
+        required: [true, 'Please provide cost price'],
+        min: 0
+    },
     price: {
         type: Number,
         required: [true, 'Please provide price'],
