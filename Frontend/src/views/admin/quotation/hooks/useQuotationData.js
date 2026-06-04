@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGetClientsQuery, useGetInventoryQuery, useGetQuotationByIdQuery } from '../../../../store/api/adminApi';
 
-export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount, setFetching, setError, setClients, setInventoryItems, clients }) => {
+export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount, setFetching, setError, setClients, setInventoryItems, clients, setClientSearchQuery }) => {
     
     const { data: clientsRes, isLoading: clientsLoading, error: clientsError } = useGetClientsQuery();
     const { data: inventoryRes, isLoading: inventoryLoading, error: inventoryError } = useGetInventoryQuery({ limit: 1000 });
@@ -26,6 +26,11 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
         if (isEdit && id && quoteRes?.success) {
             const q = quoteRes.data;
             const clientData = q.client?._id || q.client;
+            
+            if (setClientSearchQuery && q.client?.name) {
+                setClientSearchQuery(q.client.name);
+            }
+            
             setFormData({
                 client: clientData,
                 clientPhone: q.clientPhone || '',

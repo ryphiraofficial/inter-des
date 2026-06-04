@@ -42,16 +42,16 @@ const NewQuotation = ({ isEdit, isStaff }) => {
     // Logic Hooks
     const state = useQuotationState();
 
+    const search = useQuotationSearch({
+        clients, inventoryItems, setFormData: state.setFormData,
+        setLineItems: state.setLineItems, lineItems: state.lineItems
+    });
+
     useQuotationData({
         isEdit, id, setFormData: state.setFormData, setLineItems: state.setLineItems,
         setTaxRate: state.setTaxRate, setDiscount: state.setDiscount,
         setIncludeDiscount: state.setIncludeDiscount, setFetching, setError,
-        setClients, setInventoryItems, clients
-    });
-
-    const search = useQuotationSearch({
-        clients, inventoryItems, setFormData: state.setFormData,
-        setLineItems: state.setLineItems, lineItems: state.lineItems
+        setClients, setInventoryItems, clients, setClientSearchQuery: search.setClientSearchQuery
     });
 
     const calc = useQuotationCalculations({

@@ -4,7 +4,7 @@ import { useGetSalesClientsQuery, useGetSalesInventoryQuery, useGetSalesQuotatio
 export const useQuotationData = ({ 
     isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, 
     setIncludeDiscount, setFetching, setError, setClients, setInventoryItems,
-    clients 
+    clients, setClientSearchQuery
 }) => {
     const { data: clientsRes, isLoading: clientsLoading } = useGetSalesClientsQuery();
     const { data: inventoryRes, isLoading: inventoryLoading } = useGetSalesInventoryQuery({ limit: 1000 });
@@ -35,6 +35,10 @@ export const useQuotationData = ({
             const q = quoteRes.data;
             const clientData = q.client?._id || q.client;
             
+            if (setClientSearchQuery && q.client?.name) {
+                setClientSearchQuery(q.client.name);
+            }
+
             setFormData(prev => ({
                 ...prev,
                 client: clientData,
