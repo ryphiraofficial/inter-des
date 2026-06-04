@@ -38,6 +38,7 @@ export const useQuotationData = ({
             setFormData(prev => ({
                 ...prev,
                 client: clientData,
+                clientPhone: q.clientPhone || '',
                 quoteNumber: q.quotationNumber,
                 date: new Date(q.createdAt).toISOString().split('T')[0],
                 validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
@@ -63,6 +64,9 @@ export const useQuotationData = ({
                 finishBrand: item.finish || '',
                 materialOrigin: item.material || '',
                 size: item.size || '',
+                cmL: item.cmL || null,
+                cmD: item.cmD || null,
+                cmH: item.cmH || null,
                 quantity: item.quantity,
                 unit: item.unit,
                 rate: item.rate,
