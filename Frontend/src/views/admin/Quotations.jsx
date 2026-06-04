@@ -11,6 +11,7 @@ import { selectUser } from '../../store/slices/authSlice';
 import QuotationTabs from './quotations/list/components/QuotationTabs';
 import QuotationTable from './quotations/list/components/QuotationTable';
 import ApproveQuotationModal from './quotations/list/components/ApproveQuotationModal';
+import AlertDialog from './components/AlertDialog';
 import { TableSkeleton } from './components/Skeleton';
 
 import './css/Quotations.css';
@@ -20,6 +21,8 @@ const Quotations = ({ isStaff }) => {
     const state = useQuotationListState();
     const [selectedQuotation, setSelectedQuotation] = useState(null);
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [quotationToDelete, setQuotationToDelete] = useState(null);
     
     const { fetchQuotations } = useQuotationListData({
         setQuotations: state.setQuotations,
@@ -44,6 +47,18 @@ const Quotations = ({ isStaff }) => {
     const handleConfirmApproval = async (id, designManagerId) => {
         setIsApproveModalOpen(false);
         await actions.handleApprove(id, designManagerId);
+    };
+
+    const triggerDeleteModal = (id) => {
+        setQuotationToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!quotationToDelete) return;
+        setIsDeleteModalOpen(false);
+        await actions.handleDelete(quotationToDelete);
+        setQuotationToDelete(null);
     };
 
     const canApprove = getRolePermissions(user?.role).canApproveQuotations;
@@ -87,7 +102,7 @@ const Quotations = ({ isStaff }) => {
                         expandedRow={state.expandedRow}
                         toggleRow={actions.toggleRow}
                         handleApprove={triggerApprovalModal}
-                        handleDelete={actions.handleDelete}
+                        handleDelete={triggerDeleteModal}
                         isStaff={isStaff}
                         canApprove={canApprove}
                         submitting={state.submitting}
@@ -102,6 +117,18 @@ const Quotations = ({ isStaff }) => {
                 quotation={selectedQuotation}
                 designManagers={state.designManagers}
                 submitting={state.submitting}
+            />
+
+            <AlertDialog
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Quotation"
+                description="Are you sure you want to delete this quotation? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                isDestructive={true}
+                isProcessing={state.submitting}
             />
         </div>
     );

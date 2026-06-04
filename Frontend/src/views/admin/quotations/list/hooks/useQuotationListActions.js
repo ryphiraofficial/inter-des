@@ -21,7 +21,6 @@ export const useQuotationListActions = ({
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this quotation?')) return;
         setSubmitting(true);
         try {
             await deleteQuotation(id).unwrap();
