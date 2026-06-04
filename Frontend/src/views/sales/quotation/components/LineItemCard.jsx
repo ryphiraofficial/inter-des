@@ -83,10 +83,13 @@ const LineItemCard = ({
                                 updateLineItem(item.id, 'cmL', v);
                                 if (v && (item.cmH || 0) > 0) {
                                     const sqft = (v * (item.cmH || 0)) / 900;
-                                    updateLineItem(item.id, 'quantity', Math.round(sqft * 100) / 100);
-                                    updateLineItem(item.id, 'size', Math.round(sqft * 100) / 100 + ' SFT');
+                                    const roundedSqft = Math.round(sqft * 100) / 100;
+                                    updateLineItem(item.id, 'quantity', roundedSqft);
+                                    updateLineItem(item.id, 'sqft', roundedSqft);
+                                    updateLineItem(item.id, 'size', roundedSqft + ' SFT');
                                 } else if (!v || !item.cmH) {
                                     updateLineItem(item.id, 'quantity', 1);
+                                    updateLineItem(item.id, 'sqft', null);
                                     updateLineItem(item.id, 'size', '');
                                 }
                             }} />
@@ -101,10 +104,13 @@ const LineItemCard = ({
                                 updateLineItem(item.id, 'cmH', v);
                                 if (v && (item.cmL || 0) > 0) {
                                     const sqft = ((item.cmL || 0) * v) / 900;
-                                    updateLineItem(item.id, 'quantity', Math.round(sqft * 100) / 100);
-                                    updateLineItem(item.id, 'size', Math.round(sqft * 100) / 100 + ' SFT');
+                                    const roundedSqft = Math.round(sqft * 100) / 100;
+                                    updateLineItem(item.id, 'quantity', roundedSqft);
+                                    updateLineItem(item.id, 'sqft', roundedSqft);
+                                    updateLineItem(item.id, 'size', roundedSqft + ' SFT');
                                 } else if (!v || !item.cmL) {
                                     updateLineItem(item.id, 'quantity', 1);
+                                    updateLineItem(item.id, 'sqft', null);
                                     updateLineItem(item.id, 'size', '');
                                 }
                             }} />

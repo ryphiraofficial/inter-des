@@ -43,6 +43,10 @@ const QuotationItemSchema = new mongoose.Schema({
         type: Number,
         min: 0
     },
+    sqft: {
+        type: Number,
+        min: 0
+    },
     measurements: {
         type: String,
         trim: true

@@ -71,6 +71,7 @@ export const useQuotationData = ({
                 cmL: item.cmL || null,
                 cmD: item.cmD || null,
                 cmH: item.cmH || null,
+                sqft: item.sqft || null,
                 quantity: item.quantity,
                 unit: item.unit,
                 rate: item.rate,
