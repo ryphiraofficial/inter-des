@@ -4,8 +4,11 @@ import { useClientLogic } from '../hooks/useClientLogic';
 // Sub-components (Local to Accounts)
 import ClientTable from './components/clients/ClientTable';
 import ClientModal from './components/clients/ClientModal';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerClients = ({ user, search, setSearch }) => {
+const ManagerClients = ({ search, setSearch }) => {
+    const user = useAppSelector(selectUser);
     const {
         loading, showModal, setShowModal,
         editClient, form, setForm, submitting, filtered, handleSubmit, handleDelete, openEdit

@@ -1,0 +1,155 @@
+/* ── Overlay ───────────────────────────────────────────────────── */
+.cd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: cd-fade-in 0.15s ease;
+}
+
+@keyframes cd-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Dialog box ────────────────────────────────────────────────── */
+.cd-dialog {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2rem 2rem 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.18),
+        0 4px 16px rgba(15, 23, 42, 0.08);
+    position: relative;
+    animation: cd-slide-up 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@keyframes cd-slide-up {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Warning icon ──────────────────────────────────────────────── */
+.cd-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ea580c;
+    flex-shrink: 0;
+}
+
+/* ── Close button ──────────────────────────────────────────────── */
+.cd-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.cd-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+/* ── Text body ─────────────────────────────────────────────────── */
+.cd-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.cd-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.cd-message {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Action buttons ────────────────────────────────────────────── */
+.cd-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.cd-btn {
+    height: 38px;
+    padding: 0 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.cd-btn-cancel {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+.cd-btn-cancel:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.cd-btn-confirm {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.cd-btn-confirm:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    transform: translateY(-1px);
+}
+
+.cd-btn-confirm:active {
+    transform: translateY(0);
+}

@@ -9,8 +9,11 @@ import {
 import { useNotifications } from '../../sales/hooks/useNotifications';
 import NotificationPopup from '../../sales/components/SalesNotificationPopup';
 import '../../sales/css/SalesHeader.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLogout }) => {
+const ProcurementNavbar = ({ role, onRefresh, isLoading, onMenuClick, onLogout }) => {
+    const user = useAppSelector(selectUser);
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -89,15 +92,16 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                     </button>
                 )}
 
-                <div className="procurement-navbar-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
+                <div style={{ position: 'relative' }}>
                     <button 
-                        className="procurement-navbar-profile-btn"
-                        onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        style={{ position: 'relative' }}
+                        className="procurement-navbar-bell" 
+                        onClick={() => {
+                            setIsProfileOpen(false);
+                            setShowNotifications(v => !v);
+                            if (!showNotifications) fetchNotifications();
+                        }}
                     >
-                        <div className="procurement-navbar-avatar" style={{ width: '38px', height: '38px' }}>
-                            {getInitials(user?.fullName || user?.name)}
-                        </div>
+                        <Bell size={20} />
                         {unreadCount > 0 && (
                             <span style={{
                                 position: 'absolute', top: '-2px', right: '-2px',
@@ -109,6 +113,32 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                                 {unreadCount > 9 ? '9+' : unreadCount}
                             </span>
                         )}
+                    </button>
+
+                    {showNotifications && (
+                        <NotificationPopup 
+                            notifications={notifications}
+                            unreadCount={unreadCount}
+                            onClose={() => setShowNotifications(false)}
+                            onMarkAsRead={handleMarkAsRead}
+                            onMarkAllRead={handleMarkAllRead}
+                            onDelete={handleDelete}
+                        />
+                    )}
+                </div>
+
+                <div className="procurement-navbar-profile-wrapper" ref={profileRef} style={{ position: 'relative' }}>
+                    <button 
+                        className="procurement-navbar-profile-btn"
+                        onClick={() => {
+                            setShowNotifications(false);
+                            setIsProfileOpen(!isProfileOpen);
+                        }}
+                        style={{ position: 'relative' }}
+                    >
+                        <div className="procurement-navbar-avatar" style={{ width: '38px', height: '38px' }}>
+                            {getInitials(user?.fullName || user?.name)}
+                        </div>
                     </button>
 
                     {isProfileOpen && (
@@ -124,19 +154,6 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                             <button className="procurement-navbar-dropdown-item" onClick={() => setIsProfileOpen(false)}>
                                 <User size={16} /> My Profile
                             </button>
-                            <button className="procurement-navbar-dropdown-item" onClick={toggleNotif} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Bell size={16} /> Notifications
-                                </div>
-                                {unreadCount > 0 && (
-                                    <span style={{
-                                        background: '#ef4444', color: 'white', fontSize: '0.65rem',
-                                        fontWeight: 'bold', padding: '2px 6px', borderRadius: '10px'
-                                    }}>
-                                        {unreadCount}
-                                    </span>
-                                )}
-                            </button>
                             <button className="procurement-navbar-dropdown-item" onClick={() => setIsProfileOpen(false)}>
                                 <Settings size={16} /> Settings
                             </button>
@@ -146,17 +163,6 @@ const ProcurementNavbar = ({ user, role, onRefresh, isLoading, onMenuClick, onLo
                                 </button>
                             )}
                         </div>
-                    )}
-
-                    {showNotifications && (
-                        <NotificationPopup 
-                            notifications={notifications}
-                            unreadCount={unreadCount}
-                            onClose={() => setShowNotifications(false)}
-                            onMarkAsRead={handleMarkAsRead}
-                            onMarkAllRead={handleMarkAllRead}
-                            onDelete={handleDelete}
-                        />
                     )}
                 </div>
             </div>

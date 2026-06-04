@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock, Trash2, FileText, Clock3, Wallet } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
 import AlertDialog from '../../components/AlertDialog';
-import { projectAPI } from '../../../../models/api';
+import { useUpdateProjectMutation } from '../../../../store/api/adminApi';
+import ProjectInfoCards from './ProjectInfoCards';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -34,6 +35,7 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isCollecting, setIsCollecting] = useState(false);
+    const [updateProject] = useUpdateProjectMutation();
 
     const paidAmount = project ? Math.max(project.advanceAmount || 0, project.collectedAmount || 0) : 0;
     const remainingBalance = project ? Math.max(0, project.budget - paidAmount) : 0;
@@ -42,10 +44,10 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
         if (!project) return;
         setIsCollecting(true);
         try {
-            await projectAPI.update(project._id, { 
+            await updateProject({ id: project._id, 
                 paymentCollectionStatus: 'Pending Assignment',
                 notes: (project.notes || '') + '\n[Admin Requested Balance Payment Collection]'
-            });
+            }).unwrap();
             // Optimistic update
             project.paymentCollectionStatus = 'Pending Assignment';
         } catch (error) {
@@ -175,76 +177,7 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
                     </div>
                 </div>
 
-                <div className="info-cards-grid">
-                    <div className="info-card-premium">
-                        <div className="info-card-header">
-                            <div className="info-card-icon-container">
-                                <Building2 size={18} strokeWidth={2.5} />
-                            </div>
-                            <h4>Client Information</h4>
-                        </div>
-                        <div className="info-content-grid">
-                            <div className="info-item">
-                                <span className="label">Primary Contact</span>
-                                <strong className="value">{project.client?.name}</strong>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Email Address</span>
-                                <span className="value text-muted">{project.client?.email || 'N/A'}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Phone Number</span>
-                                <span className="value text-muted">{project.client?.phone || 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="info-card-premium">
-                        <div className="info-card-header">
-                            <div className="info-card-icon-container bg-indigo">
-                                <Calendar size={18} strokeWidth={2.5} />
-                            </div>
-                            <h4>Project Timeline</h4>
-                        </div>
-                        <div className="info-content-grid">
-                            <div className="info-item">
-                                <span className="label">Date Created</span>
-                                <span className="value">{new Date(project.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Last Modified</span>
-                                <span className="value">{new Date(project.updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Current Stage</span>
-                                <strong className="value" style={{ color: getStageColor(project.stage) }}>{project.stage}</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="info-card-premium">
-                        <div className="info-card-header">
-                            <div className="info-card-icon-container bg-emerald">
-                                <Users size={18} strokeWidth={2.5} />
-                            </div>
-                            <h4>Project Team</h4>
-                        </div>
-                        <div className="info-content-grid">
-                            <div className="info-item">
-                                <span className="label">Design Manager</span>
-                                <strong className="value">{project.assignedDesignManager?.fullName || 'Unassigned'}</strong>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Procurement Manager</span>
-                                <strong className="value">{project.assignedProcurementManager?.fullName || 'Unassigned'}</strong>
-                            </div>
-                            <div className="info-item">
-                                <span className="label">Production Manager</span>
-                                <strong className="value">{project.assignedProductionManager?.fullName || 'Unassigned'}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ProjectInfoCards project={project} getStageColor={getStageColor} />
             </div>
 
             <AlertDialog 

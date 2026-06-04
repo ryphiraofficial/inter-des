@@ -1,5 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 import { useRoleDashboard } from '../hooks/useRoleDashboard';
 import DesignLayout from '../../views/design/layout/DesignLayout';
 import DesignManagerDashboard from '../../views/design/manager/DesignManagerDashboard';
@@ -12,32 +14,33 @@ import SalesDashboard from '../../views/sales/SalesDashboard';
 import AccountsManagerDashboard from '../../views/Accounts/manager/ManagerDashboard';
 import AccountsStaffDashboard from '../../views/Accounts/staff/StaffDashboard';
 
-const RoleDashboard = ({ user, onLogout }) => {
+const RoleDashboard = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const dashboardType = useRoleDashboard(user?.role);
 
     switch (dashboardType) {
         case 'design_manager':
             return (
-                <DesignLayout role="manager" user={user} onLogout={onLogout}>
-                    <DesignManagerDashboard user={user} onLogout={onLogout} />
+                <DesignLayout role="manager" onLogout={onLogout}>
+                    <DesignManagerDashboard onLogout={onLogout} />
                 </DesignLayout>
             );
         case 'design_staff':
             return (
-                <DesignLayout role="staff" user={user} onLogout={onLogout}>
-                    <DesignStaffDashboard user={user} onLogout={onLogout} />
+                <DesignLayout role="staff" onLogout={onLogout}>
+                    <DesignStaffDashboard onLogout={onLogout} />
                 </DesignLayout>
             );
         case 'procurement_manager':
             return (
-                <ProcurementLayout role="manager" user={user} onLogout={onLogout}>
-                    <ProcurementManagerDashboard user={user} onLogout={onLogout} />
+                <ProcurementLayout role="manager" onLogout={onLogout}>
+                    <ProcurementManagerDashboard onLogout={onLogout} />
                 </ProcurementLayout>
             );
         case 'procurement_staff':
             return (
-                <ProcurementLayout role="staff" user={user} onLogout={onLogout}>
-                    <ProcurementStaffDashboard user={user} onLogout={onLogout} />
+                <ProcurementLayout role="staff" onLogout={onLogout}>
+                    <ProcurementStaffDashboard onLogout={onLogout} />
                 </ProcurementLayout>
             );
         case 'project_manager':
@@ -48,16 +51,16 @@ const RoleDashboard = ({ user, onLogout }) => {
         case 'site_supervisor':
             return <Navigate to="/site/dashboard" replace />;
         case 'staff':
-            return <SalesDashboard user={user} onLogout={onLogout} />;
+            return <SalesDashboard onLogout={onLogout} />;
         case 'sales':
-            return <SalesDashboard user={user} />;
+            return <SalesDashboard />;
         case 'accounts_manager':
-            return <AccountsManagerDashboard user={user} onLogout={onLogout} />;
+            return <AccountsManagerDashboard onLogout={onLogout} />;
         case 'accounts_staff':
-            return <AccountsStaffDashboard user={user} onLogout={onLogout} />;
+            return <AccountsStaffDashboard onLogout={onLogout} />;
         case 'admin':
         default:
-            return <AdminDashboard user={user} onLogout={onLogout} />;
+            return <AdminDashboard onLogout={onLogout} />;
     }
 };
 

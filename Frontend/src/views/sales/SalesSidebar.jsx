@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import './css/SalesSidebar.css';
 import { useCompanySettings } from '../../hooks/useCompanySettings';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
 const NAV_ITEMS = [
     { to: '/staff/dashboard',   icon: LayoutDashboard,  label: 'Dashboard' },
@@ -21,7 +23,8 @@ const NAV_ITEMS = [
     { to: '/staff/quotations',  icon: FileText,         label: 'Quotations' },
 ];
 
-const SalesSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
+const SalesSidebar = ({ onLogout, isOpen, toggleSidebar }) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     const { companyName } = useCompanySettings();
 

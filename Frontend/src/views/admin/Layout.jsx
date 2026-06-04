@@ -5,8 +5,11 @@ import DeptSidebar from './components/DeptSidebar';
 import Header from './Header';
 import { getRoleDepartment } from './hooks/useRoleDashboard';
 import './css/Layout.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
-const Layout = ({ user, onLogout }) => {
+const Layout = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const [isCollapsed, setIsCollapsed] = React.useState(false);
     const [isMobileOpen, setIsMobileOpen] = React.useState(false);
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
@@ -55,7 +58,7 @@ const Layout = ({ user, onLogout }) => {
             {isMobileOpen && <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
             {renderSidebar()}
             <main className="main-content" style={mainContentStyle}>
-                {!isQuotationView && <Header user={user} toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />}
+                {!isQuotationView && <Header toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />}
                 <div className={`page-wrapper ${isQuotationView ? 'full-height' : ''}`}>
                     <Outlet />
                 </div>

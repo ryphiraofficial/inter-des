@@ -14,8 +14,11 @@ import { GraphicalAnalysis, TrendCharts } from './dashboard/components/Dashboard
 import Skeleton from './components/Skeleton';
 
 import './css/Dashboard.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
-const Dashboard = ({ user }) => {
+const Dashboard = ({}) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     const state = useDashboardState();
     

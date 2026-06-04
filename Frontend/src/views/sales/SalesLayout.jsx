@@ -3,6 +3,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import DeptSidebar from './components/DeptSidebar';
 import SalesHeader  from './SalesHeader';
 import './css/SalesLayout.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
 const PAGE_MAP = {
     '/staff/dashboard':   { title: 'Dashboard',   subtitle: "Welcome back! Here's your task overview." },
@@ -14,7 +16,8 @@ const PAGE_MAP = {
     '/staff/meetings':    { title: 'Meetings',     subtitle: 'View and join your scheduled team and client meetings.' },
 };
 
-const SalesLayout = ({ user, onLogout }) => {
+const SalesLayout = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -60,7 +63,6 @@ const SalesLayout = ({ user, onLogout }) => {
                         title={title}
                         subtitle={subtitle}
                         toggleSidebar={isMobile ? toggleMobileSidebar : toggleSidebar}
-                        user={user}
                         onLogout={onLogout}
                     />
                 )}

@@ -404,6 +404,12 @@
     position: relative;
 }
 
+@media (min-width: 769px) {
+    .procurement-navbar-profile-wrapper {
+        display: none !important;
+    }
+}
+
 .procurement-navbar-profile-btn {
     display: flex;
     align-items: center;

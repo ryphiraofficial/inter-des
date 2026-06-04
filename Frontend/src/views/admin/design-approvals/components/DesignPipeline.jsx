@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Eye, User, Image as ImageIcon, Sparkles } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 
 const DesignPipeline = ({ tasks, setSelectedTask, setShowDesignModal, openApproveModal }) => {
     if (tasks.length === 0) {

@@ -1,73 +1,77 @@
 import { useState, useEffect } from 'react';
-import { clientAPI, inventoryAPI, quotationAPI } from '../../../../models/api';
+import { useGetClientsQuery, useGetInventoryQuery, useGetQuotationByIdQuery } from '../../../../store/api/adminApi';
 
 export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount, setFetching, setError, setClients, setInventoryItems, clients }) => {
     
+    const { data: clientsRes, isLoading: clientsLoading, error: clientsError } = useGetClientsQuery();
+    const { data: inventoryRes, isLoading: inventoryLoading, error: inventoryError } = useGetInventoryQuery({ limit: 1000 });
+    const { data: quoteRes, isLoading: quoteLoading, error: quoteError } = useGetQuotationByIdQuery(id, { skip: !isEdit || !id });
+
     // Initial Data Fetch
     useEffect(() => {
-        const loadInitialData = async () => {
-            try {
-                const clientRes = await clientAPI.getAll();
-                if (clientRes.success) setClients(clientRes.data);
+        if (clientsLoading || inventoryLoading || (isEdit && id && quoteLoading)) {
+            setFetching(true);
+            return;
+        }
+        
+        if (clientsError || inventoryError || quoteError) {
+            setError('Failed to load data.');
+            setFetching(false);
+            return;
+        }
 
-                const inventoryRes = await inventoryAPI.getAll({ limit: 1000 });
-                if (inventoryRes.success) setInventoryItems(inventoryRes.data);
+        if (clientsRes?.success) setClients(clientsRes.data);
+        if (inventoryRes?.success) setInventoryItems(inventoryRes.data);
 
-                if (isEdit && id) {
-                    const quoteRes = await quotationAPI.getById(id);
-                    if (quoteRes.success) {
-                        const q = quoteRes.data;
-                        const clientData = q.client?._id || q.client;
-                        setFormData({
-                            client: clientData,
-                            clientPhone: q.clientPhone || '',
-                            quoteNumber: q.quotationNumber,
-                            date: new Date(q.createdAt).toISOString().split('T')[0],
-                            validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
-                            documentType: q.documentType || 'Quotation',
-                            projectName: q.projectName,
-                            projectDescription: q.projectDescription || '',
-                            projectStart: q.projectStart ? new Date(q.projectStart).toISOString().split('T')[0] : '',
-                            projectEnd: q.projectEnd ? new Date(q.projectEnd).toISOString().split('T')[0] : '',
-                            scopeOfWork: q.scopeOfWork || '',
-                            depositPercent: q.depositPercent || 30,
-                            paymentTerms: q.paymentTerms || '',
-                            warrantyTerms: q.warrantyTerms || '',
-                            cancellationPolicy: q.cancellationPolicy || '',
-                            notes: q.notes || '',
-                            termsConditions: q.termsAndConditions || ''
-                        });
+        if (isEdit && id && quoteRes?.success) {
+            const q = quoteRes.data;
+            const clientData = q.client?._id || q.client;
+            setFormData({
+                client: clientData,
+                clientPhone: q.clientPhone || '',
+                quoteNumber: q.quotationNumber,
+                date: new Date(q.createdAt).toISOString().split('T')[0],
+                validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
+                documentType: q.documentType || 'Quotation',
+                projectName: q.projectName,
+                projectDescription: q.projectDescription || '',
+                projectStart: q.projectStart ? new Date(q.projectStart).toISOString().split('T')[0] : '',
+                projectEnd: q.projectEnd ? new Date(q.projectEnd).toISOString().split('T')[0] : '',
+                scopeOfWork: q.scopeOfWork || '',
+                depositPercent: q.depositPercent || 30,
+                paymentTerms: q.paymentTerms || '',
+                warrantyTerms: q.warrantyTerms || '',
+                cancellationPolicy: q.cancellationPolicy || '',
+                notes: q.notes || '',
+                termsConditions: q.termsAndConditions || ''
+            });
 
-                        setLineItems(q.items.map(item => ({
-                            id: item._id || Math.random(),
-                            name: item.itemName,
-                            description: item.description,
-                            section: item.section || 'Uncategorized',
-                            finishBrand: item.finish || '',
-                            materialOrigin: item.material || '',
-                            size: item.size || '',
-                            quantity: item.quantity,
-                            unit: item.unit,
-                            rate: item.rate,
-                            amount: item.amount,
-                            image: item.image || null
-                        })));
-                        if (q.taxRate) setTaxRate(q.taxRate);
-                        if (q.discount) {
-                            setDiscount(q.discount);
-                            setIncludeDiscount(true);
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('Error loading data:', err);
-                setError('Failed to load data: ' + err.message);
-            } finally {
-                setFetching(false);
+            setLineItems(q.items.map(item => ({
+                id: item._id || Math.random(),
+                name: item.itemName,
+                description: item.description,
+                section: item.section || 'Uncategorized',
+                finishBrand: item.finish || '',
+                materialOrigin: item.material || '',
+                size: item.size || '',
+                cmL: item.cmL || null,
+                cmD: item.cmD || null,
+                cmH: item.cmH || null,
+                quantity: item.quantity,
+                unit: item.unit,
+                rate: item.rate,
+                amount: item.amount,
+                costPrice: item.costPrice || 0,
+                image: item.image || null
+            })));
+            if (q.taxRate) setTaxRate(q.taxRate);
+            if (q.discount) {
+                setDiscount(q.discount);
+                setIncludeDiscount(true);
             }
-        };
-        loadInitialData();
-    }, [isEdit, id]);
+        }
+        setFetching(false);
+    }, [clientsRes, inventoryRes, quoteRes, clientsLoading, inventoryLoading, quoteLoading, clientsError, inventoryError, quoteError, isEdit, id, setClients, setDiscount, setError, setFetching, setFormData, setIncludeDiscount, setInventoryItems, setLineItems, setTaxRate]);
 
     // AI Auto-Fill Listener
     useEffect(() => {
@@ -119,5 +123,5 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
 
         window.addEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
         return () => window.removeEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
-    }, [clients]);
+    }, [clients, setFormData, setLineItems]);
 };

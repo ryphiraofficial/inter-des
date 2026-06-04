@@ -1,19 +1,20 @@
-import { quotationAPI } from '../../../../../models/api';
+import { useApproveQuotationMutation, useDeleteQuotationMutation } from '../../../../../store/api/adminApi';
 
 export const useQuotationListActions = ({ 
     fetchQuotations, setSubmitting, setExpandedRow, expandedRow 
 }) => {
     
+    const [approveQuotation] = useApproveQuotationMutation();
+    const [deleteQuotation] = useDeleteQuotationMutation();
+
     const handleApprove = async (id, designManagerId) => {
         setSubmitting(true);
         try {
-            const response = await quotationAPI.approve(id, { designManagerId });
-            if (response.success) {
-                alert('Quotation approved successfully and project initialized');
-                fetchQuotations();
-            }
+            await approveQuotation({ id, designManagerId }).unwrap();
+            alert('Quotation approved successfully and project initialized');
+            fetchQuotations();
         } catch (err) {
-            alert(err.message || 'Failed to approve');
+            alert(err.data?.message || err.message || 'Failed to approve');
         } finally {
             setSubmitting(false);
         }
@@ -23,13 +24,11 @@ export const useQuotationListActions = ({
         if (!window.confirm('Are you sure you want to delete this quotation?')) return;
         setSubmitting(true);
         try {
-            const response = await quotationAPI.delete(id);
-            if (response.success) {
-                alert('Quotation deleted successfully');
-                fetchQuotations();
-            }
+            await deleteQuotation(id).unwrap();
+            alert('Quotation deleted successfully');
+            fetchQuotations();
         } catch (err) {
-            alert(err.message || 'Failed to delete');
+            alert(err.data?.message || err.message || 'Failed to delete');
         } finally {
             setSubmitting(false);
         }

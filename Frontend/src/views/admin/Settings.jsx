@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Check, X } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../models/api';
+import { BASE_IMAGE_URL } from '../../config/constants';
 
 // Hooks
 import { useSettingsState } from './settings/hooks/useSettingsState';
@@ -34,12 +34,14 @@ const Settings = () => {
         setSaving: state.setSaving, showToast: state.showToast
     });
 
+    const { setToast } = state;
+
     useEffect(() => {
         if (state.toast) {
-            const timer = setTimeout(() => state.setToast(null), 3000);
+            const timer = setTimeout(() => setToast(null), 3000);
             return () => clearTimeout(timer);
         }
-    }, [state.toast]);
+    }, [state.toast, setToast]);
 
     const getImageUrl = (path) => {
         if (!path) return null;

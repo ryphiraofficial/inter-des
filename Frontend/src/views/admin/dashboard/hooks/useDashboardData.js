@@ -1,30 +1,28 @@
 import { useEffect } from 'react';
-import { reportAPI, purchaseOrderAPI } from '../../../../models/api';
+import { useGetDashboardStatsQuery, useGetPurchaseOrderStatsQuery } from '../../../../store/api/adminApi';
 
 export const useDashboardData = ({ 
     setStats, setPoStats, setRevenueData, setQuotationData, setLoading, setError 
 }) => {
     
-    const fetchDashboardData = async () => {
-        try {
-            setLoading(true);
-            const [dashboardRes, poStatsRes] = await Promise.all([
-                reportAPI.getDashboard(),
-                purchaseOrderAPI.getStats()
-            ]);
-
-            if (dashboardRes.success) setStats(dashboardRes.data);
-            if (poStatsRes.success) setPoStats(poStatsRes.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: dashboardRes, isLoading: dashboardLoading, error: dashboardError, refetch: refetchDashboard } = useGetDashboardStatsQuery();
+    const { data: poStatsRes, isLoading: poStatsLoading, error: poStatsError, refetch: refetchPoStats } = useGetPurchaseOrderStatsQuery();
 
     useEffect(() => {
-        fetchDashboardData();
-        
+        setLoading(dashboardLoading || poStatsLoading);
+    }, [dashboardLoading, poStatsLoading, setLoading]);
+
+    useEffect(() => {
+        if (dashboardError) setError(dashboardError.message || 'Error loading dashboard');
+        if (poStatsError) setError(poStatsError.message || 'Error loading PO stats');
+    }, [dashboardError, poStatsError, setError]);
+
+    useEffect(() => {
+        if (dashboardRes?.success) setStats(dashboardRes.data);
+        if (poStatsRes?.success) setPoStats(poStatsRes.data);
+    }, [dashboardRes, poStatsRes, setStats, setPoStats]);
+
+    useEffect(() => {
         // Setup mock data for charts
         setRevenueData([
             { name: 'Jan', value: 46000 },
@@ -44,7 +42,12 @@ export const useDashboardData = ({
             { name: 'May', Approved: 25, Pending: 6 },
             { name: 'Jun', Approved: 22, Pending: 3 },
         ]);
-    }, []);
+    }, [setRevenueData, setQuotationData]);
+
+    const fetchDashboardData = () => {
+        refetchDashboard();
+        refetchPoStats();
+    };
 
     return { fetchDashboardData };
 };

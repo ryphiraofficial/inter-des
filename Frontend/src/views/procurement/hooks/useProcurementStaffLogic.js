@@ -1,24 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { projectAPI, vendorAPI, procurementAPI, notificationAPI, taskAPI } from '../../../models/api';
+import { useCreateNotificationMutation } from '../../../store/api/sharedApi';
+import {
+    useGetStaffTasksQuery,
+    useGetVendorsQuery,
+    useGetProjectsByStageQuery,
+    useGetVendorPurchaseHistoryQuery,
+    useCompareVendorPricesMutation,
+    useRequestTimeExtensionMutation,
+    useUpdateTaskMutation,
+    useUpdateMaterialRequestMutation,
+    useCreateVendorPurchaseMutation
+} from '../../../store/api/procurementApi';
 
 export const useProcurementStaffLogic = (user) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
-    const [projects, setProjects] = useState([]);
-    const [tasks, setTasks] = useState([]);
-    const [vendors, setVendors] = useState([]);
-    const [purchaseHistory, setPurchaseHistory] = useState([]);
-    const [vendorStats, setVendorStats] = useState([]);
-    const [loading, setLoading] = useState(true);
+    
     const [searchQuery, setSearchQuery] = useState('');
     const [vendorSearch, setVendorSearch] = useState('');
     
     // Sourcing Hub States
     const [selectedSourcingProject, setSelectedSourcingProject] = useState(null);
     const [sourcingBucket, setSourcingBucket] = useState([]);
-    const [savedSourcing, setSavedSourcing] = useState([]);
+    const [savedSourcing, setSavedSourcing] = useState(() => {
+        const saved = localStorage.getItem('savedSourcing');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [sourcingSearch, setSourcingSearch] = useState('');
     const [dailyUpdate, setDailyUpdate] = useState('');
 
@@ -33,52 +42,44 @@ export const useProcurementStaffLogic = (user) => {
     const [compareResults, setCompareResults] = useState([]);
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
+    // RTK Query Hooks
+    const { data: tasksRes, isLoading: tasksLoading } = useGetStaffTasksQuery();
+    const { data: vendorsRes, isLoading: vendorsLoading } = useGetVendorsQuery();
+    const { data: projectsRes, isLoading: projectsLoading } = useGetProjectsByStageQuery('Procurement');
+    const { data: historyRes, isLoading: historyLoading } = useGetVendorPurchaseHistoryQuery(searchQuery ? { search: searchQuery } : {});
+
+    const [comparePrices] = useCompareVendorPricesMutation();
+    const [requestTimeExtension] = useRequestTimeExtensionMutation();
+    const [updateTask] = useUpdateTaskMutation();
+    const [updateMaterialRequest] = useUpdateMaterialRequestMutation();
+    const [createVendorPurchase] = useCreateVendorPurchaseMutation();
+    const [createNotification] = useCreateNotificationMutation();
+
+    const loading = tasksLoading || vendorsLoading || projectsLoading || historyLoading;
+
+    const vendors = vendorsRes?.success ? vendorsRes.data : [];
+    const tasks = tasksRes?.success ? tasksRes.data : [];
+    const projectsList = projectsRes?.success ? projectsRes.data : [];
+    
+    // Compute combined projects list from projects by stage + projects embedded in tasks
+    const projects = (() => {
+        const projMap = new Map();
+        projectsList.forEach(p => projMap.set(p._id, p));
+        tasks.forEach(t => {
+            if (t.project && t.project._id) {
+                projMap.set(t.project._id, t.project);
+            }
+        });
+        return Array.from(projMap.values());
+    })();
+
+    const purchaseHistory = historyRes?.success ? historyRes.data : [];
+    const vendorStats = historyRes?.vendorStats || [];
+
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab) setActiveTab(tab);
     }, [searchParams]);
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const [tasksRes, vendorsRes, projectsRes] = await Promise.all([
-                procurementAPI.getStaffTasks(),
-                vendorAPI.getAll(),
-                projectAPI.getByStage('Procurement')
-            ]);
-
-            if (tasksRes.success) setTasks(tasksRes.data);
-            if (vendorsRes.success) setVendors(vendorsRes.data);
-            
-            if (projectsRes.success || tasksRes.success) {
-                const projMap = new Map();
-                if (projectsRes.success) {
-                    projectsRes.data.forEach(p => projMap.set(p._id, p));
-                }
-                if (tasksRes.success) {
-                    tasksRes.data.forEach(t => {
-                        if (t.project && t.project._id) {
-                            projMap.set(t.project._id, t.project);
-                        }
-                    });
-                }
-                setProjects(Array.from(projMap.values()));
-            }
-
-            const saved = localStorage.getItem('savedSourcing');
-            if (saved) setSavedSourcing(JSON.parse(saved));
-
-            await fetchPurchaseHistory();
-        } catch (err) {
-            console.error('Error:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSaveSourcing = async () => {
         if (!selectedSourcingProject || sourcingBucket.length === 0) return;
@@ -96,14 +97,14 @@ export const useProcurementStaffLogic = (user) => {
             localStorage.setItem('savedSourcing', JSON.stringify(updated));
             
             // Send daily update notification to manager
-            await notificationAPI.create({
+            await createNotification({
                 recipientRole: 'Procurement Manager',
                 title: `Sourcing Update: ${selectedSourcingProject.name}`,
                 message: `Staff ${user?.fullName || ''} has updated the sourcing list for project ${selectedSourcingProject.projectNumber}. Status: ${dailyUpdate || 'In Progress'}`,
                 type: 'info',
                 relatedId: selectedSourcingProject._id,
                 relatedModel: 'Project'
-            });
+            }).unwrap();
 
             setSourcingBucket([]);
             setSelectedSourcingProject(null);
@@ -136,22 +137,11 @@ export const useProcurementStaffLogic = (user) => {
         localStorage.setItem('savedSourcing', JSON.stringify(updated));
     };
 
-    const fetchPurchaseHistory = async (query = '') => {
-        try {
-            const historyRes = await procurementAPI.getVendorPurchaseHistory(
-                query ? { search: query } : {}
-            );
-            if (historyRes.success) {
-                setPurchaseHistory(historyRes.data);
-                setVendorStats(historyRes.vendorStats);
-            }
-        } catch (err) {
-            console.error('Error fetching history:', err);
-        }
-    };
-
+    // Note: handleSearch is not explicitly needed as RTK Query auto-fetches when searchQuery state changes,
+    // but we can keep it as a no-op to satisfy UI events if they explicitly call it,
+    // or just let the button do nothing as the state update handles it.
     const handleSearch = () => {
-        fetchPurchaseHistory(searchQuery);
+        // Query args in useGetVendorPurchaseHistoryQuery will trigger a fetch automatically.
     };
 
     const handleComparePrices = async () => {
@@ -160,7 +150,7 @@ export const useProcurementStaffLogic = (user) => {
                 itemName: item.itemName,
                 quantity: item.quantity || 1
             }));
-            const result = await procurementAPI.compareVendorPrices(items);
+            const result = await comparePrices(items).unwrap();
             if (result.success) {
                 setCompareResults(result.data);
                 setShowCompareModal(true);
@@ -172,14 +162,14 @@ export const useProcurementStaffLogic = (user) => {
 
     const handleRequestTimeExtension = async () => {
         try {
-            await procurementAPI.requestTimeExtension(selectedTask._id, {
+            await requestTimeExtension({
+                id: selectedTask._id,
                 requestedDate: extensionDate,
                 reason: extensionReason
-            });
+            }).unwrap();
             setShowTimeExtension(false);
             setExtensionDate('');
             setExtensionReason('');
-            fetchData();
         } catch (err) {
             console.error('Error requesting extension:', err);
         }
@@ -188,23 +178,22 @@ export const useProcurementStaffLogic = (user) => {
     const handleCompleteTask = async (task) => {
         try {
             if (task.type === 'Task') {
-                await taskAPI.update(task._id, { status: 'Pending Manager Review' });
+                await updateTask({ id: task._id, status: 'Pending Manager Review' }).unwrap();
             } else {
-                await procurementAPI.updateMaterialRequest(task._id, { status: 'Pending Manager Review', completedAt: new Date() });
+                await updateMaterialRequest({ id: task._id, status: 'Pending Manager Review', completedAt: new Date() }).unwrap();
             }
             
             // Notify the manager
-            await notificationAPI.create({
+            await createNotification({
                 recipientRole: 'Procurement Manager',
                 title: `Task Submitted for Review: ${task.requestNumber || task.title}`,
                 message: `Staff member ${user?.fullName || 'A staff member'} has submitted sourcing for project ${task.project?.name || 'N/A'}.`,
                 type: 'info',
                 relatedId: task.project?._id,
                 relatedModel: 'Project'
-            });
+            }).unwrap();
             
             setShowTaskDetailsModal(false);
-            fetchData();
             alert('Task submitted to manager for review!');
         } catch (err) {
             console.error('Error completing task:', err);
@@ -214,13 +203,13 @@ export const useProcurementStaffLogic = (user) => {
 
     const recordPurchase = async (purchaseData) => {
         try {
-            await procurementAPI.createVendorPurchase(purchaseData);
+            await createVendorPurchase(purchaseData).unwrap();
             setShowPurchaseModal(false);
-            await procurementAPI.updateMaterialRequest(selectedTask._id, {
+            await updateMaterialRequest({
+                id: selectedTask._id,
                 status: 'Pending Manager Review',
                 completedAt: new Date()
-            });
-            fetchData();
+            }).unwrap();
         } catch (err) {
             console.error('Error recording purchase:', err);
         }
@@ -289,7 +278,6 @@ export const useProcurementStaffLogic = (user) => {
         compareResults,
         showPurchaseModal,
         setShowPurchaseModal,
-        fetchData,
         handleSaveSourcing,
         handleAddToBucket,
         handleRemoveFromBucket,

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { purchaseOrderAPI } from '../../../../models/api';
+import { useGetPurchaseOrdersQuery } from '../../../../store/api/adminApi';
 
 export const usePOData = ({ 
     setPurchaseOrders, setLoading, setError, setShowCreateModal, setSearchTerm 
@@ -11,29 +11,29 @@ export const usePOData = ({
         return () => window.removeEventListener('header-search', handleHeaderSearch);
     }, [setSearchTerm]);
     
-    const fetchPurchaseOrders = async () => {
-        try {
-            setLoading(true);
-            const response = await purchaseOrderAPI.getAll();
-            if (response.success) {
-                setPurchaseOrders(response.data);
-            }
-        } catch (err) {
-            setError(err.message);
-            console.error('Error fetching POs:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: poRes, isLoading, error, refetch } = useGetPurchaseOrdersQuery();
 
     useEffect(() => {
-        fetchPurchaseOrders();
-        
+        setLoading(isLoading);
+    }, [isLoading, setLoading]);
+
+    useEffect(() => {
+        if (error) {
+            setError(error.message || 'Error fetching POs');
+            console.error('Error fetching POs:', error);
+        }
+    }, [error, setError]);
+
+    useEffect(() => {
+        if (poRes?.success) setPurchaseOrders(poRes.data);
+    }, [poRes, setPurchaseOrders]);
+
+    useEffect(() => {
         const handleOpenCreateModal = () => setShowCreateModal(true);
         window.addEventListener('open-create-po-modal', handleOpenCreateModal);
         
         return () => window.removeEventListener('open-create-po-modal', handleOpenCreateModal);
-    }, []);
+    }, [setShowCreateModal]);
 
-    return { fetchPurchaseOrders };
+    return { fetchPurchaseOrders: refetch };
 };

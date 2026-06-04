@@ -22,8 +22,13 @@ const SidebarNav = ({ navGroups }) => {
             
             if (hasActive) {
                 setCollapsedGroups(prev => ({ ...prev, [group.title]: false }));
-            } else if (collapsedGroups[group.title] === undefined && group.title !== 'Main') {
-                 setCollapsedGroups(prev => ({ ...prev, [group.title]: false }));
+            } else if (group.title !== 'Main') {
+                 setCollapsedGroups(prev => {
+                     if (prev[group.title] === undefined) {
+                         return { ...prev, [group.title]: false };
+                     }
+                     return prev;
+                 });
             }
         });
     }, [navGroups, location]);

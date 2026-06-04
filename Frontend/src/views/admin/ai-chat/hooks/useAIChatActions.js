@@ -1,8 +1,9 @@
-import { aiAPI } from '../../../../models/api';
+import { useAiQueryMutation } from '../../../../store/api/sharedApi';
 
 export const useAIChatActions = ({ 
     input, setInput, messages, setMessages, setIsLoading, isLoading, location, navigate 
 }) => {
+    const [aiQuery] = useAiQueryMutation();
 
     const handleAIAction = (actionObj) => {
         const { action, path, data, formType } = actionObj;
@@ -43,7 +44,7 @@ export const useAIChatActions = ({
         setIsLoading(true);
 
         try {
-            const response = await aiAPI.query(query, location.pathname, {});
+            const response = await aiQuery({ prompt: query, currentPath: location.pathname, pageState: {} }).unwrap();
 
             if (response.success) {
                 let botText = response.data;

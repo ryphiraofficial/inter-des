@@ -4,7 +4,9 @@ import {
     ShoppingCart, Building2, Box, ClipboardCheck, Clock, Plus, CheckCircle,
     FolderOpen, CalendarOff, Video, ClipboardList, MapPin
 } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../models/api';
+import { BASE_IMAGE_URL } from '../../../config/constants';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
 const NAV_CONFIG = {
     'Design Manager': {
@@ -166,7 +168,8 @@ const getImageUrl = (path) => {
     return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
-export const useDeptSidebar = (role, user) => {
+export const useDeptSidebar = (role) => {
+    const user = useAppSelector(selectUser);
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const currentTab = searchParams.get('tab') || 'overview';

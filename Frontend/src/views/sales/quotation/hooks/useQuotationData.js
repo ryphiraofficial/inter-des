@@ -1,75 +1,87 @@
 import { useEffect } from 'react';
-import { quotationAPI, clientAPI, inventoryAPI } from '../../../../models/api';
+import { useGetSalesClientsQuery, useGetSalesInventoryQuery, useGetSalesQuotationByIdQuery } from '../../../../store/api/salesApi';
 
 export const useQuotationData = ({ 
     isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, 
     setIncludeDiscount, setFetching, setError, setClients, setInventoryItems,
     clients 
 }) => {
+    const { data: clientsRes, isLoading: clientsLoading } = useGetSalesClientsQuery();
+    const { data: inventoryRes, isLoading: inventoryLoading } = useGetSalesInventoryQuery({ limit: 1000 });
+    
+    // Only fetch quotation by ID if it's edit mode and we have an ID
+    const { data: quoteRes, isLoading: quoteLoading, error: quoteError } = useGetSalesQuotationByIdQuery(id, { skip: !isEdit || !id });
+
     useEffect(() => {
-        const loadInitialData = async () => {
-            try {
-                const clientRes = await clientAPI.getAll();
-                if (clientRes.success) setClients(clientRes.data);
+        if (clientsRes?.success) setClients(clientsRes.data);
+    }, [clientsRes, setClients]);
 
-                const inventoryRes = await inventoryAPI.getAll({ limit: 1000 });
-                if (inventoryRes.success) setInventoryItems(inventoryRes.data);
+    useEffect(() => {
+        if (inventoryRes?.success) setInventoryItems(inventoryRes.data);
+    }, [inventoryRes, setInventoryItems]);
 
-                if (isEdit && id) {
-                    const quoteRes = await quotationAPI.getById(id);
-                    if (quoteRes.success) {
-                        const q = quoteRes.data;
-                        const clientData = q.client?._id || q.client;
-                        
-                        setFormData({
-                            client: clientData,
-                            quoteNumber: q.quotationNumber,
-                            date: new Date(q.createdAt).toISOString().split('T')[0],
-                            validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
-                            documentType: q.documentType || 'Quotation',
-                            projectName: q.projectName,
-                            projectDescription: q.projectDescription || '',
-                            projectStart: q.projectStart ? new Date(q.projectStart).toISOString().split('T')[0] : '',
-                            projectEnd: q.projectEnd ? new Date(q.projectEnd).toISOString().split('T')[0] : '',
-                            scopeOfWork: q.scopeOfWork || '',
-                            depositPercent: q.depositPercent || 30,
-                            paymentTerms: q.paymentTerms || '',
-                            warrantyTerms: q.warrantyTerms || '',
-                            cancellationPolicy: q.cancellationPolicy || '',
-                            notes: q.notes || '',
-                            termsConditions: q.termsAndConditions || ''
-                        });
+    useEffect(() => {
+        setFetching(clientsLoading || inventoryLoading || (isEdit && quoteLoading));
+    }, [clientsLoading, inventoryLoading, isEdit, quoteLoading, setFetching]);
 
-                        setLineItems(q.items.map(item => ({
-                            id: item._id || Math.random(),
-                            name: item.itemName,
-                            description: item.description,
-                            section: item.section || 'Uncategorized',
-                            finishBrand: item.finish || '',
-                            materialOrigin: item.material || '',
-                            size: item.size || '',
-                            quantity: item.quantity,
-                            unit: item.unit,
-                            rate: item.rate,
-                            amount: item.amount,
-                            image: item.image || null
-                        })));
-                        
-                        if (q.taxRate) setTaxRate(q.taxRate);
-                        if (q.discount) {
-                            setDiscount(q.discount);
-                            setIncludeDiscount(true);
-                        }
-                    }
-                }
-            } catch (err) {
-                setError('Failed to load data: ' + err.message);
-            } finally {
-                setFetching(false);
+    useEffect(() => {
+        if (quoteError) {
+            setError('Failed to load quotation: ' + (quoteError.message || quoteError.data?.message));
+        }
+    }, [quoteError, setError]);
+
+    useEffect(() => {
+        if (isEdit && id && quoteRes?.success) {
+            const q = quoteRes.data;
+            const clientData = q.client?._id || q.client;
+            
+            setFormData(prev => ({
+                ...prev,
+                client: clientData,
+                clientPhone: q.clientPhone || '',
+                quoteNumber: q.quotationNumber,
+                date: new Date(q.createdAt).toISOString().split('T')[0],
+                validUntil: q.validUntil ? new Date(q.validUntil).toISOString().split('T')[0] : '',
+                documentType: q.documentType || 'Quotation',
+                projectName: q.projectName,
+                projectDescription: q.projectDescription || '',
+                projectStart: q.projectStart ? new Date(q.projectStart).toISOString().split('T')[0] : '',
+                projectEnd: q.projectEnd ? new Date(q.projectEnd).toISOString().split('T')[0] : '',
+                scopeOfWork: q.scopeOfWork || '',
+                depositPercent: q.depositPercent || 30,
+                paymentTerms: q.paymentTerms || '',
+                warrantyTerms: q.warrantyTerms || '',
+                cancellationPolicy: q.cancellationPolicy || '',
+                notes: q.notes || '',
+                termsConditions: q.termsAndConditions || ''
+            }));
+
+            setLineItems(q.items.map(item => ({
+                id: item._id || Math.random(),
+                name: item.itemName,
+                description: item.description,
+                section: item.section || 'Uncategorized',
+                finishBrand: item.finish || '',
+                materialOrigin: item.material || '',
+                size: item.size || '',
+                cmL: item.cmL || null,
+                cmD: item.cmD || null,
+                cmH: item.cmH || null,
+                quantity: item.quantity,
+                unit: item.unit,
+                rate: item.rate,
+                amount: item.amount,
+                costPrice: item.costPrice || 0,
+                image: item.image || null
+            })));
+            
+            if (q.taxRate) setTaxRate(q.taxRate);
+            if (q.discount) {
+                setDiscount(q.discount);
+                setIncludeDiscount(true);
             }
-        };
-        loadInitialData();
-    }, [isEdit, id]);
+        }
+    }, [isEdit, id, quoteRes, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount]);
 
     // AI Populate Listener
     useEffect(() => {
@@ -112,5 +124,5 @@ export const useQuotationData = ({
         const handleAIPopulate = (e) => processAIData(e.detail);
         window.addEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
         return () => window.removeEventListener('AI_POPULATE_QUOTATION', handleAIPopulate);
-    }, [clients]);
+    }, [clients, setFormData, setLineItems]);
 };

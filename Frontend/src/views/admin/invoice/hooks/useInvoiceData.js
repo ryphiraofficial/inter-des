@@ -1,35 +1,27 @@
 import { useEffect } from 'react';
-import { invoiceAPI, clientAPI } from '../../../../models/api';
+import { useGetInvoicesQuery, useGetClientsQuery } from '../../../../store/api/adminApi';
 
 export const useInvoiceData = ({ 
     setInvoices, setClients, setLoading, setError, setSearchTerm, setShowCreateModal 
 }) => {
     
-    const fetchInvoices = async () => {
-        try {
-            setLoading(true);
-            const response = await invoiceAPI.getAll();
-            if (response.success) setInvoices(response.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchClients = async () => {
-        try {
-            const response = await clientAPI.getAll();
-            if (response.success) setClients(response.data);
-        } catch (err) {
-            console.error('Error fetching clients:', err);
-        }
-    };
+    const { data: invRes, isLoading: invLoading, error: invError, refetch } = useGetInvoicesQuery();
+    const { data: clientsRes } = useGetClientsQuery();
 
     useEffect(() => {
-        fetchInvoices();
-        fetchClients();
+        setLoading(invLoading);
+    }, [invLoading, setLoading]);
 
+    useEffect(() => {
+        if (invError) setError(invError.message || 'Error fetching invoices');
+    }, [invError, setError]);
+
+    useEffect(() => {
+        if (invRes?.success) setInvoices(invRes.data);
+        if (clientsRes?.success) setClients(clientsRes.data);
+    }, [invRes, clientsRes, setInvoices, setClients]);
+
+    useEffect(() => {
         const handleOpenModal = () => setShowCreateModal(true);
         const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
 
@@ -40,7 +32,7 @@ export const useInvoiceData = ({
             window.removeEventListener('open-create-invoice-modal', handleOpenModal);
             window.removeEventListener('header-search', handleHeaderSearch);
         };
-    }, []);
+    }, [setShowCreateModal, setSearchTerm]);
 
-    return { fetchInvoices, fetchClients };
+    return { fetchInvoices: refetch, fetchClients: () => {} };
 };

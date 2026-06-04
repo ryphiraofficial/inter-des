@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Package, User, UserPlus, DollarSign, CheckCircle } from 'lucide-react';
+import CustomSelect from '../../../common/CustomSelect';
+import PaymentWarningDialog from './PaymentWarningDialog';
+import ConfirmApprovalDialog from './ConfirmApprovalDialog';
 
-const ProcurementPipeline = ({ 
+const ProcurementPipeline = ({
     procurementItems, selectedPM, setSelectedPM,
-    productionManagers, handleProcurementApprove, approving 
+    productionManagers, handleProcurementApprove, approving
 }) => {
+    const [confirmItem, setConfirmItem] = useState(null);
+    const [paymentWarningItem, setPaymentWarningItem] = useState(null);
+
     if (procurementItems.length === 0) {
         return (
             <div style={{ background: 'white', borderRadius: '24px', padding: '5rem 2rem', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
@@ -22,8 +28,6 @@ const ProcurementPipeline = ({
             {procurementItems.map((item) => {
                 const pmAssigned = !!selectedPM[item._id];
                 const isApproving = !!approving[item._id];
-                
-                // Get project payment details
                 const project = item.project;
                 const advanceAmt = project?.advanceAmount || 0;
                 const paidAmt = project?.collectedAmount || 0;
@@ -32,6 +36,7 @@ const ProcurementPipeline = ({
 
                 return (
                     <div key={item._id} className="approval-card" style={{ background: 'white', borderRadius: '24px', border: '1px solid #e2e8f0', overflow: 'hidden', transition: 'all 0.3s ease', position: 'relative' }}>
+                        {/* Card Header */}
                         <div style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                                 <div>
@@ -52,6 +57,7 @@ const ProcurementPipeline = ({
                         </div>
 
                         <div style={{ padding: '1.5rem' }}>
+                            {/* Items List */}
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#1e293b' }}>Items to Approve:</h4>
                                 <div style={{ background: '#f1f5f9', padding: '1rem', borderRadius: '12px', maxHeight: '120px', overflowY: 'auto' }}>
@@ -68,7 +74,7 @@ const ProcurementPipeline = ({
                                 </div>
                             </div>
 
-                            {/* Step 1: Assign Project Manager */}
+                            {/* Assign PM */}
                             <div style={{ marginBottom: '1.25rem', padding: '1rem', background: pmAssigned ? '#f0fdf4' : '#fffbeb', borderRadius: '14px', border: `1px solid ${pmAssigned ? '#bbf7d0' : '#fde68a'}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                                     <UserPlus size={16} color={pmAssigned ? '#16a34a' : '#d97706'} />
@@ -76,26 +82,17 @@ const ProcurementPipeline = ({
                                         {pmAssigned ? '✓ Project Manager Assigned' : 'Step 1: Assign Project Manager'}
                                     </span>
                                 </div>
-                                <select
+                                <CustomSelect
+                                    options={productionManagers.map(pm => ({ label: `${pm.fullName} (${pm.email})`, value: pm._id }))}
                                     value={selectedPM[item._id] || ''}
                                     onChange={(e) => setSelectedPM(prev => ({ ...prev, [item._id]: e.target.value }))}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', background: 'white', cursor: 'pointer', outline: 'none' }}
-                                >
-                                    <option value="">Select Project Manager...</option>
-                                    {productionManagers.map(pm => (
-                                        <option key={pm._id} value={pm._id}>{pm.fullName} ({pm.email})</option>
-                                    ))}
-                                </select>
+                                    placeholder="Select Project Manager..."
+                                    searchable={true}
+                                />
                             </div>
 
-                            {/* Client Payment Status Info Box (No separate action step needed) */}
-                            <div style={{ 
-                                marginBottom: '1.5rem', 
-                                padding: '1rem', 
-                                background: payStatus === 'Cleared' ? '#f0fdf4' : (collStatus === 'Collected' ? '#eff6ff' : '#fff5f5'), 
-                                borderRadius: '14px', 
-                                border: `1px solid ${payStatus === 'Cleared' ? '#bbf7d0' : (collStatus === 'Collected' ? '#bfdbfe' : '#fecaca')}` 
-                            }}>
+                            {/* Payment Status */}
+                            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: payStatus === 'Cleared' ? '#f0fdf4' : (collStatus === 'Collected' ? '#eff6ff' : '#fff5f5'), borderRadius: '14px', border: `1px solid ${payStatus === 'Cleared' ? '#bbf7d0' : (collStatus === 'Collected' ? '#bfdbfe' : '#fecaca')}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                                     <DollarSign size={16} color={payStatus === 'Cleared' ? '#16a34a' : (collStatus === 'Collected' ? '#2563eb' : '#dc2626')} />
                                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: payStatus === 'Cleared' ? '#16a34a' : (collStatus === 'Collected' ? '#1e40af' : '#991b1b'), textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -114,28 +111,20 @@ const ProcurementPipeline = ({
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '4px', paddingTop: '6px', borderTop: '1px dashed #cbd5e1' }}>
                                         <span style={{ color: '#64748b' }}>Status:</span>
                                         {payStatus === 'Cleared' ? (
-                                            <span style={{ padding: '2px 8px', background: '#dcfce7', color: '#15803d', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                                Cleared
-                                            </span>
+                                            <span style={{ padding: '2px 8px', background: '#dcfce7', color: '#15803d', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>Cleared</span>
                                         ) : collStatus === 'Collected' ? (
-                                            <span style={{ padding: '2px 8px', background: '#dbeafe', color: '#1d4ed8', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                                Collected (Awaiting Clearance)
-                                            </span>
+                                            <span style={{ padding: '2px 8px', background: '#dbeafe', color: '#1d4ed8', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>Collected (Awaiting Clearance)</span>
                                         ) : paidAmt > 0 ? (
-                                            <span style={{ padding: '2px 8px', background: '#ffedd5', color: '#c2410c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                                Partial Payment
-                                            </span>
+                                            <span style={{ padding: '2px 8px', background: '#ffedd5', color: '#c2410c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>Partial Payment</span>
                                         ) : (
-                                            <span style={{ padding: '2px 8px', background: '#fee2e2', color: '#b91c1c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                                Pending Advance
-                                            </span>
+                                            <span style={{ padding: '2px 8px', background: '#fee2e2', color: '#b91c1c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>Pending Advance</span>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
-                            <button 
-                                onClick={() => handleProcurementApprove(item)}
+                            <button
+                                onClick={() => payStatus !== 'Cleared' ? setPaymentWarningItem(item) : setConfirmItem(item)}
                                 disabled={isApproving}
                                 style={{ padding: '14px', background: pmAssigned ? '#10b981' : '#94a3b8', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: isApproving ? 'wait' : 'pointer', transition: 'all 0.2s', width: '100%', opacity: isApproving ? 0.7 : 1 }}
                             >
@@ -145,6 +134,19 @@ const ProcurementPipeline = ({
                     </div>
                 );
             })}
+
+            <PaymentWarningDialog
+                item={paymentWarningItem}
+                onCancel={() => setPaymentWarningItem(null)}
+                onProceed={() => { setConfirmItem(paymentWarningItem); setPaymentWarningItem(null); }}
+            />
+
+            <ConfirmApprovalDialog
+                item={confirmItem}
+                selectedPM={selectedPM}
+                onCancel={() => setConfirmItem(null)}
+                onConfirm={() => { handleProcurementApprove(confirmItem); setConfirmItem(null); }}
+            />
         </div>
     );
 };

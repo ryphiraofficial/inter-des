@@ -8,8 +8,11 @@ import OverviewCharts from './components/OverviewCharts';
 import ActivityFeed from './components/ActivityFeed';
 
 import '../css/ManagerDashboard.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const Overview = ({ user }) => {
+const Overview = ({}) => {
+    const user = useAppSelector(selectUser);
     // Helper for date range (simplified for the main UI file)
     const calculateDateRange = (filterName) => {
         const now = new Date();

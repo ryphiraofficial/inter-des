@@ -1,23 +1,24 @@
 import { useEffect } from 'react';
-import { quotationAPI } from '../../../../../models/api';
+import { useGetSalesQuotationByIdQuery } from '../../../../../store/api/salesApi';
 
 export const useQuotationViewData = ({ id, setQuotation, setLoading, setError }) => {
+    const { data: quoteRes, isLoading, error } = useGetSalesQuotationByIdQuery(id, { skip: !id });
+
     useEffect(() => {
-        const fetchQuotation = async () => {
-            try {
-                setLoading(true);
-                const res = await quotationAPI.getById(id);
-                if (res.success) {
-                    setQuotation(res.data);
-                } else {
-                    setError('Quotation not found');
-                }
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        if (id) fetchQuotation();
-    }, [id]);
+        setLoading(isLoading);
+    }, [isLoading, setLoading]);
+
+    useEffect(() => {
+        if (error) {
+            setError(error.data?.message || error.message || 'Quotation not found');
+        } else if (quoteRes && !quoteRes.success) {
+            setError('Quotation not found');
+        }
+    }, [error, quoteRes, setError]);
+
+    useEffect(() => {
+        if (quoteRes?.success) {
+            setQuotation(quoteRes.data);
+        }
+    }, [quoteRes, setQuotation]);
 };

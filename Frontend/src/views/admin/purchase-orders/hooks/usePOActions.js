@@ -1,9 +1,17 @@
-import { purchaseOrderAPI } from '../../../../models/api';
+import { 
+    useCreatePurchaseOrderMutation, 
+    useDeletePurchaseOrderMutation, 
+    useMarkPOReceivedMutation 
+} from '../../../../store/api/adminApi';
 
 export const usePOActions = ({ 
     fetchPurchaseOrders, setSubmitting, setShowCreateModal, setFormData, setPurchaseOrders, purchaseOrders 
 }) => {
     
+    const [createPurchaseOrder] = useCreatePurchaseOrderMutation();
+    const [deletePurchaseOrder] = useDeletePurchaseOrderMutation();
+    const [markPOReceived] = useMarkPOReceivedMutation();
+
     const handleCreatePO = async (formData) => {
         if (!formData.supplier || formData.items.length === 0 || !formData.deliveryDate || !formData.deliveryAddress) {
             alert('Please fill in all required fields: Supplier, Delivery Date, Address, and at least one item.');
@@ -33,14 +41,12 @@ export const usePOActions = ({
 
             poData.totalAmount = poData.items.reduce((sum, item) => sum + item.amount, 0);
 
-            const response = await purchaseOrderAPI.create(poData);
-            if (response.success) {
-                setShowCreateModal(false);
-                fetchPurchaseOrders();
-                setFormData({ supplier: '', deliveryAddress: '', deliveryDate: '', paymentTerms: '', notes: '', items: [] });
-            }
+            await createPurchaseOrder(poData).unwrap();
+            setShowCreateModal(false);
+            fetchPurchaseOrders();
+            setFormData({ supplier: '', deliveryAddress: '', deliveryDate: '', paymentTerms: '', notes: '', items: [] });
         } catch (err) {
-            alert('Error creating PO: ' + err.message);
+            alert('Error creating PO: ' + (err.data?.message || err.message));
         } finally {
             setSubmitting(false);
         }
@@ -49,12 +55,10 @@ export const usePOActions = ({
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this purchase order?')) return;
         try {
-            const response = await purchaseOrderAPI.delete(id);
-            if (response.success) {
-                setPurchaseOrders(purchaseOrders.filter(po => po._id !== id));
-            }
+            await deletePurchaseOrder(id).unwrap();
+            setPurchaseOrders(purchaseOrders.filter(po => po._id !== id));
         } catch (err) {
-            alert('Error deleting PO: ' + err.message);
+            alert('Error deleting PO: ' + (err.data?.message || err.message));
         }
     };
 
@@ -62,14 +66,12 @@ export const usePOActions = ({
         if (!window.confirm('Mark this purchase order as received? This will update inventory.')) return;
         try {
             setSubmitting(true);
-            const response = await purchaseOrderAPI.markReceived(id);
-            if (response.success) {
-                setPurchaseOrders(purchaseOrders.map(po =>
-                    po._id === id ? { ...po, status: 'Received' } : po
-                ));
-            }
+            await markPOReceived(id).unwrap();
+            setPurchaseOrders(purchaseOrders.map(po =>
+                po._id === id ? { ...po, status: 'Received' } : po
+            ));
         } catch (err) {
-            alert('Error updating PO: ' + err.message);
+            alert('Error updating PO: ' + (err.data?.message || err.message));
         } finally {
             setSubmitting(false);
         }

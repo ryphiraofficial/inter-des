@@ -1,16 +1,16 @@
-import { procurementAPI } from '../../../../models/api';
+import { useApproveMaterialRequestMutation } from '../../../../store/api/designApi';
 
 export const useMaterialActions = (fetchData) => {
+    const [approveRequest] = useApproveMaterialRequestMutation();
+
     const handleApproveMaterialRequest = async (requestId) => {
         if (!window.confirm('Are you sure you want to release this material request to procurement?')) return;
         try {
-            const res = await procurementAPI.approveMaterialRequest(requestId);
-            if (res.success) {
-                alert('Material request released to procurement successfully!');
-                fetchData();
-            }
+            await approveRequest(requestId).unwrap();
+            alert('Material request released to procurement successfully!');
+            fetchData();
         } catch (err) {
-            alert('Approval failed: ' + err.message);
+            alert('Approval failed: ' + (err.data?.message || err.message));
         }
     };
 

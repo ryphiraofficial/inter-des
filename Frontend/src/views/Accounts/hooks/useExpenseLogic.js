@@ -1,25 +1,42 @@
 import { useState, useEffect } from 'react';
-import { accountsAPI } from '../../../models/api';
-import { uploadAPI } from '../../../models/api/admin/miscAPI';
+import { useUploadImageMutation } from '../../../store/api/sharedApi';
+import {
+    useGetExpensesQuery,
+    useCreateExpenseMutation,
+    useUpdateExpenseMutation,
+    useDeleteExpenseMutation
+} from '../../../store/api/accountsApi';
 
 export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all') => {
-    const [expenses, setExpenses] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [localSearch, setLocalSearch] = useState('');
     const search = parentSearch !== undefined ? parentSearch : localSearch;
     const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [filterCategory, setFilterCategory] = useState('All');
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({
         description: '', amount: '', category: 'Materials',
         expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null
     });
     const [editingId, setEditingId] = useState(null);
 
+    const { data: expenseRes, isLoading: loading } = useGetExpensesQuery({ limit: 500 });
+    const [createExpense, { isLoading: isCreating }] = useCreateExpenseMutation();
+    const [updateExpense, { isLoading: isUpdating }] = useUpdateExpenseMutation();
+    const [deleteExpense] = useDeleteExpenseMutation();
+    const [uploadImage] = useUploadImageMutation();
+    const [isUploading, setIsUploading] = useState(false);
+
+    const submitting = isCreating || isUpdating || isUploading;
+
+    const rawExpenses = expenseRes?.success ? expenseRes.data : [];
+    // Only map once for default status
+    const expenses = rawExpenses.map(e => ({
+        ...e,
+        status: e.status || (Math.random() > 0.8 ? 'Pending' : 'Paid')
+    }));
+
     useEffect(() => {
-        fetchExpenses();
         const handleOpenModal = () => {
             setEditingId(null);
             setForm({
@@ -31,24 +48,6 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
         window.addEventListener('open-create-expense-modal', handleOpenModal);
         return () => window.removeEventListener('open-create-expense-modal', handleOpenModal);
     }, []);
-
-    const fetchExpenses = async () => {
-        try {
-            setLoading(true);
-            const res = await accountsAPI.getExpenses({ limit: 500 });
-            if (res?.success) {
-                const data = (res.data || []).map(e => ({
-                    ...e,
-                    status: e.status || (Math.random() > 0.8 ? 'Pending' : 'Paid')
-                }));
-                setExpenses(data);
-            }
-        } catch (err) {
-            console.error('Error fetching expenses:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleEdit = (expense) => {
         setEditingId(expense._id);
@@ -69,12 +68,12 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
     const handleSubmit = async () => {
         if (!form.description || !form.amount) return alert('Description and amount are required');
         try {
-            setSubmitting(true);
+            setIsUploading(true);
             let receiptUrl = '';
             if (form.receiptFile) {
                 const formData = new FormData();
                 formData.append('image', form.receiptFile);
-                const uploadRes = await uploadAPI.image(formData);
+                const uploadRes = await uploadImage(formData).unwrap();
                 if (uploadRes && uploadRes.url) {
                     receiptUrl = uploadRes.url;
                 }
@@ -93,37 +92,33 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
                 payload.receipt = form.existingReceipt;
             }
 
-            delete payload.receiptFile; // Don't send file object in JSON payload
+            delete payload.receiptFile;
             delete payload.existingReceipt;
-            delete payload.vendor; // vendor is an ObjectId, use vendorName for string
+            delete payload.vendor;
 
-            let res;
             if (editingId) {
-                res = await accountsAPI.updateExpense(editingId, payload);
+                await updateExpense({ id: editingId, ...payload }).unwrap();
             } else {
-                res = await accountsAPI.createExpense(payload);
+                await createExpense(payload).unwrap();
             }
             
-            if (res?.success) {
-                setShowModal(false);
-                fetchExpenses();
-                setEditingId(null);
-                setForm({ description: '', amount: '', category: 'Materials', expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null });
-            }
+            setShowModal(false);
+            setEditingId(null);
+            setForm({ description: '', amount: '', category: 'Materials', expenseDate: new Date().toISOString().split('T')[0], vendor: '', notes: '', status: 'Paid', receiptFile: null });
+            
         } catch (err) {
-            alert('Error: ' + err.message);
+            alert('Error: ' + (err.data?.message || err.message));
         } finally {
-            setSubmitting(false);
+            setIsUploading(false);
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this expense?')) return;
         try {
-            await accountsAPI.deleteExpense(id);
-            setExpenses(prev => prev.filter(e => e._id !== id));
+            await deleteExpense(id).unwrap();
         } catch (err) {
-            alert('Error deleting expense: ' + err.message);
+            alert('Error deleting expense: ' + (err.data?.message || err.message));
         }
     };
 

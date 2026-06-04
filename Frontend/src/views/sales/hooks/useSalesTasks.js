@@ -1,32 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { taskAPI } from '../../../models/api';
+import { useGetSalesTasksQuery, useApproveSalesTaskMutation } from '../../../store/api/salesApi';
 
 export const useSalesTasks = () => {
-    const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();
     const searchTerm = searchParams.get('q') || '';
     const [filterStatus, setFilterStatus] = useState('All');
+    
+    const { data: tasksRes, isLoading: loading } = useGetSalesTasksQuery();
+    const [approveTask, { isLoading: isUpdating }] = useApproveSalesTaskMutation();
     const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
-
-    const fetchTasks = async () => {
-        try {
-            setLoading(true);
-            const response = await taskAPI.getAll();
-            if (response.success) {
-                setTasks(response.data);
-            }
-        } catch (err) {
-            console.error('Failed to load tasks:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const tasks = tasksRes?.success ? tasksRes.data : [];
 
     const handleSalesReview = async (taskId, approved) => {
         try {
@@ -37,14 +22,11 @@ export const useSalesTasks = () => {
             }
             
             setUpdatingTaskId(taskId);
-            const response = await taskAPI.salesApprove(taskId, { approved, salesNotes: notes });
-            if (response.success) {
-                alert(approved ? 'Design approved successfully!' : 'Design sent back for revision');
-                fetchTasks();
-            }
+            await approveTask({ id: taskId, approved, salesNotes: notes }).unwrap();
+            alert(approved ? 'Design approved successfully!' : 'Design sent back for revision');
         } catch (err) {
             console.error('Failed to review:', err);
-            alert('Action failed: ' + err.message);
+            alert('Action failed: ' + (err.data?.message || err.message));
         } finally {
             setUpdatingTaskId(null);
         }
@@ -69,7 +51,7 @@ export const useSalesTasks = () => {
         loading,
         filterStatus,
         setFilterStatus,
-        updatingTaskId,
+        updatingTaskId: updatingTaskId || (isUpdating ? updatingTaskId : null),
         filteredTasks,
         stats,
         handleSalesReview

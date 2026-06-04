@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Image as ImageIcon, ExternalLink, FileText } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 
 const DesignPreviewModal = ({ show, setShow, selectedTask, handleAdminReview }) => {
     if (!show || !selectedTask) return null;

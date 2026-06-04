@@ -1,13 +1,16 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, CheckSquare, X, LogOut, TrendingUp } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../models/api';
+import { BASE_IMAGE_URL } from '../../../config/constants';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import NavGroup from './components/NavGroup';
 import { primaryNav, secondaryNav, systemNav } from './components/SidebarConfig';
 import './css/AccountsStaffSidebar.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const AccountsStaffSidebar = ({ user, onLogout, isOpen, toggleSidebar }) => {
+const AccountsStaffSidebar = ({ onLogout, isOpen, toggleSidebar }) => {
+    const user = useAppSelector(selectUser);
     const location = useLocation();
     const { companyName } = useCompanySettings();
     const getImageUrl = (path) => path ? (path.startsWith('http') ? path : `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`) : null;

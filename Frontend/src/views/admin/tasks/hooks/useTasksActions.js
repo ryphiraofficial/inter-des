@@ -1,31 +1,39 @@
-import { taskAPI } from '../../../../models/api';
+import { 
+    useCreateTaskMutation,
+    useUpdateTaskMutation, 
+    useDeleteTaskMutation, 
+    useSalesApproveTaskMutation, 
+    useAdminReviewTaskMutation 
+} from '../../../../store/api/adminApi';
 
 export const useTasksActions = ({ 
     editingTask, formData, fetchTasks, showToast, closeModal, 
     setTasks, setSubmitting 
 }) => {
 
+    const [createTask] = useCreateTaskMutation();
+    const [updateTask] = useUpdateTaskMutation();
+    const [deleteTask] = useDeleteTaskMutation();
+    const [salesApprove] = useSalesApproveTaskMutation();
+    const [adminReview] = useAdminReviewTaskMutation();
+
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         setSubmitting(true);
         try {
             if (editingTask) {
-                const response = await taskAPI.update(editingTask._id, formData);
-                if (response.success) {
-                    await fetchTasks();
-                    showToast('Task updated successfully');
-                    closeModal();
-                }
+                await updateTask({ id: editingTask._id, ...formData }).unwrap();
+                await fetchTasks();
+                showToast('Task updated successfully');
+                closeModal();
             } else {
-                const response = await taskAPI.create(formData);
-                if (response.success) {
-                    await fetchTasks();
-                    showToast('New task assigned successfully');
-                    closeModal();
-                }
+                await createTask(formData).unwrap();
+                await fetchTasks();
+                showToast('New task assigned successfully');
+                closeModal();
             }
         } catch (err) {
-            showToast(err.message || 'Failed to save task', 'error');
+            showToast(err.data?.message || err.message || 'Failed to save task', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -33,15 +41,13 @@ export const useTasksActions = ({
 
     const handleStatusChange = async (taskId, newStatus) => {
         try {
-            const response = await taskAPI.update(taskId, { status: newStatus });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { 
-                    ...t, 
-                    status: newStatus, 
-                    progress: newStatus === 'Completed' ? 100 : t.progress 
-                } : t));
-                showToast(`Task status updated to ${newStatus}`);
-            }
+            await updateTask({ id: taskId, status: newStatus }).unwrap();
+            setTasks(prev => prev.map(t => t._id === taskId ? { 
+                ...t, 
+                status: newStatus, 
+                progress: newStatus === 'Completed' ? 100 : t.progress 
+            } : t));
+            showToast(`Task status updated to ${newStatus}`);
         } catch (err) {
             showToast('Failed to update status', 'error');
         }
@@ -53,10 +59,8 @@ export const useTasksActions = ({
             if (newProgress === 100) updateData.status = 'Completed';
             else if (newProgress > 0 && newProgress < 100) updateData.status = 'In Progress';
 
-            const response = await taskAPI.update(taskId, updateData);
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...updateData } : t));
-            }
+            await updateTask({ id: taskId, ...updateData }).unwrap();
+            setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...updateData } : t));
         } catch (err) {
             showToast('Failed to update progress', 'error');
         }
@@ -67,11 +71,9 @@ export const useTasksActions = ({
         if (!approved && !notes) return;
 
         try {
-            const response = await taskAPI.salesApprove(taskId, { approved, salesNotes: notes || '' });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Sales Approved' : 'Revision Required' } : t));
-                showToast(approved ? 'Design approved by Sales' : 'Revision requested');
-            }
+            await salesApprove({ id: taskId, approved, salesNotes: notes || '' }).unwrap();
+            setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Sales Approved' : 'Revision Required' } : t));
+            showToast(approved ? 'Design approved by Sales' : 'Revision requested');
         } catch (err) {
             showToast('Sales review failed', 'error');
         }
@@ -82,11 +84,9 @@ export const useTasksActions = ({
         if (!approved && !notes) return;
 
         try {
-            const response = await taskAPI.adminReview(taskId, { approved, rejectionReason: notes || '' });
-            if (response.success) {
-                setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Pushed to Procurement' : 'Admin Rejected' } : t));
-                showToast(approved ? 'Pushed to Procurement successfully' : 'Design rejected and sent back');
-            }
+            await adminReview({ id: taskId, approved, rejectionReason: notes || '' }).unwrap();
+            setTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: approved ? 'Pushed to Procurement' : 'Admin Rejected' } : t));
+            showToast(approved ? 'Pushed to Procurement successfully' : 'Design rejected and sent back');
         } catch (err) {
             showToast('Admin review failed', 'error');
         }
@@ -95,11 +95,9 @@ export const useTasksActions = ({
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this task?')) return;
         try {
-            const response = await taskAPI.delete(id);
-            if (response.success) {
-                await fetchTasks();
-                showToast('Task deleted successfully');
-            }
+            await deleteTask(id).unwrap();
+            await fetchTasks();
+            showToast('Task deleted successfully');
         } catch (err) {
             showToast('Failed to delete task', 'error');
         }

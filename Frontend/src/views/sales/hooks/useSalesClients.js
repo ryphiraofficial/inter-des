@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { clientAPI } from '../../../models/api';
+import { useGetSalesClientsQuery, useCreateSalesClientMutation } from '../../../store/api/salesApi';
 
 const initialFormData = {
     name: '',
@@ -17,32 +17,16 @@ const initialFormData = {
 };
 
 export const useSalesClients = () => {
-    const [clients, setClients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [formData, setFormData] = useState(initialFormData);
     
     const searchTerm = searchParams.get('q') || '';
     const showModal = searchParams.get('action') === 'new';
 
-    useEffect(() => {
-        fetchClients();
-    }, []);
-
-    const fetchClients = async () => {
-        try {
-            setLoading(true);
-            const response = await clientAPI.getAll();
-            if (response.success) {
-                setClients(response.data);
-            }
-        } catch (err) {
-            console.error('Failed to load clients:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: clientsRes, isLoading: loading } = useGetSalesClientsQuery();
+    const [createClient, { isLoading: submitting }] = useCreateSalesClientMutation();
+    
+    const clients = clientsRes?.success ? clientsRes.data : [];
 
     const closeModal = () => {
         const p = new URLSearchParams(searchParams);
@@ -57,19 +41,13 @@ export const useSalesClients = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitting(true);
         try {
-            const response = await clientAPI.create(formData);
-            if (response.success) {
-                alert('Client added successfully');
-                closeModal();
-                setFormData(initialFormData);
-                fetchClients();
-            }
+            await createClient(formData).unwrap();
+            alert('Client added successfully');
+            closeModal();
+            setFormData(initialFormData);
         } catch (err) {
-            alert(err.message || 'Failed to add client');
-        } finally {
-            setSubmitting(false);
+            alert(err.data?.message || err.message || 'Failed to add client');
         }
     };
 

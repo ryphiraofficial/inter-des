@@ -1,8 +1,11 @@
 import React from 'react';
 import { Target, Clock, CheckCircle, AlertCircle, Play } from 'lucide-react';
 import '../css/StaffDashboard.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const Overview = ({ user, projects, myTasks, notifications, onUpdateTaskStatus }) => {
+const Overview = ({ projects, myTasks, notifications, onUpdateTaskStatus }) => {
+    const user = useAppSelector(selectUser);
     return (
         <div className="view-overview fade-in">
             <div className="welcome-banner">

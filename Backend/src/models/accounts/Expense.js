@@ -1,0 +1,93 @@
+import mongoose from 'mongoose';
+
+const ExpenseSchema = new mongoose.Schema({
+    expenseNumber: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true
+    },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project'
+    },
+    type: {
+        type: String,
+        enum: ['Material', 'Labor', 'Transport', 'Equipment', 'Permit', 'Consultation', 'Food', 'Stationery', 'Fuel', 'Travel', 'Office Supplies', 'Company Overhead', 'Miscellaneous'],
+        required: [true, 'Please specify expense type']
+    },
+    category: {
+        type: String,
+        trim: true
+    },
+    description: {
+        type: String,
+        required: [true, 'Please provide description'],
+        trim: true
+    },
+    amount: {
+        type: Number,
+        required: [true, 'Please provide amount'],
+        min: 0
+    },
+    vendor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor'
+    },
+    vendorName: {
+        type: String,
+        trim: true
+    },
+    purchaseOrder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PurchaseOrder'
+    },
+    invoice: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Invoice'
+    },
+    expenseDate: {
+        type: Date,
+        default: Date.now
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Paid', 'Partially Paid'],
+        default: 'Pending'
+    },
+    paidAmount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    paymentDate: {
+        type: Date
+    },
+    receipt: {
+        type: String
+    },
+    notes: {
+        type: String,
+        trim: true
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
+ExpenseSchema.pre('save', async function (next) {
+    if (!this.expenseNumber) {
+        const count = await mongoose.model('Expense').countDocuments();
+        const year = new Date().getFullYear();
+        this.expenseNumber = `EXP-${year}-${String(count + 1).padStart(4, '0')}`;
+    }
+    next();
+});
+
+ExpenseSchema.index({ project: 1, type: 1, expenseDate: -1 });
+
+export default mongoose.model('Expense', ExpenseSchema);

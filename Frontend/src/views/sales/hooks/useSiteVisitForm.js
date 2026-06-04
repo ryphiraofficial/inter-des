@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { clientAPI, taskAPI, uploadAPI, siteVisitAPI } from '../../../models/api';
+import { useGetSalesClientsQuery, useGetSalesTasksQuery, useCreateSiteVisitMutation } from '../../../store/api/salesApi';
+import { useUploadImageMutation } from '../../../store/api/sharedApi';
 
 export const useSiteVisitForm = (showToast, navigate) => {
     const [images, setImages] = useState([]);
-    const [clients, setClients] = useState([]);
-    const [tasks, setTasks] = useState([]);
     const [uploading, setUploading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
     const [visitData, setVisitData] = useState({
         client: '',
         task: '',
@@ -15,38 +13,18 @@ export const useSiteVisitForm = (showToast, navigate) => {
         visitDate: new Date().toISOString().split('T')[0]
     });
 
-    useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const res = await clientAPI.getAll();
-                if (res.success) setClients(res.data);
-            } catch (err) {
-                console.error('Error fetching clients:', err);
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-        fetchClients();
-    }, []);
+    const { data: clientsRes, isLoading: clientsLoading } = useGetSalesClientsQuery();
+    const { data: tasksRes, isLoading: tasksLoading } = useGetSalesTasksQuery();
+    const [createVisit] = useCreateSiteVisitMutation();
+    const [uploadImage] = useUploadImageMutation();
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            if (!visitData.client) {
-                setTasks([]);
-                return;
-            }
-            try {
-                const res = await taskAPI.getAll();
-                if (res.success) {
-                    const clientTasks = res.data.filter(t => t.client?._id === visitData.client || t.client === visitData.client);
-                    setTasks(clientTasks);
-                }
-            } catch (err) {
-                console.error('Error fetching tasks:', err);
-            }
-        };
-        fetchTasks();
-    }, [visitData.client]);
+    const initialLoading = clientsLoading || tasksLoading;
+    const clients = clientsRes?.success ? clientsRes.data : [];
+    const allTasks = tasksRes?.success ? tasksRes.data : [];
+
+    const tasks = visitData.client 
+        ? allTasks.filter(t => t.client?._id === visitData.client || t.client === visitData.client)
+        : [];
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -84,7 +62,7 @@ export const useSiteVisitForm = (showToast, navigate) => {
                     const formData = new FormData();
                     formData.append('image', img.file);
                     
-                    const res = await uploadAPI.image(formData);
+                    const res = await uploadImage(formData).unwrap();
                     
                     if (res.success && res.url) {
                         uploadedUrls.push(res.url);
@@ -103,10 +81,10 @@ export const useSiteVisitForm = (showToast, navigate) => {
                 return;
             }
 
-            await siteVisitAPI.create({
+            await createVisit({
                 ...visitData,
                 images: uploadedUrls
-            });
+            }).unwrap();
 
             showToast('Site visit details and images uploaded successfully!');
             setImages([]);

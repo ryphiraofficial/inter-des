@@ -1,147 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Calendar, User, CreditCard, Tag, FileText, Info, CheckCircle2, MoreHorizontal, ExternalLink, Edit3 } from 'lucide-react';
-import { taskAPI, projectAPI } from '../../../../models/api';
-
-const getStageColor = (stage) => {
-    const colors = {
-        'Design': '#8b5cf6',
-        'Procurement': '#f59e0b',
-        'Production': '#3b82f6',
-        'Completed': '#10b981'
-    };
-    return colors[stage] || '#64748b';
-};
-
-const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '₹0';
-    return `₹${amount.toLocaleString('en-IN')}`;
-};
-
-const formatDate = (date) => {
-    if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-    });
-};
-
-const TeamPopover = ({ managerType, manager, staff, loading, onClose }) => {
-    return (
-        <div className="team-popover">
-            <div className="popover-header">
-                <div className="p-title">
-                    <User size={14} />
-                    <span>{managerType} Team</span>
-                </div>
-                <button className="p-close" onClick={onClose}>×</button>
-            </div>
-            <div className="popover-body">
-                <div className="manager-info">
-                    <div className="m-avatar">{manager?.name?.charAt(0) || 'U'}</div>
-                    <div className="m-details">
-                        <span className="m-name">{manager?.name || 'Unassigned'}</span>
-                        <span className="m-role">{managerType} Manager</span>
-                    </div>
-                </div>
-                
-                <div className="staff-section">
-                    <label>Staff Members ({staff.length})</label>
-                    {loading ? (
-                        <div className="p-loading">Loading team...</div>
-                    ) : staff.length === 0 ? (
-                        <div className="p-empty">No staff assigned yet</div>
-                    ) : (
-                        <div className="staff-list">
-                            {staff.map(s => (
-                                <div key={s._id} className="staff-item">
-                                    <div className="s-avatar">{s.name?.charAt(0)}</div>
-                                    <div className="s-info">
-                                        <span className="s-name">{s.name}</span>
-                                        <span className="s-role">{s.role || 'Team Member'}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
+import TeamPopover from './TeamPopover';
+import { useProjectDetail } from '../hooks/useProjectDetail';
+import { getStageColor, formatCurrency, formatDate } from '../../../../utils/projectUtils';
 
 const ProjectDetailModal = ({ selectedProject, handleClose, onUpdate }) => {
-    const [popover, setPopover] = useState(null); // { type, manager, staff, loading }
-    const [allTasks, setAllTasks] = useState([]);
-    
-    const [isEditingDeadline, setIsEditingDeadline] = useState(false);
-    const [deadlineValue, setDeadlineValue] = useState('');
-    const [isSavingDeadline, setIsSavingDeadline] = useState(false);
-
-    useEffect(() => {
-        if (selectedProject) {
-            fetchProjectTasks();
-            setDeadlineValue(selectedProject.targetEndDate ? new Date(selectedProject.targetEndDate).toISOString().split('T')[0] : '');
-            setIsEditingDeadline(false);
-        }
-    }, [selectedProject]);
-
-    const fetchProjectTasks = async () => {
-        try {
-            const res = await taskAPI.getAll({ project: selectedProject._id });
-            if (res.success) {
-                setAllTasks(res.data);
-            }
-        } catch (err) {
-            console.error('Error fetching project tasks:', err);
-        }
-    };
-
-    const handleSaveDeadline = async () => {
-        if (!deadlineValue) {
-            setIsEditingDeadline(false);
-            return;
-        }
-        setIsSavingDeadline(true);
-        try {
-            await projectAPI.update(selectedProject._id, { targetEndDate: deadlineValue });
-            selectedProject.targetEndDate = deadlineValue; // Optimistic update
-            if (onUpdate) onUpdate();
-            setIsEditingDeadline(false);
-        } catch (err) {
-            console.error('Failed to update deadline:', err);
-            alert('Failed to update deadline');
-        } finally {
-            setIsSavingDeadline(false);
-        }
-    };
-
-    const handleManagerClick = (type, manager) => {
-        // Filter tasks related to this stage/manager to find staff
-        const relatedTasks = allTasks.filter(t => {
-            const searchType = type.toLowerCase();
-            return (
-                t.status?.toLowerCase().includes(searchType) || 
-                t.title?.toLowerCase().includes(searchType) ||
-                t.tags?.some(tag => tag.toLowerCase().includes(searchType))
-            );
-        });
-
-        // Get unique staff from these tasks
-        const staffMap = new Map();
-        relatedTasks.forEach(t => {
-            t.assignedTo?.forEach(s => {
-                if (s && s._id) staffMap.set(s._id, s);
-            });
-        });
-
-        setPopover({
-            type,
-            manager,
-            staff: Array.from(staffMap.values()),
-            loading: false
-        });
-    };
+    const {
+        popover,
+        setPopover,
+        isEditingDeadline,
+        setIsEditingDeadline,
+        deadlineValue,
+        setDeadlineValue,
+        isSavingDeadline,
+        handleSaveDeadline,
+        handleManagerClick
+    } = useProjectDetail(selectedProject, onUpdate);
 
     if (!selectedProject) return null;
 

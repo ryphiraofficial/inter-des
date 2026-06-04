@@ -1,17 +1,19 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
+import { useAppSelector } from '../../../../store/hooks';
+import { selectUser } from '../../../../store/slices/authSlice';
 
-const SidebarFooter = ({ user, onLogout }) => {
+const SidebarFooter = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const getImageUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
         return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
-    const userInitials = user?.fullName
-        ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-        : '?';
+    const displayName = user?.fullName || user?.name || 'Admin';
+    const userInitials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
     return (
         <div className="sidebar-footer">
@@ -25,8 +27,8 @@ const SidebarFooter = ({ user, onLogout }) => {
                         )}
                     </div>
                     <div className="footer-details">
-                        <p className="footer-name">{user.fullName}</p>
-                        <p className="footer-role">{user.role}</p>
+                        <p className="footer-name">{displayName}</p>
+                        <p className="footer-role">{user.role ? user.role.replace(/_/g, ' ') : 'Administration'}</p>
                     </div>
                 </div>
             )}

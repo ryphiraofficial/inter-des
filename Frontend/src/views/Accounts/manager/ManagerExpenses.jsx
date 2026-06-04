@@ -8,8 +8,11 @@ import ExpenseTable from './components/expenses/ExpenseTable';
 import ExpenseModal from './components/expenses/ExpenseModal';
 
 import '../css/Expenses.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerExpenses = ({ user, search, setSearch, filterMode }) => {
+const ManagerExpenses = ({ search, setSearch, filterMode }) => {
+    const user = useAppSelector(selectUser);
     const {
         expenses, loading, filterCategory, setFilterCategory,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,

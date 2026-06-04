@@ -1,60 +1,47 @@
-import { useState, useEffect } from 'react';
-import { accountsAPI } from '../../../models/api';
+import { useState } from 'react';
+import {
+    useGetPendingCollectionsQuery,
+    useGenerateAdvanceInvoiceMutation
+} from '../../../store/api/accountsApi';
 
 export const useStaffQueueLogic = (user) => {
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const { data: projRes, isLoading: loading, refetch } = useGetPendingCollectionsQuery();
+    const [generateInvoice] = useGenerateAdvanceInvoiceMutation();
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const res = await accountsAPI.getPendingAccountsProjects();
-            if (res?.success) {
-                const myProjects = (res.data || []).filter(p => {
-                    const assignedStaff = p.assignedAccountsStaff;
-                    if (!assignedStaff) return false;
-                    
-                    const assignedStaffId = assignedStaff._id || assignedStaff;
-                    const loggedInUserId = user?._id || user?.id;
-                    
-                    // 1. Match by user ID
-                    if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
-                    
-                    // 2. Fallback to match by email
-                    const assignedEmail = assignedStaff.email;
-                    const loggedInEmail = user?.email;
-                    if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
-                    
-                    // 3. Fallback to match by staffId
-                    const assignedStaffIdVal = assignedStaff.staffId;
-                    const loggedInStaffIdVal = user?.staffId;
-                    if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
+    const allProjects = projRes?.success ? projRes.data : [];
+    
+    const projects = allProjects.filter(p => {
+        const assignedStaff = p.assignedAccountsStaff;
+        if (!assignedStaff) return false;
+        
+        const assignedStaffId = assignedStaff._id || assignedStaff;
+        const loggedInUserId = user?._id || user?.id;
+        
+        // 1. Match by user ID
+        if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
+        
+        // 2. Fallback to match by email
+        const assignedEmail = assignedStaff.email;
+        const loggedInEmail = user?.email;
+        if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
+        
+        // 3. Fallback to match by staffId
+        const assignedStaffIdVal = assignedStaff.staffId;
+        const loggedInStaffIdVal = user?.staffId;
+        if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
 
-                    return false;
-                });
-                setProjects(myProjects);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+        return false;
+    });
 
     const handleGenerateInvoice = async (projectId) => {
         try {
-            await accountsAPI.generateAdvanceInvoice({ projectId });
+            await generateInvoice({ projectId }).unwrap();
             alert('Invoice Generated & Sent!');
-            fetchData();
         } catch (err) {
-            alert('Error: ' + err.message);
+            alert('Error: ' + (err.data?.message || err.message));
         }
     };
 
@@ -71,6 +58,6 @@ export const useStaffQueueLogic = (user) => {
         showPaymentModal,
         setShowPaymentModal,
         selectedProject,
-        fetchData
+        fetchData: refetch
     };
 };

@@ -4,8 +4,11 @@ import { useVendorLogic } from '../hooks/useVendorLogic';
 // Sub-components
 import VendorTable from './components/vendors/VendorTable';
 import VendorModal from './components/vendors/VendorModal';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerVendors = ({ user, search, setSearch }) => {
+const ManagerVendors = ({ search, setSearch }) => {
+    const user = useAppSelector(selectUser);
     const {
         loading, showModal, setShowModal, editVendor, submitting, form, setForm, filtered, handleSubmit, handleDelete, openEdit
     } = useVendorLogic(search, setSearch);

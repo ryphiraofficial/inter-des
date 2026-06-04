@@ -35,10 +35,12 @@ const AIChat = () => {
         scrollToBottom();
     }, [state.messages]);
 
+    const { setShowWelcome } = state;
+
     useEffect(() => {
-        const timer = setTimeout(() => state.setShowWelcome(false), 8000);
+        const timer = setTimeout(() => setShowWelcome(false), 8000);
         return () => clearTimeout(timer);
-    }, []);
+    }, [setShowWelcome]);
 
     const toggleChat = () => {
         state.setIsOpen(!state.isOpen);

@@ -1,32 +1,15 @@
-import { useState, useEffect } from 'react';
-import { settingsAPI } from '../models/api';
+import { useGetSettingsQuery } from '../store/api/adminApi';
 
 export const useCompanySettings = (defaultName = 'Interior Design', defaultSubtitle = '') => {
-    const [companyName, setCompanyName] = useState(defaultName);
-    const [motto, setMotto] = useState(defaultSubtitle);
-    const [loading, setLoading] = useState(true);
+    const { data: res, isLoading } = useGetSettingsQuery();
+    
+    let companyName = defaultName;
+    let motto = defaultSubtitle;
 
-    useEffect(() => {
-        let mounted = true;
-        const fetchSettings = async () => {
-            try {
-                const res = await settingsAPI.get();
-                if (mounted && res.success && res.data?.company) {
-                    setCompanyName(res.data.company.companyName || defaultName);
-                    setMotto(defaultSubtitle ? defaultSubtitle : (res.data.company.motto || ''));
-                }
-            } catch (err) {
-                console.error('Failed to load company settings:', err);
-            } finally {
-                if (mounted) setLoading(false);
-            }
-        };
-        fetchSettings();
-        
-        return () => {
-            mounted = false;
-        };
-    }, [defaultName, defaultSubtitle]);
+    if (res?.success && res.data?.company) {
+        companyName = res.data.company.companyName || defaultName;
+        motto = defaultSubtitle ? defaultSubtitle : (res.data.company.motto || '');
+    }
 
-    return { companyName, motto, loading };
+    return { companyName, motto, loading: isLoading };
 };

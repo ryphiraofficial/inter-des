@@ -12,8 +12,11 @@ import ManagerVendors from '../manager/ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
 import MyCollections from './components/MyCollections';
 import MeetingsPage from '../../common/MeetingsPage';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const StaffDashboard = ({ user, onLogout }) => {
+const StaffDashboard = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [search, setSearch] = React.useState('');
@@ -22,7 +25,7 @@ const StaffDashboard = ({ user, onLogout }) => {
         setSearch('');
     }, [activeTab]);
 
-    const exportSupportedTabs = ['collections', 'invoices', 'payments', 'expenses', 'vendors'];
+    const exportSupportedTabs = ['collections', 'invoices', 'payments', 'expenses', 'vendors', 'clients'];
     const handleExport = exportSupportedTabs.includes(activeTab) ? () => {
         window.dispatchEvent(new CustomEvent('accounts-export-data', { detail: { tab: activeTab } }));
     } : null;
@@ -35,6 +38,7 @@ const StaffDashboard = ({ user, onLogout }) => {
             case 'payments': return <ManagerPayments user={user} search={search} setSearch={setSearch} />;
             case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} />;
             case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
+            case 'clients': return <ManagerClients user={user} search={search} setSearch={setSearch} />;
             case 'meetings': return <MeetingsPage user={user} />;
             default: return <Overview user={user} />;
         }

@@ -1,12 +1,15 @@
-import { projectAPI } from '../../../../models/api';
+import { useUpdateProjectMutation, useDeleteProjectMutation } from '../../../../store/api/adminApi';
 
 export const useProjectActions = ({ 
     fetchProjects, setSelectedProject, navigate, urlProjectId 
 }) => {
     
+    const [updateProject] = useUpdateProjectMutation();
+    const [deleteProject] = useDeleteProjectMutation();
+
     const handleStageChange = async (projectId, newStage) => {
         try {
-            await projectAPI.updateStage(projectId, { stage: newStage });
+            await updateProject({ id: projectId, stage: newStage }).unwrap();
             fetchProjects();
         } catch (err) {
             console.error('Error updating stage:', err);
@@ -15,7 +18,7 @@ export const useProjectActions = ({
 
     const handleDeleteProject = async (projectId) => {
         try {
-            await projectAPI.delete(projectId);
+            await deleteProject(projectId).unwrap();
             fetchProjects();
             handleClose();
         } catch (err) {

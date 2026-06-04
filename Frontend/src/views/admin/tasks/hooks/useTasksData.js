@@ -1,45 +1,45 @@
-import { useEffect } from 'react';
-import { taskAPI, staffAPI, clientAPI, quotationAPI } from '../../../../models/api';
+import { useEffect, useCallback } from 'react';
+import { 
+    useGetTasksQuery, 
+    useGetStaffQuery, 
+    useGetClientsQuery, 
+    useGetQuotationsQuery 
+} from '../../../../store/api/adminApi';
 
 export const useTasksData = ({ 
     setTasks, setStaff, setClients, setQuotations, 
     setLoading, setError, showToast, setShowTaskModal, setFormData, setSearchTerm
 }) => {
-    
-    const fetchTasks = async () => {
-        try {
-            const response = await taskAPI.getAll();
-            if (response.success) setTasks(response.data);
-        } catch (err) {
-            console.error('Error fetching tasks:', err);
-        }
-    };
+    const { data: tasksRes, isLoading: tasksLoading, error: tasksError, refetch: refetchTasks } = useGetTasksQuery();
+    const { data: staffRes, isLoading: staffLoading } = useGetStaffQuery();
+    const { data: clientsRes, isLoading: clientsLoading } = useGetClientsQuery({ limit: 1000 });
+    const { data: quotationsRes, isLoading: quotationsLoading } = useGetQuotationsQuery({ limit: 1000 });
 
-    const fetchAllData = async () => {
-        try {
-            setLoading(true);
-            const [tasksRes, staffRes, clientsRes, quotationsRes] = await Promise.all([
-                taskAPI.getAll(),
-                staffAPI.getAll(),
-                clientAPI.getAll({ limit: 1000 }),
-                quotationAPI.getAll({ limit: 1000 })
-            ]);
-
-            if (tasksRes.success) setTasks(tasksRes.data);
-            if (staffRes.success) setStaff(staffRes.data);
-            if (clientsRes.success) setClients(clientsRes.data);
-            if (quotationsRes.success) setQuotations(quotationsRes.data);
-        } catch (err) {
-            setError(err.message);
-            showToast('Failed to load task data', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const isLoading = tasksLoading || staffLoading || clientsLoading || quotationsLoading;
 
     useEffect(() => {
-        fetchAllData();
+        setLoading(isLoading);
+    }, [isLoading, setLoading]);
 
+    useEffect(() => {
+        if (tasksError) {
+            setError(tasksError.message || 'Error loading tasks');
+            showToast('Failed to load task data', 'error');
+        }
+    }, [tasksError, setError, showToast]);
+
+    useEffect(() => {
+        if (tasksRes?.success) setTasks(tasksRes.data);
+        if (staffRes?.success) setStaff(staffRes.data);
+        if (clientsRes?.success) setClients(clientsRes.data);
+        if (quotationsRes?.success) setQuotations(quotationsRes.data);
+    }, [tasksRes, staffRes, clientsRes, quotationsRes, setTasks, setStaff, setClients, setQuotations]);
+
+    const fetchAllData = useCallback(() => {
+        refetchTasks();
+    }, [refetchTasks]);
+
+    useEffect(() => {
         const processAIData = (data) => {
             if (!data) return;
             setFormData(prev => ({ ...prev, ...data }));
@@ -68,7 +68,7 @@ export const useTasksData = ({
             window.removeEventListener('open-create-task-modal', handleOpenTaskModal);
             window.removeEventListener('header-search', handleHeaderSearch);
         };
-    }, []);
+    }, [setFormData, setShowTaskModal, setSearchTerm]);
 
-    return { fetchTasks, fetchAllData };
+    return { fetchTasks: refetchTasks, fetchAllData };
 };
