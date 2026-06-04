@@ -28,6 +28,7 @@ const InventoryTable = ({
                         <th style={{ width: '40%' }}>Item Details</th>
                         <th className="desktop-hide" style={{ width: '15%' }}>Category</th>
                         <th className="desktop-hide" style={{ width: '15%' }}>Stock Level</th>
+                        <th className="desktop-hide" style={{ width: '15%' }}>Cost Price</th>
                         <th className="desktop-hide" style={{ width: '15%' }}>Price</th>
                         <th className="desktop-hide" style={{ width: '15%' }}>Actions</th>
                         <th className="mobile-show">Price</th>
@@ -67,6 +68,9 @@ const InventoryTable = ({
                                     </span>
                                 </td>
                                 <td className="desktop-hide">
+                                    <span className="price-value" style={{ color: '#64748b' }}>₹{(item.costPrice || 0).toLocaleString()}</span>
+                                </td>
+                                <td className="desktop-hide">
                                     <span className="price-value">₹{item.price.toLocaleString()}</span>
                                 </td>
                                 <td className="desktop-hide">
@@ -100,6 +104,10 @@ const InventoryTable = ({
                                                     <span className={item.stock <= item.reorderLevel ? 'stock-low' : ''}>
                                                         {item.stock} {item.unit}
                                                     </span>
+                                                </div>
+                                                <div className="info-item">
+                                                    <label>Cost Price</label>
+                                                    <span style={{ color: '#64748b' }}>₹{(item.costPrice || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="info-item full">
                                                     <label>Description</label>
