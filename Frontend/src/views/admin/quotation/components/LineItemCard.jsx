@@ -95,9 +95,9 @@ const LineItemCard = ({
                                     const h = item.cmH || 0;
                                     if (v && h > 0) {
                                         const sqft = Math.round((v * h) / 900 * 100) / 100;
-                                        batchUpdateLineItem(item.id, { cmL: v, sqft, quantity: sqft, size: sqft + ' SFT' });
+                                        batchUpdateLineItem(item.id, { cmL: v, cmH: h, sqft, quantity: sqft, size: sqft + ' SFT' });
                                     } else {
-                                        batchUpdateLineItem(item.id, { cmL: v, sqft: null, quantity: 1, size: '' });
+                                        batchUpdateLineItem(item.id, { cmL: v, cmH: item.cmH ?? null, sqft: null, quantity: 1, size: '' });
                                     }
                                 }} />
                                 <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>×</span>
@@ -111,9 +111,9 @@ const LineItemCard = ({
                                     const l = item.cmL || 0;
                                     if (v && l > 0) {
                                         const sqft = Math.round((l * v) / 900 * 100) / 100;
-                                        batchUpdateLineItem(item.id, { cmH: v, sqft, quantity: sqft, size: sqft + ' SFT' });
+                                        batchUpdateLineItem(item.id, { cmL: l, cmH: v, sqft, quantity: sqft, size: sqft + ' SFT' });
                                     } else {
-                                        batchUpdateLineItem(item.id, { cmH: v, sqft: null, quantity: 1, size: '' });
+                                        batchUpdateLineItem(item.id, { cmL: item.cmL ?? null, cmH: v, sqft: null, quantity: 1, size: '' });
                                     }
                                 }} />
                                 <div style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '0.5rem 0.75rem', minWidth: '90px', textAlign: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
