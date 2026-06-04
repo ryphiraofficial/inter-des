@@ -1,56 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Send, CheckCircle, Clock } from 'lucide-react';
-import { accountsAPI } from '../../../models/api';
+import { useGetPendingCollectionsQuery, useGenerateAdvanceInvoiceMutation } from '../../../store/api/accountsApi';
 import Skeleton from './Skeleton';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const StaffCollectionQueue = ({ user }) => {
+const StaffCollectionQueue = ({}) => {
+    const user = useAppSelector(selectUser);
     const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: res, isLoading: loading, refetch: fetchData } = useGetPendingCollectionsQuery();
+    const [generateAdvanceInvoice] = useGenerateAdvanceInvoiceMutation();
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (res?.success) {
+            // Filter to only show projects assigned to this specific staff member
+            const myProjects = (res.data || []).filter(p => {
+                const assignedStaff = p.assignedAccountsStaff;
+                if (!assignedStaff) return false;
+                
+                const assignedStaffId = assignedStaff._id || assignedStaff;
+                const loggedInUserId = user?._id || user?.id;
+                
+                // 1. Match by user ID
+                if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
+                
+                // 2. Fallback to match by email
+                const assignedEmail = assignedStaff.email;
+                const loggedInEmail = user?.email;
+                if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
+                
+                // 3. Fallback to match by staffId
+                const assignedStaffIdVal = assignedStaff.staffId;
+                const loggedInStaffIdVal = user?.staffId;
+                if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const res = await accountsAPI.getPendingAccountsProjects();
-            if (res?.success) {
-                // Filter to only show projects assigned to this specific staff member
-                const myProjects = (res.data || []).filter(p => {
-                    const assignedStaff = p.assignedAccountsStaff;
-                    if (!assignedStaff) return false;
-                    
-                    const assignedStaffId = assignedStaff._id || assignedStaff;
-                    const loggedInUserId = user?._id || user?.id;
-                    
-                    // 1. Match by user ID
-                    if (loggedInUserId && assignedStaffId === loggedInUserId) return true;
-                    
-                    // 2. Fallback to match by email
-                    const assignedEmail = assignedStaff.email;
-                    const loggedInEmail = user?.email;
-                    if (assignedEmail && loggedInEmail && assignedEmail.toLowerCase() === loggedInEmail.toLowerCase()) return true;
-                    
-                    // 3. Fallback to match by staffId
-                    const assignedStaffIdVal = assignedStaff.staffId;
-                    const loggedInStaffIdVal = user?.staffId;
-                    if (assignedStaffIdVal && loggedInStaffIdVal && assignedStaffIdVal === loggedInStaffIdVal) return true;
-
-                    return false;
-                });
-                setProjects(myProjects);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+                return false;
+            });
+            setProjects(myProjects);
         }
-    };
+    }, [res, user]);
 
     const handleGenerateInvoice = async (projectId) => {
         try {
-            await accountsAPI.generateAdvanceInvoice({ projectId });
+            await generateAdvanceInvoice({ projectId }).unwrap();
             alert('Invoice Generated & Sent!');
             fetchData();
         } catch (err) {

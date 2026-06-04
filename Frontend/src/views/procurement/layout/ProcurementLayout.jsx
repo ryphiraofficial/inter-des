@@ -23,7 +23,6 @@ const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, childre
     return (
         <div className="procurement-layout">
             <Sidebar 
-                user={user} 
                 onLogout={onLogout} 
                 isMobileOpen={isMobileMenuOpen} 
                 onCloseMobile={() => setIsMobileMenuOpen(false)} 
@@ -31,7 +30,6 @@ const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, childre
             <div className="procurement-layout-main">
                 <ProcurementNavbar 
                     role={role} 
-                    user={user} 
                     onRefresh={onRefresh} 
                     isLoading={isLoading} 
                     onMenuClick={() => setIsMobileMenuOpen(true)}

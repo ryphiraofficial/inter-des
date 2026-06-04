@@ -15,6 +15,8 @@ import ProductionPipeline from './design-approvals/components/ProductionPipeline
 import DesignPreviewModal from './design-approvals/components/DesignPreviewModal';
 import PaymentCollectionModal from './design-approvals/components/PaymentCollectionModal';
 import ApprovalSkeleton from './design-approvals/components/ApprovalSkeleton';
+import UnlockRequestsTable from '../production/project_manager/components/Approvals/UnlockRequestsTable';
+import { useGetUnlockRequestsQuery } from '../../store/api/productionApi';
 
 import './css/Tasks.css';
 
@@ -22,6 +24,10 @@ const DesignApprovals = () => {
     const { showToast } = useToast();
     const state = useApprovalsState();
     
+    // Fetch unlock requests for count
+    const { data: unlockRes } = useGetUnlockRequestsQuery();
+    const unlockCount = unlockRes?.data?.length || 0;
+
     useApprovalsData({
         setTasks: state.setTasks,
         setProcurementItems: state.setProcurementItems,
@@ -58,7 +64,7 @@ const DesignApprovals = () => {
 
     if (state.loading) return <ApprovalSkeleton />;
 
-    const totalPending = state.tasks.length + state.procurementItems.length + state.productionProjects.length;
+    const totalPending = state.tasks.length + state.procurementItems.length + state.productionProjects.length + unlockCount;
 
     return (
         <div className="tasks-container">
@@ -81,7 +87,8 @@ const DesignApprovals = () => {
                     counts={{ 
                         design: state.tasks.length, 
                         procurement: state.procurementItems.length,
-                        production: state.productionProjects.length
+                        production: state.productionProjects.length,
+                        unlocks: unlockCount
                     }} 
                 />
 
@@ -114,6 +121,10 @@ const DesignApprovals = () => {
                         onReject={actions.handleProductionReject}
                         approving={state.approvingProduction}
                     />
+                )}
+
+                {state.activeTab === 'unlocks' && (
+                    <UnlockRequestsTable />
                 )}
             </div>
 

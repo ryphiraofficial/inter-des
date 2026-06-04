@@ -1,9 +1,17 @@
-import { userAPI } from '../../../../models/api';
+import { 
+    useCreateUserMutation, 
+    useUpdateUserMutation, 
+    useDeleteUserMutation 
+} from '../../../../store/api/adminApi';
 
 export const useUserActions = ({ 
     fetchUsers, setSubmitting, setShowModal, setEditingUser, setFormData, setUsers, users 
 }) => {
     
+    const [createUser] = useCreateUserMutation();
+    const [updateUser] = useUpdateUserMutation();
+    const [deleteUser] = useDeleteUserMutation();
+
     const handleEditClick = (user) => {
         setEditingUser(user);
         setFormData({
@@ -42,19 +50,19 @@ export const useUserActions = ({
 
         try {
             setSubmitting(true);
-            const response = editingUser
-                ? await userAPI.update(editingUser._id, formData)
-                : await userAPI.create(formData);
-
-            if (response.success) {
-                alert(editingUser ? 'User updated successfully' : 'New user created successfully');
-                setShowModal(false);
-                fetchUsers();
-                setEditingUser(null);
-                setFormData({ fullName: '', email: '', phone: '', role: 'Admin', department: 'Admin', password: '' });
+            if (editingUser) {
+                await updateUser({ id: editingUser._id, ...formData }).unwrap();
+            } else {
+                await createUser(formData).unwrap();
             }
+
+            alert(editingUser ? 'User updated successfully' : 'New user created successfully');
+            setShowModal(false);
+            fetchUsers();
+            setEditingUser(null);
+            setFormData({ fullName: '', email: '', phone: '', role: 'Admin', department: 'Admin', password: '' });
         } catch (err) {
-            alert(err.message || `Error ${editingUser ? 'updating' : 'creating'} user`);
+            alert(err.data?.message || err.message || `Error ${editingUser ? 'updating' : 'creating'} user`);
         } finally {
             setSubmitting(false);
         }
@@ -63,11 +71,9 @@ export const useUserActions = ({
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
         try {
-            const response = await userAPI.delete(id);
-            if (response.success) {
-                setUsers(users.filter(u => u._id !== id));
-                alert('User deleted successfully');
-            }
+            await deleteUser(id).unwrap();
+            setUsers(users.filter(u => u._id !== id));
+            alert('User deleted successfully');
         } catch (err) {
             alert('Failed to delete user');
         }

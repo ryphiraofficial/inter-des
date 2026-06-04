@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { invoiceAPI, clientAPI } from '../../../models/api';
+import {
+    useGetAccountsInvoicesQuery,
+    useCreateAccountsInvoiceMutation,
+    useUpdateAccountsInvoicePaymentMutation,
+    useDeleteAccountsInvoiceMutation,
+    useGetAccountsClientsQuery
+} from '../../../store/api/accountsApi';
 
 export const useInvoiceLogic = () => {
-    const [invoices, setInvoices] = useState([]);
-    const [clients, setClients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -25,30 +26,21 @@ export const useInvoiceLogic = () => {
         status: 'Sent'
     });
 
-    const fetchInvoices = async () => {
-        try {
-            setLoading(true);
-            const response = await invoiceAPI.getAll();
-            if (response.success) setInvoices(response.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: invRes, isLoading: loadingInv, error: errInv } = useGetAccountsInvoicesQuery();
+    const { data: clientsRes } = useGetAccountsClientsQuery();
 
-    const fetchClients = async () => {
-        try {
-            const response = await clientAPI.getAll();
-            if (response.success) setClients(response.data);
-        } catch (err) {
-            console.error('Error fetching clients:', err);
-        }
-    };
+    const [createInvoice, { isLoading: isCreating }] = useCreateAccountsInvoiceMutation();
+    const [updatePayment] = useUpdateAccountsInvoicePaymentMutation();
+    const [deleteInvoice] = useDeleteAccountsInvoiceMutation();
+
+    const loading = loadingInv;
+    const submitting = isCreating;
+    const error = errInv ? (errInv.data?.message || errInv.message) : null;
+
+    const invoices = invRes?.success ? invRes.data : [];
+    const clients = clientsRes?.success ? clientsRes.data : [];
 
     useEffect(() => {
-        fetchInvoices();
-        fetchClients();
         const handleOpenModal = () => setShowCreateModal(true);
         const handleHeaderSearch = (e) => setSearchTerm(e.detail || '');
         window.addEventListener('open-create-invoice-modal', handleOpenModal);
@@ -61,37 +53,27 @@ export const useInvoiceLogic = () => {
 
     const handleCreateInvoice = async (data) => {
         try {
-            setSubmitting(true);
-            const response = await invoiceAPI.create(data);
-            if (response.success) {
-                setShowCreateModal(false);
-                fetchInvoices();
-            }
+            await createInvoice(data).unwrap();
+            setShowCreateModal(false);
         } catch (err) {
-            alert(err.message);
-        } finally {
-            setSubmitting(false);
+            alert(err.data?.message || err.message);
         }
     };
 
     const handleUpdatePayment = async (id, paymentData) => {
         try {
-            const response = await invoiceAPI.updatePayment(id, paymentData);
-            if (response.success) {
-                setInvoices(prev => prev.map(inv => inv._id === id ? { ...inv, ...response.data } : inv));
-            }
+            await updatePayment({ id, ...paymentData }).unwrap();
         } catch (err) {
-            alert(err.message);
+            alert(err.data?.message || err.message);
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this invoice?')) return;
         try {
-            const response = await invoiceAPI.delete(id);
-            if (response.success) setInvoices(prev => prev.filter(inv => inv._id !== id));
+            await deleteInvoice(id).unwrap();
         } catch (err) {
-            alert(err.message);
+            alert(err.data?.message || err.message);
         }
     };
 

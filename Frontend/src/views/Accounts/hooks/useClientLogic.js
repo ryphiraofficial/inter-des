@@ -1,35 +1,32 @@
 import { useState, useEffect } from 'react';
-import { clientAPI } from '../../../models/api';
+import {
+    useGetAccountsClientsQuery,
+    useCreateAccountsClientMutation,
+    useUpdateAccountsClientMutation,
+    useDeleteAccountsClientMutation
+} from '../../../store/api/accountsApi';
 
 export const useClientLogic = (parentSearch, parentSetSearch) => {
-    const [clients, setClients] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [localSearch, setLocalSearch] = useState('');
     const search = parentSearch !== undefined ? parentSearch : localSearch;
     const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
     const [showModal, setShowModal] = useState(false);
     const [editClient, setEditClient] = useState(null);
     const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', gstNumber: '' });
-    const [submitting, setSubmitting] = useState(false);
+
+    const { data: clientRes, isLoading: loading } = useGetAccountsClientsQuery();
+    const [createClient, { isLoading: isCreating }] = useCreateAccountsClientMutation();
+    const [updateClient, { isLoading: isUpdating }] = useUpdateAccountsClientMutation();
+    const [deleteClient] = useDeleteAccountsClientMutation();
+
+    const submitting = isCreating || isUpdating;
+    const clients = clientRes?.success ? clientRes.data : [];
 
     useEffect(() => {
-        fetchClients();
         const handleOpenModal = () => openCreate();
         window.addEventListener('open-create-client-modal', handleOpenModal);
         return () => window.removeEventListener('open-create-client-modal', handleOpenModal);
     }, []);
-
-    const fetchClients = async () => {
-        try {
-            setLoading(true);
-            const res = await clientAPI.getAll();
-            if (res?.success) setClients(res.data || []);
-        } catch (err) {
-            console.error('Error fetching clients:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const openCreate = () => {
         setEditClient(null);
@@ -46,31 +43,23 @@ export const useClientLogic = (parentSearch, parentSetSearch) => {
     const handleSubmit = async () => {
         if (!form.name) return alert('Client name is required');
         try {
-            setSubmitting(true);
-            let res;
             if (editClient) {
-                res = await clientAPI.update(editClient._id, form);
+                await updateClient({ id: editClient._id, ...form }).unwrap();
             } else {
-                res = await clientAPI.create(form);
+                await createClient(form).unwrap();
             }
-            if (res?.success) {
-                setShowModal(false);
-                fetchClients();
-            }
+            setShowModal(false);
         } catch (err) {
-            alert('Error saving client: ' + err.message);
-        } finally {
-            setSubmitting(false);
+            alert('Error saving client: ' + (err.data?.message || err.message));
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this client?')) return;
         try {
-            await clientAPI.delete(id);
-            setClients(prev => prev.filter(c => c._id !== id));
+            await deleteClient(id).unwrap();
         } catch (err) {
-            alert('Error deleting: ' + err.message);
+            alert('Error deleting: ' + (err.data?.message || err.message));
         }
     };
 

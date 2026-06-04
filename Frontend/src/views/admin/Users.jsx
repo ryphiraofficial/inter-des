@@ -7,8 +7,11 @@ import UserTable from './users/components/UserTable';
 import UserFormModal from './users/components/UserFormModal';
 
 import './css/Users.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
 const Users = () => {
+    const user = useAppSelector(selectUser);
     const state = useUserState();
     
     const { fetchUsers } = useUserData({

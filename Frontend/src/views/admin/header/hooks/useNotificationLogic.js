@@ -1,61 +1,63 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { notificationAPI } from '../../../../models/api';
+import { useEffect } from 'react';
+import {
+    useGetNotificationsQuery,
+    useMarkNotificationReadMutation,
+    useMarkAllNotificationsReadMutation,
+    useDeleteNotificationMutation
+} from '../../../../store/api/adminApi';
 
 export const useNotificationLogic = ({ 
-    setNotifications, setUnreadCount, showNotifications, setShowNotifications, notifications 
+    setNotifications, setUnreadCount, showNotifications, setShowNotifications 
 }) => {
-    const pollRef = useRef(null);
+    
+    // We can use pollingInterval from RTK Query directly instead of setInterval!
+    const { data: notifRes, refetch } = useGetNotificationsQuery(
+        { limit: 30 },
+        { pollingInterval: 30000 } // Poll every 30 seconds
+    );
 
-    const fetchNotifications = useCallback(async () => {
-        try {
-            const res = await notificationAPI.getAll({ limit: 30 });
-            if (res?.success) {
-                setNotifications(res.data || []);
-                setUnreadCount(res.unreadCount || 0);
-            }
-        } catch (err) {
-            console.error('Failed to fetch notifications:', err);
-        }
-    }, [setNotifications, setUnreadCount]);
+    const [markRead] = useMarkNotificationReadMutation();
+    const [markAllRead] = useMarkAllNotificationsReadMutation();
+    const [deleteNotif] = useDeleteNotificationMutation();
 
     useEffect(() => {
-        fetchNotifications();
-        pollRef.current = setInterval(fetchNotifications, 30000);
-        return () => { if (pollRef.current) clearInterval(pollRef.current); };
-    }, [fetchNotifications]);
+        if (notifRes?.success) {
+            setNotifications(notifRes.data || []);
+            setUnreadCount(notifRes.unreadCount || 0);
+        }
+    }, [notifRes, setNotifications, setUnreadCount]);
 
     const handleMarkAsRead = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            await notificationAPI.markAsRead(id);
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
-            setUnreadCount(prev => Math.max(0, prev - 1));
-        } catch (err) { console.error('Failed to mark as read:', err); }
+            await markRead(id).unwrap();
+        } catch (err) { 
+            console.error('Failed to mark as read:', err); 
+        }
     };
 
     const handleMarkAllRead = async () => {
         try {
-            await notificationAPI.markAllAsRead();
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-            setUnreadCount(0);
-        } catch (err) { console.error('Failed to mark all as read:', err); }
+            await markAllRead().unwrap();
+        } catch (err) { 
+            console.error('Failed to mark all as read:', err); 
+        }
     };
 
     const handleDelete = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            await notificationAPI.delete(id);
-            const wasUnread = notifications.find(n => n._id === id && !n.isRead);
-            setNotifications(prev => prev.filter(n => n._id !== id));
-            if (wasUnread) setUnreadCount(prev => Math.max(0, prev - 1));
-        } catch (err) { console.error('Failed to delete notification:', err); }
+            await deleteNotif(id).unwrap();
+        } catch (err) { 
+            console.error('Failed to delete notification:', err); 
+        }
     };
 
     const toggleNotifications = () => {
         const willShow = !showNotifications;
         setShowNotifications(willShow);
-        if (willShow) fetchNotifications();
+        if (willShow) refetch();
     };
 
-    return { handleMarkAsRead, handleMarkAllRead, handleDelete, toggleNotifications, fetchNotifications };
+    return { handleMarkAsRead, handleMarkAllRead, handleDelete, toggleNotifications, fetchNotifications: refetch };
 };

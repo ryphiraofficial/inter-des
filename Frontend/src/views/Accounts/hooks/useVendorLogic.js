@@ -1,35 +1,33 @@
 import { useState, useEffect } from 'react';
-import { vendorAPI } from '../../../models/api';
+import {
+    useGetVendorsQuery,
+    useCreateVendorMutation,
+    useUpdateVendorMutation,
+    useDeleteVendorMutation
+} from '../../../store/api/accountsApi';
 
 export const useVendorLogic = (parentSearch, parentSetSearch) => {
-    const [vendors, setVendors] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [localSearch, setLocalSearch] = useState('');
     const search = parentSearch !== undefined ? parentSearch : localSearch;
     const setSearch = parentSetSearch !== undefined ? parentSetSearch : setLocalSearch;
+    
     const [showModal, setShowModal] = useState(false);
     const [editVendor, setEditVendor] = useState(null);
-    const [submitting, setSubmitting] = useState(false);
     const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', category: '', gstNumber: '' });
 
+    const { data: vendorRes, isLoading: loading } = useGetVendorsQuery();
+    const [createVendor, { isLoading: isCreating }] = useCreateVendorMutation();
+    const [updateVendor, { isLoading: isUpdating }] = useUpdateVendorMutation();
+    const [deleteVendor] = useDeleteVendorMutation();
+
+    const submitting = isCreating || isUpdating;
+    const vendors = vendorRes?.success ? vendorRes.data : [];
+
     useEffect(() => {
-        fetchVendors();
         const handleOpenModal = () => openCreate();
         window.addEventListener('open-create-vendor-modal', handleOpenModal);
         return () => window.removeEventListener('open-create-vendor-modal', handleOpenModal);
     }, []);
-
-    const fetchVendors = async () => {
-        try {
-            setLoading(true);
-            const res = await vendorAPI.getAll();
-            if (res?.success) setVendors(res.data || []);
-        } catch (err) {
-            console.error('Error fetching vendors:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const openCreate = () => {
         setEditVendor(null);
@@ -46,31 +44,23 @@ export const useVendorLogic = (parentSearch, parentSetSearch) => {
     const handleSubmit = async () => {
         if (!form.name) return alert('Vendor name is required');
         try {
-            setSubmitting(true);
-            let res;
             if (editVendor) {
-                res = await vendorAPI.update(editVendor._id, form);
+                await updateVendor({ id: editVendor._id, ...form }).unwrap();
             } else {
-                res = await vendorAPI.create(form);
+                await createVendor(form).unwrap();
             }
-            if (res?.success) {
-                setShowModal(false);
-                fetchVendors();
-            }
+            setShowModal(false);
         } catch (err) {
-            alert('Error saving vendor: ' + err.message);
-        } finally {
-            setSubmitting(false);
+            alert('Error saving vendor: ' + (err.data?.message || err.message));
         }
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this vendor?')) return;
         try {
-            await vendorAPI.delete(id);
-            setVendors(prev => prev.filter(v => v._id !== id));
+            await deleteVendor(id).unwrap();
         } catch (err) {
-            alert('Error deleting: ' + err.message);
+            alert('Error deleting: ' + (err.data?.message || err.message));
         }
     };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Upload, Plus, Trash2, Package } from 'lucide-react';
 import { PREDEFINED_ITEMS, ITEM_UNITS } from '../hooks/useUploadActions';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 
 const UploadDesignModal = ({
     show, onClose, selectedTask,

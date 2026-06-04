@@ -1,29 +1,36 @@
 import { useEffect } from 'react';
-import { settingsAPI, authAPI, uploadAPI } from '../../../../models/api';
+import { useGetSettingsQuery } from '../../../../store/api/adminApi';
+import { useGetCurrentUserQuery } from '../../../../store/api/authApi';
+import { useUploadImageMutation } from '../../../../store/api/sharedApi';
 
 export const useSettingsData = ({ 
     setSettings, setProfile, setLoading, setSaving, showToast, updateSettingsField 
 }) => {
     
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const [settingsRes, profileRes] = await Promise.all([
-                settingsAPI.get(),
-                authAPI.getCurrentUser()
-            ]);
-            if (settingsRes.success) setSettings(settingsRes.data);
-            if (profileRes.success) setProfile(profileRes.data);
-        } catch (err) {
-            showToast('error', 'Failed to load settings');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: settingsRes, isLoading: settingsLoading, error: settingsError, refetch } = useGetSettingsQuery();
+    const [uploadImage] = useUploadImageMutation();
+
+    const { data: profileRes } = useGetCurrentUserQuery();
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (profileRes?.success) {
+            setProfile(profileRes.data);
+        }
+    }, [profileRes, setProfile]);
+
+    useEffect(() => {
+        setLoading(settingsLoading);
+    }, [settingsLoading, setLoading]);
+
+    useEffect(() => {
+        if (settingsError) {
+            showToast('error', 'Failed to load settings');
+        }
+    }, [settingsError, showToast]);
+
+    useEffect(() => {
+        if (settingsRes?.success) setSettings(settingsRes.data);
+    }, [settingsRes, setSettings]);
 
     const handleFileUpload = async (e, type) => {
         const file = e.target.files[0];
@@ -34,9 +41,9 @@ export const useSettingsData = ({
 
         try {
             setSaving(true);
-            const res = await uploadAPI.image(formData);
+            const res = await uploadImage(formData).unwrap();
             if (res.success) {
-                const url = res.data.url || res.data.path;
+                const url = res.data?.url || res.data?.path || res.url || res.path || res.data;
                 if (type === 'logo') {
                     updateSettingsField('company', 'companyLogo', url);
                 } else if (type === 'avatar') {
@@ -51,5 +58,5 @@ export const useSettingsData = ({
         }
     };
 
-    return { fetchData, handleFileUpload };
+    return { fetchData: refetch, handleFileUpload };
 };

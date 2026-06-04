@@ -1,4 +1,9 @@
-import { quotationAPI, uploadAPI, clientAPI } from '../../../../models/api';
+import { 
+    useCreateQuotationMutation, 
+    useUpdateQuotationMutation,
+    useCreateClientMutation 
+} from '../../../../store/api/adminApi';
+import { useUploadImageMutation } from '../../../../store/api/sharedApi';
 
 export const useQuotationActions = ({
     formData,
@@ -20,6 +25,10 @@ export const useQuotationActions = ({
     setShowExitDialog,
     setFieldErrors
 }) => {
+    
+    const [createQuotation] = useCreateQuotationMutation();
+    const [updateQuotation] = useUpdateQuotationMutation();
+    const [createClient] = useCreateClientMutation();
 
     const handlePreview = (e, status = 'Under Review') => {
         if (e) e.preventDefault();
@@ -85,18 +94,15 @@ export const useQuotationActions = ({
                 }))
             };
 
-            let response;
             if (isEdit) {
-                response = await quotationAPI.update(id, quotationData);
+                await updateQuotation({ id, ...quotationData }).unwrap();
             } else {
-                response = await quotationAPI.create(quotationData);
+                await createQuotation(quotationData).unwrap();
             }
 
-            if (response.success) {
-                navigate(isStaff ? '/staff/quotations' : '/quotations');
-            }
+            navigate(isStaff ? '/staff/quotations' : '/quotations');
         } catch (err) {
-            setError(err.message);
+            setError(err.data?.message || err.message);
             setShowBillPreview(false);
         } finally {
             setIsSaving(false);
@@ -127,18 +133,17 @@ export const useQuotationActions = ({
                     image: item.image
                 }))
             };
-            let response;
+            
             if (isEdit) {
-                response = await quotationAPI.update(id, { ...quotationData, status: 'Draft' });
+                await updateQuotation({ id, ...quotationData, status: 'Draft' }).unwrap();
             } else {
-                response = await quotationAPI.create(quotationData);
+                await createQuotation(quotationData).unwrap();
             }
-            if (response.success) {
-                setShowExitDialog(false);
-                navigate(isStaff ? '/staff/quotations' : '/quotations');
-            }
+            
+            setShowExitDialog(false);
+            navigate(isStaff ? '/staff/quotations' : '/quotations');
         } catch (err) {
-            setError('Failed to save draft: ' + err.message);
+            setError('Failed to save draft: ' + (err.data?.message || err.message));
             setShowExitDialog(false);
         } finally {
             setIsSaving(false);
@@ -150,7 +155,7 @@ export const useQuotationActions = ({
         try {
             const fd = new FormData();
             fd.append('image', file);
-            const result = await uploadAPI.image(fd);
+            const result = await uploadImage(fd).unwrap();
             if (result.success) updateLineItem(itemId, 'image', result.data);
         } catch (err) {
             console.error('Upload error:', err);
@@ -160,15 +165,16 @@ export const useQuotationActions = ({
     const confirmQuickAddClient = async (e, quickAddData, selectClient) => {
         e.preventDefault();
         try {
-            const res = await clientAPI.create({ ...quickAddData, status: 'Active' });
-            if (res.success) {
-                const newClient = res.data;
-                setClients(prev => [...prev, newClient]);
-                selectClient(newClient);
-                setShowQuickAddModal(false);
-            }
+            const newClient = await createClient({ ...quickAddData, status: 'Active' }).unwrap();
+            // Assuming the RTK query mutation might return data directly or nested in `data` depending on transformResponse, but .unwrap() usually gives the direct payload. Wait, previous models/api returned {success, data}. If the backend still returns {success, data}, then .unwrap() returns that object. Let's see:
+            // if newClient has `.data`, we extract it.
+            const clientData = newClient.data ? newClient.data : newClient;
+            
+            setClients(prev => [...prev, clientData]);
+            selectClient(clientData);
+            setShowQuickAddModal(false);
         } catch (err) {
-            setError('Failed to create client: ' + err.message);
+            setError('Failed to create client: ' + (err.data?.message || err.message));
         }
     };
 

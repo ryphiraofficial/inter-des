@@ -7,8 +7,11 @@ import {
 import { useNotifications } from '../../sales/hooks/useNotifications';
 import NotificationPopup from '../../sales/components/SalesNotificationPopup';
 import '../../sales/css/SalesHeader.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const DesignNavbar = ({ user, onRefresh, isLoading, toggleSidebar }) => {
+const DesignNavbar = ({ onRefresh, isLoading, toggleSidebar }) => {
+    const user = useAppSelector(selectUser);
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [showNotifications, setShowNotifications] = useState(false);

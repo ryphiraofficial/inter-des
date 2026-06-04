@@ -1,4 +1,9 @@
-import { quotationAPI, clientAPI, uploadAPI } from '../../../../models/api';
+import { 
+    useCreateSalesQuotationMutation, 
+    useUpdateSalesQuotationMutation,
+    useCreateSalesClientMutation 
+} from '../../../../store/api/salesApi';
+import { useUploadImageMutation } from '../../../../store/api/sharedApi';
 
 export const useQuotationActions = ({
     formData, lineItems, taxRate, discount, includeDiscount, offerPrice,
@@ -6,6 +11,10 @@ export const useQuotationActions = ({
     setPendingStatus, setClients, setShowQuickAddModal, setShowExitDialog,
     setFieldErrors
 }) => {
+    const [createQuotation] = useCreateSalesQuotationMutation();
+    const [updateQuotation] = useUpdateSalesQuotationMutation();
+    const [createClient] = useCreateSalesClientMutation();
+    const [uploadImage] = useUploadImageMutation();
     
     const handlePreview = (e, status = 'Under Review') => {
         if (e) e.preventDefault();
@@ -73,9 +82,9 @@ export const useQuotationActions = ({
 
             let response;
             if (isEdit) {
-                response = await quotationAPI.update(id, quotationData);
+                response = await updateQuotation({ id, ...quotationData }).unwrap();
             } else {
-                response = await quotationAPI.create(quotationData);
+                response = await createQuotation(quotationData).unwrap();
             }
 
             if (response.success) {
@@ -116,9 +125,9 @@ export const useQuotationActions = ({
             
             let response;
             if (isEdit) {
-                response = await quotationAPI.update(id, { ...quotationData, status: 'Draft' });
+                response = await updateQuotation({ id, ...quotationData, status: 'Draft' }).unwrap();
             } else {
-                response = await quotationAPI.create(quotationData);
+                response = await createQuotation(quotationData).unwrap();
             }
             
             if (response.success) {
@@ -136,7 +145,7 @@ export const useQuotationActions = ({
     const confirmQuickAddClient = async (e, quickAddData, selectClient) => {
         e.preventDefault();
         try {
-            const res = await clientAPI.create({ ...quickAddData, status: 'Active' });
+            const res = await createClient({ ...quickAddData, status: 'Active' }).unwrap();
             if (res.success) {
                 const newClient = res.data;
                 setClients(prev => [...prev, newClient]);
@@ -154,7 +163,7 @@ export const useQuotationActions = ({
         try {
             const uploadForm = new FormData();
             uploadForm.append('image', file);
-            const result = await uploadAPI.image(uploadForm);
+            const result = await uploadImage(uploadForm).unwrap();
             if (result.success) updateLineItem(itemId, 'image', result.data);
         } catch (err) {
             console.error('Upload error:', err);

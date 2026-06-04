@@ -1,11 +1,12 @@
 import React from 'react';
-import { Image as ImageIcon, Package, Wrench } from 'lucide-react';
+import { Image as ImageIcon, Package, Wrench, LockOpen } from 'lucide-react';
 
 const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
     const tabs = [
         { key: 'design',      label: 'Design Pipeline',      icon: ImageIcon, color: '#6366f1', count: counts.design },
         { key: 'procurement', label: 'Procurement Pipeline',  icon: Package,   color: '#0ea5e9', count: counts.procurement },
         { key: 'production',  label: 'Production Pipeline',   icon: Wrench,    color: '#f59e0b', count: counts.production },
+        { key: 'unlocks',     label: 'Unlock Requests',       icon: LockOpen,  color: '#dc2626', count: counts.unlocks },
     ];
 
     return (

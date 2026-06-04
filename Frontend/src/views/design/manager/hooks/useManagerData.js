@@ -1,19 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 import {
-    projectAPI, quotationAPI, taskAPI, notificationAPI,
-    staffAPI, procurementAPI, BASE_IMAGE_URL
-} from '../../../../models/api';
+    useGetProjectStatsQuery,
+    useGetProjectsQuery,
+    useGetDesignTasksQuery,
+    useGetQuotationsQuery,
+    useGetStaffAnalyticsOverviewQuery,
+    useGetNotificationsQuery,
+    useGetStaffQuery
+} from '../../../../store/api/designApi';
+import { useGetMaterialRequestsQuery } from '../../../../store/api/procurementApi';
 
 export const useManagerData = () => {
-    const [stats, setStats] = useState(null);
-    const [projects, setProjects] = useState([]);
-    const [tasks, setTasks] = useState([]);
-    const [quotations, setQuotations] = useState([]);
-    const [teamStats, setTeamStats] = useState([]);
-    const [notifications, setNotifications] = useState([]);
-    const [staffList, setStaffList] = useState([]);
-    const [materialRequests, setMaterialRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: statsRes, isLoading: statsLoading, refetch: refetchStats } = useGetProjectStatsQuery();
+    const { data: projectsRes, isLoading: projectsLoading, refetch: refetchProjects } = useGetProjectsQuery({ limit: 100 });
+    const { data: tasksRes, isLoading: tasksLoading, refetch: refetchTasks } = useGetDesignTasksQuery({ limit: 100 });
+    const { data: quotationsRes, isLoading: quotationsLoading, refetch: refetchQuotations } = useGetQuotationsQuery({ status: 'Approved' });
+    const { data: teamRes, isLoading: teamLoading, refetch: refetchTeam } = useGetStaffAnalyticsOverviewQuery();
+    const { data: notificationsRes, isLoading: notificationsLoading, refetch: refetchNotifications } = useGetNotificationsQuery({ limit: 30 });
+    const { data: staffRes, isLoading: staffLoading, refetch: refetchStaff } = useGetStaffQuery();
+    const { data: materialRes, isLoading: materialLoading, refetch: refetchMaterial } = useGetMaterialRequestsQuery({ limit: 100 });
+
+    const loading = statsLoading || projectsLoading || tasksLoading || quotationsLoading || 
+                    teamLoading || notificationsLoading || staffLoading || materialLoading;
+
+    const stats = statsRes?.success ? statsRes.data : null;
+    const projects = projectsRes?.success ? projectsRes.data : [];
+    const tasks = tasksRes?.success ? tasksRes.data : [];
+    const quotations = quotationsRes?.success ? quotationsRes.data : [];
+    const teamStats = teamRes?.success ? teamRes.data.filter(s => s.role?.toLowerCase().includes('design')) : [];
+    const notifications = notificationsRes?.success ? notificationsRes.data : [];
+    const staffList = staffRes?.success ? staffRes.data.filter(s => s.role?.toLowerCase().includes('design') && s.status === 'Active') : [];
+    const materialRequests = materialRes?.success ? materialRes.data : [];
 
     const getImageUrl = useCallback((url) => {
         if (!url) return '';
@@ -21,36 +39,19 @@ export const useManagerData = () => {
         return `${BASE_IMAGE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
     }, []);
 
-    const fetchData = useCallback(async () => {
-        try {
-            setLoading(true);
-            const [projectStats, projectList, taskList, quoteRes, teamRes, notifRes, staffRes, matRes] = await Promise.all([
-                projectAPI.getStats(),
-                projectAPI.getAll({ limit: 100 }),
-                taskAPI.getAll({ limit: 100 }),
-                quotationAPI.getAll({ status: 'Approved' }),
-                staffAPI.getAnalyticsOverview(),
-                notificationAPI.getAll({ limit: 30 }),
-                staffAPI.getAll(),
-                procurementAPI.getMaterialRequests({ limit: 100 })
-            ]);
-
-            if (projectStats.success) setStats(projectStats.data);
-            if (projectList.success) setProjects(projectList.data);
-            if (taskList.success) setTasks(taskList.data);
-            if (quoteRes.success) setQuotations(quoteRes.data);
-            if (teamRes.success) setTeamStats(teamRes.data.filter(s => s.role?.toLowerCase().includes('design')));
-            if (notifRes.success) setNotifications(notifRes.data);
-            if (staffRes.success) setStaffList(staffRes.data.filter(s => s.role?.toLowerCase().includes('design') && s.status === 'Active'));
-            if (matRes.success) setMaterialRequests(matRes.data);
-        } catch (err) {
-            console.error('Design Manager Dashboard error:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => { fetchData(); }, [fetchData]);
+    // A consolidated refetch function for backward compatibility with existing components
+    // that might expect `fetchData()` to refresh the dashboard.
+    // In a fully RTK Query-native app, we'd remove this, but this keeps the UI components untouched.
+    const fetchData = useCallback(() => {
+        refetchStats();
+        refetchProjects();
+        refetchTasks();
+        refetchQuotations();
+        refetchTeam();
+        refetchNotifications();
+        refetchStaff();
+        refetchMaterial();
+    }, [refetchStats, refetchProjects, refetchTasks, refetchQuotations, refetchTeam, refetchNotifications, refetchStaff, refetchMaterial]);
 
     return {
         stats, projects, tasks, quotations, teamStats,

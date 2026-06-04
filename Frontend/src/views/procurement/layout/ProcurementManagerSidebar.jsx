@@ -5,6 +5,8 @@ import {
     Building2, CheckCircle, LogOut, Video
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
 const NAV_ITEMS = [
     { tab: 'overview',         label: 'Dashboard',         icon: LayoutDashboard },
@@ -16,7 +18,8 @@ const NAV_ITEMS = [
     { tab: 'meetings',         label: 'Meetings',          icon: Video },
 ];
 
-const ProcurementManagerSidebar = ({ user, onLogout, isMobileOpen, onCloseMobile }) => {
+const ProcurementManagerSidebar = ({ onLogout, isMobileOpen, onCloseMobile }) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';

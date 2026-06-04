@@ -1,193 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Loader, ChevronDown, Check } from 'lucide-react';
-import { projectAPI } from '../../../../models/api';
-
-/* ── Shadcn-style custom Select ─────────────────────────────────── */
-const SdcnSelect = ({ value, onChange, options, placeholder }) => {
-    const [open, setOpen] = useState(false);
-    const ref = useRef(null);
-
-    useEffect(() => {
-        const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, []);
-
-    const selected = options.find(o => o.value === value);
-
-    return (
-        <div className="sdcn-select" ref={ref}>
-            <button
-                type="button"
-                className={`sdcn-select-trigger ${!selected ? 'placeholder' : ''}`}
-                onClick={() => setOpen(o => !o)}
-            >
-                <span className="sdcn-select-value">{selected ? selected.label : (placeholder || 'Select…')}</span>
-                <ChevronDown size={15} className={`sdcn-select-chevron ${open ? 'open' : ''}`} />
-            </button>
-
-            {open && (
-                <div className="sdcn-select-content">
-                    {options.map(opt => (
-                        <div
-                            key={opt.value}
-                            className={`sdcn-select-item ${opt.value === value ? 'selected' : ''}`}
-                            onClick={() => { onChange(opt.value); setOpen(false); }}
-                        >
-                            <span>{opt.label}</span>
-                            {opt.value === value && <Check size={14} className="sdcn-select-check" />}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
-/* ── Inline scoped styles (no external CSS dep) ─────────────────── */
-const scopedStyles = `
-.sdcn-select {
-    position: relative;
-    width: 100%;
-}
-
-.sdcn-select-trigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 13.5px;
-    color: #0f172a;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    font-family: inherit;
-    box-sizing: border-box;
-}
-
-.sdcn-select-trigger:hover {
-    border-color: #cbd5e1;
-}
-
-.sdcn-select-trigger:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.10);
-}
-
-.sdcn-select-trigger.placeholder .sdcn-select-value {
-    color: #94a3b8;
-}
-
-.sdcn-select-value {
-    flex: 1;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sdcn-select-chevron {
-    color: #94a3b8;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-}
-
-.sdcn-select-chevron.open {
-    transform: rotate(180deg);
-}
-
-.sdcn-select-content {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    width: 100%;
-    background: #fff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04);
-    z-index: 300;
-    padding: 4px;
-    max-height: 220px;
-    overflow-y: auto;
-    animation: sdcn-dropdown-in 0.12s ease;
-}
-
-@keyframes sdcn-dropdown-in {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.sdcn-select-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13.5px;
-    color: #0f172a;
-    cursor: pointer;
-    transition: background 0.12s;
-    user-select: none;
-}
-
-.sdcn-select-item:hover {
-    background: #f1f5f9;
-}
-
-.sdcn-select-item.selected {
-    background: #eef2ff;
-    font-weight: 600;
-}
-
-.sdcn-select-check {
-    color: #6366f1;
-    flex-shrink: 0;
-}
-
-/* ── Shadcn-style input / textarea ─────────────────────────────── */
-.pe-sdcn-input {
-    display: flex;
-    width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 13.5px;
-    color: #0f172a;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    box-sizing: border-box;
-    font-family: inherit;
-}
-
-.pe-sdcn-input::placeholder { color: #94a3b8; }
-
-.pe-sdcn-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.10);
-}
-
-textarea.pe-sdcn-input {
-    height: auto;
-    padding: 10px 12px;
-    resize: vertical;
-    line-height: 1.5;
-}
-
-.pe-field-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 7px;
-}
-`;
+import React, { useState, useEffect } from 'react';
+import { X, Loader } from 'lucide-react';
+import { useUpdateProjectMutation } from '../../../../store/api/adminApi';
+import SdcnSelect from '../../../../components/ui/SdcnSelect';
+import './ProjectEditModal.css';
 
 const ProjectEditModal = ({ project, onClose, onUpdate }) => {
     const [form, setForm] = useState({
@@ -200,6 +15,7 @@ const ProjectEditModal = ({ project, onClose, onUpdate }) => {
         budget: 0
     });
     const [saving, setSaving] = useState(false);
+    const [updateProject] = useUpdateProjectMutation();
 
     useEffect(() => {
         if (project) {
@@ -219,7 +35,7 @@ const ProjectEditModal = ({ project, onClose, onUpdate }) => {
         e.preventDefault();
         setSaving(true);
         try {
-            await projectAPI.update(project._id, form);
+            await updateProject({ id: project._id, ...form }).unwrap();
             if (onUpdate) onUpdate();
             onClose();
         } catch (error) {
@@ -234,7 +50,6 @@ const ProjectEditModal = ({ project, onClose, onUpdate }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <style>{scopedStyles}</style>
             <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', overflow: 'visible' }}>
                 <div className="modal-header">
                     <h2>Edit Project: {project.name}</h2>

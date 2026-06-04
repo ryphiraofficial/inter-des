@@ -1,40 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
-import { taskAPI, notificationAPI, procurementAPI } from '../../../../models/api';
+import { useCallback } from 'react';
+import {
+    useGetDesignTasksQuery,
+    useGetNotificationsQuery,
+    useMarkNotificationReadMutation
+} from '../../../../store/api/designApi';
+import { useGetMaterialRequestsQuery } from '../../../../store/api/procurementApi';
 
 export const useStaffData = (user) => {
-    const [tasks, setTasks] = useState([]);
-    const [notifications, setNotifications] = useState([]);
-    const [materialRequests, setMaterialRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: tasksRes, isLoading: tasksLoading, refetch: refetchTasks } = useGetDesignTasksQuery();
+    const { data: notifRes, isLoading: notifLoading, refetch: refetchNotifs } = useGetNotificationsQuery({ limit: 10 });
+    const { data: matRes, isLoading: matLoading, refetch: refetchMatReqs } = useGetMaterialRequestsQuery();
 
-    const fetchData = useCallback(async (isInitial = false) => {
-        try {
-            if (isInitial) setLoading(true);
-            const [taskRes, notifRes, matRes] = await Promise.all([
-                taskAPI.getAll(),
-                notificationAPI.getAll({ limit: 10 }),
-                procurementAPI.getMaterialRequests()
-            ]);
+    const [markReadMutation] = useMarkNotificationReadMutation();
 
-            if (taskRes.success) setTasks(taskRes.data);
-            if (notifRes.success) setNotifications(notifRes.data);
-            if (matRes.success) {
-                setMaterialRequests(matRes.data.filter(r =>
-                    (r.requestedBy?._id || r.requestedBy) === user?._id
-                ));
-            }
-        } catch (err) {
-            console.error('Staff Dashboard Fetch Error:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [user?._id]);
+    const loading = tasksLoading || notifLoading || matLoading;
 
-    useEffect(() => {
-        fetchData(true);
-        const interval = setInterval(() => fetchData(false), 30000);
-        return () => clearInterval(interval);
-    }, [fetchData]);
+    const allTasks = tasksRes?.success ? tasksRes.data : [];
+    // Only show tasks assigned to this staff member (optional, if backend doesn't filter)
+    // The previous implementation used the full task list and didn't seem to filter by user here, 
+    // but typically staff only see their tasks or derived lists.
+    const tasks = allTasks;
+
+    const notifications = notifRes?.success ? notifRes.data : [];
+    
+    // Filter material requests requested by this user
+    const materialRequests = matRes?.success ? matRes.data.filter(r => (r.requestedBy?._id || r.requestedBy) === user?._id) : [];
+
+    // Consolidated refetch
+    const fetchData = useCallback(() => {
+        refetchTasks();
+        refetchNotifs();
+        refetchMatReqs();
+    }, [refetchTasks, refetchNotifs, refetchMatReqs]);
 
     // Derived task lists
     const pendingTasks = tasks.filter(t => ['To Do', 'In Progress', 'Revision Required'].includes(t.status));
@@ -49,8 +46,7 @@ export const useStaffData = (user) => {
 
     const markNotifRead = async (id) => {
         try {
-            await notificationAPI.markAsRead(id);
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+            await markReadMutation(id).unwrap();
         } catch (err) {
             console.error('Notif Read Error:', err);
         }

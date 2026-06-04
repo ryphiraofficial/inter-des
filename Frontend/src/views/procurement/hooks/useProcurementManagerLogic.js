@@ -1,6 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { projectAPI, procurementAPI, notificationAPI, vendorAPI, taskAPI, productionAPI } from '../../../models/api';
+import { useCreateNotificationMutation } from '../../../store/api/sharedApi';
+import {
+    useGetMaterialRequestsQuery,
+    useGetTasksQuery,
+    useGetVendorsQuery,
+    useGetProcurementStaffQuery,
+    useGetProjectsByStageQuery,
+    useGetProcurementStatsQuery,
+    useUpdateTaskMutation,
+    useUpdateMaterialRequestMutation,
+    useAssignStaffToRequestMutation,
+    useRespondTimeExtensionMutation,
+    useCreateVendorMutation,
+    useLazyGetVendorPurchaseHistoryQuery
+} from '../../../store/api/procurementApi';
+import { useCreateProductionTaskMutation as useProductionCreateTaskMutation } from '../../../store/api/productionApi';
 
 export const useProcurementManagerLogic = () => {
     const navigate = useNavigate();
@@ -8,13 +23,6 @@ export const useProcurementManagerLogic = () => {
     const activeTab = searchParams.get('tab') || 'overview';
     const [showHandoffModal, setShowHandoffModal] = useState(false);
 
-    const [stats, setStats] = useState(null);
-    const [projects, setProjects] = useState([]);
-    const [materialRequests, setMaterialRequests] = useState([]);
-    const [pushedTasks, setPushedTasks] = useState([]);
-    const [staff, setStaff] = useState([]);
-    const [vendors, setVendors] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [selectedVendorDetail, setSelectedVendorDetail] = useState(null);
@@ -26,9 +34,32 @@ export const useProcurementManagerLogic = () => {
     const [vendorSaving, setVendorSaving] = useState(false);
     const [selectedReviewItem, setSelectedReviewItem] = useState(null);
 
-    useEffect(() => {
-        fetchData();
-    }, [activeTab]);
+    // RTK Query hooks
+    const { data: vendorsRes, isLoading: vendorsLoading } = useGetVendorsQuery();
+    const { data: staffRes, isLoading: staffLoading } = useGetProcurementStaffQuery();
+    const { data: requestsRes, isLoading: requestsLoading } = useGetMaterialRequestsQuery({ limit: 500, sort: '-createdAt' });
+    const { data: tasksRes, isLoading: tasksLoading } = useGetTasksQuery({ status: 'Pushed to Procurement,Assigned to Procurement,Pending Manager Review,Pending Procurement Admin Review,Procurement Approved', limit: 500 });
+    const { data: projRes, isLoading: projLoading } = useGetProjectsByStageQuery('Procurement');
+    const { data: procStatsRes, isLoading: statsLoading } = useGetProcurementStatsQuery();
+    
+    const [getVendorHistory] = useLazyGetVendorPurchaseHistoryQuery();
+
+    const [updateTask] = useUpdateTaskMutation();
+    const [updateMaterialRequest] = useUpdateMaterialRequestMutation();
+    const [assignStaff] = useAssignStaffToRequestMutation();
+    const [respondTimeExtension] = useRespondTimeExtensionMutation();
+    const [createVendor] = useCreateVendorMutation();
+    const [createProductionTask] = useProductionCreateTaskMutation();
+    const [createNotification] = useCreateNotificationMutation();
+
+    const loading = vendorsLoading || staffLoading || requestsLoading || tasksLoading || projLoading || statsLoading;
+
+    const vendors = vendorsRes?.success ? vendorsRes.data : [];
+    const staff = staffRes?.success ? staffRes.data : [];
+    const materialRequests = requestsRes?.success ? requestsRes.data : [];
+    const pushedTasks = tasksRes?.success ? tasksRes.data : [];
+    const projects = projRes?.success ? projRes.data : [];
+    const stats = procStatsRes?.success ? procStatsRes.data : null;
 
     useEffect(() => {
         const handleOpenAddVendor = () => setShowAddVendorModal(true);
@@ -36,56 +67,21 @@ export const useProcurementManagerLogic = () => {
         return () => window.removeEventListener('open-create-vendor-modal', handleOpenAddVendor);
     }, []);
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            console.log('Fetching procurement data...');
-            const [vendorList, staffRes, requestsRes, taskRes] = await Promise.all([
-                vendorAPI.getAll(),
-                procurementAPI.getProcurementStaff(),
-                procurementAPI.getMaterialRequests({ limit: 500, sort: '-createdAt' }),
-                taskAPI.getAll({ status: 'Pushed to Procurement,Assigned to Procurement,Pending Manager Review,Pending Procurement Admin Review,Procurement Approved', limit: 500 })
-            ]);
-
-            if (vendorList.success) setVendors(vendorList.data);
-            if (staffRes.success) setStaff(staffRes.data);
-            if (requestsRes.success) {
-                console.log('MRs fetched:', requestsRes.data.length);
-                setMaterialRequests(requestsRes.data);
-            }
-            if (taskRes.success) {
-                console.log('Pushed Tasks fetched:', taskRes.data.length);
-                setPushedTasks(taskRes.data);
-            }
-
-            const projRes = await projectAPI.getByStage('Procurement');
-            if (projRes.success) setProjects(projRes.data);
-
-            const procRes = await procurementAPI.getStats();
-            if (procRes.success) setStats(procRes.data);
-        } catch (err) {
-            console.error('Error fetching procurement data:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleApproveToAdmin = async (request) => {
         try {
             if (request.type === 'Task') {
-                await taskAPI.update(request._id, { status: 'Pending Procurement Admin Review' });
+                await updateTask({ id: request._id, status: 'Pending Procurement Admin Review' }).unwrap();
             } else {
-                await procurementAPI.updateMaterialRequest(request._id, { status: 'Pending Admin Review' });
+                await updateMaterialRequest({ id: request._id, status: 'Pending Admin Review' }).unwrap();
             }
-            await notificationAPI.create({
+            await createNotification({
                 recipientRole: 'Super Admin',
                 title: 'Procurement Ready for Approval',
                 message: `Procurement for ${request.project?.name || request.requestNumber || request.title} is ready for final admin approval.`,
                 type: 'info',
                 relatedId: request.project?._id,
                 relatedModel: 'Project'
-            });
-            fetchData();
+            }).unwrap();
             alert('Sent to Admin for final approval!');
         } catch (err) {
             console.error(err);
@@ -95,40 +91,40 @@ export const useProcurementManagerLogic = () => {
 
     const handleHandoff = async (request) => {
         try {
-            const prodRes = await productionAPI.createTask({
+            const prodRes = await createProductionTask({
                 project: request.project?._id,
                 title: `Production Start: ${request.requestNumber || request.title}`,
                 description: `Materials procured and ready for production. Items: ${request.items?.map(i => i.itemName).join(', ') || 'See details'}`,
                 priority: 'High',
                 status: 'To Do',
                 materialRequest: request._id
-            });
+            }).unwrap();
 
             if (prodRes.success) {
                 if (request.type === 'Task') {
-                    await taskAPI.update(request._id, { status: 'Handed Off' });
+                    await updateTask({ id: request._id, status: 'Handed Off' }).unwrap();
                 } else {
-                    await procurementAPI.updateMaterialRequest(request._id, {
+                    await updateMaterialRequest({
+                        id: request._id,
                         status: 'Handed Off',
                         handoffDate: new Date()
-                    });
+                    }).unwrap();
                 }
                 
-                await notificationAPI.create({
+                await createNotification({
                     recipientRole: 'Project Manager',
                     title: 'New Production Handoff',
                     message: `Materials for ${request.requestNumber || request.title} are ready. Production task created.`,
                     type: 'success',
                     relatedId: prodRes.data._id,
                     relatedModel: 'ProductionTask'
-                });
+                }).unwrap();
 
-                fetchData();
                 alert('Project handed off to Project Manager!');
             }
         } catch (err) {
             console.error('Handoff error:', err);
-            alert('Failed to handoff: ' + err.message);
+            alert('Failed to handoff: ' + (err.data?.message || err.message || 'Unknown error'));
         }
     };
 
@@ -136,31 +132,28 @@ export const useProcurementManagerLogic = () => {
         try {
             let res;
             if (selectedRequest.type === 'Task') {
-                res = await taskAPI.update(selectedRequest._id, { 
+                res = await updateTask({ 
+                    id: selectedRequest._id, 
                     assignedTo: staffId, 
                     status: 'Assigned to Procurement'
-                });
+                }).unwrap();
             } else {
-                res = await procurementAPI.assignStaff(selectedRequest._id, staffId);
+                res = await assignStaff({ id: selectedRequest._id, staffId }).unwrap();
             }
 
             if (res.success) {
                 setShowAssignModal(false);
                 setSelectedRequest(null);
-                fetchData();
             }
         } catch (err) {
             console.error('Error assigning staff:', err);
-            alert('Failed to assign staff: ' + err.message);
+            alert('Failed to assign staff: ' + (err.data?.message || err.message));
         }
     };
 
     const handleTimeExtension = async (requestId, status, managerRemarks) => {
         try {
-            const res = await procurementAPI.respondTimeExtension(requestId, { status, managerRemarks });
-            if (res.success) {
-                fetchData();
-            }
+            await respondTimeExtension({ id: requestId, status, managerRemarks }).unwrap();
         } catch (err) {
             console.error('Error responding to time extension:', err);
         }
@@ -170,15 +163,14 @@ export const useProcurementManagerLogic = () => {
         if (!vendorForm.name || !vendorForm.phone) return alert('Name and phone are required.');
         try {
             setVendorSaving(true);
-            const res = await vendorAPI.create(vendorForm);
+            const res = await createVendor(vendorForm).unwrap();
             if (res.success) {
                 setShowAddVendorModal(false);
                 setVendorForm(emptyVendorForm);
-                fetchData();
             }
         } catch (err) {
             console.error('Error adding vendor:', err);
-            alert('Failed to add vendor: ' + err.message);
+            alert('Failed to add vendor: ' + (err.data?.message || err.message));
         } finally {
             setVendorSaving(false);
         }
@@ -187,7 +179,7 @@ export const useProcurementManagerLogic = () => {
     const handleViewVendorDetails = async (vendor) => {
         setSelectedVendorDetail(vendor);
         try {
-            const historyRes = await procurementAPI.getVendorPurchaseHistory({ vendorId: vendor._id });
+            const historyRes = await getVendorHistory({ vendorId: vendor._id }).unwrap();
             if (historyRes.success) {
                 setVendorHistory(historyRes.data);
             } else {
@@ -258,7 +250,6 @@ export const useProcurementManagerLogic = () => {
         vendorSaving,
         selectedReviewItem,
         setSelectedReviewItem,
-        fetchData,
         handleApproveToAdmin,
         handleHandoff,
         handleAssignStaff,

@@ -1,9 +1,17 @@
-import { clientAPI } from '../../../../models/api';
+import { 
+    useCreateClientMutation, 
+    useUpdateClientMutation, 
+    useDeleteClientMutation 
+} from '../../../../store/api/adminApi';
 
 export const useClientActions = ({ 
     fetchClients, setSubmitting, setShowNewClientModal, setEditingClient, setFormData, initialFormData 
 }) => {
     
+    const [createClient] = useCreateClientMutation();
+    const [updateClient] = useUpdateClientMutation();
+    const [deleteClient] = useDeleteClientMutation();
+
     const closeModal = () => {
         setShowNewClientModal(false);
         setEditingClient(null);
@@ -14,20 +22,16 @@ export const useClientActions = ({
         setSubmitting(true);
         try {
             if (editingClient) {
-                const response = await clientAPI.update(editingClient._id, formData);
-                if (response.success) {
-                    await fetchClients();
-                    closeModal();
-                }
+                await updateClient({ id: editingClient._id, ...formData }).unwrap();
+                await fetchClients();
+                closeModal();
             } else {
-                const response = await clientAPI.create(formData);
-                if (response.success) {
-                    await fetchClients();
-                    closeModal();
-                }
+                await createClient(formData).unwrap();
+                await fetchClients();
+                closeModal();
             }
         } catch (err) {
-            alert(err.message || 'Failed to save client');
+            alert(err.data?.message || err.message || 'Failed to save client');
         } finally {
             setSubmitting(false);
         }
@@ -54,10 +58,8 @@ export const useClientActions = ({
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this client?')) return;
         try {
-            const response = await clientAPI.delete(id);
-            if (response.success) {
-                await fetchClients();
-            }
+            await deleteClient(id).unwrap();
+            await fetchClients();
         } catch (err) {
             alert('Failed to delete client');
         }

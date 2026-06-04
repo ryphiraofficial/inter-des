@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Calendar } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../models/api';
+import { BASE_IMAGE_URL } from '../../../config/constants';
 import Skeleton from './Skeleton';
 
 const SalesVisitsGallery = ({ recentVisits, loading, navigate }) => {

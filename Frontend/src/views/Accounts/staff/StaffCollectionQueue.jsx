@@ -2,8 +2,11 @@ import React from 'react';
 import { FileText, CheckCircle } from 'lucide-react';
 import { useStaffQueueLogic } from '../hooks/useStaffQueueLogic';
 import RecordPaymentModal from '../common/RecordPaymentModal';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const StaffCollectionQueue = ({ user }) => {
+const StaffCollectionQueue = ({}) => {
+    const user = useAppSelector(selectUser);
     const { projects, loading, handleGenerateInvoice, handleRecordPayment, showPaymentModal, setShowPaymentModal, selectedProject, fetchData } = useStaffQueueLogic(user);
 
     if (loading) return <div style={{ padding: '24px' }}>Loading queue...</div>;

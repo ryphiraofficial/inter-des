@@ -81,14 +81,53 @@ export const CustomDatePicker = ({ value, onChange }) => {
     );
 };
 
+import { createPortal } from 'react-dom';
+
 export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon }) => {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
+    const [dropdownStyle, setDropdownStyle] = useState({});
+
     useEffect(() => {
-        const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        const h = (e) => { 
+            // Also need to check if click is inside the portal dropdown
+            if (ref.current && !ref.current.contains(e.target) && !e.target.closest('.custom-select-portal')) {
+                setOpen(false); 
+            }
+        };
         document.addEventListener('mousedown', h);
         return () => document.removeEventListener('mousedown', h);
     }, []);
+
+    const toggleOpen = () => {
+        if (!open && ref.current) {
+            const rect = ref.current.getBoundingClientRect();
+            setDropdownStyle({
+                position: 'fixed',
+                top: rect.bottom + 6 + 'px',
+                left: rect.left + 'px',
+                width: rect.width + 'px',
+                background: '#fff',
+                borderRadius: '10px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+                zIndex: 9999,
+                padding: '4px'
+            });
+            setOpen(true);
+        } else {
+            setOpen(false);
+        }
+    };
+
+    // Close on scroll to prevent detached dropdown
+    useEffect(() => {
+        if (open) {
+            const handleScroll = () => setOpen(false);
+            window.addEventListener('scroll', handleScroll, true);
+            return () => window.removeEventListener('scroll', handleScroll, true);
+        }
+    }, [open]);
 
     const selected = options.find(o => (o.value ?? o) === value);
     const label = selected ? (selected.label ?? (typeof selected === 'object' ? (selected.value ?? '') : selected)) : placeholder;
@@ -97,7 +136,7 @@ export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon
         <div ref={ref} style={{ position: 'relative', width: '100%' }}>
             <button
                 type="button"
-                onClick={() => setOpen(o => !o)}
+                onClick={toggleOpen}
                 style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '8px',
                     padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '8px',
@@ -112,12 +151,8 @@ export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon
                 </span>
                 <ChevronDown size={14} style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none' }} />
             </button>
-            {open && (
-                <div style={{
-                    position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0,
-                    background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0',
-                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 9999, padding: '4px'
-                }}>
+            {open && createPortal(
+                <div className="custom-select-portal" style={dropdownStyle}>
                     {options.map(opt => {
                         const v = opt.value ?? opt;
                         const l = opt.label ?? (typeof opt === 'object' ? (opt.value ?? '') : opt);
@@ -139,8 +174,10 @@ export const CustomSelect = ({ value, onChange, options, placeholder, icon: Icon
                             </button>
                         );
                     })}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
 };
+

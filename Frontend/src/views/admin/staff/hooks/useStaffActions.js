@@ -1,4 +1,11 @@
-import { staffAPI } from '../../../../models/api';
+import { 
+    useCreateStaffMutation, 
+    useUpdateStaffMutation, 
+    useDeleteStaffMutation,
+    useUpdateStaffSalaryMutation,
+    adminApi
+} from '../../../../store/api/adminApi';
+import { useDispatch } from 'react-redux';
 
 export const useStaffActions = ({ 
     editingStaff, formData, fetchStaff, showToast, closeModal, 
@@ -6,6 +13,12 @@ export const useStaffActions = ({
     setSalaryLoading, setShowSalaryModal, setSalarySubmitting,
     setSelectedAnalytics, setAnalyticsLoading, setShowAnalytics
 }) => {
+    const dispatch = useDispatch();
+
+    const [createStaff] = useCreateStaffMutation();
+    const [updateStaff] = useUpdateStaffMutation();
+    const [deleteStaff] = useDeleteStaffMutation();
+    const [updateStaffSalary] = useUpdateStaffSalaryMutation();
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
@@ -17,14 +30,14 @@ export const useStaffActions = ({
         setSubmitting(true);
         try {
             if (editingStaff) {
-                const response = await staffAPI.update(editingStaff._id, formData);
-                if (response.success) { await fetchStaff(); showToast('Updated!'); closeModal(); }
+                await updateStaff({ id: editingStaff._id, ...formData }).unwrap();
+                await fetchStaff(); showToast('Updated!'); closeModal();
             } else {
-                const response = await staffAPI.create(formData);
-                if (response.success) { await fetchStaff(); showToast('Added!'); closeModal(); }
+                await createStaff(formData).unwrap();
+                await fetchStaff(); showToast('Added!'); closeModal();
             }
         } catch (err) {
-            showToast(err.message || 'Error', 'error');
+            showToast(err.data?.message || err.message || 'Error', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -36,7 +49,7 @@ export const useStaffActions = ({
         setSalaryLoading(true);
         setShowSalaryModal(true);
         try {
-            const res = await staffAPI.getSalary(staff._id);
+            const res = await dispatch(adminApi.endpoints.getStaffSalary.initiate(staff._id)).unwrap();
             if (res.success) {
                 setSalaryStaff(res.data);
                 const s = res.data.salary || {};
@@ -55,7 +68,7 @@ export const useStaffActions = ({
         if (e) e.preventDefault();
         setSalarySubmitting(true);
         try {
-            const res = await staffAPI.updateSalary(salaryStaff._id, salaryForm);
+            const res = await updateStaffSalary({ id: salaryStaff._id, ...salaryForm }).unwrap();
             if (res.success) {
                 setSalaryStaff(res.data);
                 setSalaryEditMode(false);
@@ -70,7 +83,7 @@ export const useStaffActions = ({
         setAnalyticsLoading(true);
         setShowAnalytics(true);
         try {
-            const response = await staffAPI.getAnalytics(staff._id);
+            const response = await dispatch(adminApi.endpoints.getStaffAnalytics.initiate(staff._id)).unwrap();
             if (response.success) setSelectedAnalytics(response.data);
         } catch (err) { showToast('Failed to load analytics', 'error'); }
         finally { setAnalyticsLoading(false); }
@@ -79,8 +92,8 @@ export const useStaffActions = ({
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this staff member?')) return;
         try {
-            const response = await staffAPI.delete(id);
-            if (response.success) { await fetchStaff(); showToast('Deleted'); }
+            await deleteStaff(id).unwrap();
+            await fetchStaff(); showToast('Deleted');
         } catch (err) { showToast('Delete failed', 'error'); }
     };
 

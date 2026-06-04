@@ -1,73 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { logout, selectIsAuthenticated } from './store/slices/authSlice';
+import { ToastProvider } from './models/context/ToastContext';
 import Login from './views/auth/Login';
 import AppRoutes from './controllers/routes/AppRoutes';
-import { ToastProvider } from './models/context/ToastContext';
+import { usePushNotifications } from './hooks/usePushNotifications';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    
+    usePushNotifications();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    // Auth state is fully hydrated from localStorage by the Redux store (see store/index.js).
+    // No need for a separate useEffect to read localStorage here.
 
-    if (token && savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        if (parsedUser) {
-          setIsAuthenticated(true);
-          setUser(parsedUser);
-        }
-      } catch (e) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
+    const handleLogout = () => {
+        dispatch(logout());
+        window.location.href = '/';
+    };
+
+    if (!isAuthenticated) {
+        return <Login />;
     }
 
-    setLoading(false);
-  }, []);
-
-  const handleLoginSuccess = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setUser(null);
-    window.location.href = '/';
-  };
-
-  if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontSize: '1.2rem',
-        color: '#667eea'
-      }}>
-        Loading...
-      </div>
+        <ToastProvider>
+            <Router>
+                <AppRoutes onLogout={handleLogout} />
+            </Router>
+        </ToastProvider>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  return (
-    <ToastProvider>
-      <Router>
-        <AppRoutes user={user} onLogout={handleLogout} />
-      </Router>
-    </ToastProvider>
-  );
 }
 
 export default App;

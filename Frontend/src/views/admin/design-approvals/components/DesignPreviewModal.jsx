@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageIcon, X, FileText, ExternalLink, Package } from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 
 const DesignPreviewModal = ({ selectedTask, setShowDesignModal, handleReject, openApproveModal }) => {
     return (

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { projectAPI } from '../../../../models/api';
+import { useGetProjectsQuery, useGetProjectByIdQuery } from '../../../../store/api/adminApi';
 
 export const useProjectData = ({ 
     setProjects, setLoading, setSelectedProject, stageFilter, statusFilter, urlProjectId, setSearchTerm 
@@ -11,38 +11,24 @@ export const useProjectData = ({
         return () => window.removeEventListener('header-search', handleHeaderSearch);
     }, [setSearchTerm]);
     
-    const fetchProjects = async () => {
-        try {
-            setLoading(true);
-            const params = {};
-            if (stageFilter) params.stage = stageFilter;
-            if (statusFilter) params.status = statusFilter;
-            
-            const res = await projectAPI.getAll(params);
-            if (res.success) setProjects(res.data);
-        } catch (err) {
-            console.error('Error fetching projects:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchSingleProject = async (id) => {
-        try {
-            const res = await projectAPI.getById(id);
-            if (res.success) setSelectedProject(res.data);
-        } catch (err) {
-            console.error('Error fetching project details:', err);
-        }
-    };
+    const params = {};
+    if (stageFilter) params.stage = stageFilter;
+    if (statusFilter) params.status = statusFilter;
+    
+    const { data: projectsRes, isLoading, refetch } = useGetProjectsQuery(params);
+    const { data: singleProjRes } = useGetProjectByIdQuery(urlProjectId, { skip: !urlProjectId });
 
     useEffect(() => {
-        fetchProjects();
-    }, [stageFilter, statusFilter]);
+        setLoading(isLoading);
+    }, [isLoading, setLoading]);
 
     useEffect(() => {
-        if (urlProjectId) fetchSingleProject(urlProjectId);
-    }, [urlProjectId]);
+        if (projectsRes?.success) setProjects(projectsRes.data);
+    }, [projectsRes, setProjects]);
 
-    return { fetchProjects, fetchSingleProject };
+    useEffect(() => {
+        if (singleProjRes?.success) setSelectedProject(singleProjRes.data);
+    }, [singleProjRes, setSelectedProject]);
+
+    return { fetchProjects: refetch, fetchSingleProject: () => {} };
 };

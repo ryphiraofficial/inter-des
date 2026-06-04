@@ -5,8 +5,11 @@ import {
     Bell, MessageSquare, Award, Clock, DollarSign, Building2, Video
 } from 'lucide-react';
 import { getRoleDepartment, useRoleDashboard, isSuperAdmin } from '../../hooks/useRoleDashboard';
+import { useAppSelector } from '../../../../store/hooks';
+import { selectUser } from '../../../../store/slices/authSlice';
 
-export const useNavGroups = (user) => {
+export const useNavGroups = () => {
+    const user = useAppSelector(selectUser);
     const dashboardType = useRoleDashboard(user?.role);
     const department = getRoleDepartment(user?.role);
 
@@ -85,7 +88,7 @@ export const useNavGroups = (user) => {
                 { name: 'Vendors', icon: Building2, path: '/?tab=vendors' },
                 { name: 'Material Requests', icon: Package, path: '/?tab=requests' },
             ];
-        } else if (dashboardType === 'production_manager') {
+        } else if (dashboardType === 'project_manager') {
             roleSpecificItems = [
                 { name: 'Production Pipeline', icon: Wrench, path: '/' },
                 { name: 'Checklists', icon: ClipboardCheck, path: '/checklists' },

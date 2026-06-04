@@ -1,0 +1,111 @@
+{
+  "missingDependencies": [
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/Accounts/hooks/useAccountsProjectLogic.js",
+      "line": 14,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 21) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/AIChat.jsx",
+      "line": 41,
+      "message": "React Hook useEffect has a missing dependency: 'state'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/Header.jsx",
+      "line": 65,
+      "message": "React Hook useEffect has a missing dependency: 'state'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/Projects.jsx",
+      "line": 64,
+      "message": "React Hook useEffect has a missing dependency: 'state'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/Settings.jsx",
+      "line": 42,
+      "message": "React Hook useEffect has a missing dependency: 'state'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/quotation/hooks/useQuotationData.js",
+      "line": 70,
+      "message": "React Hook useEffect has missing dependencies: 'setClients', 'setDiscount', 'setError', 'setFetching', 'setFormData', 'setIncludeDiscount', 'setInventoryItems', 'setLineItems', and 'setTaxRate'. Either include them or remove the dependency array. If 'setClients' changes too often, find the parent component that defines it and wrap that definition in useCallback."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/quotation/hooks/useQuotationData.js",
+      "line": 122,
+      "message": "React Hook useEffect has missing dependencies: 'setFormData' and 'setLineItems'. Either include them or remove the dependency array. If 'setFormData' changes too often, find the parent component that defines it and wrap that definition in useCallback."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/sidebar/components/SidebarNav.jsx",
+      "line": 29,
+      "message": "React Hook useEffect has a missing dependency: 'collapsedGroups'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/common/MeetingsPage.jsx",
+      "line": 133,
+      "message": "React Hook useEffect has a missing dependency: 'markRead'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/project_manager/hooks/useProductionReports.js",
+      "line": 40,
+      "message": "React Hook useEffect has a missing dependency: 'downloadCSV'. Either include it or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/project_manager/hooks/useProjectHandoff.js",
+      "line": 33,
+      "message": "React Hook useEffect has missing dependencies: 'assignments' and 'projects'. Either include them or remove the dependency array."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_engineer/SiteSafety.jsx",
+      "line": 27,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 33) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_engineer/hooks/useSiteAttendance.js",
+      "line": 19,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 25) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_engineer/hooks/useSiteReports.js",
+      "line": 20,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 31) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_supervisor/SiteSafety.jsx",
+      "line": 27,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 33) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_supervisor/hooks/useSiteAttendance.js",
+      "line": 19,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 25) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_supervisor/hooks/useSiteReports.js",
+      "line": 20,
+      "message": "The 'projects' conditional could make the dependencies of useEffect Hook (at line 31) change on every render. To fix this, wrap the initialization of 'projects' in its own useMemo() Hook."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/sales/quotations/list/hooks/useQuotationList.js",
+      "line": 12,
+      "message": "The 'quotations' conditional could make the dependencies of useMemo Hook (at line 30) change on every render. To fix this, wrap the initialization of 'quotations' in its own useMemo() Hook."
+    }
+  ],
+  "missingCleanups": [
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/admin/header/hooks/useSearchLogic.js",
+      "snippet": "() => {\n        setSearchValue('');\n        setSearchOpen(false);\n        window.dispatchEvent(new CustomEvent('header-search', { detail: '' }));\n    }, [pathname, setSearchValue, setSearchOpen]);\n\n    const handleSearchChange = (e) => {\n        const val = e.target.value;\n        setSearchValue(val);\n        window.dispatchEvent(new CustomEvent('header-search', { detail: val }));...",
+      "reason": "Contains side-effect (event/timer/subscription) but no return cleanup function detected."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_engineer/hooks/useSiteTaskDetail.js",
+      "snippet": "() => {\n        setLocalTask(task);\n    }, [task]);\n\n    const showToast = (msg, type = 'success') => {\n        setToast({ msg, type });\n        setTimeout(() => setToast(null), 3000);\n    };\n\n    const handleStatus = async (status) => {...",
+      "reason": "Contains side-effect (event/timer/subscription) but no return cleanup function detected."
+    },
+    {
+      "file": "/home/rohith/Documents/Startup/Interior/Frontend/src/views/production/site_supervisor/hooks/useSiteTaskDetail.js",
+      "snippet": "() => {\n        setLocalTask(task);\n    }, [task]);\n\n    const showToast = (msg, type = 'success') => {\n        setToast({ msg, type });\n        setTimeout(() => setToast(null), 3000);\n    };\n\n    const handleStatus = async (status) => {...",
+      "reason": "Contains side-effect (event/timer/subscription) but no return cleanup function detected."
+    }
+  ]
+}

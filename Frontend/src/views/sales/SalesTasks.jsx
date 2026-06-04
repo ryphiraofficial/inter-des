@@ -5,8 +5,11 @@ import { useSalesTasks } from './hooks/useSalesTasks';
 import SalesTasksStats from './components/SalesTasksStats';
 import SalesTasksGrid from './components/SalesTasksGrid';
 import './css/SalesTasks.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
-const SalesTasks = ({ user, forceTable = false }) => {
+const SalesTasks = ({ forceTable = false }) => {
+    const user = useAppSelector(selectUser);
     const department = getRoleDepartment(user?.role);
 
     if (department === 'Accounts' && !forceTable) {

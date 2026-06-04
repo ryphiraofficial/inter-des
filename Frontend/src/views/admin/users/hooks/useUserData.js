@@ -1,26 +1,28 @@
 import { useEffect } from 'react';
-import { userAPI } from '../../../../models/api';
+import { useGetUsersQuery } from '../../../../store/api/adminApi';
 
 export const useUserData = ({ 
     setUsers, setLoading, setError, setEditingUser, setFormData, setShowModal, setSearchTerm 
 }) => {
     
-    const fetchUsers = async () => {
-        try {
-            setLoading(true);
-            const response = await userAPI.getAll();
-            if (response.success) setUsers(response.data);
-        } catch (err) {
-            setError(err.message);
-            alert('Failed to load team members');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: usersRes, isLoading, error, refetch } = useGetUsersQuery();
 
     useEffect(() => {
-        fetchUsers();
+        setLoading(isLoading);
+    }, [isLoading, setLoading]);
 
+    useEffect(() => {
+        if (error) {
+            setError(error.message || 'Error fetching users');
+            alert('Failed to load team members');
+        }
+    }, [error, setError]);
+
+    useEffect(() => {
+        if (usersRes?.success) setUsers(usersRes.data);
+    }, [usersRes, setUsers]);
+
+    useEffect(() => {
         const handleOpenModal = () => {
             setEditingUser(null);
             setFormData({ fullName: '', email: '', phone: '', role: 'Designer', password: '', department: 'Design' });
@@ -36,7 +38,7 @@ export const useUserData = ({
             window.removeEventListener('open-create-user-modal', handleOpenModal);
             window.removeEventListener('header-search', handleHeaderSearch);
         };
-    }, []);
+    }, [setEditingUser, setFormData, setShowModal, setSearchTerm]);
 
-    return { fetchUsers };
+    return { fetchUsers: refetch };
 };

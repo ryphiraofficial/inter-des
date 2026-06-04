@@ -1,8 +1,6 @@
 import React from 'react';
 import { FileText, ArrowRight, Eye, CheckSquare } from 'lucide-react';
 import Skeleton from './Skeleton';
-import { taskAPI } from '../../../models/api';
-
 const SalesApprovalsCard = ({ pendingReviews, loading, navigate, onPreviewTask }) => {
     return (
         <div className="approvals-card">

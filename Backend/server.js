@@ -1,61 +1,78 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const compression = require('compression');
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config();
+import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import compression from 'compression';
+import fs from 'fs';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Shared
+import authRoutes from './src/routes/shared/authRoutes.js';
+import notificationRoutes from './src/routes/shared/notificationRoutes.js';
+import approvalRoutes from './src/routes/shared/approvalRoutes.js';
+import aiRoutes from './src/routes/shared/aiRoutes.js';
+import uploadRoutes from './src/routes/shared/uploadRoutes.js';
+import pushRoutes from './src/routes/shared/pushRoutes.js';
+
+// Admin
+import userRoutes from './src/routes/admin/userRoutes.js';
+import staffRoutes from './src/routes/admin/staffRoutes.js';
+import teamRoutes from './src/routes/admin/teamRoutes.js';
+import teamMemberRoutes from './src/routes/admin/teamMemberRoutes.js';
+import meetingRoutes from './src/routes/admin/meetingRoutes.js';
+import leaveRoutes from './src/routes/admin/leaveRoutes.js';
+import settingsRoutes from './src/routes/admin/settingsRoutes.js';
+import reportRoutes from './src/routes/admin/reportRoutes.js';
+
+// Sales
+import clientRoutes from './src/routes/sales/clientRoutes.js';
+import quotationRoutes from './src/routes/sales/quotationRoutes.js';
+import invoiceRoutes from './src/routes/sales/invoiceRoutes.js';
+
+// Accounts
+import accountsRoutes from './src/routes/accounts/accountsRoutes.js';
+
+// Design
+import designRoutes from './src/routes/design/designRoutes.js';
+import projectRoutes from './src/routes/design/projectRoutes.js';
+import taskRoutes from './src/routes/design/taskRoutes.js';
+import kanbanTaskRoutes from './src/routes/design/kanbanTaskRoutes.js';
+import checklistRoutes from './src/routes/design/checklistRoutes.js';
+
+// Procurement
+import procurementRoutes from './src/routes/procurement/procurementRoutes.js';
+import vendorRoutes from './src/routes/procurement/vendorRoutes.js';
+import purchaseOrderRoutes from './src/routes/procurement/purchaseOrderRoutes.js';
+import inventoryRoutes from './src/routes/procurement/inventoryRoutes.js';
+import poInventoryRoutes from './src/routes/procurement/poInventoryRoutes.js';
+
+// Production
+import productionRoutes from './src/routes/production/productionRoutes.js';
+import productionManagementRoutes from './src/routes/production/productionManagementRoutes.js';
+import siteVisitRoutes from './src/routes/production/siteVisitRoutes.js';
+
+import errorHandler from './src/middleware/errorHandler.js';
+import { checkTaskDeadlines } from './src/utils/notificationHelper.js';
+import Staff from './src/models/admin/Staff.js';
+
+const app = express();
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
 
-const authRoutes = require('./routes/authRoutes');
-const quotationRoutes = require('./routes/quotationRoutes');
-const clientRoutes = require('./routes/clientRoutes');
-const inventoryRoutes = require('./routes/inventoryRoutes');
-const purchaseOrderRoutes = require('./routes/purchaseOrderRoutes');
-const poInventoryRoutes = require('./routes/poInventoryRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const teamRoutes = require('./routes/teamRoutes');
-const invoiceRoutes = require('./routes/invoiceRoutes');
-const userRoutes = require('./routes/userRoutes');
-const reportRoutes = require('./routes/reportRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const projectRoutes = require('./routes/projectRoutes');
-const vendorRoutes = require('./routes/vendorRoutes');
-const checklistRoutes = require('./routes/checklistRoutes');
-const accountsRoutes = require('./routes/accountsRoutes');
-const procurementRoutes = require('./routes/procurementRoutes');
-const productionRoutes = require('./routes/productionRoutes');
-const designRoutes = require('./routes/designRoutes');
-const meetingRoutes = require('./routes/meetingRoutes');
-
-const aiRoutes = require('./routes/aiRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
-const staffRoutes = require('./routes/staffRoutes');
-const siteVisitRoutes = require('./routes/siteVisitRoutes');
-const settingsRoutes = require('./routes/settingsRoutes');
-
-const errorHandler = require('./middleware/errorHandler');
-
-const app = express();
-
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: false
 }));
-
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
-
+app.use(cors({ origin: true, credentials: true }));
 app.use(compression());
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -75,41 +92,52 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Shared
 app.use('/api/auth', authRoutes);
-app.use('/api/quotations', quotationRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/purchase-orders', purchaseOrderRoutes);
-app.use('/api/po-inventory', poInventoryRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/teams', teamRoutes);
-app.use('/api/invoices', invoiceRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/push', pushRoutes);
 app.use('/api/projects', projectRoutes);
-app.use('/api/vendors', vendorRoutes);
-app.use('/api/checklists', checklistRoutes);
-app.use('/api/accounts', accountsRoutes);
-app.use('/api/procurement', procurementRoutes);
-app.use('/api/production', productionRoutes);
-app.use('/api/production-management', require('./routes/productionManagementRoutes'));
-app.use('/api/design', designRoutes);
-app.use('/api/kanban-tasks', require('./routes/kanbanTaskRoutes'));
-app.use('/api/team', require('./routes/teamMemberRoutes'));
-app.use('/api/approvals', require('./routes/approvalRoutes'));
-app.use('/api/leaves', require('./routes/leaveRoutes'));
-
+app.use('/api/approvals', approvalRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/upload', uploadRoutes);
+
+// Admin
+app.use('/api/users', userRoutes);
 app.use('/api/staff', staffRoutes);
-app.use('/api/site-visits', siteVisitRoutes);
-app.use('/api/settings', settingsRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/team', teamMemberRoutes);
 app.use('/api/meetings', meetingRoutes);
+app.use('/api/leaves', leaveRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/reports', reportRoutes);
 
-// Serve React build
+// Sales
+app.use('/api/clients', clientRoutes);
+app.use('/api/quotations', quotationRoutes);
+app.use('/api/invoices', invoiceRoutes);
+
+// Accounts
+app.use('/api/accounts', accountsRoutes);
+
+// Design
+app.use('/api/design', designRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/kanban-tasks', kanbanTaskRoutes);
+app.use('/api/checklists', checklistRoutes);
+
+// Procurement
+app.use('/api/procurement', procurementRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/po-inventory', poInventoryRoutes);
+
+// Production
+app.use('/api/production', productionRoutes);
+app.use('/api/production-management', productionManagementRoutes);
+app.use('/api/site-visits', siteVisitRoutes);
+
 app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
 });
@@ -128,9 +156,6 @@ const connectDB = async () => {
 
 const PORT = process.env.PORT || 5000;
 
-const { checkTaskDeadlines } = require('./utils/notificationHelper');
-const Staff = require('./models/Staff');
-
 const migrateStaffIds = async () => {
     try {
         const staffWithoutId = await Staff.find({ $or: [{ staffId: null }, { staffId: { $exists: false } }, { staffId: '' }] });
@@ -148,20 +173,18 @@ const migrateStaffIds = async () => {
 
 const startServer = async () => {
     await connectDB();
-
     app.listen(PORT, () => {
         console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
         console.log(`API available at http://localhost:${PORT}/api`);
     });
-
     await migrateStaffIds();
-
     setTimeout(() => {
         checkTaskDeadlines();
         setInterval(checkTaskDeadlines, 60 * 60 * 1000);
         console.log('Task deadline checker started');
     }, 5000);
 };
+
 startServer();
 
 process.on('unhandledRejection', (err) => {
@@ -174,4 +197,4 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
-module.exports = app;
+export default app;

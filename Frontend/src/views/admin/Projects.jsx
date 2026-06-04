@@ -57,11 +57,13 @@ const Projects = () => {
         }
     };
 
+    const { setShowModal } = state;
+
     useEffect(() => {
-        const handleOpenModal = () => state.setShowModal(true);
+        const handleOpenModal = () => setShowModal(true);
         window.addEventListener('open-create-project-modal', handleOpenModal);
         return () => window.removeEventListener('open-create-project-modal', handleOpenModal);
-    }, []);
+    }, [setShowModal]);
 
     const filteredProjects = state.projects.filter(p => 
         p.name?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
@@ -92,18 +94,18 @@ const Projects = () => {
     }
 
     const renderActiveView = () => {
+        const activeProjects = filteredProjects.filter(p => p.stage !== 'Completed' && p.status !== 'Completed');
+        const archivedProjects = filteredProjects.filter(p => p.stage === 'Completed' || p.status === 'Completed');
+
         switch (state.activeView) {
             case 'table':
-                return <ProjectTable projects={filteredProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
+                return <ProjectTable projects={activeProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
             case 'timeline':
-                return <ProjectTimeline projects={filteredProjects} />;
-            case 'archive': {
-                const archivedProjects = filteredProjects.filter(p => p.stage === 'Completed');
+                return <ProjectTimeline projects={activeProjects} />;
+            case 'archive': 
                 return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
-            }
             case 'kanban':
-            default: {
-                const activeProjects = filteredProjects.filter(p => p.stage !== 'Completed');
+            default: 
                 return (
                     <ProjectWorkflow 
                         projects={activeProjects}
@@ -113,7 +115,6 @@ const Projects = () => {
                         groupBy={state.groupBy}
                     />
                 );
-            }
         }
     };
 

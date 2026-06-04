@@ -4,8 +4,11 @@ import { usePaymentLogic } from '../hooks/usePaymentLogic';
 // Sub-components
 import PaymentTable from './components/payments/PaymentTable';
 import PaymentModal from './components/payments/PaymentModal';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerPayments = ({ user, search, setSearch }) => {
+const ManagerPayments = ({ search, setSearch }) => {
+    const user = useAppSelector(selectUser);
     const {
         clients, loading, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete

@@ -44,8 +44,10 @@ export const getRolePermissions = (role) => {
         if (roleLower === 'design staff') return 'design_staff';
         if (roleLower === 'procurement manager') return 'procurement_manager';
         if (roleLower === 'procurement staff') return 'procurement_staff';
-        if (roleLower === 'project manager') return 'production_manager';
-        if (roleLower === 'project engineer' || roleLower === 'site engineer' || roleLower === 'site supervisor') return 'production_staff';
+        if (roleLower === 'project manager') return 'project_manager';
+        if (roleLower === 'project engineer') return 'project_engineer';
+        if (roleLower === 'site engineer') return 'site_engineer';
+        if (roleLower === 'site supervisor') return 'site_supervisor';
         if (roleLower === 'accounts manager') return 'accounts_manager';
         if (roleLower === 'accounts staff') return 'accounts_staff';
         if (roleLower === 'super admin' || roleLower === 'admin' || roleLower === 'manager') return 'admin';
@@ -85,7 +87,7 @@ export const getRolePermissions = (role) => {
             canViewMaterialRequests: true,
             canMarkReceived: true
         },
-        production_manager: {
+        project_manager: {
             canAssignTasks: true,
             canManageProduction: true,
             canMonitorChecklist: true,
@@ -93,7 +95,22 @@ export const getRolePermissions = (role) => {
             canMoveToCompleted: true,
             canManageTeam: true
         },
-        production_staff: {
+        project_engineer: {
+            canUpdateTasks: true,
+            canUploadPhotos: true,
+            canReportIssues: true,
+            canUpdateChecklist: true,
+            canViewAssignedTasks: true,
+            canAssignTasks: true
+        },
+        site_engineer: {
+            canUpdateTasks: true,
+            canUploadPhotos: true,
+            canReportIssues: true,
+            canUpdateChecklist: true,
+            canViewAssignedTasks: true
+        },
+        site_supervisor: {
             canUpdateTasks: true,
             canUploadPhotos: true,
             canReportIssues: true,

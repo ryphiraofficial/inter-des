@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, IndianRupee } from 'lucide-react';
-import { accountsAPI } from '../../../models/api';
+import { useVerifyPaymentAndReleaseMutation } from '../../../store/api/accountsApi';
 
 const RecordPaymentModal = ({ isOpen, onClose, project, onSuccess }) => {
     const [amount, setAmount] = useState(project?.advanceAmount || '');
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
+    const [verifyPayment] = useVerifyPaymentAndReleaseMutation();
 
     if (!isOpen || !project) return null;
 
@@ -13,11 +14,11 @@ const RecordPaymentModal = ({ isOpen, onClose, project, onSuccess }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await accountsAPI.verifyPayment({
+            const res = await verifyPayment({
                 projectId: project._id,
                 collectedAmount: amount,
                 paymentNotes: notes
-            });
+            }).unwrap();
             if (res.success) {
                 onSuccess();
                 onClose();

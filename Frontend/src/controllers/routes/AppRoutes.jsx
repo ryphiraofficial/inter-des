@@ -1,5 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
 // Controllers — Layouts
 import Layout from '../../views/admin/Layout';
@@ -24,30 +26,37 @@ import Projects from '../../views/admin/Projects';
 import DesignApprovals from '../../views/admin/DesignApprovals';
 
 // Views — Production Manager
-import ProductionDashboard from '../../views/production/manager/Dashboard';
-import ProductionProjectsList from '../../views/production/manager/ProjectsList';
-import ProjectCompletion from '../../views/production/manager/ProjectCompletion';
-import ProductionTasksBoard from '../../views/production/manager/TasksBoard';
-import ProductionTeamOverview from '../../views/production/manager/TeamOverview';
-import ProductionApprovals from '../../views/production/manager/Approvals';
-import ProjectHandoff from '../../views/production/manager/ProjectHandoff';
-import ProductionReports from '../../views/production/manager/ProductionReports';
+import ProductionDashboard from '../../views/production/project_manager/Dashboard';
+import ProductionProjectsList from '../../views/production/project_manager/ProjectsList';
+import CompletedProjectsList from '../../views/production/project_manager/CompletedProjectsList';
+import ProjectCompletion from '../../views/production/project_manager/ProjectCompletion';
+import ProductionTasksBoard from '../../views/production/project_manager/TasksBoard';
+import ProductionTeamOverview from '../../views/production/project_manager/TeamOverview';
+import ProductionApprovals from '../../views/production/project_manager/Approvals';
+import ProjectHandoff from '../../views/production/project_manager/ProjectHandoff';
+import ProductionReports from '../../views/production/project_manager/ProductionReports';
 
 // Views — Engineer
-import EngineerDashboard from '../../views/production/engineer/EngineerDashboard';
-import EngineerTasks from '../../views/production/engineer/EngineerTasks';
-import EngineerProjects from '../../views/production/engineer/EngineerProjects';
-import ProjectDetail from '../../views/production/engineer/ProjectDetail';
-import TaskDetail from '../../views/production/engineer/TaskDetail';
-import EngineerReports from '../../views/production/engineer/EngineerReports';
-import LeaveRequest from '../../views/production/engineer/LeaveRequest';
-import EngineerApprovals from '../../views/production/engineer/EngineerApprovals';
+import EngineerDashboard from '../../views/production/project_engineer/EngineerDashboard';
+import EngineerTasks from '../../views/production/project_engineer/EngineerTasks';
+import EngineerProjects from '../../views/production/project_engineer/EngineerProjects';
+import ProjectDetail from '../../views/production/project_engineer/ProjectDetail';
+import TaskDetail from '../../views/production/project_engineer/TaskDetail';
+import EngineerReports from '../../views/production/project_engineer/EngineerReports';
+import LeaveRequest from '../../views/production/project_engineer/LeaveRequest';
+import EngineerApprovals from '../../views/production/project_engineer/EngineerApprovals';
 
-// Views — Site
-import SiteDashboard from '../../views/production/site/SiteDashboard';
-import SiteTasks from '../../views/production/site/SiteTasks';
-import SiteReports from '../../views/production/site/SiteReports';
-import SiteLeave from '../../views/production/site/SiteLeave';
+// Views — Site Engineer
+import SESiteDashboard from '../../views/production/site_engineer/SiteDashboard';
+import SESiteTasks from '../../views/production/site_engineer/SiteTasks';
+import SESiteReports from '../../views/production/site_engineer/SiteReports';
+import SESiteLeave from '../../views/production/site_engineer/SiteLeave';
+
+// Views — Site Supervisor
+import SSSiteDashboard from '../../views/production/site_supervisor/SiteDashboard';
+import SSSiteTasks from '../../views/production/site_supervisor/SiteTasks';
+import SSSiteReports from '../../views/production/site_supervisor/SiteReports';
+import SSSiteLeave from '../../views/production/site_supervisor/SiteLeave';
 
 // Views — Meetings
 import AdminMeetings from '../../views/admin/Meetings';
@@ -74,7 +83,8 @@ import ProcurementStaffDashboard from '../../views/procurement/staff/Procurement
 // Controllers — Hooks
 import { isAdminLayout, isStaffLayout } from '../hooks/useRoleDashboard';
 
-const AppRoutes = ({ user, onLogout }) => {
+const AppRoutes = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const userRole = user?.role;
     const isProductionEngineer = ['Project Engineer', 'Site Engineer', 'Site Supervisor'].includes(userRole);
     const isProcurementRole = userRole === 'Procurement Manager' || userRole === 'Procurement Staff';
@@ -88,16 +98,16 @@ const AppRoutes = ({ user, onLogout }) => {
         <Routes>
             {/* Dedicated Procurement Layout Route */}
             {isProcurementRole && (
-                <Route path="/" element={<ProcurementLayout role={userRole === 'Procurement Staff' ? 'staff' : 'manager'} user={user} onLogout={onLogout} />}>
-                    <Route index element={userRole === 'Procurement Staff' ? <ProcurementStaffDashboard user={user} onLogout={onLogout} /> : <ProcurementManagerDashboard user={user} onLogout={onLogout} />} />
+                <Route path="/" element={<ProcurementLayout role={userRole === 'Procurement Staff' ? 'staff' : 'manager'} onLogout={onLogout} />}>
+                    <Route index element={userRole === 'Procurement Staff' ? <ProcurementStaffDashboard onLogout={onLogout} /> : <ProcurementManagerDashboard onLogout={onLogout} />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
             )}
 
             {/* Admin Layout - for Super Admin, Admin, Manager, and Department Managers */}
             {shouldUseAdminLayout && (
-                <Route path="/" element={<Layout user={user} onLogout={onLogout} />}>
-                    <Route index element={<RoleDashboard user={user} onLogout={onLogout} />} />
+                <Route path="/" element={<Layout onLogout={onLogout} />}>
+                    <Route index element={<RoleDashboard onLogout={onLogout} />} />
                     
                     {/* General Admin Only Routes */}
                     <Route path="projects" element={isGeneralAdmin ? <Projects /> : <Navigate to="/" replace />} />
@@ -115,45 +125,46 @@ const AppRoutes = ({ user, onLogout }) => {
                     <Route path="approvals" element={isGeneralAdmin ? <DesignApprovals /> : <Navigate to="/" replace />} />
 
                     {/* Quotations & Material Review: General Admin & Design Manager Only */}
-                    <Route path="quotations" element={(isGeneralAdmin || isDesignManager) ? <Quotations user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="quotations" element={(isGeneralAdmin || isDesignManager) ? <Quotations /> : <Navigate to="/" replace />} />
                     <Route path="quotations/new" element={(isGeneralAdmin || isDesignManager) ? <NewQuotation /> : <Navigate to="/" replace />} />
                     <Route path="quotations/edit/:id" element={(isGeneralAdmin || isDesignManager) ? <NewQuotation isEdit={true} /> : <Navigate to="/" replace />} />
                     <Route path="quotations/view/:id" element={(isGeneralAdmin || isDesignManager) ? <QuotationView /> : <Navigate to="/" replace />} />
-                    <Route path="material-review" element={(isGeneralAdmin || isDesignManager) ? <MaterialReviewHub user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="material-review" element={(isGeneralAdmin || isDesignManager) ? <MaterialReviewHub /> : <Navigate to="/" replace />} />
 
                     {/* Production Management Routes (Project Manager) */}
                     <Route path="production-management/dashboard" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionDashboard /> : <Navigate to="/" replace />} />
                     <Route path="production-management/handoff" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProjectHandoff /> : <Navigate to="/" replace />} />
                     <Route path="production-management/projects" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionProjectsList /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/completed" element={(isGeneralAdmin || userRole === 'Project Manager') ? <CompletedProjectsList /> : <Navigate to="/" replace />} />
                     <Route path="production-management/projects/:id/complete" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProjectCompletion /> : <Navigate to="/" replace />} />
-                    <Route path="production-management/tasks" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTasksBoard user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="production-management/tasks" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTasksBoard /> : <Navigate to="/" replace />} />
                     <Route path="production-management/team" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionTeamOverview /> : <Navigate to="/" replace />} />
                     <Route path="production-management/approvals" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionApprovals /> : <Navigate to="/" replace />} />
                     <Route path="production-management/reports" element={(isGeneralAdmin || userRole === 'Project Manager') ? <ProductionReports /> : <Navigate to="/" replace />} />
 
                     {/* Engineer Routes (Project Engineer only) */}
-                    <Route path="engineer/dashboard" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerDashboard user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/projects" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/projects/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/transferred-tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks user={user} isTransferred={true} /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/tasks/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/dashboard" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerDashboard /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/projects" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerProjects /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/projects/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <ProjectDetail /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/transferred-tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks isTransferred={true} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/tasks/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <TaskDetail /> : <Navigate to="/" replace />} />
                     <Route path="engineer/reports" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerReports /> : <Navigate to="/" replace />} />
-                    <Route path="engineer/leave" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <LeaveRequest user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/leave" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <LeaveRequest /> : <Navigate to="/" replace />} />
                     <Route path="engineer/approvals" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerApprovals /> : <Navigate to="/" replace />} />
 
                     {/* Site Portal Routes (Site Engineer & Site Supervisor) */}
-                    <Route path="site/dashboard" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteDashboard user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/projects" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <EngineerProjects user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/projects/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <ProjectDetail user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/tasks" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteTasks user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/transferred-tasks" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SiteTasks user={user} isTransferred={true} /> : <Navigate to="/" replace />} />
-                    <Route path="site/tasks/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <TaskDetail user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/reports" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteReports user={user} /> : <Navigate to="/" replace />} />
-                    <Route path="site/leave" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <SiteLeave user={user} /> : <Navigate to="/" replace />} />
+                    <Route path="site/dashboard" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteDashboard /> : userRole === 'Site Supervisor' ? <SSSiteDashboard /> : <Navigate to="/" replace />} />
+                    <Route path="site/projects" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <EngineerProjects /> : <Navigate to="/" replace />} />
+                    <Route path="site/projects/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <ProjectDetail /> : <Navigate to="/" replace />} />
+                    <Route path="site/tasks" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteTasks /> : userRole === 'Site Supervisor' ? <SSSiteTasks /> : <Navigate to="/" replace />} />
+                    <Route path="site/transferred-tasks" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteTasks isTransferred={true} /> : <Navigate to="/" replace />} />
+                    <Route path="site/tasks/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <TaskDetail /> : <Navigate to="/" replace />} />
+                    <Route path="site/reports" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteReports /> : userRole === 'Site Supervisor' ? <SSSiteReports /> : <Navigate to="/" replace />} />
+                    <Route path="site/leave" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteLeave /> : userRole === 'Site Supervisor' ? <SSSiteLeave /> : <Navigate to="/" replace />} />
 
                     {/* Meetings — Admin manages, all production staff can view */}
-                    <Route path="meetings" element={isGeneralAdmin ? <AdminMeetings user={user} /> : <MeetingsPage user={user} />} />
+                    <Route path="meetings" element={isGeneralAdmin ? <AdminMeetings /> : <MeetingsPage />} />
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
@@ -161,22 +172,22 @@ const AppRoutes = ({ user, onLogout }) => {
 
             {/* Staff Layout - for Department Staff */}
             {shouldUseSalesLayout && (
-                <Route path="/staff" element={<SalesLayout user={user} onLogout={onLogout} />}>
+                <Route path="/staff" element={<SalesLayout onLogout={onLogout} />}>
                     <Route index element={<Navigate to="/staff/dashboard" replace />} />
-                    <Route path="dashboard" element={<RoleDashboard user={user} onLogout={onLogout} />} />
-                    <Route path="tasks" element={<SalesTasks user={user} />} />
-                    <Route path="approvals" element={<SalesApprovals user={user} />} />
-                    <Route path="all-tasks" element={<SalesTasks user={user} forceTable={true} />} />
-                    <Route path="site-visits" element={<SiteVisit user={user} />} />
-                    <Route path="clients" element={<SalesClients user={user} />} />
-                    <Route path="opportunities" element={<SalesClients user={user} isOpportunities={true} />} />
-                    <Route path="quotations" element={<SalesQuotations user={user} />} />
-                    <Route path="quotations/new" element={<SalesNewQuotation isStaff={true} user={user} />} />
-                    <Route path="quotations/edit/:id" element={<SalesNewQuotation isStaff={true} isEdit={true} user={user} />} />
+                    <Route path="dashboard" element={<RoleDashboard onLogout={onLogout} />} />
+                    <Route path="tasks" element={<SalesTasks />} />
+                    <Route path="approvals" element={<SalesApprovals />} />
+                    <Route path="all-tasks" element={<SalesTasks forceTable={true} />} />
+                    <Route path="site-visits" element={<SiteVisit />} />
+                    <Route path="clients" element={<SalesClients />} />
+                    <Route path="opportunities" element={<SalesClients isOpportunities={true} />} />
+                    <Route path="quotations" element={<SalesQuotations />} />
+                    <Route path="quotations/new" element={<SalesNewQuotation isStaff={true} />} />
+                    <Route path="quotations/edit/:id" element={<SalesNewQuotation isStaff={true} isEdit={true} />} />
                     <Route path="quotations/view/:id" element={<SalesQuotationView isStaff={true} />} />
                     <Route path="projects/:id" element={<Projects />} />
-                    <Route path="material-review" element={<MaterialReviewHub user={user} />} />
-                    <Route path="meetings" element={<MeetingsPage user={user} />} />
+                    <Route path="material-review" element={<MaterialReviewHub />} />
+                    <Route path="meetings" element={<MeetingsPage />} />
                     <Route path="*" element={<Navigate to="/staff/dashboard" replace />} />
                 </Route>
             )}

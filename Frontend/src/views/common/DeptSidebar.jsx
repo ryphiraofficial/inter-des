@@ -1,9 +1,6 @@
 /**
  * DeptSidebar.jsx — Unified Department Sidebar
  *
- * Single file that houses the sidebar UI and nav-item config for every
- * department role. Layout.jsx and StaffLayout.jsx both import from here.
- *
  * Props:
  *   role         {string}   - The user's role string (e.g. 'Design Manager')
  *   user         {object}   - User object ({ fullName, role, avatar })
@@ -14,154 +11,36 @@
 
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import {
-    LayoutDashboard, FileText, Users, CheckSquare, Package, Send,
-    ShoppingCart, Building2, Box, ClipboardCheck, Target,
-    Wrench, Clock, Image, LogOut, Menu, Plus, CheckCircle,
-    FolderOpen, CalendarOff, X, Video
-} from 'lucide-react';
-import { BASE_IMAGE_URL } from '../../models/api';
+import { LogOut, Menu, X } from 'lucide-react';
+import { BASE_IMAGE_URL } from '../../config/constants';
 import '../admin/css/Sidebar.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
+import NAV_CONFIG from './navConfig';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Nav-item config map — keyed by role string
-// ─────────────────────────────────────────────────────────────────────────────
-const NAV_CONFIG = {
-    'Design Manager': {
-        brandTitle:    'STUDIO DESIGN',
-        brandSubtitle: 'CREATIVE MANAGEMENT',
-        sidebarClass:  'design',
-        basePath:      '/',
-        items: [
-            { name: 'Dashboard',         icon: LayoutDashboard, path: '/?tab=dashboard',              tab: 'dashboard' },
-            { name: 'Quotations',        icon: FileText,        path: '/quotations',                  tab: null },
-            { name: 'Project Status',    icon: Clock,           path: '/?tab=pipeline',               tab: 'pipeline' },
-            { name: 'Project Details',   icon: FileText,        path: '/?tab=project_details',        tab: 'project_details' },
-            { name: 'Task Assignment',   icon: CheckSquare,     path: '/?tab=tasks',                   tab: 'tasks' },
-            { name: 'Staff Overview',    icon: Users,           path: '/?tab=staff_overview',          tab: 'staff_overview' },
-            { name: 'Material Hub',      icon: Package,         path: '/material-review',              tab: null },
-            { name: 'Meetings',          icon: Video,           path: '/meetings' },
-        ],
-    },
-
-    'Design Staff': {
-        brandTitle:   'Design Staff',
-        sidebarClass: 'design',
-        basePath:     '/',
-        items: [
-            { name: 'My Dashboard',    icon: LayoutDashboard, path: '/?tab=overview',    tab: 'overview' },
-            { name: 'My Tasks',        icon: CheckSquare,     path: '/?tab=tasks',        tab: 'tasks' },
-            { name: 'Revisions',       icon: Target,          path: '/?tab=revisions',    tab: 'revisions' },
-            { name: 'Submitted Tasks', icon: CheckSquare,     path: '/?tab=submissions',  tab: 'submissions' },
-            { name: 'Meetings',        icon: Video,           path: '/meetings' },
-        ],
-    },
-
-    'Project Manager': {
-        brandTitle:   'Project Manager',
-        sidebarClass: 'production',
-        basePath:     '/production-management/dashboard',
-        items: [
-            { name: 'Dashboard', icon: LayoutDashboard, path: '/production-management/dashboard' },
-            { name: 'Project Handoff', icon: Target,    path: '/production-management/handoff' },
-            { name: 'Projects',  icon: Box,             path: '/production-management/projects' },
-            { name: 'Tasks',     icon: CheckSquare,     path: '/production-management/tasks' },
-            { name: 'Team',      icon: Users,           path: '/production-management/team' },
-            { name: 'Approvals', icon: ClipboardCheck,  path: '/production-management/approvals' },
-            { name: 'Reports',   icon: FileText,        path: '/production-management/reports' },
-        ],
-    },
-
-    'Project Engineer': {
-        brandTitle:   'Engineer Portal',
-        sidebarClass: 'production',
-        basePath:     '/engineer/dashboard',
-        items: [
-            { name: 'Dashboard',     icon: LayoutDashboard, path: '/engineer/dashboard' },
-            { name: 'Projects',      icon: FolderOpen,      path: '/engineer/projects' },
-            { name: 'My Tasks',      icon: CheckSquare,     path: '/engineer/tasks' },
-            { name: 'Transferred Tasks', icon: Users,       path: '/engineer/transferred-tasks' },
-            { name: 'Site Reports',  icon: FileText,        path: '/engineer/reports' },
-            { name: 'Approvals',     icon: ClipboardCheck,  path: '/engineer/approvals' },
-            { name: 'Leave Request', icon: CalendarOff,     path: '/engineer/leave' },
-            { name: 'Meetings',      icon: Video,           path: '/meetings' },
-        ],
-    },
-
-    'Site Engineer': {
-        brandTitle:   'Site Portal',
-        sidebarClass: 'production',
-        basePath:     '/site/dashboard',
-        items: [
-            { name: 'Dashboard',     icon: LayoutDashboard, path: '/site/dashboard' },
-            { name: 'Projects',      icon: FolderOpen,      path: '/site/projects' },
-            { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
-            { name: 'Reports',       icon: FileText,        path: '/site/reports' },
-            { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
-            { name: 'Meetings',      icon: Video,           path: '/meetings' },
-        ],
-    },
-
-    'Site Supervisor': {
-        brandTitle:   'Site Supervisor',
-        sidebarClass: 'production',
-        basePath:     '/site/dashboard',
-        items: [
-            { name: 'Dashboard',     icon: LayoutDashboard, path: '/site/dashboard' },
-            { name: 'Projects',      icon: FolderOpen,      path: '/site/projects' },
-            { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
-            { name: 'Reports',       icon: FileText,        path: '/site/reports' },
-            { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
-            { name: 'Meetings',      icon: Video,           path: '/meetings' },
-        ],
-    },
-
-    'Production Staff': {
-        brandTitle:   'Production Staff',
-        sidebarClass: 'production',
-        basePath:     '/staff/dashboard',
-        items: [
-            { name: 'My Dashboard',  icon: LayoutDashboard, path: '/staff/dashboard' },
-            { name: 'Task Tracker',  icon: CheckSquare,     path: '/staff/tasks' },
-            { name: 'Site Inventory', icon: Box,            path: '/inventory' },
-            { name: 'Checklists',    icon: ClipboardCheck,  path: '/checklists' },
-            { name: 'Meetings',      icon: Video,           path: '/meetings' },
-        ],
-    },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helper — resolves avatar URL
-// ─────────────────────────────────────────────────────────────────────────────
 const getImageUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
     return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DeptSidebar — the single exported component
-// ─────────────────────────────────────────────────────────────────────────────
 const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobileOpen, toggleMobileSidebar }) => {
-    const location   = useLocation();
+    const location    = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const currentTab   = searchParams.get('tab') || 'overview';
 
     const config = NAV_CONFIG[role];
-
-    // Graceful fallback — unknown role renders nothing
     if (!config) return null;
 
-    const { brandTitle, brandSubtitle, sidebarClass, basePath, items } = config;
+    const { sidebarClass, basePath, items } = config;
 
-    const userInitials = user?.fullName
-        ? user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    const displayName  = user?.fullName || user?.name || 'User';
+    const userInitials = displayName
+        ? displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
         : '?';
 
     const isActiveTab = (item) => {
-        if (item.tab) {
-            return currentTab === item.tab && location.pathname === basePath;
-        }
+        if (item.tab) return currentTab === item.tab && location.pathname === basePath;
         return location.pathname === item.path;
     };
 
@@ -185,12 +64,8 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
                         </>
                     )}
                 </div>
-                <button className="btn-toggle-sidebar" onClick={toggleSidebar}>
-                    <Menu size={20} />
-                </button>
-                <button className="btn-close-sidebar-mobile" onClick={toggleMobileSidebar || toggleSidebar} title="Close Sidebar">
-                    <X size={20} />
-                </button>
+                <button className="btn-toggle-sidebar" onClick={toggleSidebar}><Menu size={20} /></button>
+                <button className="btn-close-sidebar-mobile" onClick={toggleMobileSidebar || toggleSidebar} title="Close Sidebar"><X size={20} /></button>
             </div>
 
             <nav className="sidebar-nav">
@@ -200,17 +75,12 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
                             <NavLink
                                 to={item.path}
                                 className={() => `nav-link ${isActiveTab(item) ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (window.innerWidth <= 768 && toggleMobileSidebar) {
-                                        toggleMobileSidebar();
-                                    }
-                                }}
+                                onClick={() => { if (window.innerWidth <= 768 && toggleMobileSidebar) toggleMobileSidebar(); }}
                             >
                                 <item.icon size={18} className="nav-icon" />
                                 <span>{item.name}</span>
                             </NavLink>
                         </li>
-
                     ))}
                 </ul>
             </nav>
@@ -221,8 +91,8 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
                         {user?.avatar ? <img src={getImageUrl(user.avatar)} alt="Avatar" /> : userInitials}
                     </div>
                     <div className="footer-details">
-                        <p className="footer-name">{user?.fullName}</p>
-                        <p className="footer-role">{user?.role}</p>
+                        <p className="footer-name">{displayName}</p>
+                        <p className="footer-role">{user?.role ? user.role.replace(/_/g, ' ') : ''}</p>
                     </div>
                 </div>
                 <button className="btn-logout-icon mobile-hide" onClick={onLogout} title="Logout">

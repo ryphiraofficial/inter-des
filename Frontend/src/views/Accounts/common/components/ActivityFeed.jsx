@@ -54,7 +54,7 @@ const ActivityFeed = ({ loading, activityFeed, upcomingDues }) => {
                         <div className={`due-item ${due.status === 'urgent' ? 'urgent' : due.status === 'warning' ? 'warning' : ''}`} key={i}>
                             <div className="due-info">
                                 <h4>{due.title}</h4>
-                                <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#94a3b8' }}></div> {due.entity}</p>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#64748b' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#94a3b8', flexShrink: 0 }}></span> {due.entity}</span>
                             </div>
                             <div className="due-meta">
                                 <span className="due-amount">{formatCurrency(due.amount)}</span>

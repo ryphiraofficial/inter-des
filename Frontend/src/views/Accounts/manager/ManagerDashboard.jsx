@@ -15,8 +15,11 @@ import AccountsInvoices from '../common/AccountsInvoices';
 import AccountsProjects from '../common/AccountsProjects';
 import AccountsReports from '../common/AccountsReports';
 import MeetingsPage from '../../common/MeetingsPage';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerDashboard = ({ user, onLogout }) => {
+const ManagerDashboard = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [search, setSearch] = React.useState('');

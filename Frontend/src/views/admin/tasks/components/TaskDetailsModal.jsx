@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Calendar, MapPin, Camera } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
-import { BASE_IMAGE_URL } from '../../../../models/api';
+import { BASE_IMAGE_URL } from '../../../../config/constants';
 
 const TaskDetailsModal = ({ show, setShow, selectedTask, visitsLoading, taskVisits }) => {
     if (!show || !selectedTask) return null;

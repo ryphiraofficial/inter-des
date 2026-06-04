@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
-const Project = require('./Backend/models/Project');
-const Quotation = require('./Backend/models/Quotation');
-require('dotenv').config({ path: './Backend/.env' });
+import mongoose from 'mongoose';
+import Project from './Backend/models/Project.js';
+import Quotation from './Backend/models/Quotation.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: './Backend/.env' });
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(async () => {
     const projects = await Project.find().populate('quotation');
     console.log(`Total projects: ${projects.length}`);

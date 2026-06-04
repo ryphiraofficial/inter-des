@@ -12,8 +12,11 @@ import SalesActivityFeed from './components/SalesActivityFeed';
 import SalesRecentQuotations from './components/SalesRecentQuotations';
 import SalesMonthlyTarget from './components/SalesMonthlyTarget';
 import SalesQuickActions from './components/SalesQuickActions';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
-const SalesDashboard = ({ user }) => {
+const SalesDashboard = ({}) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     
     // Custom Hook to handle all data fetching and state

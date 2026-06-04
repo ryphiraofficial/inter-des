@@ -5,6 +5,8 @@ import {
     CheckCircle, Package, LogOut, Video
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
 const NAV_ITEMS = [
     { tab: 'overview',     label: 'My Overview',    icon: LayoutDashboard },
@@ -15,7 +17,8 @@ const NAV_ITEMS = [
     { tab: 'meetings',     label: 'Meetings',         icon: Video },
 ];
 
-const DesignStaffSidebar = ({ user, onLogout }) => {
+const DesignStaffSidebar = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';

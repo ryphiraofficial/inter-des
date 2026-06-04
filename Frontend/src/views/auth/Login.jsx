@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { authAPI } from '../../models/api';
+import { useLoginMutation } from '../../store/api/authApi';
+import { useAppDispatch } from '../../store/hooks';
+import { loginSuccess } from '../../store/slices/authSlice';
 import './css/Login.css';
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
+    const dispatch = useAppDispatch();
     const [formData, setFormData] = useState({
         identifier: '',
         password: ''
     });
+    const [login] = useLoginMutation();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -36,12 +40,10 @@ const Login = ({ onLoginSuccess }) => {
                 payload.email = identifier;
             }
 
-            const response = await authAPI.login(payload);
+            const response = await login(payload).unwrap();
 
             if (response.success) {
-                localStorage.setItem('token', response.token);
-                localStorage.setItem('user', JSON.stringify(response.data));
-                onLoginSuccess(response.data);
+                dispatch(loginSuccess({ user: response.data, token: response.token }));
             }
         } catch (err) {
             setError(err.message || 'Login failed. Please check your credentials.');

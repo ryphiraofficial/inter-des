@@ -12,8 +12,11 @@ import { useProcurementStaffLogic } from '../hooks/useProcurementStaffLogic';
 import TaskDetailsModal from '../components/TaskDetailsModal';
 import TimeExtensionModal from '../components/TimeExtensionModal';
 import MeetingsPage from '../../common/MeetingsPage';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ProcurementStaffDashboard = ({ user, onLogout }) => {
+const ProcurementStaffDashboard = ({ onLogout }) => {
+    const user = useAppSelector(selectUser);
     const {
         activeTab,
         setActiveTab,

@@ -41,6 +41,12 @@ const Invoice = () => {
             inv.client?.name?.toLowerCase().includes(state.searchTerm.toLowerCase());
         const matchesStatus = state.statusFilter === 'All' || inv.status === state.statusFilter;
         return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+        // "Unapproved" (Draft) first logic
+        if (a.status === 'Draft' && b.status !== 'Draft') return -1;
+        if (a.status !== 'Draft' && b.status === 'Draft') return 1;
+        // Then sort by newest first
+        return new Date(b.createdAt || b.invoiceDate) - new Date(a.createdAt || a.invoiceDate);
     });
 
     return (

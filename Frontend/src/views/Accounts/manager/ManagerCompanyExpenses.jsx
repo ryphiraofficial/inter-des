@@ -8,8 +8,11 @@ import ExpenseModal from './components/expenses/ExpenseModal';
 import { TableSkeleton } from '../components/UI/Skeleton';
 
 import '../css/Expenses.css';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const ManagerCompanyExpenses = ({ user, search, setSearch }) => {
+const ManagerCompanyExpenses = ({ search, setSearch }) => {
+    const user = useAppSelector(selectUser);
     const {
         expenses, loading, showModal, setShowModal,
         submitting, form, setForm, handleDelete, handleSubmit, handleEdit, editingId

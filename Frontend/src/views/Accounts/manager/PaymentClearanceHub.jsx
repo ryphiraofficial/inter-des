@@ -1,8 +1,11 @@
 import React from 'react';
 import { usePaymentClearanceLogic } from '../hooks/usePaymentClearanceLogic';
 import ClearanceTable from './components/ClearanceTable';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const PaymentClearanceHub = ({ user, search, setSearch }) => {
+const PaymentClearanceHub = ({ search, setSearch }) => {
+    const user = useAppSelector(selectUser);
     const {
         staffList, loading, assigningId, setAssigningId,
         selectedStaff, setSelectedStaff, filtered, handleAssign, handleClear

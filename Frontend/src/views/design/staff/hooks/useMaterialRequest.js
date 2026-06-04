@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { procurementAPI } from '../../../../models/api';
+import { useCreateMaterialRequestMutation } from '../../../../store/api/procurementApi';
 
 export const useMaterialRequest = () => {
     const [showMaterialModal, setShowMaterialModal] = useState(false);
@@ -7,6 +7,8 @@ export const useMaterialRequest = () => {
     const [materialFormData, setMaterialFormData] = useState({
         project: '', quotation: '', items: [], priority: 'Medium', notes: ''
     });
+
+    const [createMaterialRequest] = useCreateMaterialRequestMutation();
 
     const handleOpenMaterialModal = (task) => {
         const quotationId = task.quotation?._id || task.quotation;
@@ -48,15 +50,13 @@ export const useMaterialRequest = () => {
         if (materialFormData.items.length === 0) return alert('Please add at least one item');
         try {
             setSubmittingMaterial(true);
-            const res = await procurementAPI.createMaterialRequest(materialFormData);
-            if (res.success) {
-                alert('Material request submitted successfully!');
-                setShowMaterialModal(false);
-                setMaterialFormData({ project: '', quotation: '', items: [], priority: 'Medium', notes: '' });
-                return true;
-            }
+            await createMaterialRequest(materialFormData).unwrap();
+            alert('Material request submitted successfully!');
+            setShowMaterialModal(false);
+            setMaterialFormData({ project: '', quotation: '', items: [], priority: 'Medium', notes: '' });
+            return true;
         } catch (err) {
-            alert('Request failed: ' + err.message);
+            alert('Request failed: ' + (err.data?.message || err.message));
         } finally {
             setSubmittingMaterial(false);
         }

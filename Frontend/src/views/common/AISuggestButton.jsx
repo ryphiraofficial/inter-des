@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
-import { aiAPI } from '../../models/api';
+import { useAiSuggestMutation } from '../../store/api/sharedApi';
 
 const AISuggestButton = ({ type, field, value, onSuggest, context = {} }) => {
     const [suggesting, setSuggesting] = useState(false);
+    const [aiSuggest] = useAiSuggestMutation();
 
     const handleSuggest = async () => {
         if (suggesting) return;
@@ -23,7 +24,7 @@ const AISuggestButton = ({ type, field, value, onSuggest, context = {} }) => {
 
         setSuggesting(true);
         try {
-            const res = await aiAPI.getSuggestion(type, field, searchValue || value);
+            const res = await aiSuggest({ type, field, value: searchValue || value }).unwrap();
             if (res.success) {
                 onSuggest(res.suggestion);
             }
