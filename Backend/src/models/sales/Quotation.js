@@ -186,6 +186,42 @@ const QuotationSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    projectDescription: {
+        type: String,
+        trim: true
+    },
+    projectStart: {
+        type: Date
+    },
+    projectEnd: {
+        type: Date
+    },
+    scopeOfWork: {
+        type: String,
+        trim: true
+    },
+    depositPercent: {
+        type: Number,
+        default: 30,
+        min: 0,
+        max: 100
+    },
+    paymentTerms: {
+        type: String,
+        trim: true
+    },
+    warrantyTerms: {
+        type: String,
+        trim: true
+    },
+    cancellationPolicy: {
+        type: String,
+        trim: true
+    },
+    documentType: {
+        type: String,
+        default: 'Quotation'
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
