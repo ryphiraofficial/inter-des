@@ -69,9 +69,22 @@ export const useQuotationState = () => {
         }));
     };
 
+    const batchUpdateLineItem = (id, fields) => {
+        setLineItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const updated = { ...item, ...fields };
+                if ('quantity' in fields || 'rate' in fields) {
+                    updated.amount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                }
+                return updated;
+            }
+            return item;
+        }));
+    };
+
     return {
         formData, setFormData, handleInputChange,
-        lineItems, setLineItems, addLineItem, removeLineItem, updateLineItem,
+        lineItems, setLineItems, addLineItem, removeLineItem, updateLineItem, batchUpdateLineItem,
         taxRate, setTaxRate, includeTax, setIncludeTax,
         discount, setDiscount, includeDiscount, setIncludeDiscount,
         expandedItems, setExpandedItems, initialFormData

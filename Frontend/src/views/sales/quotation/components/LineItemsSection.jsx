@@ -4,7 +4,7 @@ import CustomSelect from '../../components/CustomSelect';
 import LineItemCard from './LineItemCard';
 
 const LineItemsSection = ({
-    lineItems, addLineItem, removeLineItem, updateLineItem,
+    lineItems, addLineItem, removeLineItem, updateLineItem, batchUpdateLineItem,
     expandedItems, setExpandedItems, globalSearchQuery, setGlobalSearchQuery,
     globalSearchResults, handleGlobalSearch, addFromInventorySelect,
     activeSearchId, searchResults, handleProductSearch, selectProduct,
@@ -90,6 +90,7 @@ const LineItemsSection = ({
                             item={item}
                             index={index}
                             updateLineItem={updateLineItem}
+                            batchUpdateLineItem={batchUpdateLineItem}
                             removeLineItem={removeLineItem}
                             expandedItems={expandedItems}
                             setExpandedItems={setExpandedItems}

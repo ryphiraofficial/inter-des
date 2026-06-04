@@ -3,7 +3,7 @@ import { Trash2, ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
 
 const LineItemCard = ({
-    item, index, updateLineItem, removeLineItem, expandedItems, setExpandedItems,
+    item, index, updateLineItem, batchUpdateLineItem, removeLineItem, expandedItems, setExpandedItems,
     activeSearchId, searchResults, handleProductSearch, selectProduct, handleImageUpload
 }) => {
     return (
@@ -48,8 +48,10 @@ const LineItemCard = ({
                             options={[
                                 { value: 'SCM', label: 'SCM' },
                                 { value: 'SFT', label: 'SFT' },
+                                { value: 'Sq Ft', label: 'Sq Ft' },
                                 { value: 'RFT', label: 'RFT' },
                                 { value: 'Nos', label: 'Nos' },
+                                { value: 'Numbers', label: 'Numbers' },
                                 { value: 'Lumpsum', label: 'Lumpsum' }
                             ]}
                         />
@@ -73,24 +75,19 @@ const LineItemCard = ({
                 </div>
             </div>
 
-            {['sqft', 'sft', 'sq.ft'].includes(item.unit?.toLowerCase().replace(/\s/g, '')) && (
+            {['sqft', 'sft', 'sq.ft', 'sqft'].includes(item.unit?.toLowerCase().replace(/\s/g, '')) && (
                 <div style={{ padding: '0.75rem 0 0.25rem', borderTop: '1px solid #f1f5f9', marginTop: '0.5rem' }}>
                     <div className="form-group" style={{ marginBottom: 0 }}>
                         <label style={{ fontSize: '0.75rem' }}>Dimensions (cm)</label>
                         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                             <input type="number" placeholder="L" style={{ padding: '0.4rem', fontSize: '0.85rem', width: '60px', border: '1px solid #e2e8f0', borderRadius: '4px', background: '#f8fafc' }} value={item.cmL ?? ''} onChange={(e) => {
                                 const v = e.target.value ? parseFloat(e.target.value) : null;
-                                updateLineItem(item.id, 'cmL', v);
-                                if (v && (item.cmH || 0) > 0) {
-                                    const sqft = (v * (item.cmH || 0)) / 900;
-                                    const roundedSqft = Math.round(sqft * 100) / 100;
-                                    updateLineItem(item.id, 'quantity', roundedSqft);
-                                    updateLineItem(item.id, 'sqft', roundedSqft);
-                                    updateLineItem(item.id, 'size', roundedSqft + ' SFT');
-                                } else if (!v || !item.cmH) {
-                                    updateLineItem(item.id, 'quantity', 1);
-                                    updateLineItem(item.id, 'sqft', null);
-                                    updateLineItem(item.id, 'size', '');
+                                const h = item.cmH || 0;
+                                if (v && h > 0) {
+                                    const sqft = Math.round((v * h) / 900 * 100) / 100;
+                                    batchUpdateLineItem(item.id, { cmL: v, sqft, quantity: sqft, size: sqft + ' SFT' });
+                                } else {
+                                    batchUpdateLineItem(item.id, { cmL: v, sqft: null, quantity: 1, size: '' });
                                 }
                             }} />
                             <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>×</span>
@@ -101,17 +98,12 @@ const LineItemCard = ({
                             <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>×</span>
                             <input type="number" placeholder="H" style={{ padding: '0.4rem', fontSize: '0.85rem', width: '60px', border: '1px solid #e2e8f0', borderRadius: '4px', background: '#f8fafc' }} value={item.cmH ?? ''} onChange={(e) => {
                                 const v = e.target.value ? parseFloat(e.target.value) : null;
-                                updateLineItem(item.id, 'cmH', v);
-                                if (v && (item.cmL || 0) > 0) {
-                                    const sqft = ((item.cmL || 0) * v) / 900;
-                                    const roundedSqft = Math.round(sqft * 100) / 100;
-                                    updateLineItem(item.id, 'quantity', roundedSqft);
-                                    updateLineItem(item.id, 'sqft', roundedSqft);
-                                    updateLineItem(item.id, 'size', roundedSqft + ' SFT');
-                                } else if (!v || !item.cmL) {
-                                    updateLineItem(item.id, 'quantity', 1);
-                                    updateLineItem(item.id, 'sqft', null);
-                                    updateLineItem(item.id, 'size', '');
+                                const l = item.cmL || 0;
+                                if (v && l > 0) {
+                                    const sqft = Math.round((l * v) / 900 * 100) / 100;
+                                    batchUpdateLineItem(item.id, { cmH: v, sqft, quantity: sqft, size: sqft + ' SFT' });
+                                } else {
+                                    batchUpdateLineItem(item.id, { cmH: v, sqft: null, quantity: 1, size: '' });
                                 }
                             }} />
                             <div style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '0.4rem 0.75rem', minWidth: '80px', textAlign: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>

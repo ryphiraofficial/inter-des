@@ -46,6 +46,19 @@ export const useQuotationState = () => {
         }));
     };
 
+    const batchUpdateLineItem = (id, fields) => {
+        setLineItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const updated = { ...item, ...fields };
+                if ('quantity' in fields || 'rate' in fields) {
+                    updated.amount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                }
+                return updated;
+            }
+            return item;
+        }));
+    };
+
     const createNewItem = () => ({
         id: Date.now() + Math.random(),
         name: '',
@@ -74,6 +87,7 @@ export const useQuotationState = () => {
         formData, setFormData,
         handleInputChange,
         updateLineItem,
+        batchUpdateLineItem,
         addLineItem,
         removeLineItem
     };

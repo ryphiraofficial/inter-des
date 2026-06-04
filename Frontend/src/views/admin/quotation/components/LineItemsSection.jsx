@@ -8,6 +8,7 @@ const LineItemsSection = ({
     addLineItem,
     removeLineItem,
     updateLineItem,
+    batchUpdateLineItem,
     expandedItems,
     setExpandedItems,
     globalSearchQuery,
@@ -102,6 +103,7 @@ const LineItemsSection = ({
                         item={item}
                         index={index}
                         updateLineItem={updateLineItem}
+                        batchUpdateLineItem={batchUpdateLineItem}
                         removeLineItem={removeLineItem}
                         expandedItems={expandedItems}
                         setExpandedItems={setExpandedItems}

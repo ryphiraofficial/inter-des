@@ -142,6 +142,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                         addLineItem={state.addLineItem}
                         removeLineItem={state.removeLineItem}
                         updateLineItem={state.updateLineItem}
+                        batchUpdateLineItem={state.batchUpdateLineItem}
                         expandedItems={state.expandedItems}
                         setExpandedItems={state.setExpandedItems}
                         globalSearchQuery={search.globalSearchQuery}
