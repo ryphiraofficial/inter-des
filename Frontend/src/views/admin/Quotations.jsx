@@ -5,6 +5,8 @@ import { useQuotationListState } from './quotations/list/hooks/useQuotationListS
 import { useQuotationListData } from './quotations/list/hooks/useQuotationListData';
 import { useQuotationListActions } from './quotations/list/hooks/useQuotationListActions';
 import { getRolePermissions } from './hooks/useRoleDashboard';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
 import QuotationTabs from './quotations/list/components/QuotationTabs';
 import QuotationTable from './quotations/list/components/QuotationTable';
@@ -13,7 +15,8 @@ import { TableSkeleton } from './components/Skeleton';
 
 import './css/Quotations.css';
 
-const Quotations = ({ isStaff, user }) => {
+const Quotations = ({ isStaff }) => {
+    const user = useAppSelector(selectUser);
     const state = useQuotationListState();
     const [selectedQuotation, setSelectedQuotation] = useState(null);
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
