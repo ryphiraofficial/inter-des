@@ -1,12 +1,16 @@
 import webpush from 'web-push';
 import PushSubscription from '../../models/shared/PushSubscription.js';
 
-// Setup VAPID details
-webpush.setVapidDetails(
-    process.env.VAPID_MAILTO || 'mailto:admin@example.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+// Setup VAPID details if keys are provided
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        process.env.VAPID_MAILTO || 'mailto:admin@example.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn('⚠️ WARNING: VAPID_PUBLIC_KEY or VAPID_PRIVATE_KEY is missing. Push notifications will be disabled.');
+}
 
 /**
  * @desc    Subscribe a user to push notifications
