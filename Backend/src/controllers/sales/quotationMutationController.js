@@ -29,6 +29,8 @@ export const updateQuotation = async (req, res) => {
     try {
         let quotation = await Quotation.findById(req.params.id);
         if (!quotation) return res.status(404).json({ success: false, message: 'Quotation not found' });
+        
+        console.log("UPDATE QUOTATION PAYLOAD ITEMS:", JSON.stringify(req.body.items, null, 2));
 
         if (req.body.items && req.body.items !== quotation.items) {
             const versionSnapshot = {
