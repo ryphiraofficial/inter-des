@@ -23,25 +23,27 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
     const dateOptions = ['All Time', 'Today', 'This Week', 'This Month'];
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px' }}>
+        <div className="expense-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', width: '100%' }}>
             
             {/* Date Filter */}
-            <div className="filter-group">
-                <div style={{ position: 'relative' }}>
+            <div className="filter-group" style={{ flex: '1 1 calc(50% - 6px)' }}>
+                <div style={{ position: 'relative', width: '100%' }}>
                     <button
                         onClick={() => setShowDateDropdown(p => !p)}
                         className="filter-dropdown-btn"
                         style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            padding: '9px 14px', borderRadius: '8px', height: '45px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                            padding: '9px 14px', borderRadius: '8px', height: '45px', width: '100%',
                             border: '1px solid #e2e8f0',
                             background: filterDate === 'All Time' ? '#fff' : '#eef2ff',
                             color: filterDate === 'All Time' ? '#64748b' : '#4f46e5',
                             fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer'
                         }}
                     >
-                        <CalendarDays size={15} />
-                        {filterDate}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <CalendarDays size={15} />
+                            {filterDate}
+                        </div>
                         <ChevronDown size={14} style={{ opacity: 0.6, transform: showDateDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                     </button>
 
@@ -49,7 +51,7 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
                         <>
                             <div className="dropdown-overlay" onClick={() => setShowDateDropdown(false)} style={{ position: 'fixed', inset: 0, zIndex: 49 }} />
                             <div className="dropdown-menu" style={{
-                                position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                                position: 'absolute', top: 'calc(100% + 6px)', left: 0,
                                 background: '#fff', borderRadius: '10px',
                                 border: '1px solid #e2e8f0',
                                 boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
@@ -81,23 +83,27 @@ const ExpenseFilterBar = ({ filterCategory, setFilterCategory, showCategoryDropd
             </div>
 
             {/* Category Filter */}
-            <div className="filter-group">
-                <div style={{ position: 'relative' }}>
+            <div className="filter-group" style={{ flex: '1 1 calc(50% - 6px)' }}>
+                <div style={{ position: 'relative', width: '100%' }}>
                     <button
                         onClick={() => setShowCategoryDropdown(p => !p)}
                         className="filter-dropdown-btn"
                         style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            padding: '9px 14px', borderRadius: '8px', height: '45px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                            padding: '9px 14px', borderRadius: '8px', height: '45px', width: '100%',
                             border: '1px solid #e2e8f0',
                             background: filterCategory === 'All' ? '#fff' : '#eef2ff',
                             color: filterCategory === 'All' ? '#64748b' : '#4f46e5',
                             fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer'
                         }}
                     >
-                        <SlidersHorizontal size={15} />
-                        {filterCategory === 'All' ? 'All Categories' : filterCategory}
-                        <ChevronDown size={14} style={{ opacity: 0.6, transform: showCategoryDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            <SlidersHorizontal size={15} style={{ flexShrink: 0 }} />
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {filterCategory === 'All' ? 'All Categories' : filterCategory}
+                            </span>
+                        </div>
+                        <ChevronDown size={14} style={{ opacity: 0.6, flexShrink: 0, transform: showCategoryDropdown ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                     </button>
 
                     {showCategoryDropdown && (

@@ -24,12 +24,7 @@ const MyCollections = ({ search: parentSearch, setSearch: parentSetSearch }) => 
 
     return (
         <div style={{ padding: '0 8px' }}>
-            {/* Header section with Refresh only (since title is in navbar) */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-                <button onClick={fetchData} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#fff' }}>
-                    <RefreshCw size={15} className={loading ? 'spin-anim' : ''} /> Refresh
-                </button>
-            </div>
+
 
             {/* Stats row */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '28px' }}>
@@ -72,15 +67,15 @@ const MyCollections = ({ search: parentSearch, setSearch: parentSetSearch }) => 
                         <div style={{ color: '#64748b', fontWeight: 500 }}>Loading assigned collection tasks...</div>
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 0', textClassName: 'text-center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 20px', textAlign: 'center' }}>
                         <AlertCircle size={44} style={{ color: '#94a3b8', marginBottom: '16px' }} />
-                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#1e293b' }}>No Collection Tasks Found</h3>
-                        <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: '14px', maxWidth: '360px', textAlign: 'center', lineHeight: 1.5 }}>
+                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#1e293b', textAlign: 'center' }}>No Collection Tasks Found</h3>
+                        <p style={{ margin: '8px 0 0', color: '#64748b', fontSize: '14px', maxWidth: '360px', textAlign: 'center', lineHeight: 1.6 }}>
                             {search ? "No projects match your current search terms." : "You do not have any active payment collection assignments right now."}
                         </p>
                     </div>
                 ) : (
-                    <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
+                    <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '20px' }}>
                         {filtered.map(p => (
                             <CollectionProjectCard 
                                 key={p._id} 

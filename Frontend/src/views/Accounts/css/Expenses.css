@@ -335,19 +335,28 @@
     background: #ecfdf5;
     color: #059669;
 }
-.status-paid::before { background: #059669; }
+
+.status-paid::before {
+    background: #059669;
+}
 
 .status-pending {
     background: #fffbeb;
     color: #d97706;
 }
-.status-pending::before { background: #d97706; }
+
+.status-pending::before {
+    background: #d97706;
+}
 
 .status-overdue {
     background: #fef2f2;
     color: #dc2626;
 }
-.status-overdue::before { background: #dc2626; }
+
+.status-overdue::before {
+    background: #dc2626;
+}
 
 /* Empty State */
 .empty-state {
@@ -492,8 +501,13 @@
 
 /* Skeleton Loading */
 @keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
 }
 
 .skeleton {
@@ -502,17 +516,18 @@
     animation: shimmer 2s infinite linear;
     border-radius: 4px;
 }
+
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .expenses-dashboard-container {
         padding: 1rem;
     }
-    
+
     .kpi-cards-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
-    
+
     .expenses-analytics-grid {
         grid-template-columns: 1fr;
     }
@@ -524,11 +539,11 @@
         align-items: stretch;
         gap: 1rem;
     }
-    
+
     .search-wrapper {
         width: 100%;
     }
-    
+
     .filter-group {
         width: 100%;
         justify-content: space-between;
@@ -543,12 +558,12 @@
     .kpi-cards-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .expenses-actions {
         width: 100%;
         flex-direction: column;
     }
-    
+
     .expenses-actions button {
         width: 100%;
     }
@@ -560,6 +575,7 @@
 }
 
 @media (max-width: 768px) {
+
     /* Hide desktop table */
     .table-wrapper {
         display: none;
@@ -583,7 +599,7 @@
         box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .expense-mobile-card:hover {
         box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08);
         transform: translateY(-2px);
@@ -598,7 +614,7 @@
         background: #fff;
         transition: background-color 0.2s;
     }
-    
+
     .expense-mobile-header:active {
         background-color: #f8fafc;
     }
@@ -629,7 +645,7 @@
         display: block;
         margin-bottom: 2px;
     }
-    
+
     .expense-date-sm {
         font-size: 12px;
         color: #64748b;
@@ -655,7 +671,7 @@
         color: #64748b;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .expense-mobile-toggle.expanded {
         transform: rotate(180deg);
         background: #4f46e5;
@@ -673,7 +689,7 @@
         border-top: 1px solid transparent;
         opacity: 0;
     }
-    
+
     .expense-mobile-details.expanded {
         max-height: 500px;
         padding: 16px;
@@ -688,7 +704,7 @@
         padding: 10px 0;
         border-bottom: 1px dashed #cbd5e1;
     }
-    
+
     .expense-detail-row:last-child {
         border-bottom: none;
     }
@@ -713,7 +729,7 @@
         gap: 12px;
         margin-top: 16px;
     }
-    
+
     .expense-mobile-actions button {
         flex: 1;
         padding: 10px;
@@ -728,21 +744,21 @@
         cursor: pointer;
         transition: all 0.2s;
     }
-    
+
     .btn-mobile-edit {
         background: #eff6ff;
         color: #2563eb;
     }
-    
+
     .btn-mobile-edit:hover {
         background: #dbeafe;
     }
-    
+
     .btn-mobile-delete {
         background: #fef2f2;
         color: #dc2626;
     }
-    
+
     .btn-mobile-delete:hover {
         background: #fee2e2;
     }

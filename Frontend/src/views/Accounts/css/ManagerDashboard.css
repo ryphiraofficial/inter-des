@@ -206,6 +206,12 @@
     }
 }
 
+@media (max-width: 500px) {
+    .stats-grid-6-v2 {
+        grid-template-columns: 1fr;
+    }
+}
+
 .stat-card-v3 {
     background: #ffffff;
     border-radius: 12px;
