@@ -15,6 +15,7 @@ import NotificationSettings from './settings/components/NotificationSettings';
 import SecuritySettings from './settings/components/SecuritySettings';
 import UserProfile from './settings/components/UserProfile';
 import ApplicationSettings from './settings/components/ApplicationSettings';
+import QuotationTemplates from './settings/components/QuotationTemplates';
 import DataBackup from './settings/components/DataBackup';
 
 import './css/Settings.css';
@@ -81,6 +82,8 @@ const Settings = () => {
                 );
             case 'application': 
                 return <ApplicationSettings {...props} />;
+            case 'templates':
+                return <QuotationTemplates {...props} getImageUrl={getImageUrl} />;
             case 'data': 
                 return <DataBackup showToast={state.showToast} />;
             default: 

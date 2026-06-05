@@ -5,6 +5,8 @@ import { useQuotationViewState } from './quotations/view/hooks/useQuotationViewS
 import { useQuotationViewData } from './quotations/view/hooks/useQuotationViewData';
 import { useQuotationViewActions } from './quotations/view/hooks/useQuotationViewActions';
 import { useQuotationViewCalculations } from './quotations/view/hooks/useQuotationViewCalculations';
+import { useGetSettingsQuery } from '../../store/api/adminApi';
+import QuotationTemplateWrapper from './settings/components/templates/QuotationTemplateWrapper';
 
 import ActionHeader from './quotations/view/components/ActionHeader';
 import DocHeader from './quotations/view/components/DocHeader';
@@ -22,7 +24,8 @@ const Skeleton = ({ width, height, borderRadius }) => (
 const QuotationView = ({ isStaff }) => {
     const { id } = useParams();
     const state = useQuotationViewState();
-    
+    const { data: settingsRes } = useGetSettingsQuery();
+
     useQuotationViewData({
         id,
         setQuotation: state.setQuotation,
@@ -30,8 +33,17 @@ const QuotationView = ({ isStaff }) => {
         setError: state.setError
     });
 
-    const actions = useQuotationViewActions({ isStaff, id });
+    const printRef = React.useRef(null);
     const calc = useQuotationViewCalculations(state.quotation);
+    const actions = useQuotationViewActions({ 
+        isStaff, 
+        id, 
+        quotationNumber: state.quotation?.quotationNumber, 
+        printRef,
+        quotation: state.quotation,
+        settings: settingsRes?.data,
+        calc
+    });
 
     if (state.loading) {
         return (
@@ -68,45 +80,48 @@ const QuotationView = ({ isStaff }) => {
 
     return (
         <div className="qv-wrapper">
-            <ActionHeader 
+            <ActionHeader
                 handleBack={actions.handleBack}
-                handleEdit={actions.handleEdit}
                 handlePrint={actions.handlePrint}
                 handleDownload={actions.handleDownload}
             />
 
-            <div className="quotation-document">
-                <DocHeader 
-                    quotationNumber={q.quotationNumber}
-                    createdAt={q.createdAt}
-                    status={q.status}
-                />
+            <div ref={printRef}>
+                <QuotationTemplateWrapper quotation={q} calc={calc} settings={settingsRes?.data}>
+                    <div className="quotation-document">
+                        <DocHeader
+                            quotationNumber={q.quotationNumber}
+                            createdAt={q.createdAt}
+                            status={q.status}
+                        />
 
-                <div className="doc-content">
-                    <PartiesGrid 
-                        client={q.client}
-                        projectName={q.projectName}
-                        projectDescription={q.projectDescription}
-                        validUntil={q.validUntil}
-                    />
+                        <div className="doc-content">
+                            <PartiesGrid
+                                client={q.client}
+                                projectName={q.projectName}
+                                projectDescription={q.projectDescription}
+                                validUntil={q.validUntil}
+                            />
 
-                    <ItemsTable items={q.items || []} />
+                            <ItemsTable items={q.items || []} />
 
-                    <DocSummary 
-                        subtotal={calc.subtotal}
-                        discount={q.discount}
-                        discountAmount={calc.discountAmount}
-                        offerPrice={calc.offerPrice}
-                        taxRate={q.taxRate}
-                        taxAmount={calc.taxAmount}
-                        grandTotal={calc.grandTotal}
-                        depositPercent={q.depositPercent}
-                        notes={q.notes}
-                        termsAndConditions={q.termsAndConditions}
-                    />
-                </div>
+                            <DocSummary
+                                subtotal={calc.subtotal}
+                                discount={q.discount}
+                                discountAmount={calc.discountAmount}
+                                offerPrice={calc.offerPrice}
+                                taxRate={q.taxRate}
+                                taxAmount={calc.taxAmount}
+                                grandTotal={calc.grandTotal}
+                                depositPercent={q.depositPercent}
+                                notes={q.notes}
+                                termsAndConditions={q.termsAndConditions}
+                            />
+                        </div>
 
-                <DocFooter />
+                        <DocFooter />
+                    </div>
+                </QuotationTemplateWrapper>
             </div>
         </div>
     );

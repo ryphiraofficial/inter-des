@@ -45,7 +45,8 @@ const SettingsSchema = new mongoose.Schema({
         brandSubtitle: { type: String, default: 'Admin Panel', trim: true },
         accentColor: { type: String, default: '#2563eb', trim: true },
         dateFormat: { type: String, default: 'DD/MM/YYYY', enum: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'] },
-        timezone: { type: String, default: 'Asia/Kolkata', trim: true }
+        timezone: { type: String, default: 'Asia/Kolkata', trim: true },
+        quotationTemplate: { type: String, default: 'Template1', trim: true }
     }
 }, {
     timestamps: true

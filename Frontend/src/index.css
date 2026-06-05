@@ -2,8 +2,15 @@
 @import "tailwindcss";
 
 @keyframes popupIn {
-  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 :root {
@@ -121,7 +128,13 @@ button {
   scrollbar-width: none;
 }
 
-h1, h2, h3, h4, h5, h6, .heading {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading {
   font-family: 'Outfit', sans-serif;
   letter-spacing: -0.02em;
   font-weight: 700;
@@ -142,4 +155,49 @@ h1, h2, h3, h4, h5, h6, .heading {
 
 .no-underline {
   text-decoration: none !important;
+}
+
+/* Global Print Styles for Templates */
+@media print {
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+
+  body, html {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Make sure background graphic colors and borders print correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force all quotation templates to fit the printed page width perfectly */
+  .template1-container,
+  .template2-container,
+  .template3-container,
+  .template4-container,
+  .invoice-container,
+  .quotation-document {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background-color: #ffffff !important;
+  }
+
+  /* Prevent split page rows for items/headings */
+  tr, .item-row, .qv-item-row, .t2-item-row, .t3-item-row, .t4-item-row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }

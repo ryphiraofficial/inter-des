@@ -1,15 +1,12 @@
 import React from 'react';
 import { ArrowLeft, Edit, Printer, Download, MapPin, Phone, Globe } from 'lucide-react';
 
-export const ActionHeader = ({ handleBack, handleEdit, handlePrint, handleDownload }) => (
+export const ActionHeader = ({ handleBack, handlePrint, handleDownload }) => (
     <div className="qv-actions-bar no-print">
         <button className="btn-back" onClick={handleBack}>
-            <ArrowLeft size={18} /> Back
+            <ArrowLeft size={14} /> Back
         </button>
         <div className="qv-right-actions">
-            <button className="btn-edit" onClick={handleEdit}>
-                <Edit size={18} /> Edit
-            </button>
             <button className="btn-secondary" onClick={handlePrint}>
                 <Printer size={18} /> Print
             </button>
