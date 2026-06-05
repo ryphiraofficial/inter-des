@@ -7,10 +7,9 @@ const ExpenseStats = ({ loading, expenses }) => {
     
     if (loading) return <StatsSkeleton count={4} />;
 
-    const totalExpenses = expenses.reduce((s, e) => s + (e.amount || 0), 0);
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    
+
     const currentMonthExpenses = expenses.filter(e => {
         const d = new Date(e.expenseDate);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
@@ -21,6 +20,12 @@ const ExpenseStats = ({ loading, expenses }) => {
         const prevM = currentMonth === 0 ? 11 : currentMonth - 1;
         const prevY = currentMonth === 0 ? currentYear - 1 : currentYear;
         return d.getMonth() === prevM && d.getFullYear() === prevY;
+    }).reduce((s, e) => s + (e.amount || 0), 0);
+
+    const todayExpenses = expenses.filter(e => {
+        const d = new Date(e.expenseDate);
+        const today = new Date();
+        return d.toDateString() === today.toDateString();
     }).reduce((s, e) => s + (e.amount || 0), 0);
 
     const monthlyTrend = prevMonthExpenses ? ((currentMonthExpenses - prevMonthExpenses) / prevMonthExpenses) * 100 : 0;
@@ -39,8 +44,8 @@ const ExpenseStats = ({ loading, expenses }) => {
     const pendingCount = expenses.filter(e => e.status === 'Pending' || e.status === 'Overdue').length;
 
     const stats = [
-        { title: 'Total Expenses', value: formatCurrency(totalExpenses), icon: Wallet, bg: '#e0e7ff', color: '#4f46e5', footer: 'All Time' },
-        { title: 'Monthly Spending', value: formatCurrency(currentMonthExpenses), icon: BarChart3, bg: '#ecfdf5', color: '#10b981', trend: monthlyTrend },
+        { title: 'Total Expenses', value: formatCurrency(currentMonthExpenses), icon: Wallet, bg: '#e0e7ff', color: '#4f46e5', footer: 'This Month', trend: monthlyTrend },
+        { title: "Today's Spending", value: formatCurrency(todayExpenses), icon: BarChart3, bg: '#ecfdf5', color: '#10b981', footer: 'Today' },
         { title: 'Top Category', value: topCategory[0], icon: PieIcon, bg: '#fef3c7', color: '#f59e0b', subtext: `${formatCurrency(topCategory[1])} spent` },
         { title: 'Pending Payments', value: pendingCount, icon: AlertCircle, bg: '#fef2f2', color: '#ef4444', footer: 'Requires attention' }
     ];

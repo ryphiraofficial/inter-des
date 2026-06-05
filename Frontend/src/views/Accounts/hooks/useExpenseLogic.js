@@ -122,22 +122,40 @@ export const useExpenseLogic = (parentSearch, parentSetSearch, filterMode = 'all
         }
     };
 
+    const [filterDate, setFilterDate] = useState('Today');
+
     const filtered = expenses.filter(e => {
         const vendorText = e.vendorName || (e.vendor && e.vendor.name) || (typeof e.vendor === 'string' ? e.vendor : '');
         const matchesSearch = e.description?.toLowerCase().includes(search.toLowerCase()) || 
                               vendorText.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = filterCategory === 'All' || e.category === filterCategory || e.type === filterCategory;
         
+        let matchesDate = true;
+        if (e.expenseDate && filterDate !== 'All Time') {
+            const expDate = new Date(e.expenseDate);
+            const today = new Date();
+            
+            if (filterDate === 'Today') {
+                matchesDate = expDate.toDateString() === today.toDateString();
+            } else if (filterDate === 'This Week') {
+                const firstDay = new Date(today.setDate(today.getDate() - today.getDay()));
+                matchesDate = expDate >= firstDay;
+            } else if (filterDate === 'This Month') {
+                matchesDate = expDate.getMonth() === today.getMonth() && expDate.getFullYear() === today.getFullYear();
+            }
+        }
+
         let matchesMode = true;
         if (filterMode === 'company') {
             matchesMode = !e.project;
         }
 
-        return matchesSearch && matchesCategory && matchesMode;
+        return matchesSearch && matchesCategory && matchesDate && matchesMode;
     }).sort((a, b) => new Date(b.expenseDate) - new Date(a.expenseDate));
 
     return {
         expenses, loading, search, setSearch, filterCategory, setFilterCategory,
+        filterDate, setFilterDate,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete, handleEdit, editingId, setEditingId
     };

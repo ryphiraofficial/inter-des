@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X
+    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
     { tab: 'meetings',   label: 'Meetings',            icon: Video },
 ];
 
-const AccountsStaffSidebar = ({ isOpen, onClose }) => {
+const AccountsStaffSidebar = ({ isOpen, onClose, user, onLogout }) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
@@ -28,10 +28,15 @@ const AccountsStaffSidebar = ({ isOpen, onClose }) => {
         if (onClose) onClose();
     };
 
+    const getInitials = (u) => {
+        const name = u?.fullName || u?.name || '';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    };
+
     return (
-        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`}>
+        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
             {/* Sidebar header with close button on mobile */}
-            <div style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', marginBottom: '1rem', flexShrink: 0 }}>
+            <div style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
                         {companyName}
@@ -46,7 +51,7 @@ const AccountsStaffSidebar = ({ isOpen, onClose }) => {
                 </button>
             </div>
 
-            <div className="accounts-sidebar-nav-container">
+            <div className="accounts-sidebar-nav-container" style={{ flex: 1, overflowY: 'auto', paddingTop: '1rem' }}>
                 <nav className="accounts-sidebar-nav">
                     <div className="accounts-sidebar-section-label">OPERATIONS</div>
                     {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
@@ -62,7 +67,24 @@ const AccountsStaffSidebar = ({ isOpen, onClose }) => {
                 </nav>
             </div>
 
-
+            {/* Profile and Logout for Desktop Only */}
+            <div className="accounts-sidebar-footer accounts-hide-on-mobile" style={{ padding: '1.25rem', borderTop: '1px solid #e2e8f0', marginTop: 'auto', flexShrink: 0, background: '#f8fafc' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+                    <div className="accounts-mobile-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem', flexShrink: 0 }}>
+                        {getInitials(user)}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                        <span className="accounts-sidebar-user-name">{user?.fullName || user?.name || 'User'}</span>
+                        <span className="accounts-sidebar-user-role">{user?.role?.replace(/_/g, ' ') || 'Accounts'}</span>
+                    </div>
+                </div>
+                {onLogout && (
+                    <button className="accounts-sidebar-logout-btn" onClick={onLogout}>
+                        <LogOut size={16} />
+                        <span>Log Out</span>
+                    </button>
+                )}
+            </div>
         </aside>
     );
 };

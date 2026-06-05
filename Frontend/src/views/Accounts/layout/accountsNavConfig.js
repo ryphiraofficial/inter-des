@@ -14,13 +14,11 @@ export const TAB_META = {
     meetings:          { label: 'Meetings',               description: 'Schedule and manage finance meetings' }
 };
 
-// Search config keyed by tab — only tabs that support search
 export const SEARCH_CONFIGS = {
     clearance:        { placeholder: 'Search projects...' },
     collections:      { placeholder: 'Search project name, ID, or client...' },
     clients:          { placeholder: 'Search by name, email or phone...' },
     payments:         { placeholder: 'Search by client or reference...' },
-    expenses:         { placeholder: 'Search by description or category...' },
     company_expenses: { placeholder: 'Search company expenses...' },
     vendors:          { placeholder: 'Search by name or category...' }
 };

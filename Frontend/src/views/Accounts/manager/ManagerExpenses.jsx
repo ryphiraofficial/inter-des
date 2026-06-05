@@ -15,6 +15,7 @@ const ManagerExpenses = ({ search, setSearch, filterMode }) => {
     const user = useAppSelector(selectUser);
     const {
         expenses, loading, filterCategory, setFilterCategory,
+        filterDate, setFilterDate,
         showCategoryDropdown, setShowCategoryDropdown, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete
     } = useExpenseLogic(search, setSearch, filterMode);
@@ -75,6 +76,8 @@ const ManagerExpenses = ({ search, setSearch, filterMode }) => {
                         setFilterCategory={setFilterCategory}
                         showCategoryDropdown={showCategoryDropdown}
                         setShowCategoryDropdown={setShowCategoryDropdown}
+                        filterDate={filterDate}
+                        setFilterDate={setFilterDate}
                     />
                 </div>
 
