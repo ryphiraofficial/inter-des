@@ -136,6 +136,30 @@
     font-weight: 500;
 }
 
+/* Default Desktop Search Bar */
+.accounts-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    min-width: 180px;
+}
+.accounts-search-wrapper input {
+    width: 100%;
+    height: 38px;
+    padding: 0 16px 0 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    background: #f8fafc;
+    transition: all 0.2s;
+}
+.accounts-search-wrapper input:focus {
+    background: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 @media (max-width: 480px) {
     .accounts-navbar-pagedesc {
         display: none;
@@ -496,9 +520,48 @@
         gap: 0.5rem;
     }
 
-    /* Hide search bar on very small screens */
+    /* Click-to-expand search bar on mobile screens */
     .accounts-search-wrapper {
+        display: flex;
+        min-width: 0;
+        width: 38px; /* Just enough for the icon */
+        height: 38px;
+        background: transparent;
+        border-radius: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .accounts-search-wrapper.expanded {
+        flex-grow: 1; /* Expands to fill available space */
+        width: auto;
+        background: #f8fafc;
+        cursor: text;
+    }
+
+    .accounts-search-wrapper input {
+        opacity: 0;
+        padding-left: 36px !important; /* Keep space for absolute icon */
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        transition: opacity 0.2s;
+        width: 100%;
+    }
+
+    .accounts-search-wrapper.expanded input {
+        opacity: 1;
+    }
+
+    /* When search is expanded on mobile, hide the brand (hamburger + title) so search can fill space */
+    .accounts-navbar.search-expanded .accounts-navbar-brand {
         display: none;
+    }
+
+    .accounts-navbar.search-expanded .accounts-navbar-right {
+        width: 100%;
+        justify-content: flex-end;
     }
 
     /* Hide export label text on mobile */
@@ -516,12 +579,11 @@
     }
 }
 
-/* Show search on slightly larger mobile (≥480px) */
+/* Make search bar slightly larger on medium screens */
 @media (min-width: 480px) and (max-width: 768px) {
-    .accounts-search-wrapper {
-        display: flex;
-        min-width: 140px;
-        max-width: 200px;
+    .accounts-search-wrapper.expanded {
+        width: auto;
+        flex-grow: 1;
     }
 }
 

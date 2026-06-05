@@ -53,13 +53,18 @@ export const usePaymentLogic = (parentSearch, parentSetSearch) => {
         }
     };
 
-    const filtered = payments.filter(p =>
-        p.client?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        p.reference?.toLowerCase().includes(search.toLowerCase())
-    );
+    const [filterMethod, setFilterMethod] = useState('All');
+
+    const filtered = payments.filter(p => {
+        const matchesSearch = p.client?.name?.toLowerCase().includes(search.toLowerCase()) ||
+                              p.reference?.toLowerCase().includes(search.toLowerCase());
+        const matchesMethod = filterMethod === 'All' || p.paymentMethod === filterMethod;
+        return matchesSearch && matchesMethod;
+    });
 
     return {
         payments, clients, loading, search, setSearch, showModal, setShowModal,
-        submitting, form, setForm, filtered, handleSubmit, handleDelete
+        submitting, form, setForm, filtered, handleSubmit, handleDelete,
+        filterMethod, setFilterMethod
     };
 };

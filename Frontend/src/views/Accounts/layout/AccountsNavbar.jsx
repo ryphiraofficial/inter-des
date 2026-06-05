@@ -78,8 +78,33 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
         navigate(path);
     };
 
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const searchInputRef = useRef(null);
+
+    /* Close search on outside click */
+    useEffect(() => {
+        const handler = (e) => {
+            if (isSearchExpanded && !e.target.closest('.accounts-search-wrapper')) {
+                setIsSearchExpanded(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        document.addEventListener('touchstart', handler);
+        return () => {
+            document.removeEventListener('mousedown', handler);
+            document.removeEventListener('touchstart', handler);
+        };
+    }, [isSearchExpanded]);
+
+    const handleSearchClick = () => {
+        if (!isSearchExpanded) {
+            setIsSearchExpanded(true);
+            setTimeout(() => searchInputRef.current?.focus(), 100);
+        }
+    };
+
     return (
-        <header className="accounts-navbar" style={{ overflow: 'visible' }}>
+        <header className={`accounts-navbar ${isSearchExpanded ? 'search-expanded' : ''}`} style={{ overflow: 'visible' }}>
 
             {/* ── Left: Hamburger (mobile) + Page title ── */}
             <div className="accounts-navbar-brand">
@@ -105,27 +130,22 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
 
                 {/* Search */}
                 {searchConfig && setSearch && (
-                    <div className="accounts-search-wrapper" style={{ position: 'relative', width: '100%', maxWidth: '280px', minWidth: '180px' }}>
+                    <div 
+                        className={`accounts-search-wrapper ${isSearchExpanded ? 'expanded' : ''}`} 
+                        onClick={handleSearchClick}
+                    >
                         <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                         <input
+                            ref={searchInputRef}
                             type="text"
                             placeholder={searchConfig.placeholder}
                             value={search || ''}
                             onChange={e => setSearch(e.target.value)}
-                            style={{ width: '100%', height: '38px', padding: '0 16px 0 36px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', outline: 'none', background: '#f8fafc', transition: 'all 0.2s' }}
                         />
                     </div>
                 )}
 
-                {/* Export */}
-                {onExport && (
-                    <button onClick={onExport} style={{ ...btnBase, background: '#fff', border: '1px solid #e2e8f0', color: '#475569', fontWeight: 500 }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                        onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
-                        <Download size={15} />
-                        <span className="accounts-btn-label">Export</span>
-                    </button>
-                )}
+                {/* Export - Removed per user request */}
 
                 {/* Add Expense */}
                 {['expenses', 'company_expenses'].includes(activeTab) && (

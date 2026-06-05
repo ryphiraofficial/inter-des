@@ -1,0 +1,206 @@
+/* ================================================================
+   PaymentTable — Responsive CSS
+   Mobile: collapsible card layout (accordion style)
+   Desktop: normal table layout
+   ================================================================ */
+
+.payment-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.payments-table-container {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Base states for helper classes */
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: block;
+}
+
+.desktop-only-cell {
+    display: table-cell;
+}
+
+.mobile-toggle-btn {
+    display: none;
+}
+
+/* ================================================================
+   MOBILE — Collapsible Card Layout
+   ================================================================ */
+@media (max-width: 768px) {
+
+    .payments-table-container {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    .mobile-only {
+        display: flex !important;
+    }
+
+    .desktop-only,
+    .desktop-only-cell {
+        display: none !important;
+    }
+
+    .payment-table-wrapper {
+        overflow-x: visible;
+        padding: 4px 0;
+    }
+
+    .payment-table {
+        min-width: unset;
+        width: 100%;
+        display: block;
+    }
+
+    .payment-table thead {
+        display: none;
+    }
+
+    .payment-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* ── Each <tr> becomes a card ── */
+    .payment-table tbody tr {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin: 0 0 12px 0;
+        background: #ffffff;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+        border-left: 4px solid #6366f1; /* Accent border */
+        transition: all 0.2s ease;
+    }
+    
+    .payment-table tbody tr.expanded {
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        border-left-color: #4f46e5;
+    }
+
+    /* ── Show the mobile toggle button ── */
+    .mobile-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        border: none;
+        color: #64748b;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .payment-table tbody tr.expanded .mobile-toggle-btn {
+        transform: rotate(180deg);
+        background: #e0e7ff;
+        color: #4f46e5;
+    }
+
+    /* ── Primary Info (Always visible on mobile) ── */
+    .payment-table tbody td {
+        display: none; 
+        box-sizing: border-box;
+        width: 100%;
+        padding: 10px 14px !important;
+    }
+
+    /* Header section of the card (Client & Amount) */
+    .payment-table tbody td.mobile-header {
+        display: block; 
+        padding: 0 !important;
+        border-bottom: none;
+    }
+    
+    .mobile-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .mobile-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .mobile-header-left span:first-child {
+        font-size: 16px !important;
+        letter-spacing: -0.01em;
+    }
+    
+    .mobile-header-right {
+        display: flex;
+        align-items: center; /* Row layout now */
+        gap: 12px;
+    }
+    .mobile-header-right > span {
+        font-size: 16px !important;
+        letter-spacing: -0.01em;
+    }
+
+    /* ── Expanded Details ── */
+    .payment-table tbody tr.expanded td.detail-col {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #f1f5f9;
+        background: #f8fafc;
+        font-size: 13px;
+        padding: 12px 16px !important;
+    }
+    
+    /* Labels for details */
+    .payment-table tbody td.detail-col::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Action column */
+    .payment-table tbody tr.expanded td.action-col {
+        display: flex;
+        justify-content: center;
+        border-top: 1px solid #f1f5f9;
+        background: #f8fafc;
+        padding: 14px 16px !important;
+    }
+    
+    .payment-table tbody td.action-col button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+    }
+}
