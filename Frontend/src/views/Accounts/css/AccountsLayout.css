@@ -128,6 +128,23 @@
     line-height: 1.2;
 }
 
+.accounts-navbar-pagedesc {
+    font-size: 11px;
+    color: #64748b;
+    display: block;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+@media (max-width: 480px) {
+    .accounts-navbar-pagedesc {
+        display: none;
+    }
+    .accounts-navbar-title {
+        font-size: 0.9rem;
+    }
+}
+
 .accounts-navbar-subtitle {
     font-size: 0.7rem;
     color: #94a3b8;
@@ -214,14 +231,313 @@
     animation: spin 1s linear infinite;
 }
 
+/* ── Hamburger button — mobile only ── */
+.accounts-hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #334155;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.accounts-hamburger:hover {
+    background: #e2e8f0;
+}
+
+/* ── Sidebar close button — mobile only ── */
+.accounts-sidebar-close {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #334155;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.accounts-sidebar-close:hover {
+    background: #e2e8f0;
+}
+
+/* ── Mobile profile wrapper in navbar ── */
+.accounts-mobile-profile {
+    display: none;
+    position: relative;
+}
+
+/* Avatar trigger button */
+.accounts-mobile-avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 22px;
+    transition: background 0.15s;
+    outline: none;
+}
+.accounts-mobile-avatar-btn:hover,
+.accounts-mobile-avatar-btn.open {
+    background: #f1f5f9;
+}
+
+.accounts-mobile-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+/* ── Dropdown panel ── */
+.accounts-profile-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 232px;
+    background: #ffffff;
+    border: 1px solid #e8edf3;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.14), 0 3px 10px rgba(15, 23, 42, 0.06);
+    z-index: 9999;
+    overflow: hidden;
+    animation: profileDropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes profileDropdownIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* User header — name + role only, no avatar */
+.accounts-profile-dropdown-header {
+    padding: 16px 18px 14px;
+}
+.accounts-profile-dropdown-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.accounts-profile-dropdown-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.accounts-profile-dropdown-role {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: capitalize;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Divider */
+.accounts-profile-dropdown-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0;
+}
+
+/* Menu items container */
+.accounts-profile-dropdown-menu {
+    padding: 6px 0;
+}
+
+/* Individual menu item */
+.accounts-profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 11px 18px;
+    border: none;
+    background: transparent;
+    color: #1e293b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.14s;
+    text-align: left;
+}
+.accounts-profile-menu-item:hover {
+    background: #f8fafc;
+}
+.accounts-profile-menu-icon {
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+/* Notification count badge inside menu item */
+.accounts-profile-notif-badge {
+    margin-left: auto;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+/* Logout button */
+.accounts-profile-dropdown-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 18px;
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.14s;
+    text-align: left;
+}
+.accounts-profile-dropdown-logout:hover {
+    background: #fef2f2;
+}
+
+/* Hide desktop bell on mobile (bell is inside profile dropdown) */
+.accounts-hide-on-mobile {
+    display: flex;
+}
+
+/* ── Sidebar backdrop overlay ── */
+.accounts-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 998;
+    animation: fadeInOverlay 0.2s ease;
+}
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 /* ── Responsive breakpoints ── */
 @media (max-width: 768px) {
+    /* Sidebar: hidden by default, slides in when open */
     .accounts-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100dvh;
+        z-index: 999;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+        width: 260px;
+    }
+    .accounts-sidebar--open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(15, 23, 42, 0.18);
+    }
+
+    /* Show overlay on mobile */
+    .accounts-sidebar-overlay {
+        display: block;
+    }
+
+    /* Show hamburger & close btn on mobile */
+    .accounts-hamburger {
+        display: flex;
+    }
+    .accounts-sidebar-close {
+        display: flex;
+    }
+
+    /* Show profile dropdown in navbar on mobile */
+    .accounts-mobile-profile {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Hide desktop notification bell on mobile (it's inside the profile dropdown) */
+    .accounts-hide-on-mobile {
+        display: none !important;
+    }
+
+    /* Navbar: tighter padding on mobile */
+    .accounts-navbar {
+        padding: 0 1rem;
+        gap: 0.5rem;
+    }
+
+    /* Hide search bar on very small screens */
+    .accounts-search-wrapper {
         display: none;
     }
-    .accounts-navbar-subtitle,
-    .accounts-navbar-userinfo {
+
+    /* Hide export label text on mobile */
+    .accounts-btn-label {
         display: none;
+    }
+
+    /* Make main content fill full width */
+    .accounts-layout-main {
+        width: 100%;
+    }
+
+    .accounts-layout-content {
+        padding: 1rem;
+    }
+}
+
+/* Show search on slightly larger mobile (≥480px) */
+@media (min-width: 480px) and (max-width: 768px) {
+    .accounts-search-wrapper {
+        display: flex;
+        min-width: 140px;
+        max-width: 200px;
+    }
+}
+
+/* Show button labels on desktop */
+@media (min-width: 769px) {
+    .accounts-hamburger {
+        display: none !important;
+    }
+    .accounts-sidebar-close {
+        display: none !important;
+    }
+    .accounts-mobile-profile {
+        display: none !important;
+    }
+    .accounts-btn-label {
+        display: inline;
     }
 }
 
