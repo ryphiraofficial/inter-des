@@ -3,6 +3,7 @@ import { Shield, CheckCircle } from 'lucide-react';
 import { TableSkeleton } from '../../components/UI/Skeleton';
 import ClearanceConfirmDialog from './ClearanceConfirmDialog';
 import StaffAssignCell from './StaffAssignCell';
+import '../../css/ClearanceTable.css';
 
 const ClearanceTable = ({
     loading, filtered, staffList, assigningId, setAssigningId,
@@ -51,8 +52,8 @@ const ClearanceTable = ({
 
     return (
         <>
-            <div className="table-responsive-wrapper">
-                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+            <div className="clearance-table-wrapper">
+                <table className="clearance-table">
                     <thead>
                         <tr style={{ background: '#f8fafc' }}>
                             {['Project', 'Client', 'Total Budget', 'Target Amount', 'Status', 'Assigned Staff', 'Actions'].map(h => (
@@ -72,29 +73,44 @@ const ClearanceTable = ({
 
                             return (
                                 <tr key={p._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '16px 24px', fontWeight: 600, color: '#0f172a' }}>
-                                        {p.name}
-                                        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 400 }}>{p.projectNumber}</div>
+                                    {/* Project — special card header cell */}
+                                    <td className="clearance-td-project">
+                                        <span className="clearance-project-name">{p.name}</span>
+                                        <span className="clearance-project-num">{p.projectNumber}</span>
                                     </td>
-                                    <td style={{ padding: '16px 24px', color: '#475569' }}>{p.client?.name || '—'}</td>
-                                    <td style={{ padding: '16px 24px', color: '#475569' }}>₹{(p.budget || 0).toLocaleString('en-IN')}</td>
-                                    <td style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>
-                                        <span style={{ color: isBalance ? '#f59e0b' : '#10b981', fontSize: '11px', display: 'block', textTransform: 'uppercase', marginBottom: '2px' }}>
-                                            {isBalance ? 'Balance' : 'Advance'}
+
+                                    <td data-label="Client" style={{ padding: '16px 24px', color: '#475569' }}>
+                                        {p.client?.name || '—'}
+                                    </td>
+
+                                    <td data-label="Total Budget" style={{ padding: '16px 24px', color: '#475569' }}>
+                                        ₹{(p.budget || 0).toLocaleString('en-IN')}
+                                    </td>
+
+                                    <td data-label="Target Amount" style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>
+                                        <span>
+                                            <span style={{ color: isBalance ? '#f59e0b' : '#10b981', fontSize: '11px', display: 'block', textTransform: 'uppercase', marginBottom: '2px' }}>
+                                                {isBalance ? 'Balance' : 'Advance'}
+                                            </span>
+                                            ₹{targetAmount.toLocaleString('en-IN')}
                                         </span>
-                                        ₹{targetAmount.toLocaleString('en-IN')}
                                     </td>
-                                    <td style={{ padding: '16px 24px' }}>
+
+                                    <td data-label="Status" style={{ padding: '16px 24px' }}>
                                         <span style={{ background: colors.bg, color: colors.text, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 600 }}>
                                             {displayStatus}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '16px 24px' }}>
-                                        <StaffAssignCell project={p} staffList={staffList} assigningId={assigningId}
-                                            setAssigningId={setAssigningId} selectedStaff={selectedStaff} setSelectedStaff={setSelectedStaff}
-                                            handleAssign={handleAssign} getAssignedStaffName={getAssignedStaffName} />
+
+                                    <td data-label="Assigned Staff" className="clearance-td-staff" style={{ padding: '16px 24px' }}>
+                                        <div className="clearance-staff-cell-inner">
+                                            <StaffAssignCell project={p} staffList={staffList} assigningId={assigningId}
+                                                setAssigningId={setAssigningId} selectedStaff={selectedStaff} setSelectedStaff={setSelectedStaff}
+                                                handleAssign={handleAssign} getAssignedStaffName={getAssignedStaffName} />
+                                        </div>
                                     </td>
-                                    <td style={{ padding: '16px 24px' }}>
+
+                                    <td className="clearance-td-actions" style={{ padding: '16px 24px' }}>
                                         {p.paymentCollectionStatus === 'Collected' ? (
                                             <button onClick={() => handleConfirmOpen(p._id, true)} className="btn-primary-sm"
                                                 style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
