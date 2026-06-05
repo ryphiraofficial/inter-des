@@ -1,9 +1,8 @@
 {
   "name": "interior-design-erp",
   "version": "1.0.0",
-  "main": "Backend/server.js",
   "scripts": {
     "build": "cd Backend && npm install",
-    "start": "cd Backend && npm start"
+    "start": "cd Backend && node server.js"
   }
 }
