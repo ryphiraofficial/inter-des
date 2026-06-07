@@ -200,6 +200,9 @@
     color: #475569;
     margin: 4px 0;
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .validity {

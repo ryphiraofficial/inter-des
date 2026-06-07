@@ -20,29 +20,36 @@ const LineItemCard = ({
         <div className="line-item-card" style={{ padding: '0.75rem 1rem' }}>
             <div className="line-item-main-grid">
                 <span className="line-item-number">#{index + 1}</span>
-                <div style={{ position: 'relative' }}>
-                    <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Item</span>
-                    <input
-                        type="text"
-                        className="input-styled"
-                        style={{ padding: '0.5rem', fontSize: '0.85rem' }}
-                        placeholder="Item name..."
-                        value={item.name}
-                        onChange={(e) => handleProductSearch(item.id, e.target.value, updateLineItem)}
-                    />
-                    {activeSearchId === item.id && searchResults.length > 0 && (
-                        <div className="product-search-dropdown">
-                            {searchResults.map(res => (
-                                <div key={res._id} className="search-result-item" onClick={() => selectProduct(item.id, res)}>
-                                    <div className="res-info">
-                                        <span className="res-name">{res.itemName}</span>
-                                        <span className="res-cat">{res.section}</span>
-                                    </div>
-                                    <span className="res-price">₹{res.price}</span>
-                                </div>
-                            ))}
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    {item.image && (
+                        <div style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, marginTop: '16px', border: '1px solid #cbd5e1' }}>
+                            <img src={item.image} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                     )}
+                    <div style={{ position: 'relative', flex: 1 }}>
+                        <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Item</span>
+                        <input
+                            type="text"
+                            className="input-styled"
+                            style={{ padding: '0.5rem', fontSize: '0.85rem' }}
+                            placeholder="Item name..."
+                            value={item.name}
+                            onChange={(e) => handleProductSearch(item.id, e.target.value, updateLineItem)}
+                        />
+                        {activeSearchId === item.id && searchResults.length > 0 && (
+                            <div className="product-search-dropdown">
+                                {searchResults.map(res => (
+                                    <div key={res._id} className="search-result-item" onClick={() => selectProduct(item.id, res)}>
+                                        <div className="res-info">
+                                            <span className="res-name">{res.itemName}</span>
+                                            <span className="res-cat">{res.section}</span>
+                                        </div>
+                                        <span className="res-price">₹{res.price}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Qty</span>
@@ -71,6 +78,10 @@ const LineItemCard = ({
                     </div>
                 </div>
                 <div className="line-item-actions">
+                    <button type="button" onClick={() => document.getElementById(`file-quick-admin-${item.id}`).click()} style={{ border: 'none', background: 'transparent', color: item.image ? '#6366f1' : '#94a3b8', cursor: 'pointer', padding: '4px' }} title={item.image ? "Change Image" : "Upload Image"}>
+                        {item.image ? <img src={item.image} alt="preview" style={{width: '18px', height: '18px', borderRadius: '4px', objectFit: 'cover'}} /> : <Upload size={18} />}
+                    </button>
+                    <input type="file" id={`file-quick-admin-${item.id}`} hidden onChange={(e) => handleImageUpload(item.id, e.target.files[0])} accept="image/*" />
                     <button
                         type="button"
                         onClick={() => setExpandedItems(prev => ({ ...prev, [item.id]: !prev[item.id] }))}

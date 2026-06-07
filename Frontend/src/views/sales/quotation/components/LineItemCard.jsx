@@ -10,8 +10,13 @@ const LineItemCard = ({
         <div className={`line-item-card ${expandedItems[item.id] ? 'expanded' : ''}`}>
             <div className="item-main-row">
                 <div className="item-number">{index + 1}</div>
-                <div className="item-primary-info">
-                    <div style={{ position: 'relative' }}>
+                <div className="item-primary-info" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    {item.image && (
+                        <div style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, marginTop: '16px', border: '1px solid #cbd5e1' }}>
+                            <img src={item.image} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                    )}
+                    <div style={{ position: 'relative', flex: 1 }}>
                         <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Item</span>
                         <input
                             type="text"
@@ -65,6 +70,10 @@ const LineItemCard = ({
                     </div>
                     <div className="item-total-display">₹{item.amount?.toLocaleString()}</div>
                     <div className="item-actions">
+                        <button type="button" onClick={() => document.getElementById(`file-quick-sales-${item.id}`).click()} className="btn-icon-item" title={item.image ? "Change Image" : "Upload Image"}>
+                            {item.image ? <img src={item.image} alt="preview" style={{width: '16px', height: '16px', borderRadius: '4px', objectFit: 'cover'}} /> : <Upload size={16} />}
+                        </button>
+                        <input type="file" id={`file-quick-sales-${item.id}`} hidden onChange={(e) => handleImageUpload(item.id, e.target.files[0])} accept="image/*" />
                         <button type="button" onClick={() => setExpandedItems(p => ({ ...p, [item.id]: !p[item.id] }))} className="btn-icon-item">
                             {expandedItems[item.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </button>

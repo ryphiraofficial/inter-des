@@ -29,6 +29,7 @@ export const useQuotationActions = ({
     const [createQuotation] = useCreateQuotationMutation();
     const [updateQuotation] = useUpdateQuotationMutation();
     const [createClient] = useCreateClientMutation();
+    const [uploadImage] = useUploadImageMutation();
 
     const handlePreview = (e, status = 'Under Review') => {
         if (e) e.preventDefault();
