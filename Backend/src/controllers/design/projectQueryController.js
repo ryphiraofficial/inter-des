@@ -21,6 +21,7 @@ export const getProjects = async (req, res) => {
             .populate('assignedDesignManager', 'fullName')
             .populate('assignedProcurementManager', 'fullName')
             .populate('assignedProductionManager', 'fullName')
+            .populate('assignedAccountsStaff', 'fullName')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));

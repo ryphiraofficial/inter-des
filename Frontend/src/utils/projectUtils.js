@@ -1,5 +1,6 @@
 export const getStageColor = (stage) => {
     const colors = {
+        'Accounts': '#10b981',
         'Design': '#8b5cf6',
         'Procurement': '#f59e0b',
         'Production': '#3b82f6',

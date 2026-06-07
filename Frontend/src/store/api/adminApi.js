@@ -356,6 +356,14 @@ export const adminApi = createApi({
         getMaterialRequests: builder.query({
             query: (params = {}) => `/procurement/material-requests?${newSearchParams(params)}`,
             providesTags: ['Approvals'], // Reusing approvals tag for admin
+        }),
+        accountsCollectPayment: builder.mutation({
+            query: ({ id, ...body }) => ({ url: `/projects/${id}/accounts-collect`, method: 'PUT', body }),
+            invalidatesTags: ['Projects', 'Approvals'],
+        }),
+        adminClearPaymentToProcurement: builder.mutation({
+            query: ({ id, ...body }) => ({ url: `/projects/${id}/admin-clear-payment`, method: 'PUT', body }),
+            invalidatesTags: ['Projects', 'Approvals', 'Tasks'],
         })
     }),
 });
@@ -430,5 +438,7 @@ export const {
     useMarkAllNotificationsReadMutation,
     useDeleteNotificationMutation,
     useGetProductionManagersQuery,
-    useGetMaterialRequestsQuery
+    useGetMaterialRequestsQuery,
+    useAccountsCollectPaymentMutation,
+    useAdminClearPaymentToProcurementMutation
 } = adminApi;

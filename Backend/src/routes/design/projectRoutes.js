@@ -5,6 +5,7 @@ import { protect, authorize } from '../../middleware/auth.js';
 import { createProject } from '../../controllers/design/projectCreationController.js';
 import { updateProject, updateProjectStage, performHandoff, approveFinalHandover, deleteProject } from '../../controllers/design/projectUpdateController.js';
 import { getProjects, getProject, getProjectStats, getProjectsByStage, getWorkflowChecklist, validateHandoff } from '../../controllers/design/projectQueryController.js';
+import { accountsCollectPayment, adminClearPaymentToProcurement } from '../../controllers/design/taskController.js';
 
 router.use(protect);
 
@@ -37,5 +38,11 @@ router.route('/:id/workflow-checklist')
 
 router.route('/:id/final-handover')
     .post(approveFinalHandover);
+
+router.route('/:id/accounts-collect')
+    .put(accountsCollectPayment);
+
+router.route('/:id/admin-clear-payment')
+    .put(adminClearPaymentToProcurement);
 
 export default router;

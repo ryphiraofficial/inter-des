@@ -116,7 +116,7 @@ export const managerSendToAdmin = async (reqData) => {
 
 export const adminReviewDesign = async (reqData) => {
     try {
-        const { approved, rejectionReason, approvedBudget, advancePercentage, paymentDueDate, adminPaymentNotes, procurementManagerId } = reqData.body;
+        const { approved, rejectionReason, advancePercentage, paymentDueDate, adminPaymentNotes } = reqData.body;
         const task = await Task.findById(reqData.params.id).populate('quotation');
         if (!task) return { status: 404, success: false, message: 'Task not found' };
         await healTaskReferences(task);
@@ -131,6 +131,7 @@ export const adminReviewDesign = async (reqData) => {
             return { status: 200, success: true, data: task, message: 'Design rejected and sent back for revision' };
         }
 
+        // Create project if it doesn't exist
         if (!task.project && task.quotation) {
             let project = await Project.findOne({ quotation: task.quotation._id });
             if (!project) {
@@ -147,30 +148,129 @@ export const adminReviewDesign = async (reqData) => {
         const quotationTotal = task.quotation?.totalAmount || 0;
         const pct = Number(advancePercentage) || 30;
         const calcAdvanceAmount = Math.round((quotationTotal * pct) / 100);
+        const { accountsManagerId } = reqData.body;
 
-        task.status = 'Pushed to Procurement';
-        task.timeline.push({ action: 'adminReviewed', performedBy: reqData.user.id, details: `Admin approved design. Advance payment ${pct}% (₹${calcAdvanceAmount}) sent to Accounts for collection.`, timestamp: new Date() });
+        // Set task status to "Pending Payment" — NOT "Pushed to Procurement"
+        task.status = 'Pending Payment';
+        task.timeline.push({ action: 'adminReviewed', performedBy: reqData.user.id, details: `Admin approved design. Advance payment ${pct}% (₹${calcAdvanceAmount}) sent to Accounts for collection. Procurement will begin after payment is cleared.`, timestamp: new Date() });
 
-        const latestSubmission = task.submissions?.[task.submissions.length - 1];
-        const designItems = latestSubmission?.designItems || [];
-        const materialRequestItems = designItems.map(item => ({ itemName: item.name, description: `Size: ${item.size || 'N/A'}`, quantity: item.quantity || 1, unit: item.unit || 'pcs', status: 'Pending' }));
-
-        let materialRequest = null;
+        // Set project stage to "Accounts" — NO MaterialRequest, NO Procurement Manager assignment
         if (task.project) {
-            const projectObj = await Project.findById(task.project);
-            materialRequest = await MaterialRequest.create({ project: task.project, quotation: task.quotation ? task.quotation._id : null, items: materialRequestItems, priority: 'Medium', status: 'Pending', requestedBy: reqData.user.id, createdBy: reqData.user.id, approvedBudget: approvedBudget || 0, isPushedFromDesign: true, notes: `Design approved by admin. Advance payment collection pending (${pct}% = ₹${calcAdvanceAmount}).` });
-            await Project.findByIdAndUpdate(task.project, { stage: 'Procurement', designComplete: true, advancePercentage: pct, advanceAmount: calcAdvanceAmount, paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null, adminPaymentNotes: adminPaymentNotes || '', paymentCollectionStatus: 'Pending Assignment', paymentStatus: 'Pending Advance', assignedProcurementManager: procurementManagerId || undefined });
-            if (procurementManagerId && projectObj) {
-                await notifyUser(procurementManagerId, { title: '📦 New Project Assigned for Procurement', description: `You have been assigned as the Procurement Manager for "${projectObj.name}". The design has been approved and you can start sourcing materials immediately.`, type: 'Info', relatedModel: 'Project', relatedId: task.project, createdBy: reqData.user.id });
+            const updatePayload = { 
+                stage: 'Accounts', 
+                designComplete: true, 
+                advancePercentage: pct, 
+                advanceAmount: calcAdvanceAmount, 
+                paymentDueDate: paymentDueDate ? new Date(paymentDueDate) : null, 
+                adminPaymentNotes: adminPaymentNotes || '', 
+                paymentCollectionStatus: accountsManagerId ? 'Assigned' : 'Pending Assignment', 
+                paymentStatus: 'Pending Advance' 
+            };
+            if (accountsManagerId) {
+                updatePayload.assignedAccountsStaff = accountsManagerId;
             }
+            await Project.findByIdAndUpdate(task.project, updatePayload);
         }
 
         if (task.quotation) { task.quotation.status = 'Approved'; await task.quotation.save(); }
         await task.save();
 
-        notifyByRole('Accounts Manager', { title: '💰 New Payment Collection Request', description: `Admin approved design "${task.title}". Collect ${pct}% advance (₹${calcAdvanceAmount.toLocaleString('en-IN')}) by ${paymentDueDate ? new Date(paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}. Assign a staff member to proceed.`, type: 'Info', relatedModel: 'Project', relatedId: task.project });
+        if (accountsManagerId) {
+            notifyUser(accountsManagerId, { title: '💰 New Payment Collection Assigned', description: `Admin assigned you to collect ${pct}% advance (₹${calcAdvanceAmount.toLocaleString('en-IN')}) for "${task.title}" by ${paymentDueDate ? new Date(paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}.`, type: 'Info', relatedModel: 'Project', relatedId: task.project });
+        } else {
+            notifyByRole('Accounts Manager', { title: '💰 New Payment Collection Request', description: `Admin approved design "${task.title}". Collect ${pct}% advance (₹${calcAdvanceAmount.toLocaleString('en-IN')}) by ${paymentDueDate ? new Date(paymentDueDate).toLocaleDateString('en-IN') : 'TBD'}. Assign a staff member to proceed.`, type: 'Info', relatedModel: 'Project', relatedId: task.project });
+        }
+        
         notifyDesign('Design Manager', { title: '✅ Design Approved — Awaiting Payment', description: `Admin approved "${task.title}". Project is now pending advance payment collection before procurement begins.`, type: 'Success', relatedModel: 'Task', relatedId: task._id });
 
-        return { status: 200, success: true, data: task, materialRequest, message: `Design approved. Payment collection request (${pct}% = ₹${calcAdvanceAmount}) sent to Accounts Manager.` };
+        return { status: 200, success: true, data: task, message: `Design approved. Sent to Accounts for ${pct}% advance collection (₹${calcAdvanceAmount}). Procurement will begin after payment is cleared.` };
+    } catch (error) { return { status: 500, success: false, message: error.message }; }
+};
+
+// Accounts Manager marks payment as collected
+export const accountsCollectPayment = async (reqData) => {
+    try {
+        const { amount, paymentMode, referenceNumber, paymentNotes } = reqData.body;
+        const project = await Project.findById(reqData.params.id);
+        if (!project) return { status: 404, success: false, message: 'Project not found' };
+        if (project.stage !== 'Accounts') return { status: 400, success: false, message: 'Project is not in Accounts stage' };
+
+        const newCollected = (project.collectedAmount || 0) + (Number(amount) || 0);
+        project.collectedAmount = newCollected;
+        project.paymentCollectionStatus = 'Collected';
+        project.tempCollectionDetails = {
+            amount: Number(amount) || 0,
+            paymentMode: paymentMode || '',
+            referenceNumber: referenceNumber || '',
+            paymentNotes: paymentNotes || '',
+            collectedBy: reqData.user.id,
+            collectedAt: new Date()
+        };
+        await project.save();
+
+        // Notify Admin to review and clear payment
+        notifyByRole('Super Admin', { title: '💵 Payment Collected — Awaiting Your Clearance', description: `Accounts team collected ₹${(Number(amount) || 0).toLocaleString('en-IN')} for "${project.name}". Total collected: ₹${newCollected.toLocaleString('en-IN')} of ₹${(project.advanceAmount || 0).toLocaleString('en-IN')}. Please review and clear to proceed to Procurement.`, type: 'Info', relatedModel: 'Project', relatedId: project._id });
+        notifyByRole('Admin', { title: '💵 Payment Collected — Awaiting Your Clearance', description: `Accounts team collected ₹${(Number(amount) || 0).toLocaleString('en-IN')} for "${project.name}". Total collected: ₹${newCollected.toLocaleString('en-IN')} of ₹${(project.advanceAmount || 0).toLocaleString('en-IN')}. Please review and clear to proceed to Procurement.`, type: 'Info', relatedModel: 'Project', relatedId: project._id });
+
+        return { status: 200, success: true, data: project, message: `Payment of ₹${(Number(amount) || 0).toLocaleString('en-IN')} recorded. Admin will review and clear.` };
+    } catch (error) { return { status: 500, success: false, message: error.message }; }
+};
+
+// Admin clears payment and pushes project to Procurement
+export const adminClearPaymentToProcurement = async (reqData) => {
+    try {
+        const { procurementManagerId, forceOverride, overrideReason } = reqData.body;
+        if (!procurementManagerId) return { status: 400, success: false, message: 'Please assign a Procurement Manager' };
+
+        const project = await Project.findById(reqData.params.id).populate('quotation');
+        if (!project) return { status: 404, success: false, message: 'Project not found' };
+        if (project.stage !== 'Accounts') return { status: 400, success: false, message: 'Project is not in Accounts stage' };
+
+        const collected = project.collectedAmount || 0;
+        const required = project.advanceAmount || 0;
+        const isFullyPaid = collected >= required;
+
+        if (!isFullyPaid && !forceOverride) {
+            return { status: 400, success: false, message: `Payment not fully collected. Collected ₹${collected.toLocaleString('en-IN')} of ₹${required.toLocaleString('en-IN')}. Use force override if you want to proceed anyway.`, data: { collected, required, shortfall: required - collected } };
+        }
+
+        // Find the task associated with this project to create MaterialRequest from design items
+        const task = await Task.findOne({ project: project._id, status: 'Pending Payment' }).populate('quotation');
+        
+        let materialRequest = null;
+        if (task) {
+            const latestSubmission = task.submissions?.[task.submissions.length - 1];
+            const designItems = latestSubmission?.designItems || [];
+            const materialRequestItems = designItems.map(item => ({ itemName: item.name, description: `Size: ${item.size || 'N/A'}`, quantity: item.quantity || 1, unit: item.unit || 'pcs', status: 'Pending' }));
+
+            materialRequest = await MaterialRequest.create({ 
+                project: project._id, 
+                quotation: project.quotation?._id || project.quotation, 
+                items: materialRequestItems, 
+                priority: 'Medium', 
+                status: 'Pending', 
+                requestedBy: reqData.user.id, 
+                createdBy: reqData.user.id, 
+                isPushedFromDesign: true, 
+                notes: `Payment cleared by admin. ${!isFullyPaid ? `(Override: ${overrideReason || 'Admin approved partial payment'})` : 'Full advance collected.'}` 
+            });
+
+            task.status = 'Pushed to Procurement';
+            task.timeline.push({ action: 'paymentCleared', performedBy: reqData.user.id, details: `Admin cleared payment and pushed to procurement. ${!isFullyPaid ? `Override reason: ${overrideReason}` : 'Full advance collected.'}`, timestamp: new Date() });
+            await task.save();
+        }
+
+        // Update project to Procurement stage
+        project.stage = 'Procurement';
+        project.paymentStatus = isFullyPaid ? 'Cleared' : 'Partial Payment';
+        project.paymentCollectionStatus = 'Verified';
+        project.assignedProcurementManager = procurementManagerId;
+        await project.save();
+
+        // Notify Procurement Manager
+        await notifyUser(procurementManagerId, { title: '📦 New Project Assigned for Procurement', description: `You have been assigned as the Procurement Manager for "${project.name}". Payment has been ${isFullyPaid ? 'fully collected' : 'partially collected (admin override)'}. You can start sourcing materials.`, type: 'Info', relatedModel: 'Project', relatedId: project._id, createdBy: reqData.user.id });
+        notifyByRole('Accounts Manager', { title: '✅ Payment Cleared — Moved to Procurement', description: `Admin cleared payment for "${project.name}" and moved it to procurement.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
+
+        return { status: 200, success: true, data: project, materialRequest, message: `Payment cleared. Project "${project.name}" moved to Procurement.` };
     } catch (error) { return { status: 500, success: false, message: error.message }; }
 };

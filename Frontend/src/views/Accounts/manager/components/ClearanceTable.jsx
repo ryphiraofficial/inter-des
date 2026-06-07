@@ -55,9 +55,9 @@ const ClearanceTable = ({
             <div className="clearance-table-wrapper">
                 <table className="clearance-table">
                     <thead>
-                        <tr style={{ background: '#f8fafc' }}>
+                        <tr>
                             {['Project', 'Client', 'Total Budget', 'Target Amount', 'Status', 'Assigned Staff', 'Actions'].map(h => (
-                                <th key={h} style={{ padding: '14px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>{h}</th>
+                                <th key={h} style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                             ))}
                         </tr>
                     </thead>
@@ -72,37 +72,39 @@ const ClearanceTable = ({
                             else if (isBalance && p.paymentStatus === 'Cleared' && p.paymentCollectionStatus !== 'Verified') displayStatus = 'Pending Balance';
 
                             return (
-                                <tr key={p._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <tr key={p._id} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}>
                                     {/* Project — special card header cell */}
-                                    <td className="clearance-td-project">
-                                        <span className="clearance-project-name">{p.name}</span>
-                                        <span className="clearance-project-num">{p.projectNumber}</span>
+                                    <td className="clearance-td-project" style={{ padding: '20px 24px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <span className="clearance-project-name" style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{p.name}</span>
+                                            <span className="clearance-project-num" style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, display: 'inline-flex', alignItems: 'center', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', width: 'fit-content' }}>{p.projectNumber}</span>
+                                        </div>
                                     </td>
 
-                                    <td data-label="Client" style={{ padding: '16px 24px', color: '#475569' }}>
+                                    <td data-label="Client" style={{ padding: '20px 24px', color: '#475569', fontSize: '14px', fontWeight: 500 }}>
                                         {p.client?.name || '—'}
                                     </td>
 
-                                    <td data-label="Total Budget" style={{ padding: '16px 24px', color: '#475569' }}>
+                                    <td data-label="Total Budget" style={{ padding: '20px 24px', color: '#64748b', fontSize: '14px', fontWeight: 500 }}>
                                         ₹{(p.budget || 0).toLocaleString('en-IN')}
                                     </td>
 
-                                    <td data-label="Target Amount" style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>
-                                        <span>
-                                            <span style={{ color: isBalance ? '#f59e0b' : '#10b981', fontSize: '11px', display: 'block', textTransform: 'uppercase', marginBottom: '2px' }}>
+                                    <td data-label="Target Amount" style={{ padding: '20px 24px', fontWeight: 700, color: '#0f172a' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <span style={{ color: isBalance ? '#ea580c' : '#059669', fontSize: '11px', display: 'inline-flex', alignItems: 'center', background: isBalance ? '#ffedd5' : '#d1fae5', padding: '2px 8px', borderRadius: '12px', width: 'fit-content', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
                                                 {isBalance ? 'Balance' : 'Advance'}
                                             </span>
-                                            ₹{targetAmount.toLocaleString('en-IN')}
-                                        </span>
+                                            <span style={{ fontSize: '15px' }}>₹{targetAmount.toLocaleString('en-IN')}</span>
+                                        </div>
                                     </td>
 
-                                    <td data-label="Status" style={{ padding: '16px 24px' }}>
-                                        <span style={{ background: colors.bg, color: colors.text, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 600 }}>
+                                    <td data-label="Status" style={{ padding: '20px 24px' }}>
+                                        <span style={{ background: colors.bg, color: colors.text, padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', border: `1px solid ${colors.text}20` }}>
                                             {displayStatus}
                                         </span>
                                     </td>
 
-                                    <td data-label="Assigned Staff" className="clearance-td-staff" style={{ padding: '16px 24px' }}>
+                                    <td data-label="Assigned Staff" className="clearance-td-staff" style={{ padding: '20px 24px' }}>
                                         <div className="clearance-staff-cell-inner">
                                             <StaffAssignCell project={p} staffList={staffList} assigningId={assigningId}
                                                 setAssigningId={setAssigningId} selectedStaff={selectedStaff} setSelectedStaff={setSelectedStaff}
@@ -110,15 +112,16 @@ const ClearanceTable = ({
                                         </div>
                                     </td>
 
-                                    <td className="clearance-td-actions" style={{ padding: '16px 24px' }}>
+                                    <td className="clearance-td-actions" style={{ padding: '20px 24px' }}>
                                         {p.paymentCollectionStatus === 'Collected' ? (
                                             <button onClick={() => handleConfirmOpen(p._id, true)} className="btn-primary-sm"
-                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 10px rgba(59, 130, 246, 0.2)' }}>
                                                 <Shield size={14} /> Verify & Release
                                             </button>
                                         ) : (
-                                            <button onClick={() => handleConfirmOpen(p._id, false)} disabled={p.paymentStatus === 'Cleared' && !isBalance} className="btn-success-sm">
-                                                <CheckCircle size={16} /> Clear & Release
+                                            <button onClick={() => handleConfirmOpen(p._id, false)} disabled={p.paymentStatus === 'Cleared' && !isBalance} className="btn-success-sm"
+                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: (p.paymentStatus === 'Cleared' && !isBalance) ? '#cbd5e1' : '#10b981', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: (p.paymentStatus === 'Cleared' && !isBalance) ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: (p.paymentStatus === 'Cleared' && !isBalance) ? 'none' : '0 4px 10px rgba(16, 185, 129, 0.2)' }}>
+                                                <CheckCircle size={14} /> Clear & Release
                                             </button>
                                         )}
                                     </td>

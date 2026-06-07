@@ -7,12 +7,12 @@ import { ProjectSummaryCard, AdvancePctSelector } from './PaymentModalParts';
 const PaymentCollectionModal = ({
     paymentTask, setShowPaymentModal, advancePct, setAdvancePct,
     paymentDueDate, setPaymentDueDate, paymentNotes, setPaymentNotes,
-    procurementManagers = [], selectedProcurementManagerId, setSelectedProcurementManagerId,
+    accountsManagers, selectedAccountsManagerId, setSelectedAccountsManagerId,
     submitApproval, submittingApproval
 }) => {
     const quotTotal = paymentTask.quotation?.totalAmount || 0;
     const calcAmt   = Math.round((quotTotal * advancePct) / 100);
-    const canSubmit = !submittingApproval && paymentDueDate && selectedProcurementManagerId;
+    const canSubmit = !submittingApproval && paymentDueDate;
 
     return (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -23,7 +23,7 @@ const PaymentCollectionModal = ({
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <DollarSign size={20} style={{ color: '#4f46e5' }} />
-                            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: '#0f172a' }}>Approve &amp; Set Payment Collection</h2>
+                            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: '#0f172a' }}>Approve &amp; Send to Accounts</h2>
                         </div>
                         <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>Configure advance payment before releasing to Accounts Manager</p>
                     </div>
@@ -40,17 +40,29 @@ const PaymentCollectionModal = ({
                     <ProjectSummaryCard paymentTask={paymentTask} quotTotal={quotTotal} calcAmt={calcAmt} />
                     <AdvancePctSelector advancePct={advancePct} setAdvancePct={setAdvancePct} />
 
-                    <CustomSelect label="Assign Procurement Manager" required
-                        options={procurementManagers.map(m => ({ value: m._id, label: `${m.fullName} (${m.email})` }))}
-                        value={selectedProcurementManagerId}
-                        onChange={(e) => setSelectedProcurementManagerId(e.target.value)}
-                        placeholder="Select a Procurement Manager" />
-
                     <div>
                         <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0f172a', marginBottom: '6px' }}>
                             Payment Due Date <span style={{ color: '#ef4444' }}>*</span>
                         </label>
                         <DatePicker value={paymentDueDate} onChange={(dateStr) => setPaymentDueDate(dateStr)} placeholder="Pick a date" minDate={new Date()} />
+                    </div>
+
+                    <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0f172a', marginBottom: '6px' }}>
+                            Assign Accounts Manager <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+                        </label>
+                        <CustomSelect
+                            value={selectedAccountsManagerId || ''}
+                            onChange={(e) => setSelectedAccountsManagerId(e.target.value)}
+                            options={[
+                                { label: 'Select Accounts Manager (Unassigned)', value: '' },
+                                ...(accountsManagers || []).map(m => ({
+                                    label: `${m.fullName} — Accounts Manager`,
+                                    value: String(m._id)
+                                }))
+                            ]}
+                            placeholder="Search accounts staff..."
+                        />
                     </div>
 
                     <div>
@@ -74,12 +86,12 @@ const PaymentCollectionModal = ({
                             Cancel
                         </button>
                         <button
-                            onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId: selectedProcurementManagerId })}
+                            onClick={() => submitApproval({ paymentTask, advancePct, paymentDueDate, paymentNotes, accountsManagerId: selectedAccountsManagerId })}
                             disabled={!canSubmit}
                             style={{ flex: 2, padding: '9px', borderRadius: '6px', border: 'none', background: canSubmit ? '#0f172a' : '#94a3b8', color: 'white', fontWeight: 500, fontSize: '13px', cursor: canSubmit ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.15s' }}
                             onMouseOver={(e) => { if (canSubmit) e.currentTarget.style.backgroundColor = '#1e293b'; }}
                             onMouseOut={(e) => { if (canSubmit) e.currentTarget.style.backgroundColor = '#0f172a'; }}>
-                            {submittingApproval ? 'Approving...' : <><CheckCircle size={15} /> Approve &amp; Pushed to Procurement</>}
+                            {submittingApproval ? 'Approving...' : <><CheckCircle size={15} /> Approve &amp; Send to Accounts</>}
                         </button>
                     </div>
                 </div>

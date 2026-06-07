@@ -30,8 +30,21 @@ export const ProjectKPIs = ({ projects, loading }) => {
 };
 
 export const AccountsProjectTable = ({ projects, loading, onProjectClick }) => {
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 10;
+    
+    const totalPages = Math.ceil(projects.length / itemsPerPage) || 1;
+
+    React.useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [projects.length, totalPages, currentPage]);
+
     if (loading) return <TableSkeleton rows={8} cols={5} />;
     
+    const currentProjects = projects.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     return (
         <div className="table-responsive-wrapper">
             <table className="accounts-table">
@@ -45,7 +58,7 @@ export const AccountsProjectTable = ({ projects, loading, onProjectClick }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {projects.map(p => (
+                    {currentProjects.map(p => (
                         <tr key={p._id} onClick={() => onProjectClick(p)} style={{ cursor: 'pointer' }}>
                             <td><div className="proj-cell"><strong>{p.name}</strong><span>{p.projectNumber}</span></div></td>
                             <td><span className={`badge-${p.status?.toLowerCase()}`}>{p.status}</span></td>
@@ -56,6 +69,48 @@ export const AccountsProjectTable = ({ projects, loading, onProjectClick }) => {
                     ))}
                 </tbody>
             </table>
+            
+            {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '1rem', gap: '1rem', borderTop: '1px solid #e2e8f0', background: 'white' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                        Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, projects.length)} of {projects.length} entries
+                    </span>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                            type="button"
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            style={{ 
+                                padding: '0.35rem 0.5rem', 
+                                borderRadius: '6px', 
+                                border: '1px solid #e2e8f0', 
+                                background: currentPage === 1 ? '#f8fafc' : 'white', 
+                                color: currentPage === 1 ? '#cbd5e1' : '#475569',
+                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>&lt;</span>
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            style={{ 
+                                padding: '0.35rem 0.5rem', 
+                                borderRadius: '6px', 
+                                border: '1px solid #e2e8f0', 
+                                background: currentPage === totalPages ? '#f8fafc' : 'white', 
+                                color: currentPage === totalPages ? '#cbd5e1' : '#475569',
+                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>&gt;</span>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

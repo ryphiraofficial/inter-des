@@ -1,116 +1,676 @@
-# Interior Design ERP System
+# 🏠 WoodAura — Interior Design Management Platform
 
-This is a comprehensive ERP system tailored for an Interior Design & Manufacturing firm. It streamlines the entire process from initial quotation and client approval through design, procurement, and final production.
+**WoodAura** is an end-to-end, enterprise-grade interior design business management platform built to streamline every stage of the project lifecycle — from sales and quotations through design, procurement, production, and financial accounting.
 
-## System Architecture
+Built on the **MERN stack** (MongoDB, Express.js, React, Node.js), it provides role-based dashboards and workflows for over **15 distinct user roles**, enabling teams across departments to collaborate in real time.
 
-The application is built using a modern MERN stack:
-- **Frontend:** React (Vite), React Router, Context API, CSS
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB (Mongoose ODM)
-- **Authentication:** JWT-based role-based access control (RBAC)
+---
 
-## Multi-Level Workflow & Pipeline
+## 📋 Table of Contents
 
-The system is designed around a strict sequential pipeline that guarantees accountability and structured handoffs between departments.
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [User Roles & Access Control](#user-roles--access-control)
+- [Module Breakdown](#module-breakdown)
+- [API Endpoints](#api-endpoints)
+- [Database Models](#database-models)
+- [State Management](#state-management)
+- [Environment Variables](#environment-variables)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Workflow Flowchart
+---
 
-```mermaid
-graph TD
-    %% Quotation Phase
-    A[Sales / Staff<br/>Generates Quotation<br/>/staff/quotations/new] --> B[Sales & Client<br/>Sales Approvals System<br/>/staff/approvals]
-    B --> C[Super Admin<br/>Reviews & Creates Project<br/>/projects]
-    
-    %% Design Pipeline
-    C --> D[Design Manager<br/>Assigns Design Tasks<br/>/material-review]
-    D --> E[Design Staff<br/>Submits Visual Assets<br/>/material-review]
-    E --> F{Design Manager<br/>Review}
-    F -->|Reject| E
-    F -->|Approve| G{Super Admin<br/>Design Approvals Hub<br/>/approvals}
-    G -->|Reject| E
-    
-    %% Procurement Pipeline
-    G -->|Approve| H[Procurement Staff<br/>Sources Vendors & Materials<br/>Procurement Dashboard]
-    H --> I{Procurement Manager<br/>Review Pricing<br/>Procurement Dashboard}
-    I -->|Reject| H
-    I -->|Approve| J{Super Admin<br/>Procurement Approvals Hub<br/>/approvals}
-    J -->|Reject| H
-    
-    %% Production Pipeline
-    J -->|Approve & Assign PM| K[Project Manager<br/>Receives Handoff<br/>/production-management/handoff]
-    K --> L[Project Manager<br/>Assigns Team & Activates<br/>/production-management/tasks]
-    L --> M[Production Team<br/>Task Execution<br/>/engineer/tasks & /site/tasks]
-    M --> N{PM / Engineer<br/>Production Approvals System<br/>/production-management/approvals}
-    N -->|Reject| M
-    N -->|Approve| O[Project Manager<br/>Project Completion<br/>.../projects/:id/complete]
+## Overview
 
-    classDef admin fill:#4f46e5,stroke:#312e81,stroke-width:2px,color:#fff;
-    classDef manager fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
-    classDef staff fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#1e293b;
-    classDef client fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff;
+WoodAura digitises the complete interior design business workflow:
 
-    class A,E,H,M staff;
-    class D,F,I,K,L manager;
-    class C,G,J admin;
-    class B,N,O client;
+1. **Sales** — Lead capture, client management, site visits, quotation creation with line-item images, and approval workflows.
+2. **Design** — Project planning, task management with Kanban boards, checklists, material approvals, and progress tracking.
+3. **Procurement** — Vendor management, purchase orders, inventory tracking, material requests, and vendor comparisons.
+4. **Production** — Site project management, team assignment, task boards, site attendance, safety logs, progress reports, and project handoff.
+5. **Accounts** — Payment tracking, expense management, and financial reporting.
+6. **Administration** — User/staff management, settings, meetings, notifications, and AI-assisted tools.
+
+---
+
+## Key Features
+
+### 🎨 Sales & Quotations
+- Professional quotation builder with line-item images (Cloudinary upload)
+- Auto-calculated totals with tax (GST), discounts, and offer pricing
+- Dimension tracking (L × D × H) with SqFt auto-calculation
+- Bill preview modal before final submission
+- Quotation status workflow: Draft → Under Review → Approved → Rejected
+- PDF-ready quotation view with project details
+- Quick-add client during quotation creation
+- Invoice generation from approved quotations
+
+### 📐 Design Management
+- Project lifecycle management with stage tracking
+- Kanban task board with drag-and-drop
+- Design checklists and approval workflows
+- Material review hub for design managers
+- Task assignment and progress monitoring
+
+### 📦 Procurement
+- Vendor database with comparison tools
+- Purchase order creation and tracking
+- Inventory management with stock levels
+- PO-based inventory tracking
+- Material request workflow
+
+### 🏗️ Production Management
+- Project handoff from procurement to production
+- Multi-role task boards (Project Manager, Engineer, Supervisor)
+- Site attendance and safety log tracking
+- Supervisor daily reports
+- Staff replacement requests
+- Site visit management
+- Project completion workflow with payment clearance validation
+
+### 💰 Accounts & Finance
+- Payment collection tracking
+- Expense management
+- Project financial overview
+- Budget vs. actuals reporting
+
+### ⚙️ Administration
+- Role-based user management (15+ roles)
+- Staff directory with salary configuration
+- Meeting scheduler
+- Leave request system
+- Push notification support (Web Push API)
+- AI-powered assistant (Google Gemini integration)
+- Application settings management
+- Audit logging
+
+### 🔔 Cross-Cutting Features
+- **Real-time notifications** with push support
+- **Approval workflows** across departments
+- **Cloudinary** image hosting for all uploads
+- **Role-based access control (RBAC)** at route and API level
+- **Paginated data tables** for large datasets
+- **Responsive design** for desktop and mobile
+- **Rate limiting** and **security headers** (Helmet)
+
+---
+
+## Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| **React 19** | UI framework |
+| **Vite 7** | Build tool & dev server |
+| **React Router v7** | Client-side routing |
+| **Redux Toolkit (RTK)** | Global state management |
+| **RTK Query** | API data fetching & caching |
+| **Lucide React** | Icon library |
+| **Recharts** | Dashboard charts & analytics |
+| **Tailwind CSS 4** | Utility-first styling |
+| **date-fns** | Date formatting & manipulation |
+| **react-day-picker** | Calendar/date input components |
+| **react-markdown** | Markdown rendering (AI chat) |
+| **@hello-pangea/dnd** | Drag-and-drop (Kanban boards) |
+| **Lenis** | Smooth scroll library |
+
+### Backend
+| Technology | Purpose |
+|---|---|
+| **Node.js** | Runtime environment |
+| **Express.js 4** | Web framework |
+| **MongoDB** | NoSQL database |
+| **Mongoose 8** | ODM / data modeling |
+| **JWT** | Authentication tokens |
+| **bcryptjs** | Password hashing |
+| **Cloudinary** | Cloud image storage |
+| **Multer** | File upload middleware |
+| **Helmet** | Security headers |
+| **Morgan** | HTTP request logging |
+| **express-rate-limit** | API rate limiting |
+| **express-validator** | Input validation |
+| **compression** | Response compression |
+| **web-push** | Push notifications |
+| **@google/generative-ai** | AI features (Gemini) |
+| **Nodemon** | Development auto-restart |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                   Frontend (Vite + React)        │
+│                                                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────┐   │
+│  │  Views    │  │  Store   │  │  Controllers │   │
+│  │ (by role) │  │ (Redux)  │  │  (Routes)    │   │
+│  └──────────┘  └──────────┘  └──────────────┘   │
+│       │              │              │             │
+│       └──────────────┼──────────────┘             │
+│                      │                            │
+│              RTK Query APIs                       │
+│  ┌─────────────────────────────────────────────┐ │
+│  │ adminApi │ salesApi │ designApi │ prodApi   │ │
+│  │ procurementApi │ accountsApi │ sharedApi   │ │
+│  └─────────────────────────────────────────────┘ │
+└──────────────────────┬──────────────────────────┘
+                       │ HTTP / REST
+┌──────────────────────┴──────────────────────────┐
+│              Backend (Express.js)                │
+│                                                   │
+│  ┌──────────┐  ┌────────────┐  ┌──────────────┐ │
+│  │  Routes   │  │ Controllers│  │  Middleware   │ │
+│  │ (by dept) │  │ (by dept)  │  │ (auth, RBAC) │ │
+│  └──────────┘  └────────────┘  └──────────────┘ │
+│                      │                            │
+│  ┌──────────┐  ┌────────────┐  ┌──────────────┐ │
+│  │  Models   │  │  Services  │  │   Utils      │ │
+│  │ (Mongoose)│  │ (business) │  │ (helpers)    │ │
+│  └──────────┘  └────────────┘  └──────────────┘ │
+└──────────────────────┬──────────────────────────┘
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+     ┌────┴────┐  ┌────┴────┐  ┌───┴──────┐
+     │ MongoDB │  │Cloudinary│  │ Gemini AI│
+     └─────────┘  └─────────┘  └──────────┘
 ```
 
-### 1. Quotation & Initiation Phase
-- **Sales / Staff:** Generates a quotation for a prospective client in `SalesNewQuotation.jsx` (**`/staff/quotations/new`**). All quotes are viewable at `/staff/quotations`.
-- **Client Approval (Sales Approvals System):** Clients and Sales Staff manage approvals via the **Sales Approvals System** in `SalesApprovals.jsx` (**`/staff/approvals`**). Once approved, the project officially begins.
-- **Admin:** The Super Admin reviews the approved quotation in `Quotations.jsx` (**`/quotations`**) and triggers the creation of the Project in `Projects.jsx` (**`/projects`**).
+---
 
-### 2. Design Pipeline
-- **Design Manager:** Assigns the design tasks to specific Designers and reviews submitted assets via the `MaterialReviewHub.jsx` (**`/material-review`**).
-- **Design Staff:** Works on the design, uploads visual assets, and submits them to the Design Manager for review.
-- **Super Admin (Design Approval Hub):** Final design sign-off is handled by the **Design Approvals System** located in `DesignApprovals.jsx` (**`/approvals`**, under the *Design Pipeline* tab). Clicking **Approve** officially signs off on the design and pushes it to Procurement.
+## Project Structure
 
-### 3. Procurement Pipeline
-*When a design is approved by Admin, a Material Request is automatically generated and routed to the Procurement department.*
+```
+Interior/
+├── Backend/
+│   ├── server.js                    # Express server entry point
+│   ├── env.js                       # Environment configuration
+│   ├── package.json
+│   └── src/
+│       ├── config/                  # Database & service configs
+│       ├── controllers/             # Business logic (domain-based)
+│       │   ├── accounts/
+│       │   ├── admin/
+│       │   ├── design/
+│       │   ├── procurement/
+│       │   ├── production/
+│       │   ├── sales/
+│       │   └── shared/
+│       ├── middleware/
+│       │   ├── auth.js              # JWT verification & protect middleware
+│       │   ├── errorHandler.js      # Global error handler
+│       │   └── productionAuth.js    # Production-specific RBAC
+│       ├── models/                  # Mongoose schemas (domain-based)
+│       │   ├── accounts/            # Payment, Expense
+│       │   ├── admin/               # User, Staff, Team, Meeting, Settings
+│       │   ├── design/              # Project, Task, Checklist, KanbanTask
+│       │   ├── procurement/         # Inventory, PurchaseOrder, Vendor, etc.
+│       │   ├── production/          # ProductionProject, ProductionTask, etc.
+│       │   ├── sales/               # Client, Quotation, Invoice
+│       │   └── shared/              # Notification, Approval, AuditLog
+│       ├── routes/                  # Express route definitions
+│       │   ├── accounts/
+│       │   ├── admin/
+│       │   ├── design/
+│       │   ├── procurement/
+│       │   ├── production/
+│       │   ├── sales/
+│       │   └── shared/
+│       ├── services/                # Business logic services
+│       ├── scripts/                 # One-off migration scripts
+│       └── utils/                   # Helper functions
+│
+├── Frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── src/
+│       ├── main.jsx                 # React entry point
+│       ├── App.jsx                  # Root component (auth gate)
+│       ├── index.css                # Global styles
+│       ├── App.css
+│       ├── assets/                  # Static assets (logos, images)
+│       ├── components/              # Shared/reusable components
+│       ├── config/                  # App constants (API base URL)
+│       ├── controllers/
+│       │   ├── hooks/               # Role-based dashboard hooks
+│       │   ├── layouts/             # Layout controllers
+│       │   └── routes/
+│       │       └── AppRoutes.jsx    # Centralised route config
+│       ├── hooks/                   # Global custom hooks
+│       ├── models/
+│       │   └── context/             # React contexts (Toast, etc.)
+│       ├── store/
+│       │   ├── index.js             # Redux store configuration
+│       │   ├── hooks.js             # Typed Redux hooks
+│       │   ├── api/                 # RTK Query API slices
+│       │   │   ├── adminApi.js
+│       │   │   ├── salesApi.js
+│       │   │   ├── designApi.js
+│       │   │   ├── productionApi.js
+│       │   │   ├── procurementApi.js
+│       │   │   ├── accountsApi.js
+│       │   │   ├── meetingApi.js
+│       │   │   ├── authApi.js
+│       │   │   └── sharedApi.js
+│       │   ├── slices/              # Redux state slices
+│       │   └── selectors/           # Memoised selectors
+│       ├── utils/                   # Utility functions
+│       └── views/                   # Feature-based view modules
+│           ├── auth/                # Login page
+│           ├── admin/               # Admin dashboard & modules
+│           │   ├── Dashboard.jsx
+│           │   ├── Projects.jsx
+│           │   ├── Quotations.jsx
+│           │   ├── NewQuotation.jsx
+│           │   ├── Inventory.jsx
+│           │   ├── PurchaseOrders.jsx
+│           │   ├── Clients.jsx
+│           │   ├── Staff.jsx
+│           │   ├── Tasks.jsx
+│           │   ├── Invoice.jsx
+│           │   ├── Meetings.jsx
+│           │   ├── Settings.jsx
+│           │   ├── Users.jsx
+│           │   ├── Reports.jsx
+│           │   ├── AIChat.jsx
+│           │   └── ...components/
+│           ├── sales/               # Sales staff dashboard
+│           ├── design/              # Design department views
+│           ├── procurement/         # Procurement views
+│           ├── production/          # Production views
+│           │   ├── project_manager/ # PM dashboard & tools
+│           │   ├── project_engineer/# Engineer tasks & reports
+│           │   ├── site_engineer/   # Site engineer portal
+│           │   └── site_supervisor/ # Supervisor portal
+│           ├── Accounts/            # Finance & accounting views
+│           └── common/              # Shared views (meetings, etc.)
+│
+├── README.md                        # This file
+├── package.json                     # Root package (deployment)
+└── server.js                        # Root entry (production proxy)
+```
 
-- **Procurement Staff:** Receives material requests and adds vendor pricing in `ProcurementStaffDashboard.jsx` (Default **`/`** route for Procurement Staff). They click **Submit to Manager for Review** when complete.
-- **Procurement Manager:** Verifies pricing and approves the budget in `ProcurementManagerDashboard.jsx` (Default **`/`** route for Procurement Manager).
-- **Super Admin (Procurement Approval Hub):** Final procurement sign-off and Production Manager assignment is handled by the **Procurement Approvals System** located in `DesignApprovals.jsx` (**`/approvals`**, under the *Procurement Pipeline* tab).
+---
 
-### 4. Production Pipeline
-- **Project Manager:** Receives the approved project in `ProjectHandoff.jsx` (**`/production-management/handoff`**). They are responsible for assigning the core production team via `ProductionTasksBoard.jsx` (**`/production-management/tasks`**).
-- **Production Team (Execution):** The assigned Project Engineer, Site Engineer, and Supervisor manage their daily tasks and progress in `EngineerTasks.jsx` (**`/engineer/tasks`**) and `SiteTasks.jsx` (**`/site/tasks`**).
-- **Production Approvals System:** Task submissions and leave requests are routed through multi-tier approvals. Managers approve them via `ProductionApprovals.jsx` (**`/production-management/approvals`**) and `EngineerApprovals.jsx` (**`/engineer/approvals`**).
-- **Project Completion:** Final closeout handled by the Project Manager in `ProjectCompletion.jsx` (**`/production-management/projects/:id/complete`**).
+## User Roles & Access Control
 
-## User Roles & Access
+WoodAura implements granular RBAC with **15 user roles** organised across **6 departments**:
 
-- **Super Admin**: Global oversight, final approval authority for Design and Procurement pipelines.
-- **Design Manager**: Manages designers, reviews creative assets.
-- **Design Staff**: Executes design tasks.
-- **Procurement Manager**: Manages vendor relationships, reviews sourcing, and handles production handoffs.
-- **Procurement Staff**: Sources materials and vendor quotes.
-- **Project Manager**: Oversees the entire production phase, assigns site teams, and manages project activation.
-- **Project Engineer / Site Engineer / Supervisor**: Execute and monitor site progress.
+| Department | Manager Role | Staff Roles |
+|---|---|---|
+| **Admin** | Super Admin, Admin, Manager | Staff, User |
+| **Sales** | — | Sales |
+| **Design** | Design Manager | Design Staff |
+| **Procurement** | Procurement Manager | Procurement Staff |
+| **Production** | Project Manager | Project Engineer, Site Engineer, Site Supervisor |
+| **Accounts** | Accounts Manager | Accounts Staff |
 
-## Local Development Setup
+### Layout Routing
 
-1. **Backend:**
-   ```bash
-   cd Backend
-   npm install
-   npm run dev
-   ```
+- **Admin Layout** — Super Admin, Admin, Manager, Design Manager, Project Manager, Project Engineer, Site Engineer, Site Supervisor
+- **Sales Layout** — Sales, Design Staff, Accounts Manager, Accounts Staff
+- **Procurement Layout** — Procurement Manager, Procurement Staff
 
-2. **Frontend:**
-   ```bash
-   cd Frontend
-   npm install
-   npm run dev
-   ```
+Each role sees only the navigation items and pages relevant to their department. Route guards at both the frontend (React Router) and backend (middleware) enforce access.
 
-### ✅ Completed Phases
-1. **Phase 1**: Layout, Navigation, Role-based Routing
-2. **Phase 2**: Production Dashboard (PM overview, task metrics, priority handling)
-3. **Phase 3**: Site Portal Enhancements (SE task execution, daily reports, attendance UI)
-4. **Phase 4**: Site Supervisor Enhancements (Material/Equipment logging, backend syncing)
-5. **Phase 5**: Leave Management Chain (Backend models, API endpoints, multi-tier approval dashboards for PE/PM)
+---
 
-## Pending Phases (Production Management)
-- **Phase 6:** Reports & Export
+## Module Breakdown
+
+### 1. Authentication & Users
+- JWT-based authentication with bcrypt password hashing
+- Token stored in `localStorage`, sent via `Authorization` header
+- User creation with automatic department assignment based on role
+- Status management: Active / Inactive / Suspended
+- Last login tracking
+
+### 2. Projects
+- Full lifecycle: Design → Procurement → Production → Completed
+- Kanban board, table list, and timeline views
+- Budget tracking and deadline management
+- Progress percentage with visual indicators
+- Filtering by stage, status, and grouping options
+- Paginated project tables (10 items/page)
+
+### 3. Quotations
+- Rich quotation builder with:
+  - Client selection (with quick-add)
+  - Project details and contact info
+  - Payment & cancellation policies
+  - Warranty terms
+  - Line items with name, description, section, finish, material, size
+  - Dimensions (L × D × H) with SqFt calculation
+  - Per-item image upload via Cloudinary
+  - Unit selection (Sqft, Rft, Nos, Lumpsum, etc.)
+  - Quantity, rate, and auto-calculated amounts
+- Discount policy toggle with amount
+- Tax configuration (GST rates)
+- Offer price calculation
+- Review draft / Review & Save workflow
+- Bill preview modal
+- Notes and Terms & Conditions
+
+### 4. Invoices
+- Generated from approved quotations
+- Payment tracking and status
+- Professional invoice view
+
+### 5. Inventory & Procurement
+- Item catalogue with sections, pricing, and stock levels
+- Vendor database and comparison tools
+- Purchase order creation and lifecycle
+- PO-linked inventory tracking
+- Material request workflows with approval
+
+### 6. Production
+- Project assignment and team management
+- Task creation with priority, deadlines, and dependencies
+- Site attendance logging
+- Safety log tracking
+- Progress reports (daily supervisor reports)
+- Project completion workflow with advance payment clearance
+- Staff replacement requests
+
+### 7. Accounts
+- Payment collection tracking per project
+- Expense management and categorisation
+- Financial KPIs and reporting
+
+### 8. Meetings
+- Meeting scheduler with attendees
+- Agenda and notes
+- Accessible across departments
+
+### 9. Notifications & Approvals
+- In-app notification system
+- Web Push notifications (VAPID keys)
+- Cross-department approval workflows
+- Task deadline auto-checker (hourly)
+
+### 10. AI Assistant
+- Integrated Google Gemini AI
+- Context-aware querying
+- Auto-suggestions for fields
+
+---
+
+## API Endpoints
+
+### Shared
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/login` | User login |
+| POST | `/api/auth/register` | User registration |
+| GET | `/api/auth/me` | Get current user |
+| POST | `/api/upload` | Upload image (Cloudinary) |
+| GET/POST | `/api/notifications` | Notifications CRUD |
+| GET/POST/PATCH/DELETE | `/api/approvals` | Approvals CRUD |
+| POST | `/api/ai/query` | AI query |
+| POST | `/api/ai/suggest` | AI suggestions |
+| POST | `/api/push/subscribe` | Push notification subscribe |
+
+### Admin
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/api/users` | User management |
+| GET/POST/PUT/DELETE | `/api/staff` | Staff management |
+| GET/POST/PUT/DELETE | `/api/teams` | Team management |
+| GET/POST | `/api/team` | Team members |
+| GET/POST/PUT/DELETE | `/api/meetings` | Meeting management |
+| GET/POST/PUT | `/api/leaves` | Leave requests |
+| GET/PUT | `/api/settings` | App settings |
+| GET | `/api/reports` | Report generation |
+
+### Sales
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/api/clients` | Client management |
+| GET/POST/PUT/DELETE | `/api/quotations` | Quotation CRUD |
+| GET/POST/PUT/DELETE | `/api/invoices` | Invoice CRUD |
+
+### Design
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST | `/api/design` | Design workflows |
+| GET/POST/PUT/DELETE | `/api/projects` | Project management |
+| GET/POST/PUT/DELETE | `/api/tasks` | Task management |
+| GET/POST/PUT/DELETE | `/api/kanban-tasks` | Kanban tasks |
+| GET/POST/PUT/DELETE | `/api/checklists` | Design checklists |
+
+### Procurement
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/api/procurement` | Procurement workflows |
+| GET/POST/PUT/DELETE | `/api/vendors` | Vendor management |
+| GET/POST/PUT/DELETE | `/api/purchase-orders` | Purchase orders |
+| GET/POST/PUT/DELETE | `/api/inventory` | Inventory management |
+| GET/POST/PUT/DELETE | `/api/po-inventory` | PO inventory tracking |
+
+### Production
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/api/production` | Production data |
+| GET/POST/PUT/DELETE | `/api/production-management` | Production management |
+| GET/POST | `/api/site-visits` | Site visit logging |
+
+### Accounts
+| Method | Endpoint | Description |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/api/accounts` | Payments & expenses |
+
+---
+
+## Database Models
+
+### Admin Domain
+- **User** — Authentication, roles, departments, status
+- **Staff** — Employee records, salary, attendance
+- **Team** — Team definitions
+- **TeamMember** — Team membership
+- **Meeting** — Meeting scheduler
+- **LeaveRequest** — Leave management
+- **Settings** — Application configuration
+
+### Sales Domain
+- **Client** — Customer records
+- **Quotation** — Line items, pricing, terms, images, dimensions
+- **Invoice** — Billing and payment
+
+### Design Domain
+- **Project** — Full project lifecycle tracking
+- **Task** — Assignments with attachments and progress
+- **Checklist** — Design review checklists
+- **KanbanTask** — Drag-and-drop board items
+
+### Procurement Domain
+- **Inventory** — Stock items and levels
+- **PurchaseOrder** — PO lifecycle
+- **POInventory** — PO-linked stock
+- **Vendor** — Supplier records
+- **VendorComparison** — Price comparisons
+- **VendorPurchase** — Purchase records
+- **MaterialRequest** — Internal material requests
+
+### Production Domain
+- **ProductionProject** — On-site project tracking
+- **ProductionTask** — Site tasks with progress
+- **SiteAttendance** — Daily attendance
+- **SafetyLog** — Safety compliance
+- **SiteProgressReport** — Progress updates
+- **SiteVisit** — Visit records
+- **SupervisorDailyReport** — Supervisor logs
+- **StaffReplacementRequest** — Replacement workflows
+- **ProductionActivityLog** — Activity auditing
+
+### Accounts Domain
+- **Payment** — Payment collections
+- **Expense** — Expense records
+
+### Shared Domain
+- **Notification** — In-app notifications
+- **Approval** — Cross-department approvals
+- **AuditLog** — System audit trail
+- **PushSubscription** — Web push subscriptions
+
+---
+
+## State Management
+
+The frontend uses **Redux Toolkit** with **RTK Query** for a clean separation:
+
+| Layer | Purpose |
+|---|---|
+| `store/slices/authSlice` | Authentication state (user, token) |
+| `store/api/adminApi` | Admin endpoints (projects, staff, users, etc.) |
+| `store/api/salesApi` | Sales endpoints (quotations, clients) |
+| `store/api/designApi` | Design endpoints (tasks, kanban) |
+| `store/api/productionApi` | Production endpoints |
+| `store/api/procurementApi` | Procurement endpoints |
+| `store/api/accountsApi` | Accounts endpoints |
+| `store/api/meetingApi` | Meeting endpoints |
+| `store/api/sharedApi` | Shared endpoints (upload, AI, notifications) |
+| `store/api/authApi` | Auth endpoints |
+
+RTK Query provides automatic caching, invalidation, and refetching with tag-based cache management.
+
+---
+
+## Environment Variables
+
+### Backend (`Backend/.env`)
+
+```env
+# Server
+NODE_ENV=development
+PORT=5000
+
+# Database
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/<dbname>
+
+# Authentication
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=30d
+
+# Cloudinary (Image Uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Google Gemini AI
+GEMINI_API_KEY=your_gemini_api_key
+
+# Web Push Notifications (VAPID)
+VAPID_PUBLIC_KEY=your_vapid_public_key
+VAPID_PRIVATE_KEY=your_vapid_private_key
+VAPID_MAILTO=mailto:your@email.com
+```
+
+### Frontend (`Frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_VAPID_PUBLIC_KEY=your_vapid_public_key
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** v18+ 
+- **MongoDB** (Atlas or local)
+- **Cloudinary** account (for image uploads)
+- **Git**
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ryphiraofficial/inter-des.git
+cd inter-des
+
+# Install backend dependencies
+cd Backend
+npm install
+
+# Install frontend dependencies
+cd ../Frontend
+npm install
+```
+
+### Development
+
+```bash
+# Terminal 1 — Start the backend
+cd Backend
+npm run dev
+# → Server runs on http://localhost:5000
+
+# Terminal 2 — Start the frontend
+cd Frontend
+npm run dev
+# → App runs on http://localhost:5173
+```
+
+### Production Build
+
+```bash
+# Build the frontend
+cd Frontend
+npm run build
+
+# Start the production server
+cd ../Backend
+npm start
+# → Serves both API and static frontend from port 5000
+```
+
+---
+
+## Deployment
+
+The project is configured for **Hostinger** deployment with the root `server.js` and `package.json` acting as the entry point:
+
+```
+Root server.js → imports Backend/server.js
+Root package.json → "start": "node server.js"
+```
+
+The backend serves the built frontend from `Frontend/dist/` in production mode, providing a single-server deployment.
+
+### Deployment Steps
+
+1. Push code to the repository
+2. Set all environment variables on the hosting platform
+3. Run `npm install` in both `Backend/` and `Frontend/`
+4. Run `npm run build` in `Frontend/`
+5. Start with `npm start` from the root directory
+
+---
+
+## Contributing
+
+1. Create a feature branch from `main`
+2. Follow the existing module/domain-based file organisation
+3. Use the established patterns (hooks, RTK Query, controller/route/model separation)
+4. Test your changes locally before pushing
+5. Push and create a pull request
+
+---
+
+## License
+
+ISC License
+
+---
+
+**Built with ❤️ by the WoodAura Team**

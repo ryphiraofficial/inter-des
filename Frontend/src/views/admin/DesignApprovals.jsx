@@ -10,6 +10,7 @@ import { useApprovalsActions } from './design-approvals/hooks/useApprovalsAction
 // Components
 import ApprovalTabs from './design-approvals/components/ApprovalTabs';
 import DesignPipeline from './design-approvals/components/DesignPipeline';
+import AccountsPipeline from './design-approvals/components/AccountsPipeline';
 import ProcurementPipeline from './design-approvals/components/ProcurementPipeline';
 import ProductionPipeline from './design-approvals/components/ProductionPipeline';
 import DesignPreviewModal from './design-approvals/components/DesignPreviewModal';
@@ -30,16 +31,19 @@ const DesignApprovals = () => {
 
     useApprovalsData({
         setTasks: state.setTasks,
+        setAccountsProjects: state.setAccountsProjects,
         setProcurementItems: state.setProcurementItems,
         setProductionProjects: state.setProductionProjects,
         setLoading: state.setLoading,
         setProductionManagers: state.setProductionManagers,
         setProcurementManagers: state.setProcurementManagers,
+        setAccountsManagers: state.setAccountsManagers,
         showToast
     });
 
     const actions = useApprovalsActions({
         setTasks: state.setTasks,
+        setAccountsProjects: state.setAccountsProjects,
         setProcurementItems: state.setProcurementItems,
         setProductionProjects: state.setProductionProjects,
         setSubmittingApproval: state.setSubmittingApproval,
@@ -64,28 +68,16 @@ const DesignApprovals = () => {
 
     if (state.loading) return <ApprovalSkeleton />;
 
-    const totalPending = state.tasks.length + state.procurementItems.length + state.productionProjects.length + unlockCount;
-
     return (
         <div className="tasks-container">
             <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
-                <div className="t-tasks-header" style={{ marginBottom: '2.5rem' }}>
-                    <div className="queue-strength-box" style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
-                        <div style={{ width: '40px', height: '40px', background: '#eef2ff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', flexShrink: 0 }}>
-                            <Clock size={20} />
-                        </div>
-                        <div>
-                            <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Queue Strength</span>
-                            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5', display: 'block' }}>{totalPending} Pending</span>
-                        </div>
-                    </div>
-                </div>
 
                 <ApprovalTabs 
                     activeTab={state.activeTab} 
                     setActiveTab={state.setActiveTab} 
                     counts={{ 
                         design: state.tasks.length, 
+                        accounts: state.accountsProjects.length,
                         procurement: state.procurementItems.length,
                         production: state.productionProjects.length,
                         unlocks: unlockCount
@@ -98,6 +90,15 @@ const DesignApprovals = () => {
                         setSelectedTask={state.setSelectedTask} 
                         setShowDesignModal={state.setShowDesignModal} 
                         openApproveModal={openApproveModal} 
+                    />
+                )}
+
+                {state.activeTab === 'accounts' && (
+                    <AccountsPipeline 
+                        projects={state.accountsProjects} 
+                        procurementManagers={state.procurementManagers}
+                        handleClearPayment={actions.handleClearPayment}
+                        approving={state.approving}
                     />
                 )}
 
@@ -147,9 +148,9 @@ const DesignApprovals = () => {
                     setPaymentDueDate={state.setPaymentDueDate}
                     paymentNotes={state.paymentNotes}
                     setPaymentNotes={state.setPaymentNotes}
-                    procurementManagers={state.procurementManagers}
-                    selectedProcurementManagerId={state.selectedProcurementManagerId}
-                    setSelectedProcurementManagerId={state.setSelectedProcurementManagerId}
+                    accountsManagers={state.accountsManagers}
+                    selectedAccountsManagerId={state.selectedAccountsManagerId}
+                    setSelectedAccountsManagerId={state.setSelectedAccountsManagerId}
                     submitApproval={actions.submitApproval}
                     submittingApproval={state.submittingApproval}
                 />

@@ -3,11 +3,13 @@ import { useState } from 'react';
 export const useApprovalsState = () => {
     const [activeTab, setActiveTab] = useState('design');
     const [tasks, setTasks] = useState([]);
+    const [accountsProjects, setAccountsProjects] = useState([]);
     const [procurementItems, setProcurementItems] = useState([]);
     const [productionProjects, setProductionProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [productionManagers, setProductionManagers] = useState([]);
     const [procurementManagers, setProcurementManagers] = useState([]);
+    const [accountsManagers, setAccountsManagers] = useState([]);
     
     // Design Review Modal
     const [showDesignModal, setShowDesignModal] = useState(false);
@@ -20,6 +22,7 @@ export const useApprovalsState = () => {
     const [paymentDueDate, setPaymentDueDate] = useState('');
     const [paymentNotes, setPaymentNotes] = useState('');
     const [selectedProcurementManagerId, setSelectedProcurementManagerId] = useState('');
+    const [selectedAccountsManagerId, setSelectedAccountsManagerId] = useState('');
     const [submittingApproval, setSubmittingApproval] = useState(false);
 
     // Procurement State
@@ -33,11 +36,13 @@ export const useApprovalsState = () => {
     return {
         activeTab, setActiveTab,
         tasks, setTasks,
+        accountsProjects, setAccountsProjects,
         procurementItems, setProcurementItems,
         productionProjects, setProductionProjects,
         loading, setLoading,
         productionManagers, setProductionManagers,
         procurementManagers, setProcurementManagers,
+        accountsManagers, setAccountsManagers,
         showDesignModal, setShowDesignModal,
         selectedTask, setSelectedTask,
         showPaymentModal, setShowPaymentModal,
@@ -46,6 +51,7 @@ export const useApprovalsState = () => {
         paymentDueDate, setPaymentDueDate,
         paymentNotes, setPaymentNotes,
         selectedProcurementManagerId, setSelectedProcurementManagerId,
+        selectedAccountsManagerId, setSelectedAccountsManagerId,
         submittingApproval, setSubmittingApproval,
         selectedPM, setSelectedPM,
         sentToAccounts, setSentToAccounts,

@@ -134,6 +134,7 @@ const TaskSchema = new mongoose.Schema({
             'Completed', 'Approved', 'Rejected',
             'Pending Sales Review', 'Sales Approved',
             'Pending Admin Review', 'Admin Rejected',
+            'Pending Payment',
             'Pushed to Procurement', 'Assigned to Procurement', 'Pending Manager Review', 'Pending Procurement Admin Review', 'Procurement Approved', 'Blocked'
         ],
         default: 'To Do'
@@ -247,7 +248,7 @@ TaskSchema.pre('save', function (next) {
 
     if (this.isModified('status')) {
         const now = new Date();
-        const terminalStatuses = ['Completed', 'Approved', 'Sales Approved', 'Pushed to Procurement', 'Assigned to Procurement', 'Procurement Approved'];
+        const terminalStatuses = ['Completed', 'Approved', 'Sales Approved', 'Pending Payment', 'Pushed to Procurement', 'Assigned to Procurement', 'Procurement Approved'];
         if (terminalStatuses.includes(this.status)) {
             if (!this.completedAt) this.completedAt = now;
             this.progress = 100;
@@ -268,7 +269,7 @@ TaskSchema.pre('save', function (next) {
     }
 
     // Overdue detection
-    const nonOverdueStatuses = ['Completed', 'Approved', 'Sales Approved', 'Pending Admin Review', 'Pushed to Procurement', 'Assigned to Procurement', 'Pending Manager Review', 'Pending Procurement Admin Review', 'Procurement Approved'];
+    const nonOverdueStatuses = ['Completed', 'Approved', 'Sales Approved', 'Pending Admin Review', 'Pending Payment', 'Pushed to Procurement', 'Assigned to Procurement', 'Pending Manager Review', 'Pending Procurement Admin Review', 'Procurement Approved'];
     if (!nonOverdueStatuses.includes(this.status)) {
         if (this.dueDate && new Date(this.dueDate) < new Date()) {
             this.isOverdue = true;

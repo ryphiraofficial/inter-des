@@ -5,6 +5,7 @@ import FilterDropdown from './FilterDropdown';
 const STAGE_OPTIONS = [
     { value: '',            label: 'All Stages',  dot: '#94a3b8' },
     { value: 'Design',      label: 'Design',      dot: '#6366f1' },
+    { value: 'Accounts',    label: 'Accounts',    dot: '#10b981' },
     { value: 'Procurement', label: 'Procurement', dot: '#f59e0b' },
     { value: 'Production',  label: 'Production',  dot: '#3b82f6' },
     { value: 'Completed',   label: 'Completed',   dot: '#10b981' },

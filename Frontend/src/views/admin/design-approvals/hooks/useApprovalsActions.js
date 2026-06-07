@@ -1,11 +1,12 @@
 import { 
     useAdminReviewTaskMutation, 
     useApproveProductionMutation, 
-    useAdminApproveProcurementMutation 
+    useAdminApproveProcurementMutation,
+    useAdminClearPaymentToProcurementMutation
 } from '../../../../store/api/adminApi';
 
 export const useApprovalsActions = ({ 
-    setTasks, setProcurementItems, setProductionProjects, setSubmittingApproval, 
+    setTasks, setAccountsProjects, setProcurementItems, setProductionProjects, setSubmittingApproval, 
     setShowPaymentModal, setPaymentTask, setShowDesignModal, showToast, 
     selectedPM, sentToAccounts, setApproving, setApprovingProduction
 }) => {
@@ -13,12 +14,9 @@ export const useApprovalsActions = ({
     const [adminReview] = useAdminReviewTaskMutation();
     const [approveProduction] = useApproveProductionMutation();
     const [adminApproveProcurement] = useAdminApproveProcurementMutation();
+    const [adminClearPayment] = useAdminClearPaymentToProcurementMutation();
 
-    const submitApproval = async ({ paymentTask, advancePct, paymentDueDate, paymentNotes, procurementManagerId }) => {
-        if (!procurementManagerId) {
-            showToast('Please assign a Procurement Manager', 'error');
-            return;
-        }
+    const submitApproval = async ({ paymentTask, advancePct, paymentDueDate, paymentNotes, accountsManagerId }) => {
         if (!paymentDueDate) {
             showToast('Please set a payment due date', 'error');
             return;
@@ -31,7 +29,7 @@ export const useApprovalsActions = ({
                 advancePercentage: advancePct,
                 paymentDueDate,
                 adminPaymentNotes: paymentNotes,
-                procurementManagerId
+                accountsManagerId
             }).unwrap();
             
             setTasks(prev => prev.filter(t => t._id !== paymentTask._id));
@@ -39,11 +37,40 @@ export const useApprovalsActions = ({
             setPaymentTask(null);
             const quotTotal = paymentTask.quotation?.totalAmount || 0;
             const amt = Math.round((quotTotal * advancePct) / 100);
-            showToast(`Design approved! Assigned to Procurement Manager and sent ₹${amt.toLocaleString('en-IN')} collection request to Accounts Manager.`);
+            showToast(`Design approved! Sent ₹${amt.toLocaleString('en-IN')} collection request to Accounts Manager.`);
         } catch (err) {
             showToast('Approval failed: ' + (err.data?.message || err.message), 'error');
         } finally {
             setSubmittingApproval(false);
+        }
+    };
+
+    const handleClearPayment = async (project, procurementManagerId, forceOverride = false, overrideReason = '') => {
+        if (!procurementManagerId) {
+            showToast('Please assign a Procurement Manager', 'error');
+            return;
+        }
+        try {
+            setApproving(prev => ({ ...prev, [project._id]: true }));
+            const res = await adminClearPayment({
+                id: project._id,
+                procurementManagerId,
+                forceOverride,
+                overrideReason
+            }).unwrap();
+            
+            setAccountsProjects(prev => prev.filter(p => p._id !== project._id));
+            
+            // Add the new material request to the procurement pipeline
+            if (res.materialRequest) {
+                setProcurementItems(prev => [...prev, { ...res.materialRequest, type: 'MaterialRequest' }]);
+            }
+            
+            showToast(`Payment cleared! Project sent to Procurement.`);
+        } catch (err) {
+            showToast('Failed to clear payment: ' + (err.data?.message || err.message), 'error');
+        } finally {
+            setApproving(prev => ({ ...prev, [project._id]: false }));
         }
     };
 
@@ -115,5 +142,5 @@ export const useApprovalsActions = ({
         }
     };
 
-    return { submitApproval, handleReject, handleProcurementApprove, handleProductionApprove, handleProductionReject };
+    return { submitApproval, handleReject, handleProcurementApprove, handleProductionApprove, handleProductionReject, handleClearPayment };
 };
