@@ -16,6 +16,9 @@ export const authApi = createApi({
     }),
     tagTypes: ['User'],
     endpoints: (builder) => ({
+        getPublicSettings: builder.query({
+            query: () => '/settings/public',
+        }),
         getCurrentUser: builder.query({
             query: () => '/auth/me',
             providesTags: ['User'],
@@ -34,6 +37,7 @@ export const authApi = createApi({
 });
 
 export const {
+    useGetPublicSettingsQuery,
     useGetCurrentUserQuery,
     useUpdateProfileMutation,
     useUpdatePasswordMutation,

@@ -16,6 +16,7 @@ const NAV_ITEMS = [
     { tab: 'staff_overview',     label: 'Staff Overview',    icon: Users },
     { tab: 'material_review',    label: 'Material Review',   icon: Package },
     { tab: 'meetings',           label: 'Meetings',          icon: Video },
+    { tab: 'reports',            label: 'Reports',           icon: FileText },
 ];
 
 const DesignManagerSidebar = ({ onLogout }) => {

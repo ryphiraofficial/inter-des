@@ -8,6 +8,7 @@ import Projects from './Projects';
 import Tasks from './Tasks';
 import DesignSkeleton from './DesignSkeleton';
 import MaterialReviewHub from './MaterialReviewHub';
+import Reports from './Reports';
 import PipelineTab from './components/PipelineTab';
 import TaskAssignModal from './components/TaskAssignModal';
 import SubmissionReviewModal from './components/SubmissionReviewModal';
@@ -135,6 +136,10 @@ const DesignManagerDashboard = ({}) => {
                 return <MaterialReviewHub materialRequests={materialRequests} onApprove={handleApproveMaterialRequest} />;
             case 'meetings':
                 return <MeetingsPage user={user} />;
+            case 'reports':
+                return (
+                    <Reports staffList={staffList} tasks={tasks} />
+                );
             default:
                 return (
                     <div style={{ display: 'grid', gap: '2rem' }}>

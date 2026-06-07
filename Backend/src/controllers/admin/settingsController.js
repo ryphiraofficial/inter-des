@@ -1,6 +1,28 @@
 import Settings from '../../models/admin/Settings.js';
 
 /**
+ * @desc    Get public application settings (logo, name)
+ * @route   GET /api/settings/public
+ * @access  Public
+ */
+export const getPublicSettings = async (req, res) => {
+    try {
+        const settings = await Settings.findOne();
+        res.status(200).json({
+            success: true,
+            data: {
+                company: settings?.company || {}
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+/**
  * @desc    Get application settings
  * @route   GET /api/settings
  * @access  Private (Admin)

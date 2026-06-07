@@ -35,13 +35,7 @@ const Tasks = ({
 
     return (
         <div className="tasks-board-view fade-in">
-            <div className="premium-tasks-banner">
-                <div>
-                    <h2>My Active Tasks</h2>
-                    <p>Manage your daily design assignments, track progress, and submit your deliverables.</p>
-                </div>
-                <Target size={150} className="premium-tasks-icon" />
-            </div>
+
 
             <div className="premium-tasks-grid">
                 {myTasks.length > 0 ? myTasks.map(task => (

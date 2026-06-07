@@ -77,7 +77,7 @@ const TaskCard = ({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontSize: '0.8rem', fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase' }}>
                         <Palette size={14} /> Design Brief
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.5' }}>{task.creativeRequirements}</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.5', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{task.creativeRequirements}</p>
                 </div>
             )}
 

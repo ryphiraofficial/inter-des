@@ -1096,6 +1096,12 @@
     padding: 2rem;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
     animation: modalSlideIn 0.25s ease-out;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal-content-styled::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
 
 @keyframes modalSlideIn {

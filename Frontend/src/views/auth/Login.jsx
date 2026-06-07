@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { useLoginMutation } from '../../store/api/authApi';
+import { useLoginMutation, useGetPublicSettingsQuery } from '../../store/api/authApi';
 import { useAppDispatch } from '../../store/hooks';
 import { loginSuccess } from '../../store/slices/authSlice';
+import { BASE_IMAGE_URL } from '../../config/constants';
 import './css/Login.css';
+
+const getImageUrl = (path) => path ? (path.startsWith('http') ? path : `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`) : null;
 
 const Login = () => {
     const dispatch = useAppDispatch();
+    const { data: settingsData } = useGetPublicSettingsQuery();
+    const companyLogo = settingsData?.data?.company?.companyLogo;
+    
     const [formData, setFormData] = useState({
         identifier: '',
         password: ''
@@ -62,7 +68,12 @@ const Login = () => {
     return (
         <div className="login-page-light">
             <div className="login-card">
-                <div className="login-header">
+                <div className="login-header" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    {companyLogo ? (
+                        <img src={getImageUrl(companyLogo)} alt="Company Logo" style={{ width: '56px', height: '56px', marginBottom: '16px', objectFit: 'cover', borderRadius: '50%' }} />
+                    ) : (
+                        <img src="/vite.svg" alt="Company Logo" style={{ width: '56px', height: '56px', marginBottom: '16px', objectFit: 'cover', borderRadius: '50%' }} />
+                    )}
                     <h1>Sign In</h1>
                     <p>Welcome back! Please enter your details.</p>
                 </div>
