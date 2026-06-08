@@ -5,7 +5,8 @@ import {
     useGetProductionManagersQuery,
     useGetCompletedProductionProjectsQuery,
     useGetUsersQuery,
-    useGetProjectsQuery
+    useGetProjectsQuery,
+    useGetProcurementManagersQuery
 } from '../../../../store/api/adminApi';
 
 export const useApprovalsData = ({ 
@@ -16,7 +17,7 @@ export const useApprovalsData = ({
     const { data: accountsProjectsRes, isLoading: accountsLoading, refetch: refetchAccounts } = useGetProjectsQuery({ stage: 'Accounts' });
     const { data: materialRequestsRes, isLoading: materialLoading, error: materialError, refetch: refetchMaterial } = useGetMaterialRequestsQuery({ status: 'Pending Admin Review' });
     const { data: prodManagersRes, isLoading: prodManLoading } = useGetProductionManagersQuery();
-    const { data: procManagersRes, isLoading: procManLoading } = useGetUsersQuery({ role: 'Procurement Manager', status: 'Active', limit: 100 });
+    const { data: procManagersRes, isLoading: procManLoading } = useGetProcurementManagersQuery();
     const { data: accManagersRes, isLoading: accManLoading } = useGetUsersQuery({ role: 'Accounts Manager', status: 'Active', limit: 100 });
     const { data: prodProjectsRes, isLoading: prodProjLoading, refetch: refetchProjects } = useGetCompletedProductionProjectsQuery();
 

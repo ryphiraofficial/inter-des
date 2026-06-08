@@ -49,113 +49,115 @@ const ProjectEditModal = ({ project, onClose, onUpdate }) => {
     if (!project) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', overflow: 'visible' }}>
-                <div className="modal-header">
+        <div className="pe-drawer-overlay" onClick={onClose}>
+            <div className="pe-drawer-content" onClick={e => e.stopPropagation()}>
+                <div className="pe-drawer-header">
                     <h2>Edit Project: {project.name}</h2>
-                    <button className="close-btn" onClick={onClose}><X size={20} /></button>
+                    <button className="pe-drawer-close" onClick={onClose}><X size={20} /></button>
                 </div>
                 
-                <form onSubmit={handleSubmit} className="modal-body modern-body" style={{ overflow: 'visible' }}>
-                    {/* Project Name */}
-                    <div style={{ marginBottom: '18px' }}>
-                        <label className="pe-field-label">Project Name *</label>
-                        <input 
-                            type="text" 
-                            className="pe-sdcn-input" 
-                            value={form.name} 
-                            onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                            required
-                        />
-                    </div>
-                    
-                    {/* Description */}
-                    <div style={{ marginBottom: '18px' }}>
-                        <label className="pe-field-label">Description</label>
-                        <textarea 
-                            className="pe-sdcn-input" 
-                            value={form.description} 
-                            onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-                            rows={3}
-                        />
-                    </div>
-                    
-                    {/* Priority + Budget */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', marginBottom: '18px' }}>
-                        <div>
-                            <label className="pe-field-label">Priority</label>
-                            <SdcnSelect
-                                value={form.priority}
-                                onChange={v => setForm(p => ({ ...p, priority: v }))}
-                                options={[
-                                    { value: 'Low', label: 'Low' },
-                                    { value: 'Medium', label: 'Medium' },
-                                    { value: 'High', label: 'High' },
-                                ]}
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="pe-field-label">Budget (₹)</label>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div className="pe-drawer-body">
+                        {/* Project Name */}
+                        <div style={{ marginBottom: '18px' }}>
+                            <label className="pe-field-label">Project Name *</label>
                             <input 
-                                type="number" 
+                                type="text" 
                                 className="pe-sdcn-input" 
-                                value={form.budget} 
-                                onChange={e => setForm(p => ({ ...p, budget: Number(e.target.value) }))}
-                            />
-                        </div>
-                    </div>
-                    
-                    {/* Stage + Status + Payment */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '18px', marginBottom: '24px' }}>
-                        <div>
-                            <label className="pe-field-label">Stage</label>
-                            <SdcnSelect
-                                value={form.stage}
-                                onChange={v => setForm(p => ({ ...p, stage: v }))}
-                                options={[
-                                    { value: 'Accounts', label: 'Accounts' },
-                                    { value: 'Design', label: 'Design' },
-                                    { value: 'Procurement', label: 'Procurement' },
-                                    { value: 'Production', label: 'Production' },
-                                    { value: 'Completed', label: 'Completed' },
-                                ]}
+                                value={form.name} 
+                                onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                                required
                             />
                         </div>
                         
-                        <div>
-                            <label className="pe-field-label">Status</label>
-                            <SdcnSelect
-                                value={form.status}
-                                onChange={v => setForm(p => ({ ...p, status: v }))}
-                                options={[
-                                    { value: 'Not Started', label: 'Not Started' },
-                                    { value: 'In Progress', label: 'In Progress' },
-                                    { value: 'On Hold', label: 'On Hold' },
-                                    { value: 'Completed', label: 'Completed' },
-                                    { value: 'Delayed', label: 'Delayed' },
-                                ]}
+                        {/* Description */}
+                        <div style={{ marginBottom: '18px' }}>
+                            <label className="pe-field-label">Description</label>
+                            <textarea 
+                                className="pe-sdcn-input" 
+                                value={form.description} 
+                                onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                                rows={3}
                             />
                         </div>
+                        
+                        {/* Priority + Budget */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', marginBottom: '18px' }}>
+                            <div>
+                                <label className="pe-field-label">Priority</label>
+                                <SdcnSelect
+                                    value={form.priority}
+                                    onChange={v => setForm(p => ({ ...p, priority: v }))}
+                                    options={[
+                                        { value: 'Low', label: 'Low' },
+                                        { value: 'Medium', label: 'Medium' },
+                                        { value: 'High', label: 'High' },
+                                    ]}
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="pe-field-label">Budget (₹)</label>
+                                <input 
+                                    type="number" 
+                                    className="pe-sdcn-input" 
+                                    value={form.budget} 
+                                    onChange={e => setForm(p => ({ ...p, budget: Number(e.target.value) }))}
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* Stage + Status + Payment */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '18px', marginBottom: '24px' }}>
+                            <div>
+                                <label className="pe-field-label">Stage</label>
+                                <SdcnSelect
+                                    value={form.stage}
+                                    onChange={v => setForm(p => ({ ...p, stage: v }))}
+                                    options={[
+                                        { value: 'Accounts', label: 'Accounts' },
+                                        { value: 'Design', label: 'Design' },
+                                        { value: 'Procurement', label: 'Procurement' },
+                                        { value: 'Production', label: 'Production' },
+                                        { value: 'Completed', label: 'Completed' },
+                                    ]}
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="pe-field-label">Status</label>
+                                <SdcnSelect
+                                    value={form.status}
+                                    onChange={v => setForm(p => ({ ...p, status: v }))}
+                                    options={[
+                                        { value: 'Not Started', label: 'Not Started' },
+                                        { value: 'In Progress', label: 'In Progress' },
+                                        { value: 'On Hold', label: 'On Hold' },
+                                        { value: 'Completed', label: 'Completed' },
+                                        { value: 'Delayed', label: 'Delayed' },
+                                    ]}
+                                />
+                            </div>
 
-                        <div>
-                            <label className="pe-field-label">Payment</label>
-                            <SdcnSelect
-                                value={form.paymentStatus}
-                                onChange={v => setForm(p => ({ ...p, paymentStatus: v }))}
-                                options={[
-                                    { value: 'Pending Advance', label: 'Pending Advance' },
-                                    { value: 'Invoice Sent', label: 'Invoice Sent' },
-                                    { value: 'Partial Payment', label: 'Partial Payment' },
-                                    { value: 'Cleared', label: 'Cleared' },
-                                    { value: 'Overdue', label: 'Overdue' },
-                                ]}
-                            />
+                            <div>
+                                <label className="pe-field-label">Payment</label>
+                                <SdcnSelect
+                                    value={form.paymentStatus}
+                                    onChange={v => setForm(p => ({ ...p, paymentStatus: v }))}
+                                    options={[
+                                        { value: 'Pending Advance', label: 'Pending Advance' },
+                                        { value: 'Invoice Sent', label: 'Invoice Sent' },
+                                        { value: 'Partial Payment', label: 'Partial Payment' },
+                                        { value: 'Cleared', label: 'Cleared' },
+                                        { value: 'Overdue', label: 'Overdue' },
+                                    ]}
+                                />
+                            </div>
                         </div>
                     </div>
                     
                     {/* Actions */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <div className="pe-drawer-footer">
                         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
                         <button type="submit" className="btn-primary" disabled={saving}>
                             {saving ? <><Loader size={16} className="spin" /> Saving...</> : 'Save Changes'}

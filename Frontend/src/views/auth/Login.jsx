@@ -65,14 +65,24 @@ const Login = () => {
         });
     };
 
+    const [imageError, setImageError] = useState(false);
+    const companyName = settingsData?.data?.company?.companyName || 'Company';
+
     return (
         <div className="login-page-light">
             <div className="login-card">
                 <div className="login-header" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    {companyLogo ? (
-                        <img src={getImageUrl(companyLogo)} alt="Company Logo" style={{ width: '56px', height: '56px', marginBottom: '16px', objectFit: 'cover', borderRadius: '50%' }} />
+                    {companyLogo && !imageError ? (
+                        <img 
+                            src={getImageUrl(companyLogo)} 
+                            alt="Company Logo" 
+                            style={{ width: '56px', height: '56px', marginBottom: '16px', objectFit: 'cover', borderRadius: '50%' }} 
+                            onError={() => setImageError(true)}
+                        />
                     ) : (
-                        <img src="/vite.svg" alt="Company Logo" style={{ width: '56px', height: '56px', marginBottom: '16px', objectFit: 'cover', borderRadius: '50%' }} />
+                        <div style={{ width: '56px', height: '56px', marginBottom: '16px', borderRadius: '50%', background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(15, 23, 42, 0.2)' }}>
+                            {companyName.charAt(0).toUpperCase()}
+                        </div>
                     )}
                     <h1>Sign In</h1>
                     <p>Welcome back! Please enter your details.</p>

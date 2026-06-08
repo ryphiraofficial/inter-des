@@ -27,6 +27,9 @@ export const useClientState = () => {
 
     const [formData, setFormData] = useState(initialFormData);
 
+    const [clientToDelete, setClientToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     return {
         clients, setClients,
         loading, setLoading,
@@ -38,6 +41,8 @@ export const useClientState = () => {
         submitting, setSubmitting,
         expandedRow, setExpandedRow,
         formData, setFormData,
-        initialFormData
+        initialFormData,
+        clientToDelete, setClientToDelete,
+        isDeleting, setIsDeleting
     };
 };

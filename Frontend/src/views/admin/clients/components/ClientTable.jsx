@@ -61,7 +61,7 @@ const ClientTable = ({
                                     <td className="desktop-hide">
                                         <div className="c-action-buttons">
                                             <button className="btn-icon-edit" onClick={(e) => { e.stopPropagation(); handleEdit(client); }} title="Edit"><Edit size={16} /></button>
-                                            {!isStaff && <button className="btn-icon-delete" onClick={(e) => { e.stopPropagation(); handleDelete(client._id); }} title="Delete"><Trash2 size={16} /></button>}
+                                            {!isStaff && <button className="btn-icon-delete" onClick={(e) => { e.stopPropagation(); handleDelete(client); }} title="Delete"><Trash2 size={16} /></button>}
                                         </div>
                                     </td>
                                     <td className="mobile-show">
@@ -84,7 +84,7 @@ const ClientTable = ({
                                                 </div>
                                                 <div className="expansion-actions">
                                                     <button className="btn-mobile-action primary" onClick={() => handleEdit(client)}><Edit size={16} /> Edit Client</button>
-                                                    {!isStaff && <button className="btn-mobile-action danger" onClick={() => handleDelete(client._id)}><Trash2 size={16} /> Delete Client</button>}
+                                                    {!isStaff && <button className="btn-mobile-action danger" onClick={() => handleDelete(client)}><Trash2 size={16} /> Delete Client</button>}
                                                 </div>
                                             </div>
                                         </td>

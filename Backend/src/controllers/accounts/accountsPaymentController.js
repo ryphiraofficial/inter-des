@@ -113,10 +113,17 @@ export const clearProjectPayment = async (req, res) => {
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
         
         project.paymentStatus = 'Cleared';
-        project.stage = 'Design';
+        project.paymentCollectionStatus = 'Verified';
+        
+        // Let the Admin do the final clearance to Procurement/Design
+        // project.stage = 'Design';
+        
         await project.save();
         
-        await createNotification({ title: 'Payment Cleared', description: `Advance payment cleared for Project "${project.name}". Ready for Design.`, type: 'Success', relatedModel: 'Project', relatedId: project._id, createdBy: req.user.id });
+        notifyByRole('Super Admin', { title: '💵 Payment Cleared by Manager', description: `Accounts Manager directly cleared payment for "${project.name}". Ready for final clearance to Procurement.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
+        notifyByRole('Admin', { title: '💵 Payment Cleared by Manager', description: `Accounts Manager directly cleared payment for "${project.name}". Ready for final clearance to Procurement.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
+        
+        await createNotification({ title: 'Payment Cleared', description: `Advance payment cleared by Accounts Manager for Project "${project.name}". Awaiting Admin final clearance.`, type: 'Success', relatedModel: 'Project', relatedId: project._id, createdBy: req.user.id });
         
         res.status(200).json({ success: true, data: project });
     } catch (error) {
@@ -179,8 +186,9 @@ export const verifyPaymentAndRelease = async (req, res) => {
         project.paymentCollectionStatus = 'Verified';
         
         const originalStage = project.stage;
-        if (originalStage === 'Accounts') project.stage = 'Design';
-        else if (originalStage === 'Pending Payment') project.stage = 'Procurement';
+        // Do not change stage here. The Admin will clear it and send it to Procurement.
+        // if (originalStage === 'Accounts') project.stage = 'Design';
+        // else if (originalStage === 'Pending Payment') project.stage = 'Procurement';
 
         project.tempCollectionDetails = undefined;
         project.notes = (project.notes || '') + `\n[Payment Verified by Manager: ${req.user.fullName || 'Accounts Manager'}]${paymentNotes ? `\nNotes: ${paymentNotes}` : ''}`;
@@ -191,13 +199,10 @@ export const verifyPaymentAndRelease = async (req, res) => {
         invoice.paymentDate = new Date();
         await invoice.save();
 
-        if (originalStage === 'Accounts') {
-            notifyByRole('Design Manager', { title: '🎨 Onboarding Payment Cleared', description: `Advance onboarding payment confirmed for "${project.name}". Ready for Design.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
-        } else {
-            notifyByRole('Procurement Manager', { title: '🚀 Advance Payment Cleared', description: `Advance payment confirmed for "${project.name}". Procurement can proceed without holds.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
-        }
+        notifyByRole('Super Admin', { title: '💵 Payment Verified — Awaiting Clearance', description: `Accounts Manager verified payment of ₹${paid.toLocaleString('en-IN')} for "${project.name}". Ready for final clearance to Procurement.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
+        notifyByRole('Admin', { title: '💵 Payment Verified — Awaiting Clearance', description: `Accounts Manager verified payment of ₹${paid.toLocaleString('en-IN')} for "${project.name}". Ready for final clearance to Procurement.`, type: 'Success', relatedModel: 'Project', relatedId: project._id });
 
-        await createNotification({ title: '✅ Advance Payment Verified', description: `Accounts Manager confirmed advance payment for "${project.name}". Project moved to ${originalStage === 'Accounts' ? 'Design' : 'Procurement'}.`, type: 'Success', relatedModel: 'Project', relatedId: project._id, createdBy: req.user.id });
+        await createNotification({ title: '✅ Advance Payment Verified', description: `Accounts Manager verified advance payment for "${project.name}". Awaiting Admin clearance.`, type: 'Success', relatedModel: 'Project', relatedId: project._id, createdBy: req.user.id });
 
         res.status(200).json({ success: true, data: project, message: 'Payment verified. Project released.' });
     } catch (error) {

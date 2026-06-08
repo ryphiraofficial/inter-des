@@ -16,88 +16,90 @@ const ItemFormModal = ({
     if (!showItemModal) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content-wide" data-lenis-prevent>
-                <div className="modal-header">
+        <div className="inv-drawer-overlay">
+            <div className="inv-drawer-content" data-lenis-prevent>
+                <div className="inv-drawer-header">
                     <h3>{editingItem ? 'Edit Item' : 'New Item Registration'}</h3>
                     <button className="modal-close" onClick={closeModal}><X size={20} /></button>
                 </div>
-                <form onSubmit={(e) => handleSubmit(e, formData, editingItem)}>
-                    <div className="form-grid">
-                        <div className="form-field full-width">
-                            <label>Item Name <span>*</span></label>
-                            <input name="itemName" className="client-input" value={formData.itemName} onChange={handleInputChange} required />
-                        </div>
-                        <div className="form-field full-width">
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <label>Description</label>
-                                <AISuggestButton type="Inventory" field="description" value={formData.description} context={{ itemName: formData.itemName }} onSuggest={(v) => setFormData(prev => ({ ...prev, description: v }))} />
+                <form onSubmit={(e) => handleSubmit(e, formData, editingItem)} style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                    <div className="inv-drawer-body">
+                        <div className="form-grid">
+                            <div className="form-field full-width">
+                                <label>Item Name <span>*</span></label>
+                                <input name="itemName" className="client-input" value={formData.itemName} onChange={handleInputChange} required />
                             </div>
-                            <textarea name="description" className="client-input" value={formData.description} onChange={handleInputChange} rows="2" />
-                        </div>
-                        <div className="form-field">
-                            <label>Section / Category</label>
-                            <CustomSelect
-                                name="section"
-                                value={formData.section}
-                                onChange={handleInputChange}
-                                placeholder="Select Section"
-                                options={[
-                                    { value: '', label: 'Select Section' },
-                                    ...availableSections.map(s => ({ value: s, label: s }))
-                                ]}
-                            />
-                            <button type="button" className="btn-add-inline" onClick={() => setIsAddingSection(true)}>+ Add New Category</button>
-                        </div>
-                        <div className="form-field">
-                            <label>Unit of Measure</label>
-                            <CustomSelect
-                                name="unit"
-                                value={formData.unit}
-                                onChange={handleInputChange}
-                                options={[
-                                    { value: 'Numbers', label: 'Numbers (pcs)' },
-                                    { value: 'Sq Ft', label: 'Square Feet' },
-                                    { value: 'Running Ft', label: 'Running Feet' },
-                                    { value: 'Liters', label: 'Liters' },
-                                    { value: 'Kg', label: 'Kilograms' },
-                                ]}
-                            />
-                        </div>
-                        <div className="form-field">
-                            <label>Cost Price (Purchase) (₹) <span>*</span></label>
-                            <input type="number" name="costPrice" className="client-input" value={formData.costPrice || ''} onChange={handleInputChange} required />
-                        </div>
-                        <div className="form-field">
-                            <label>Selling Price (₹) <span>*</span></label>
-                            <input type="number" name="price" className="client-input" value={formData.price} onChange={handleInputChange} required />
-                        </div>
-                        <div className="form-field">
-                            <label>Stock Level <span>*</span></label>
-                            <input type="number" name="stock" className="client-input" value={formData.stock} onChange={handleInputChange} required />
-                        </div>
-                        <div className="form-field">
-                            <label>Reorder Level</label>
-                            <input type="number" name="reorderLevel" className="client-input" value={formData.reorderLevel} onChange={handleInputChange} />
-                        </div>
-                        <div className="form-field full-width">
-                            <label>Product Image</label>
-                            <div className="image-upload-preview-container">
-                                {formData.image ? (
-                                    <div className="form-image-preview">
-                                        <img src={getImageUrl(formData.image)} alt="Preview" />
-                                        <button type="button" className="remove-preview-btn" onClick={() => setFormData(prev => ({ ...prev, image: null }))}><X size={14} /></button>
-                                    </div>
-                                ) : (
-                                    <div className="image-upload-dropzone">
-                                        <Upload size={24} /><span>Click to upload product image</span>
-                                        <input type="file" onChange={(e) => handleImageUpload(e.target.files[0])} accept="image/*" />
-                                    </div>
-                                )}
+                            <div className="form-field full-width">
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <label>Description</label>
+                                    <AISuggestButton type="Inventory" field="description" value={formData.description} context={{ itemName: formData.itemName }} onSuggest={(v) => setFormData(prev => ({ ...prev, description: v }))} />
+                                </div>
+                                <textarea name="description" className="client-input" value={formData.description} onChange={handleInputChange} rows="2" />
+                            </div>
+                            <div className="form-field">
+                                <label>Section / Category</label>
+                                <CustomSelect
+                                    name="section"
+                                    value={formData.section}
+                                    onChange={handleInputChange}
+                                    placeholder="Select Section"
+                                    options={[
+                                        { value: '', label: 'Select Section' },
+                                        ...availableSections.map(s => ({ value: s, label: s }))
+                                    ]}
+                                />
+                                <button type="button" className="btn-add-inline" onClick={() => setIsAddingSection(true)}>+ Add New Category</button>
+                            </div>
+                            <div className="form-field">
+                                <label>Unit of Measure</label>
+                                <CustomSelect
+                                    name="unit"
+                                    value={formData.unit}
+                                    onChange={handleInputChange}
+                                    options={[
+                                        { value: 'Numbers', label: 'Numbers (pcs)' },
+                                        { value: 'Sq Ft', label: 'Square Feet' },
+                                        { value: 'Running Ft', label: 'Running Feet' },
+                                        { value: 'Liters', label: 'Liters' },
+                                        { value: 'Kg', label: 'Kilograms' },
+                                    ]}
+                                />
+                            </div>
+                            <div className="form-field">
+                                <label>Cost Price (Purchase) (₹) <span>*</span></label>
+                                <input type="number" name="costPrice" className="client-input" value={formData.costPrice || ''} onChange={handleInputChange} required />
+                            </div>
+                            <div className="form-field">
+                                <label>Selling Price (₹) <span>*</span></label>
+                                <input type="number" name="price" className="client-input" value={formData.price} onChange={handleInputChange} required />
+                            </div>
+                            <div className="form-field">
+                                <label>Stock Level <span>*</span></label>
+                                <input type="number" name="stock" className="client-input" value={formData.stock} onChange={handleInputChange} required />
+                            </div>
+                            <div className="form-field">
+                                <label>Reorder Level</label>
+                                <input type="number" name="reorderLevel" className="client-input" value={formData.reorderLevel} onChange={handleInputChange} />
+                            </div>
+                            <div className="form-field full-width">
+                                <label>Product Image</label>
+                                <div className="image-upload-preview-container">
+                                    {formData.image ? (
+                                        <div className="form-image-preview">
+                                            <img src={getImageUrl(formData.image)} alt="Preview" />
+                                            <button type="button" className="remove-preview-btn" onClick={() => setFormData(prev => ({ ...prev, image: null }))}><X size={14} /></button>
+                                        </div>
+                                    ) : (
+                                        <div className="image-upload-dropzone">
+                                            <Upload size={24} /><span>Click to upload product image</span>
+                                            <input type="file" onChange={(e) => handleImageUpload(e.target.files[0])} accept="image/*" />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="modal-footer">
+                    <div className="inv-drawer-footer">
                         <button type="button" className="btn-cancel" onClick={closeModal}>Cancel</button>
                         <button type="submit" className="btn-submit" disabled={submitting}>
                             {submitting ? <Loader className="spinner" size={16} /> : (editingItem ? 'Update Item' : 'Add to Catalog')}

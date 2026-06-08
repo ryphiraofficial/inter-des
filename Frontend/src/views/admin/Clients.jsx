@@ -7,6 +7,7 @@ import { useClientActions } from './clients/hooks/useClientActions';
 import ClientHeader from './clients/components/ClientHeader';
 import ClientTable from './clients/components/ClientTable';
 import ClientFormModal from './clients/components/ClientFormModal';
+import DeleteConfirmModal from './clients/components/DeleteConfirmModal';
 
 import './css/Clients.css';
 
@@ -27,7 +28,10 @@ const Clients = ({ isStaff }) => {
         setShowNewClientModal: state.setShowNewClientModal,
         setEditingClient: state.setEditingClient,
         setFormData: state.setFormData,
-        initialFormData: state.initialFormData
+        initialFormData: state.initialFormData,
+        clientToDelete: state.clientToDelete,
+        setClientToDelete: state.setClientToDelete,
+        setIsDeleting: state.setIsDeleting
     });
 
     const SEVEN_DAYS_AGO = new Date();
@@ -90,6 +94,14 @@ const Clients = ({ isStaff }) => {
                 submitting={state.submitting}
                 handleSubmit={actions.handleSubmit}
                 closeModal={actions.closeModal}
+            />
+
+            <DeleteConfirmModal
+                isOpen={!!state.clientToDelete}
+                onClose={() => state.setClientToDelete(null)}
+                onConfirm={actions.confirmDelete}
+                itemName="client"
+                isDeleting={state.isDeleting}
             />
         </div>
     );

@@ -16,6 +16,7 @@ import PurchaseOrders from '../../views/admin/PurchaseOrders';
 import POInventory from '../../views/admin/POInventory';
 import Clients from '../../views/admin/Clients';
 import Staff from '../../views/admin/Staff';
+import EmployeeAnalysis from '../../views/admin/EmployeeAnalysis';
 import Tasks from '../../views/admin/Tasks';
 import Reports from '../../views/admin/Reports';
 import Settings from '../../views/admin/Settings';
@@ -117,6 +118,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="po-inventory" element={isGeneralAdmin ? <POInventory /> : <Navigate to="/" replace />} />
                     <Route path="clients" element={isGeneralAdmin ? <Clients /> : <Navigate to="/" replace />} />
                     <Route path="staff" element={isGeneralAdmin ? <Staff /> : <Navigate to="/" replace />} />
+                    <Route path="employee-analysis" element={isGeneralAdmin ? <EmployeeAnalysis /> : <Navigate to="/" replace />} />
                     <Route path="tasks" element={isGeneralAdmin ? <Tasks /> : <Navigate to="/" replace />} />
                     <Route path="reports" element={isGeneralAdmin ? <Reports /> : <Navigate to="/" replace />} />
                     <Route path="settings" element={isGeneralAdmin ? <Settings /> : <Navigate to="/" replace />} />

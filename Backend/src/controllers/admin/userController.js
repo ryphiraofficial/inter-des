@@ -23,6 +23,8 @@ export const getUsers = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
+        console.log('GET USERS QUERY:', query, 'RETURNED:', users.length);
+
         const total = await User.countDocuments(query);
 
         res.status(200).json({

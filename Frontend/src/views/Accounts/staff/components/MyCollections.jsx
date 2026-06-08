@@ -24,43 +24,85 @@ const MyCollections = ({ search: parentSearch, setSearch: parentSetSearch }) => 
 
     return (
         <div style={{ padding: '0 8px' }}>
+            <style>
+                {`
+                .collection-card {
+                    border: 1px solid #e2e8f0;
+                    border-radius: 16px;
+                    background: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+                }
+                .collection-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+                    border-color: #cbd5e1;
+                }
+                .collect-btn {
+                    width: 100%;
+                    height: 44px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    background: #0f172a;
+                    color: #fff;
+                    border: none;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.25s ease;
+                }
+                .collect-btn:hover {
+                    background: #1e293b;
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.3);
+                }
+                .stat-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+                }
+                `}
+            </style>
 
-
-            {/* Stats row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '28px' }}>
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Wallet size={22} />
+            {/* Premium Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+                <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)', border: '1px solid #f1f5f9', transition: 'all 0.3s ease' }} className="stat-card">
+                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5)' }}>
+                        <Wallet size={26} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Total Pending Value</div>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>₹{totalPendingAmount.toLocaleString('en-IN')}</div>
+                        <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Pending Value</div>
+                        <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginTop: '4px', letterSpacing: '-0.02em' }}>₹{totalPendingAmount.toLocaleString('en-IN')}</div>
                     </div>
                 </div>
 
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Clock size={22} />
+                <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)', border: '1px solid #f1f5f9', transition: 'all 0.3s ease' }} className="stat-card">
+                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5)' }}>
+                        <Clock size={26} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Pending Collections</div>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>{pendingCollections.length} Tasks</div>
+                        <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pending Collections</div>
+                        <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginTop: '4px', letterSpacing: '-0.02em' }}>{pendingCollections.length} <span style={{ fontSize: '16px', color: '#94a3b8', fontWeight: 600 }}>Tasks</span></div>
                     </div>
                 </div>
 
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CheckCircle size={22} />
+                <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)', border: '1px solid #f1f5f9', transition: 'all 0.3s ease' }} className="stat-card">
+                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5)' }}>
+                        <CheckCircle size={26} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Awaiting Verification</div>
-                        <div style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>{collectedCollections.length} Projects</div>
+                        <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Awaiting Verification</div>
+                        <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginTop: '4px', letterSpacing: '-0.02em' }}>{collectedCollections.length} <span style={{ fontSize: '16px', color: '#94a3b8', fontWeight: 600 }}>Projects</span></div>
                     </div>
                 </div>
             </div>
 
-            {/* Filter and Content Card */}
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+            {/* Content Area */}
+            <div style={{ background: '#fff', border: '1px solid #f1f5f9', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)' }}>
                 {loading ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0' }}>
                         <RefreshCw className="spin-anim" style={{ color: '#6366f1', marginBottom: '12px' }} size={32} />

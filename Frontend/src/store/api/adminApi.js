@@ -266,6 +266,11 @@ export const adminApi = createApi({
             query: (params = {}) => `/staff?${newSearchParams(params)}`,
             providesTags: ['Staff'],
         }),
+        getStaffAnalyticsOverview: builder.query({
+            query: () => '/staff/analytics/overview',
+            providesTags: ['Staff'],
+            keepUnusedDataFor: 120,
+        }),
         createStaff: builder.mutation({
             query: (body) => ({ url: `/staff`, method: 'POST', body }),
             invalidatesTags: ['Staff'],
@@ -353,6 +358,10 @@ export const adminApi = createApi({
             query: () => '/procurement/production-managers',
             providesTags: ['Staff'],
         }),
+        getProcurementManagers: builder.query({
+            query: () => '/procurement/managers',
+            providesTags: ['Staff'],
+        }),
         getMaterialRequests: builder.query({
             query: (params = {}) => `/procurement/material-requests?${newSearchParams(params)}`,
             providesTags: ['Approvals'], // Reusing approvals tag for admin
@@ -419,6 +428,7 @@ export const {
     useUpdateUserMutation,
     useDeleteUserMutation,
     useGetStaffQuery,
+    useGetStaffAnalyticsOverviewQuery,
     useCreateStaffMutation,
     useUpdateStaffMutation,
     useDeleteStaffMutation,
@@ -438,6 +448,7 @@ export const {
     useMarkAllNotificationsReadMutation,
     useDeleteNotificationMutation,
     useGetProductionManagersQuery,
+    useGetProcurementManagersQuery,
     useGetMaterialRequestsQuery,
     useAccountsCollectPaymentMutation,
     useAdminClearPaymentToProcurementMutation

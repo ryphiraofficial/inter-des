@@ -36,6 +36,7 @@ export const useNavGroups = () => {
 
         const systemItems = [
             { name: 'Staff', icon: Briefcase, path: '/staff' },
+            { name: 'Employee Analysis', icon: Award, path: '/employee-analysis' },
             { name: 'Reports', icon: BarChart, path: '/reports' },
             { name: 'Users', icon: Shield, path: '/users' },
             { name: 'Settings', icon: Settings, path: '/settings' },

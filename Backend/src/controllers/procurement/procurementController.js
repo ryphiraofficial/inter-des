@@ -146,3 +146,10 @@ export const getProductionManagers = async (req, res) => {
         res.status(result.status || 200).json(result);
     } catch (error) { res.status(error.status || 500).json({ success: false, message: error.message }); }
 };
+
+export const getProcurementManagers = async (req, res) => {
+    try {
+        const result = await procurementDashboardService.getProcurementManagers({ user: req.user, body: req.body, params: req.params, query: req.query });
+        res.status(result.status || 200).json(result);
+    } catch (error) { res.status(error.status || 500).json({ success: false, message: error.message }); }
+};

@@ -55,6 +55,13 @@ export const getProductionManagers = async (reqData) => {
     } catch (error) { return { status: 500, success: false, message: error.message }; }
 };
 
+export const getProcurementManagers = async (reqData) => {
+    try {
+        const managers = await User.find({ role: 'Procurement Manager', status: 'Active' }).select('fullName email phone');
+        return { status: 200, success: true, count: managers.length, data: managers };
+    } catch (error) { return { status: 500, success: false, message: error.message }; }
+};
+
 export const adminApproveProcurement = async (reqData) => {
     try {
         const { productionManagerId, sendToAccounts, itemType } = reqData.body;

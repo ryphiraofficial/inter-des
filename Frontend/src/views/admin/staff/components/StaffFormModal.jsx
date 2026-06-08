@@ -13,14 +13,14 @@ const StaffFormModal = ({
 }) => {
     if (!show) return null;
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <div className="modal-header">
+        <div className="staff-drawer-overlay">
+            <div className="staff-drawer-content">
+                <div className="staff-drawer-header">
                     <h3>{editingStaff ? 'Edit Staff Member' : 'Add New Staff'}</h3>
                     <button className="modal-close" onClick={closeModal}><X size={20} /></button>
                 </div>
-                <form onSubmit={handleSubmit}>
-                    <div className="modal-body" data-lenis-prevent>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                    <div className="staff-drawer-body" data-lenis-prevent>
                         <div className="form-grid">
                             <div className="form-group full-width">
                                 <label>Full Name *</label>
@@ -59,7 +59,7 @@ const StaffFormModal = ({
                             </div>
                         </div>
                     </div>
-                    <div className="modal-footer">
+                    <div className="staff-drawer-footer">
                         <button type="button" className="btn-cancel" onClick={closeModal} disabled={submitting}>Cancel</button>
                         <button type="submit" className="btn-submit" disabled={submitting}>
                             {submitting ? <Loader size={16} className="spinner" /> : 'Save Staff Member'}

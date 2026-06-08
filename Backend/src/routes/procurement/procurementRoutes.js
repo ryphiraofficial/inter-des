@@ -21,7 +21,8 @@ import {
     updatePurchaseStatus,
     approveMaterialRequest,
     adminApproveProcurement,
-    getProductionManagers
+    getProductionManagers,
+    getProcurementManagers
  } from '../../controllers/procurement/procurementController.js';
 
 router.use(protect);
@@ -65,6 +66,9 @@ router.route('/staff')
 // Admin procurement approval routes
 router.route('/production-managers')
     .get(getProductionManagers);
+
+router.route('/managers')
+    .get(getProcurementManagers);
 
 router.route('/admin-approve/:id')
     .put(authorize('Super Admin', 'Admin'), adminApproveProcurement);

@@ -43,6 +43,7 @@ export const getPageDetails = (location, user) => {
         '/invoice': { title: 'Invoices', subtitle: 'Generate and track professional client invoices.' },
         '/projects': { title: 'Projects', subtitle: 'Detailed overview of all ongoing projects.' },
         '/staff': { title: 'Staff', subtitle: 'Manage your team members and roles.' },
+        '/employee-analysis': { title: 'Employee Analysis', subtitle: 'Review fair hike and reward recommendations.' },
         '/approvals': { title: 'Approvals', subtitle: 'Review and manage pending design approvals.' },
         '/material-review': { title: 'Material Review', subtitle: 'Review and approve material requests.' },
         '/engineer/dashboard': { title: 'Dashboard', subtitle: 'Overview of assigned tasks' },

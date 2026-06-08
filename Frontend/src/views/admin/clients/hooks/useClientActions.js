@@ -5,7 +5,8 @@ import {
 } from '../../../../store/api/adminApi';
 
 export const useClientActions = ({ 
-    fetchClients, setSubmitting, setShowNewClientModal, setEditingClient, setFormData, initialFormData 
+    fetchClients, setSubmitting, setShowNewClientModal, setEditingClient, setFormData, initialFormData,
+    clientToDelete, setClientToDelete, setIsDeleting
 }) => {
     
     const [createClient] = useCreateClientMutation();
@@ -55,15 +56,23 @@ export const useClientActions = ({
         setShowNewClientModal(true);
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this client?')) return;
+    const handleDelete = (client) => {
+        setClientToDelete(client);
+    };
+
+    const confirmDelete = async () => {
+        if (!clientToDelete) return;
+        setIsDeleting(true);
         try {
-            await deleteClient(id).unwrap();
+            await deleteClient(clientToDelete._id).unwrap();
             await fetchClients();
+            setClientToDelete(null);
         } catch (err) {
             alert('Failed to delete client');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
-    return { handleSubmit, handleEdit, handleDelete, closeModal };
+    return { handleSubmit, handleEdit, handleDelete, confirmDelete, closeModal };
 };
