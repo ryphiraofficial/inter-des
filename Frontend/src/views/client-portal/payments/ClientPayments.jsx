@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { CreditCard, X, ChevronRight, CheckCircle2, Download } from 'lucide-react';
 import { useAppSelector } from '../../../store/hooks';
 import { selectToken } from '../../../store/slices/authSlice';
@@ -13,6 +15,8 @@ const ClientPayments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const receiptRef = useRef(null);
 
     const selectedProjectId = useAppSelector(state => state.clientPortal.selectedProjectId);
 
@@ -66,9 +70,32 @@ const ClientPayments = () => {
         setSelectedPayment(null);
     };
 
-    const handleDownloadReceipt = () => {
-        // Placeholder for future receipt generation functionality
-        showToast('Receipt generation coming soon.', 'info');
+    const handleDownloadReceipt = async () => {
+        if (!receiptRef.current || !selectedPayment) return;
+        
+        setIsDownloading(true);
+        try {
+            const canvas = await html2canvas(receiptRef.current, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Receipt-${selectedPayment.paymentNumber}.pdf`);
+            
+            showToast('Receipt downloaded successfully', 'success');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            showToast('Failed to download receipt', 'error');
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     if (loading) {
@@ -142,7 +169,8 @@ const ClientPayments = () => {
             {selectedPayment && (
                 <div className="client-payment-modal-overlay" onClick={closeModal}>
                     <div className="client-payment-modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="client-payment-modal-header">
+                        <div ref={receiptRef} style={{ padding: '2rem', background: '#fff', borderRadius: '16px' }}>
+                            <div className="client-payment-modal-header">
                             <div>
                                 <h3 className="client-payment-modal-title">Payment Receipt</h3>
                                 <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
@@ -198,10 +226,11 @@ const ClientPayments = () => {
                                 )}
                             </div>
                         </div>
+                        </div>
 
                         <div className="client-payment-modal-footer">
-                            <button className="client-payment-download-btn" onClick={handleDownloadReceipt}>
-                                <Download size={18} /> Download Receipt
+                            <button className="client-payment-download-btn" onClick={handleDownloadReceipt} disabled={isDownloading} style={{ opacity: isDownloading ? 0.7 : 1, cursor: isDownloading ? 'wait' : 'pointer' }}>
+                                <Download size={18} /> {isDownloading ? 'Generating...' : 'Download Receipt'}
                             </button>
                         </div>
                     </div>

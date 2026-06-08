@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -6,7 +6,7 @@ import { logout, selectToken } from '../../../store/slices/authSlice';
 import { setSelectedProject, selectSelectedProjectId } from '../../../store/slices/clientPortalSlice';
 import { useGetPublicSettingsQuery } from '../../../store/api/authApi';
 import { BASE_IMAGE_URL } from '../../../config/constants';
-import { LogOut, Menu, LayoutDashboard, FileText, FileSignature, Settings, X, Receipt, CreditCard, Users, MessageSquare, ChevronDown } from 'lucide-react';
+import { LogOut, Menu, LayoutDashboard, FileText, FileSignature, Settings, X, Receipt, CreditCard, Users, MessageSquare, ChevronDown, Check } from 'lucide-react';
 import './ClientLayout.css';
 
 const getImageUrl = (path) => path ? (path.startsWith('http') ? path : `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`) : null;
@@ -23,6 +23,19 @@ const ClientLayout = () => {
     const { data: settingsData } = useGetPublicSettingsQuery();
     const companyLogo = settingsData?.data?.company?.companyLogo;
     const companyName = settingsData?.data?.company?.companyName || 'WOODAURA';
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -153,19 +166,40 @@ const ClientLayout = () => {
                     
                     <div className="client-topbar-right">
                         {projects.length > 0 && (
-                            <div className="client-project-selector-wrapper">
-                                <select 
-                                    className="client-project-selector" 
-                                    value={selectedProjectId || ''} 
-                                    onChange={handleProjectChange}
+                            <div className="client-project-selector-wrapper" ref={dropdownRef}>
+                                <button 
+                                    className="client-project-selector-trigger"
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
                                 >
-                                    {projects.map(p => (
-                                        <option key={p._id} value={p._id}>
-                                            {p.name} {p.status === 'Completed' ? '(Completed)' : ''}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="client-project-selector-icon" size={16} />
+                                    <span className="client-project-selector-text">
+                                        {projects.find(p => p._id === selectedProjectId)?.name || 'Select Project'}
+                                    </span>
+                                    <ChevronDown size={16} style={{ opacity: 0.5, flexShrink: 0 }} />
+                                </button>
+                                
+                                {dropdownOpen && (
+                                    <div className="client-project-selector-content">
+                                        {projects.map(p => (
+                                            <div 
+                                                key={p._id} 
+                                                className={`client-project-selector-item ${p._id === selectedProjectId ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    dispatch(setSelectedProject(p._id));
+                                                    setDropdownOpen(false);
+                                                }}
+                                            >
+                                                {p._id === selectedProjectId && (
+                                                    <span className="client-project-selector-item-icon">
+                                                        <Check size={14} />
+                                                    </span>
+                                                )}
+                                                <span className="client-project-selector-item-text">
+                                                    {p.name} {p.status === 'Completed' ? '(Completed)' : ''}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
