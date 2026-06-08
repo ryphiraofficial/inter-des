@@ -1,0 +1,123 @@
+.client-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+.client-login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.client-login-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.client-login-logo-circle {
+    width: 64px;
+    height: 64px;
+    background: #000000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.client-login-title {
+    font-size: 1.5rem;
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.client-login-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 32px;
+}
+
+.client-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+}
+
+.client-login-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+}
+
+.client-login-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #0f172a;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.client-login-input:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.client-login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.client-login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.client-login-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.client-login-back {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.client-login-back:hover {
+    color: #0f172a;
+}

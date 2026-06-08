@@ -71,6 +71,21 @@ const QuotationItemSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    discountType: {
+        type: String,
+        enum: ['percentage', 'amount'],
+        default: 'percentage'
+    },
+    discountValue: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    discountAmount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     profit: {
         type: Number,
         default: 0
@@ -310,7 +325,18 @@ QuotationSchema.pre('save', async function (next) {
 QuotationSchema.pre('save', function (next) {
     let totalCost = 0;
     this.subtotal = this.items.reduce((sum, item) => {
-        item.amount = (item.quantity || 0) * (item.rate || 0);
+        const baseAmount = (item.quantity || 0) * (item.rate || 0);
+        
+        let itemDiscountAmount = 0;
+        if (item.discountType === 'amount') {
+            itemDiscountAmount = item.discountValue || 0;
+        } else {
+            itemDiscountAmount = (baseAmount * (item.discountValue || 0)) / 100;
+        }
+        
+        item.discountAmount = itemDiscountAmount;
+        item.amount = baseAmount - itemDiscountAmount;
+        
         item.profit = item.amount - ((item.quantity || 0) * (item.costPrice || 0));
         totalCost += (item.quantity || 0) * (item.costPrice || 0);
         return sum + item.amount;

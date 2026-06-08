@@ -1,0 +1,154 @@
+.client-dashboard {
+    font-family: 'Inter', sans-serif;
+}
+
+.client-welcome-section {
+    background: linear-gradient(135deg, #0f172a, #000000);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.client-welcome-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #ffffff;
+}
+
+.client-welcome-subtitle {
+    font-size: 0.9rem;
+    color: #f1f5f9;
+    opacity: 0.9;
+}
+
+.client-project-summary {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.client-project-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+.client-status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.client-status-badge.status-in-progress {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+}
+
+.client-status-badge.status-completed {
+    background: #f8fafc;
+    color: #000000;
+    border: 1px solid #cbd5e1;
+}
+
+.client-status-badge.status-not-started {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.client-progress-wrapper {
+    margin-bottom: 16px;
+}
+
+.client-progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #475569;
+    font-weight: 600;
+}
+
+.client-progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.client-progress-bar-fill {
+    height: 100%;
+    background: #000000;
+    border-radius: 4px;
+    transition: width 1s ease-in-out;
+}
+
+.client-project-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.client-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-detail-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.client-detail-value {
+    font-size: 0.95rem;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Skeleton Loading Animation */
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.client-skeleton-box {
+    background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.client-skeleton-banner {
+    height: 140px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.client-skeleton-card {
+    height: 220px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.client-skeleton-timeline {
+    height: 350px;
+    border-radius: 16px;
+}

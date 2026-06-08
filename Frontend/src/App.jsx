@@ -5,6 +5,7 @@ import { logout, selectIsAuthenticated } from './store/slices/authSlice';
 import { ToastProvider } from './models/context/ToastContext';
 import Login from './views/auth/Login';
 import AppRoutes from './controllers/routes/AppRoutes';
+import ClientRoutes from './controllers/routes/ClientRoutes';
 import { usePushNotifications } from './hooks/usePushNotifications';
 
 function App() {
@@ -20,6 +21,18 @@ function App() {
         dispatch(logout());
         window.location.href = '/';
     };
+
+    // ISOLATED CLIENT PORTAL ROUTING
+    const isClientRoute = window.location.pathname.startsWith('/client');
+    if (isClientRoute) {
+        return (
+            <ToastProvider>
+                <Router>
+                    <ClientRoutes />
+                </Router>
+            </ToastProvider>
+        );
+    }
 
     if (!isAuthenticated) {
         return <Login />;

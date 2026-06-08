@@ -1,0 +1,318 @@
+.client-timeline-container {
+    margin-top: 24px;
+    padding: 20px 10px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.client-timeline-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 24px;
+    padding-left: 10px;
+}
+
+.client-timeline {
+    position: relative;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* The vertical line */
+.client-timeline::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: #e2e8f0;
+    top: 10px;
+    bottom: 0;
+    left: 20px;
+    margin-left: -1px;
+}
+
+.client-timeline-item {
+    padding: 10px 0 30px 50px;
+    position: relative;
+    background-color: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* The circle on the timeline */
+.client-timeline-item::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: auto;
+    background-color: #ffffff;
+    border: 3px solid #cbd5e1;
+    top: 15px;
+    left: 20px;
+    margin-left: -8px; /* half of width to center on line */
+    border-radius: 50%;
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+/* Completed State */
+.client-timeline-item.completed::after {
+    background-color: #000000;
+    border-color: #000000;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.client-timeline-item.completed .client-timeline-item-title {
+    color: #0f172a;
+}
+
+/* In-Progress State */
+.client-timeline-item.in-progress::after {
+    background-color: #ffffff;
+    border-color: #000000;
+    border-width: 4px;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.client-timeline-item.in-progress .client-timeline-item-title {
+    color: #000000;
+}
+
+/* Pending State */
+.client-timeline-item.pending::after {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.client-timeline-content {
+    padding: 0;
+    background-color: transparent;
+    position: relative;
+}
+
+.client-timeline-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+}
+
+.client-timeline-item-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.client-timeline-item-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Staff Mini Profile in Timeline */
+.client-timeline-item.has-staff {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 8px;
+}
+
+.client-timeline-item.has-staff:hover {
+    background-color: #f8fafc;
+}
+
+.client-timeline-staff-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background-color: #f1f5f9;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.client-staff-mini-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #000000;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.client-staff-mini-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.client-staff-mini-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-staff-mini-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.client-staff-mini-name {
+    font-size: 0.85rem;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Staff Modal Overlay */
+.client-staff-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.client-staff-modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 340px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.client-staff-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.client-staff-modal-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.client-staff-modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.client-staff-modal-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.client-staff-modal-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.client-staff-modal-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.client-staff-modal-role {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+    background: #f1f5f9;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.client-staff-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.client-chat-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: #0f172a; /* Dark theme color instead of whatsapp green */
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.2);
+}
+
+.client-chat-btn:hover {
+    background: #1e293b;
+}
+
+.client-staff-no-phone {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+}

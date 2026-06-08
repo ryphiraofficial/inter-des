@@ -15,11 +15,13 @@ import fs from 'fs';
 
 // Shared
 import authRoutes from './src/routes/shared/authRoutes.js';
+import clientAuthRoutes from './src/routes/shared/clientAuth.routes.js';
 import notificationRoutes from './src/routes/shared/notificationRoutes.js';
 import approvalRoutes from './src/routes/shared/approvalRoutes.js';
 import aiRoutes from './src/routes/shared/aiRoutes.js';
 import uploadRoutes from './src/routes/shared/uploadRoutes.js';
 import pushRoutes from './src/routes/shared/pushRoutes.js';
+import clientPortalRoutes from './src/routes/shared/clientPortal.routes.js';
 
 // Admin
 import userRoutes from './src/routes/admin/userRoutes.js';
@@ -95,6 +97,8 @@ app.get('/health', (req, res) => {
 
 // Shared
 app.use('/api/auth', authRoutes);
+app.use('/api/client-auth', clientAuthRoutes);
+app.use('/api/client', clientPortalRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/projects', projectRoutes);

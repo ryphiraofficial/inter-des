@@ -67,6 +67,9 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
                 unit: item.unit,
                 rate: item.rate,
                 amount: item.amount,
+                discountType: item.discountType || 'percentage',
+                discountValue: item.discountValue || 0,
+                discountAmount: item.discountAmount || 0,
                 costPrice: item.costPrice || 0,
                 image: item.image || null
             })));
@@ -111,6 +114,9 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
                     unit: item.unit || 'SCM',
                     rate: item.rate || 0,
                     amount: (item.qty || 1) * (item.rate || 0),
+                    discountType: 'percentage',
+                    discountValue: 0,
+                    discountAmount: 0,
                     image: null
                 }));
                 setLineItems(newItems);

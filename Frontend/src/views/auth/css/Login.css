@@ -195,6 +195,29 @@
     color: #4b5563;
 }
 
+.client-login-btn-link {
+    width: 100%;
+    padding: 12px;
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+.client-login-btn-link:hover {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+}
+
 .page-footer {
     position: absolute;
     bottom: 32px;

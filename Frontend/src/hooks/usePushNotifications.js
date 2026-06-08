@@ -24,7 +24,7 @@ export const usePushNotifications = () => {
 
     useEffect(() => {
         const initializePush = async () => {
-            if (!user) return;
+            if (!user || user.role === 'Client') return;
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                 return; // Push not supported
             }

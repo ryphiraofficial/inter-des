@@ -1,0 +1,295 @@
+.client-payments-page {
+    padding: 20px 16px 80px 16px;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+.client-page-header {
+    margin-bottom: 24px;
+}
+
+.client-page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.client-page-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* Payment Card */
+.client-payment-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.client-payment-card:active {
+    transform: scale(0.98);
+}
+
+.client-payment-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.client-payment-number {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.5px;
+}
+
+.client-payment-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.client-payment-amount {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #166534; /* Success green to denote payment made */
+}
+
+.client-payment-method-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.client-payment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+    margin-top: auto;
+}
+
+.client-payment-invoice-link {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.client-payment-invoice-link strong {
+    color: #0f172a;
+}
+
+.client-payment-view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000000;
+    background: #f1f5f9;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Modal Styling */
+.client-payment-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.client-payment-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+    .client-payment-modal-overlay {
+        align-items: center;
+        padding: 20px;
+    }
+    .client-payment-modal-content {
+        border-radius: 20px;
+        max-height: 85vh;
+    }
+}
+
+.client-payment-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.client-payment-modal-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.client-payment-modal-close {
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.client-payment-modal-body {
+    padding: 30px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.client-receipt-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.client-receipt-icon {
+    width: 56px;
+    height: 56px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+}
+
+.client-receipt-amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.client-receipt-status {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #166534;
+}
+
+.client-receipt-details-list {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f1f5f9;
+}
+
+.client-receipt-detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.client-receipt-detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.client-receipt-detail-label {
+    color: #64748b;
+}
+
+.client-receipt-detail-value {
+    font-weight: 600;
+    color: #0f172a;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+.client-payment-modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.client-payment-download-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.client-payment-download-btn:active {
+    background: #f1f5f9;
+}
+
+/* Empty State */
+.client-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+.client-empty-icon {
+    width: 64px;
+    height: 64px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    color: #94a3b8;
+}
+
+.client-empty-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.client-empty-desc {
+    font-size: 0.9rem;
+    color: #64748b;
+}

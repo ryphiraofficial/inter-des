@@ -47,6 +47,9 @@ export const useQuotationState = () => {
             unit: 'SCM',
             rate: 0,
             amount: 0,
+            discountType: 'percentage',
+            discountValue: 0,
+            discountAmount: 0,
             image: null
         };
         setLineItems(prev => [newItem, ...prev]);
@@ -60,8 +63,16 @@ export const useQuotationState = () => {
         setLineItems(prev => prev.map(item => {
             if (item.id === id) {
                 const updated = { ...item, [field]: value };
-                if (field === 'quantity' || field === 'rate') {
-                    updated.amount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                if (['quantity', 'rate', 'discountType', 'discountValue'].includes(field)) {
+                    const baseAmount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                    let discountAmount = 0;
+                    if (updated.discountType === 'amount') {
+                        discountAmount = Number(updated.discountValue) || 0;
+                    } else {
+                        discountAmount = (baseAmount * (Number(updated.discountValue) || 0)) / 100;
+                    }
+                    updated.discountAmount = discountAmount;
+                    updated.amount = baseAmount - discountAmount;
                 }
                 return updated;
             }
@@ -73,8 +84,16 @@ export const useQuotationState = () => {
         setLineItems(prev => prev.map(item => {
             if (item.id === id) {
                 const updated = { ...item, ...fields };
-                if ('quantity' in fields || 'rate' in fields) {
-                    updated.amount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                if ('quantity' in fields || 'rate' in fields || 'discountType' in fields || 'discountValue' in fields) {
+                    const baseAmount = (Number(updated.quantity) || 0) * (Number(updated.rate) || 0);
+                    let discountAmount = 0;
+                    if (updated.discountType === 'amount') {
+                        discountAmount = Number(updated.discountValue) || 0;
+                    } else {
+                        discountAmount = (baseAmount * (Number(updated.discountValue) || 0)) / 100;
+                    }
+                    updated.discountAmount = discountAmount;
+                    updated.amount = baseAmount - discountAmount;
                 }
                 return updated;
             }

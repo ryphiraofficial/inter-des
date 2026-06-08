@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import clientPortalReducer from './slices/clientPortalSlice';
 import { productionApi } from './api/productionApi';
 import { procurementApi } from './api/procurementApi';
 import { designApi } from './api/designApi';
@@ -38,6 +39,7 @@ const preloadedState = (() => {
 const store = configureStore({
     reducer: {
         auth: authReducer,
+        clientPortal: clientPortalReducer,
         // RTK Query reducers
         [productionApi.reducerPath]: productionApi.reducer,
         [procurementApi.reducerPath]: procurementApi.reducer,
