@@ -84,19 +84,29 @@ const AccountsManagerSidebar = ({ isOpen, onClose, user, onLogout }) => {
                                 {subItems && isMainActive && subItems.map(sub => (
                                     <button
                                         key={sub.tab}
-                                        className={`accounts-sidebar-item ${activeTab === sub.tab ? 'active' : ''}`}
+                                        className="accounts-sidebar-item"
                                         onClick={() => handleNav(sub.tab)}
                                         style={{ 
-                                            paddingLeft: '3.5rem', 
-                                            fontSize: '0.875rem', 
+                                            paddingLeft: '3rem', 
+                                            fontSize: '0.85rem', 
                                             height: '38px',
-                                            color: activeTab === sub.tab ? '#3b82f6' : '#64748b',
+                                            marginTop: '2px',
+                                            color: activeTab === sub.tab ? '#4441cc' : '#64748b',
                                             fontWeight: activeTab === sub.tab ? 600 : 500,
-                                            background: activeTab === sub.tab ? '#eff6ff' : 'transparent',
-                                            borderLeft: activeTab === sub.tab ? '3px solid #3b82f6' : '3px solid transparent',
-                                            transition: 'all 0.2s'
+                                            background: activeTab === sub.tab ? '#eff4ff' : 'transparent',
+                                            transition: 'all 0.2s',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            boxShadow: 'none'
                                         }}
                                     >
+                                        <div style={{ 
+                                            width: '5px', 
+                                            height: '5px', 
+                                            borderRadius: '50%', 
+                                            background: activeTab === sub.tab ? '#4441cc' : '#cbd5e1',
+                                            marginRight: '10px'
+                                        }} />
                                         <span>{sub.label}</span>
                                     </button>
                                 ))}
