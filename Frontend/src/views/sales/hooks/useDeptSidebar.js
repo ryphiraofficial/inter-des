@@ -139,6 +139,7 @@ const NAV_CONFIG = {
         items: [
             { name: 'Dashboard',        icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'My Tasks',         icon: ClipboardList,   path: '/staff/tasks' },
+            { name: 'Completed Tasks',  icon: CheckCircle,     path: '/staff/completed-tasks', isSub: true },
             { name: 'Client Approvals', icon: ClipboardCheck,  path: '/staff/approvals' },
             { name: 'Site Visits',      icon: MapPin,          path: '/staff/site-visits' },
             { name: 'Clients',          icon: Users,           path: '/staff/clients' },
@@ -153,6 +154,7 @@ const NAV_CONFIG = {
         items: [
             { name: 'Dashboard',        icon: LayoutDashboard, path: '/staff/dashboard' },
             { name: 'My Tasks',         icon: ClipboardList,   path: '/staff/tasks' },
+            { name: 'Completed Tasks',  icon: CheckCircle,     path: '/staff/completed-tasks', isSub: true },
             { name: 'Client Approvals', icon: ClipboardCheck,  path: '/staff/approvals' },
             { name: 'Site Visits',      icon: MapPin,          path: '/staff/site-visits' },
             { name: 'Clients',          icon: Users,           path: '/staff/clients' },

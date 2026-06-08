@@ -11,7 +11,6 @@ import SalesUrgentTasks from './components/SalesUrgentTasks';
 import SalesActivityFeed from './components/SalesActivityFeed';
 import SalesRecentQuotations from './components/SalesRecentQuotations';
 import SalesMonthlyTarget from './components/SalesMonthlyTarget';
-import SalesQuickActions from './components/SalesQuickActions';
 import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/slices/authSlice';
 
@@ -67,8 +66,6 @@ const SalesDashboard = ({}) => {
                         loading={loading} 
                         navigate={navigate} 
                     />
-
-                    <SalesQuickActions navigate={navigate} />
 
                 </div>
 

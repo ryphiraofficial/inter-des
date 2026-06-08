@@ -16,11 +16,12 @@ import { selectUser } from '../../store/slices/authSlice';
 
 const NAV_ITEMS = [
     { to: '/staff/dashboard',   icon: LayoutDashboard,  label: 'Dashboard' },
-    { to: '/staff/tasks',       icon: ClipboardList,    label: 'My Tasks'   },
-    { to: '/staff/approvals',   icon: ClipboardCheck,   label: 'Client Approvals' },
-    { to: '/staff/site-visits', icon: MapPin,           label: 'Site Visits' },
-    { to: '/staff/clients',     icon: Users,            label: 'Clients'    },
-    { to: '/staff/quotations',  icon: FileText,         label: 'Quotations' },
+    { to: '/staff/tasks',           icon: ClipboardList,    label: 'My Tasks'   },
+    { to: '/staff/completed-tasks', icon: ClipboardCheck,   label: 'Completed Tasks', isSub: true },
+    { to: '/staff/approvals',       icon: ClipboardCheck,   label: 'Client Approvals' },
+    { to: '/staff/site-visits',     icon: MapPin,           label: 'Site Visits' },
+    { to: '/staff/clients',         icon: Users,            label: 'Clients'    },
+    { to: '/staff/quotations',      icon: FileText,         label: 'Quotations' },
 ];
 
 const SalesSidebar = ({ onLogout, isOpen, toggleSidebar }) => {
@@ -57,16 +58,16 @@ const SalesSidebar = ({ onLogout, isOpen, toggleSidebar }) => {
                 <div className="sales-sidebar-nav-container">
                     <nav className="sales-sidebar-nav">
                         <div className="sales-sidebar-section-label">DEPARTMENT</div>
-                        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+                        {NAV_ITEMS.map(({ to, icon: Icon, label, isSub }) => (
                             <NavLink
                                 key={to}
                                 to={to}
                                 className={({ isActive }) =>
-                                    `sales-sidebar-item ${isActive ? 'active' : ''}`
+                                    `sales-sidebar-item ${isActive ? 'active' : ''} ${isSub ? 'sub-item' : ''}`
                                 }
                                 onClick={() => isOpen && toggleSidebar()}
                             >
-                                <Icon size={18} />
+                                <Icon size={isSub ? 16 : 18} />
                                 <span>{label}</span>
                             </NavLink>
                         ))}

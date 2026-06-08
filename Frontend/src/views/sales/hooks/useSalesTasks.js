@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGetSalesTasksQuery, useApproveSalesTaskMutation } from '../../../store/api/salesApi';
 
-export const useSalesTasks = () => {
+export const useSalesTasks = (mode = 'active') => {
     const [searchParams] = useSearchParams();
     const searchTerm = searchParams.get('q') || '';
     const [filterStatus, setFilterStatus] = useState('All');
@@ -11,7 +11,13 @@ export const useSalesTasks = () => {
     const [approveTask, { isLoading: isUpdating }] = useApproveSalesTaskMutation();
     const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
-    const tasks = tasksRes?.success ? tasksRes.data : [];
+    let tasks = tasksRes?.success ? tasksRes.data : [];
+
+    if (mode === 'active') {
+        tasks = tasks.filter(t => t.status !== 'Completed');
+    } else if (mode === 'completed') {
+        tasks = tasks.filter(t => t.status === 'Completed');
+    }
 
     const handleSalesReview = async (taskId, approved) => {
         try {
@@ -43,9 +49,12 @@ export const useSalesTasks = () => {
         Total: tasks.length,
         'To Do': tasks.filter(t => t.status === 'To Do').length,
         'In Progress': tasks.filter(t => t.status === 'In Progress').length,
-        'Review Required': tasks.filter(t => t.status === 'Pending Sales Review').length,
-        Completed: tasks.filter(t => t.status === 'Completed').length
+        'Review Required': tasks.filter(t => t.status === 'Pending Sales Review').length
     };
+
+    if (mode === 'completed' || mode === 'all') {
+        stats.Completed = tasks.filter(t => t.status === 'Completed').length;
+    }
 
     return {
         loading,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Video, Plus, Calendar, CheckCircle, Loader } from 'lucide-react';
 import AlertDialog from './components/AlertDialog';
 import 'react-day-picker/style.css';
@@ -30,6 +30,20 @@ const AdminMeetings = () => {
         createMeeting,
         updateMeeting
     } = useAdminMeetings();
+
+    const [completedPage, setCompletedPage] = useState(1);
+    const COMPLETED_PAGE_SIZE = 5;
+
+    // Reset pagination when filter changes
+    useEffect(() => {
+        setCompletedPage(1);
+    }, [filter]);
+
+    const upcomingMeetings = filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m)));
+    const completedMeetings = filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m)));
+    
+    const totalCompletedPages = Math.ceil(completedMeetings.length / COMPLETED_PAGE_SIZE);
+    const paginatedCompleted = completedMeetings.slice((completedPage - 1) * COMPLETED_PAGE_SIZE, completedPage * COMPLETED_PAGE_SIZE);
 
     return (
         <div className="admin-meetings-page">
@@ -82,13 +96,11 @@ const AdminMeetings = () => {
                                 <div className="meetings-shift-header upcoming-shift">
                                     <span className="shift-dot upcoming-dot" />
                                     <h2 className="shift-title">Upcoming & Live</h2>
-                                    <span className="shift-count">
-                                        {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length}
-                                    </span>
+                                    <span className="shift-count">{upcomingMeetings.length}</span>
                                 </div>
-                                {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).length > 0 ? (
+                                {upcomingMeetings.length > 0 ? (
                                     <div className="meetings-list">
-                                        {filtered.filter(m => ['upcoming', 'ongoing'].includes(computeStatus(m))).map(m => (
+                                        {upcomingMeetings.map(m => (
                                             <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
                                         ))}
                                     </div>
@@ -105,16 +117,37 @@ const AdminMeetings = () => {
                                 <div className="meetings-shift-header completed-shift">
                                     <span className="shift-dot completed-dot" />
                                     <h2 className="shift-title">Completed</h2>
-                                    <span className="shift-count">
-                                        {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length}
-                                    </span>
+                                    <span className="shift-count">{completedMeetings.length}</span>
                                 </div>
-                                {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).length > 0 ? (
-                                    <div className="meetings-list">
-                                        {filtered.filter(m => ['completed', 'cancelled'].includes(computeStatus(m))).map(m => (
-                                            <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
-                                        ))}
-                                    </div>
+                                {completedMeetings.length > 0 ? (
+                                    <>
+                                        <div className="meetings-list">
+                                            {paginatedCompleted.map(m => (
+                                                <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
+                                            ))}
+                                        </div>
+                                        {totalCompletedPages > 1 && (
+                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '20px' }}>
+                                                <button 
+                                                    disabled={completedPage === 1} 
+                                                    onClick={() => setCompletedPage(p => Math.max(1, p - 1))}
+                                                    style={{ padding: '6px 14px', border: '1px solid #e2e8f0', borderRadius: '6px', background: completedPage === 1 ? '#f8fafc' : '#ffffff', color: completedPage === 1 ? '#94a3b8' : '#0f172a', cursor: completedPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 500, fontSize: '0.85rem' }}
+                                                >
+                                                    Previous
+                                                </button>
+                                                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
+                                                    Page {completedPage} of {totalCompletedPages}
+                                                </span>
+                                                <button 
+                                                    disabled={completedPage === totalCompletedPages} 
+                                                    onClick={() => setCompletedPage(p => Math.min(totalCompletedPages, p + 1))}
+                                                    style={{ padding: '6px 14px', border: '1px solid #e2e8f0', borderRadius: '6px', background: completedPage === totalCompletedPages ? '#f8fafc' : '#ffffff', color: completedPage === totalCompletedPages ? '#94a3b8' : '#0f172a', cursor: completedPage === totalCompletedPages ? 'not-allowed' : 'pointer', fontWeight: 500, fontSize: '0.85rem' }}
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className="meetings-shift-empty">
                                         <CheckCircle size={28} />
@@ -123,6 +156,21 @@ const AdminMeetings = () => {
                                 )}
                             </div>
                         </div>
+                    ) : filter === 'completed' || filter === 'cancelled' ? (
+                        <>
+                            <div className="meetings-list">
+                                {paginatedCompleted.map(m => (
+                                    <MeetingCard key={m._id} meeting={m} onEdit={handleEdit} onCancel={handleCancel} />
+                                ))}
+                            </div>
+                            {totalCompletedPages > 1 && (
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '24px' }}>
+                                    <button disabled={completedPage === 1} onClick={() => setCompletedPage(p => Math.max(1, p - 1))} style={{ padding: '6px 14px', border: '1px solid #e2e8f0', borderRadius: '6px', background: completedPage === 1 ? '#f8fafc' : '#ffffff', color: completedPage === 1 ? '#94a3b8' : '#0f172a', cursor: completedPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 500, fontSize: '0.85rem' }}>Previous</button>
+                                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Page {completedPage} of {totalCompletedPages}</span>
+                                    <button disabled={completedPage === totalCompletedPages} onClick={() => setCompletedPage(p => Math.min(totalCompletedPages, p + 1))} style={{ padding: '6px 14px', border: '1px solid #e2e8f0', borderRadius: '6px', background: completedPage === totalCompletedPages ? '#f8fafc' : '#ffffff', color: completedPage === totalCompletedPages ? '#94a3b8' : '#0f172a', cursor: completedPage === totalCompletedPages ? 'not-allowed' : 'pointer', fontWeight: 500, fontSize: '0.85rem' }}>Next</button>
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="meetings-list">
                             {filtered.map(m => (

@@ -67,6 +67,7 @@ import MeetingsPage from '../../views/common/MeetingsPage';
 import SalesDashboard from '../../views/sales/SalesDashboard';
 import SiteVisit from '../../views/sales/SiteVisit';
 import SalesTasks from '../../views/sales/SalesTasks';
+import SalesCompletedTasks from '../../views/sales/SalesCompletedTasks';
 import SalesClients from '../../views/sales/SalesClients';
 import SalesQuotations from '../../views/sales/SalesQuotations';
 import SalesNewQuotation from '../../views/sales/SalesNewQuotation';
@@ -178,6 +179,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route index element={<Navigate to="/staff/dashboard" replace />} />
                     <Route path="dashboard" element={<RoleDashboard onLogout={onLogout} />} />
                     <Route path="tasks" element={<SalesTasks />} />
+                    <Route path="completed-tasks" element={<SalesCompletedTasks />} />
                     <Route path="approvals" element={<SalesApprovals />} />
                     <Route path="all-tasks" element={<SalesTasks forceTable={true} />} />
                     <Route path="site-visits" element={<SiteVisit />} />

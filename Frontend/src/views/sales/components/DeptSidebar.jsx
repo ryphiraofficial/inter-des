@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { useDeptSidebar } from '../hooks/useDeptSidebar';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import './css/Sidebar.css';
@@ -14,6 +14,10 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
     const { brandTitle, brandSubtitle, sidebarClass, items } = config;
     const defaultSubtitle = brandSubtitle || `${brandTitle} Dashboard`;
     const { companyName, motto } = useCompanySettings('Interior Design', defaultSubtitle);
+
+    const [expandedParents, setExpandedParents] = React.useState({});
+    
+    let currentParent = null;
 
     return (
         <div className={`sidebar-container ${sidebarClass} ${isCollapsed ? 'collapsed' : ''}`}>
@@ -45,22 +49,53 @@ const DeptSidebar = ({ role, user, onLogout, isCollapsed, toggleSidebar, isMobil
 
             <nav className="sidebar-nav">
                 <ul className="nav-list">
-                    {items.map((item) => (
-                        <li key={item.name} className="nav-item">
-                            <NavLink
-                                to={item.path}
-                                className={() => `nav-link ${isActiveTab(item) ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (window.innerWidth <= 768 && toggleMobileSidebar) {
-                                        toggleMobileSidebar();
-                                    }
-                                }}
-                            >
-                                <item.icon size={18} className="nav-icon" />
-                                <span>{item.name}</span>
-                            </NavLink>
-                        </li>
-                    ))}
+                    {items.map((item, index) => {
+                        const nextItem = items[index + 1];
+                        const hasSub = !item.isSub && nextItem && nextItem.isSub;
+                        
+                        if (!item.isSub) {
+                            currentParent = item.name;
+                        }
+
+                        const isExpanded = expandedParents[currentParent] !== false; // default true
+
+                        if (item.isSub && !isExpanded) {
+                            return null;
+                        }
+
+                        return (
+                            <li key={item.name} className={`nav-item ${item.isSub ? 'sub-item' : ''}`}>
+                                <NavLink
+                                    to={item.path}
+                                    className={() => `nav-link ${isActiveTab(item) ? 'active' : ''}`}
+                                    onClick={() => {
+                                        if (window.innerWidth <= 768 && toggleMobileSidebar && !hasSub) {
+                                            toggleMobileSidebar();
+                                        }
+                                        if (hasSub && expandedParents[item.name] === false) {
+                                            setExpandedParents(prev => ({ ...prev, [item.name]: true }));
+                                        }
+                                    }}
+                                >
+                                    <item.icon size={item.isSub ? 16 : 18} className="nav-icon" />
+                                    <span>{item.name}</span>
+                                    {hasSub && (
+                                        <span 
+                                            className="sub-chevron"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setExpandedParents(prev => ({ ...prev, [item.name]: !isExpanded }));
+                                            }}
+                                            title={isExpanded ? "Collapse" : "Expand"}
+                                        >
+                                            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                        </span>
+                                    )}
+                                </NavLink>
+                            </li>
+                        );
+                    })}
                 </ul>
             </nav>
 

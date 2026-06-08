@@ -1,0 +1,148 @@
+.project-timeline-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e2e8f0;
+    margin-top: 24px;
+}
+
+.vis-timeline-wrapper .vis-timeline {
+    border: 1px solid #000000;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+/* Backgrounds and lines */
+.vis-timeline-wrapper .vis-background {
+    background-color: #ffffff;
+}
+
+.vis-timeline-wrapper .vis-time-axis .vis-text {
+    color: #000000;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px;
+}
+
+.vis-timeline-wrapper .vis-time-axis .vis-grid.vis-minor {
+    border-color: #f1f5f9;
+}
+
+.vis-timeline-wrapper .vis-time-axis .vis-grid.vis-major {
+    border-color: #000000;
+    border-width: 1px;
+}
+
+.vis-timeline-wrapper .vis-time-axis .vis-text.vis-major {
+    font-weight: 800;
+    color: #ffffff;
+    background: #000000;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-top: -2px;
+}
+
+/* Items */
+.vis-timeline-wrapper .vis-item {
+    border-radius: 4px;
+    border: 1px solid #000000;
+    font-size: 0.85rem;
+    padding: 0;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+.vis-timeline-wrapper .vis-item.vis-selected {
+    border: 2px solid #000000;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.vis-timeline-wrapper .vis-item .vis-item-content {
+    padding: 6px 12px;
+    width: 100%;
+}
+
+.task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.task-content strong {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.task-dates {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Status Colors - Monochrome Theme */
+.vis-timeline-wrapper .vis-item.vis-item-to-do {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px dashed #000000;
+}
+
+.vis-timeline-wrapper .vis-item.vis-item-in-progress {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+}
+
+.vis-timeline-wrapper .vis-item.vis-item-completed {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+.vis-timeline-wrapper .vis-item.vis-item-completed .task-content strong {
+    text-decoration: line-through;
+}
+
+/* Custom current time line */
+.vis-timeline-wrapper .vis-current-time {
+    background-color: #000000;
+    width: 2px;
+}
+
+/* Legend */
+.timeline-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+.timeline-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timeline-legend .legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.timeline-legend .legend-color.to-do { 
+    background-color: #ffffff; 
+    border: 1px dashed #000000;
+}
+.timeline-legend .legend-color.in-progress { 
+    background-color: #000000; 
+    border: 1px solid #000000;
+}
+.timeline-legend .legend-color.completed { 
+    background-color: #f1f5f9; 
+    border: 1px solid #cbd5e1;
+}

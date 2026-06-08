@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { ArrowRight, Building2, Calendar, Users, Play, CheckCircle, Pause, Clock, Trash2, FileText, Clock3, Wallet } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
 import AlertDialog from '../../components/AlertDialog';
-import { useUpdateProjectMutation } from '../../../../store/api/adminApi';
+import { useUpdateProjectMutation, useGetTasksQuery } from '../../../../store/api/adminApi';
 import ProjectInfoCards from './ProjectInfoCards';
+import ProjectTimelineVis from './ProjectTimelineVis';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -39,6 +40,12 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
 
     const paidAmount = project ? Math.max(project.advanceAmount || 0, project.collectedAmount || 0) : 0;
     const remainingBalance = project ? Math.max(0, project.budget - paidAmount) : 0;
+
+    const { data: tasksData } = useGetTasksQuery(
+        { project: project?._id },
+        { skip: !project }
+    );
+    const tasks = tasksData?.data || [];
 
     const handleCollectBalance = async () => {
         if (!project) return;
@@ -178,6 +185,10 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
                 </div>
 
                 <ProjectInfoCards project={project} getStageColor={getStageColor} />
+
+                {tasks.length > 0 && (
+                    <ProjectTimelineVis tasks={tasks} />
+                )}
             </div>
 
             <AlertDialog 

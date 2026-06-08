@@ -117,6 +117,19 @@
     color: #4441cc;
 }
 
+.sales-sidebar-item.sub-item {
+    margin-left: 1.5rem;
+    width: calc(100% - 1.5rem);
+    font-size: 0.8rem;
+    padding: 0.5rem 0.85rem;
+    color: #94a3b8;
+}
+
+.sales-sidebar-item.sub-item.active {
+    color: #4441cc;
+    font-weight: 600;
+}
+
 .sales-sidebar-footer {
     border-top: 1px solid #e2e8f0;
     padding: 1.25rem 1rem;

@@ -1,11 +1,11 @@
 import React from 'react';
 import Skeleton from './Skeleton';
 
-const SalesTasksStats = ({ loading, stats, filterStatus, setFilterStatus }) => {
+const SalesTasksStats = ({ loading, stats, filterStatus, setFilterStatus, isCompletedView }) => {
     return (
         <div className="st-stats-grid">
             {loading ? (
-                [...Array(5)].map((_, i) => (
+                [...Array(isCompletedView ? 1 : 4)].map((_, i) => (
                     <div key={i} className="st-stat-card">
                         <div className="st-stat-info">
                             <Skeleton width="60px" height="12px" />
@@ -14,7 +14,7 @@ const SalesTasksStats = ({ loading, stats, filterStatus, setFilterStatus }) => {
                         </div>
                     </div>
                 ))
-            ) : Object.entries(stats).map(([label, value]) => (
+            ) : Object.entries(stats).filter(([label]) => !isCompletedView || label === 'Total').map(([label, value]) => (
                 <div
                     key={label}
                     className={`st-stat-card ${filterStatus === label ? 'selected' : ''}`}

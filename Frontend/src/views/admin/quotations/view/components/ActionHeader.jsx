@@ -8,9 +8,6 @@ const ActionHeader = ({ handleBack, handleEdit, handlePrint, handleDownload }) =
                 <ArrowLeft size={18} /> Back
             </button>
             <div className="qv-right-actions">
-                <button className="btn-edit" onClick={handleEdit}>
-                    <Edit size={18} /> Edit
-                </button>
                 <button className="btn-secondary" onClick={handlePrint}>
                     <Printer size={18} /> Print
                 </button>
