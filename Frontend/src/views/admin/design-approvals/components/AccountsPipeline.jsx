@@ -4,6 +4,8 @@ import CustomSelect from '../../../common/CustomSelect';
 
 const AccountsPipeline = ({ projects, procurementManagers, handleClearPayment, approving }) => {
     const [selectedPM, setSelectedPM] = useState({});
+    const [dialog, setDialog] = useState({ isOpen: false, project: null, pmId: null, isForce: false, required: 0, collected: 0 });
+    const [overrideReason, setOverrideReason] = useState('');
 
     if (!projects || projects.length === 0) {
         return (
@@ -28,16 +30,32 @@ const AccountsPipeline = ({ projects, procurementManagers, handleClearPayment, a
         const collected = project.collectedAmount || 0;
         const isFullyPaid = collected >= required;
 
-        if (isFullyPaid) {
-            if (window.confirm(`Are you sure you want to clear payment for "${project.name}" and send it to Procurement?`)) {
-                handleClearPayment(project, pmId, false);
+        setDialog({
+            isOpen: true,
+            project,
+            pmId,
+            isForce: !isFullyPaid,
+            required,
+            collected
+        });
+        setOverrideReason('');
+    };
+
+    const handleConfirm = () => {
+        if (dialog.isForce) {
+            if (!overrideReason.trim()) {
+                alert("Please enter a reason for force override.");
+                return;
             }
+            handleClearPayment(dialog.project, dialog.pmId, true, overrideReason);
         } else {
-            const reason = window.prompt(`Warning: Only ₹${collected.toLocaleString('en-IN')} of ₹${required.toLocaleString('en-IN')} collected. To force override, enter a reason:`);
-            if (reason) {
-                handleClearPayment(project, pmId, true, reason);
-            }
+            handleClearPayment(dialog.project, dialog.pmId, false);
         }
+        setDialog({ isOpen: false, project: null, pmId: null, isForce: false, required: 0, collected: 0 });
+    };
+
+    const handleCancel = () => {
+        setDialog({ isOpen: false, project: null, pmId: null, isForce: false, required: 0, collected: 0 });
     };
 
     return (
@@ -145,6 +163,63 @@ const AccountsPipeline = ({ projects, procurementManagers, handleClearPayment, a
                     </div>
                 );
             })}
+
+            {dialog.isOpen && dialog.project && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, backdropFilter: 'blur(4px)', padding: '1rem' }}>
+                    <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '420px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid #e2e8f0', animation: 'fadeIn 0.2s ease-out' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '1.25rem' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: dialog.isForce ? '#fef2f2' : '#f0fdf4', color: dialog.isForce ? '#dc2626' : '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                {dialog.isForce ? <AlertTriangle size={24} /> : <CheckCircle size={24} />}
+                            </div>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                                {dialog.isForce ? 'Force Clear Payment' : 'Confirm Action'}
+                            </h3>
+                        </div>
+                        
+                        <div style={{ color: '#475569', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                            {dialog.isForce ? (
+                                <>
+                                    <span style={{ fontWeight: 600, color: '#dc2626' }}>Warning:</span> Only <strong style={{ color: '#0f172a' }}>₹{dialog.collected.toLocaleString('en-IN')}</strong> of <strong style={{ color: '#0f172a' }}>₹{dialog.required.toLocaleString('en-IN')}</strong> collected for "{dialog.project.name}".
+                                    <br /><br />
+                                    To force override, please enter a valid reason below:
+                                </>
+                            ) : (
+                                <>Are you sure you want to clear payment for <strong style={{ color: '#0f172a' }}>"{dialog.project.name}"</strong> and send it to Procurement?</>
+                            )}
+                        </div>
+
+                        {dialog.isForce && (
+                            <textarea
+                                value={overrideReason}
+                                onChange={(e) => setOverrideReason(e.target.value)}
+                                placeholder="Enter reason for overriding..."
+                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #cbd5e1', marginBottom: '1.5rem', fontSize: '0.9rem', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical', outline: 'none', transition: 'border-color 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
+                                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                                onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
+                            />
+                        )}
+
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={handleCancel}
+                                style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', color: '#64748b', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                                onMouseOver={(e) => e.target.style.background = '#f8fafc'}
+                                onMouseOut={(e) => e.target.style.background = 'white'}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirm}
+                                style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', border: 'none', background: dialog.isForce ? '#dc2626' : '#16a34a', color: 'white', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: dialog.isForce ? '0 4px 12px rgba(220, 38, 38, 0.2)' : '0 4px 12px rgba(22, 163, 74, 0.2)' }}
+                                onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
+                                onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                            >
+                                {dialog.isForce ? 'Override & Send' : 'Confirm & Send'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
