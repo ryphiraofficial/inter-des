@@ -2,7 +2,8 @@
 
 .login-page-light {
     min-height: 100vh;
-    width: 100vw;
+    width: 100%;
+    box-sizing: border-box;
     background-color: #fafafa;
     display: flex;
     flex-direction: column;
@@ -10,6 +11,9 @@
     align-items: center;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: #000000;
+    position: relative;
+    padding: 24px;
+    padding-bottom: 80px;
 }
 
 .login-card {
@@ -19,6 +23,7 @@
     padding: 48px;
     border-radius: 24px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
 }
 
 .login-header {
@@ -92,6 +97,7 @@
     color: #111827;
     outline: none;
     transition: all 0.2s;
+    box-sizing: border-box;
 }
 
 .light-input:focus {
@@ -148,6 +154,7 @@
     cursor: pointer;
     margin-top: 8px;
     transition: background-color 0.2s;
+    box-sizing: border-box;
 }
 
 .btn-signin:hover {
@@ -209,6 +216,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: 8px;
+    box-sizing: border-box;
 }
 
 .client-login-btn-link:hover {
@@ -251,4 +259,28 @@
     border-radius: 6px;
     border: 1px solid #fecaca;
     text-align: center;
+}
+
+@media (max-width: 480px) {
+    .login-page-light {
+        padding: 16px;
+        padding-bottom: 64px;
+        justify-content: flex-start; /* Better for small screens so it scrolls */
+    }
+    
+    .login-card {
+        padding: 32px 24px;
+        border-radius: 20px;
+        margin-top: 10vh;
+    }
+
+    .login-header h1 {
+        font-size: 22px;
+    }
+
+    .page-footer {
+        bottom: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
