@@ -40,44 +40,59 @@ WoodAura digitises the complete interior design business workflow:
 ### Project Lifecycle Flow
 
 ```mermaid
-graph TD
-    A[Sales] -->|Approved Quotation| B[Design]
-    B -->|Material Approvals & Plans| C[Procurement]
-    C -->|Materials & POs| D[Production]
-    D -->|Site Completion| E[Accounts]
+flowchart TD
+    %% Sales Phase
+    subgraph Sales[1. Sales & Quotation Phase]
+        S1(Create Quotation<br/>with Line Items & Images) --> S2{Admin/Client<br/>Approval}
+    end
+
+    %% Automatic Triggers
+    S2 -- "Auto-Generates" --> A1(Draft Invoice)
+    S2 -- "Auto-Creates" --> D1(Project initialized in 'Design')
+    S2 -- "Auto-Assigns" --> D2(Notify Design Manager)
+
+    %% Design Phase
+    subgraph Design[2. Design Phase]
+        D1 --> D3(Task Management:<br/>Kanban & Checklists)
+        D3 --> D4(Design Finalized)
+        D4 --> D5([Design Manager Handoff])
+    end
+
+    %% Transition to Procurement
+    D5 -- "Stage transitions to" --> P1(Procurement Stage)
+    D5 -- "Notifies" --> P2(Procurement Manager)
+
+    %% Procurement Phase
+    subgraph Procurement[3. Procurement Phase]
+        P1 --> P3(Material Requests)
+        P3 --> P4(Vendor Comparison)
+        P4 --> P5(Generate Purchase Orders)
+        P5 --> P6(Receive Materials<br/>& Update Inventory)
+    end
+
+    %% Production Phase
+    P6 -- "Admin creates linked" --> PR1(Production Project)
+    subgraph Production[4. Production Phase]
+        PR1 --> PR2(Prod Manager Accepts Handoff)
+        PR2 --> PR3(Assign Site Team)
+        PR3 --> PR4(Site Execution:<br/>Attendance, Safety, Progress)
+        PR4 --> PR5([Prod Manager Submits Completion])
+    end
+
+    %% Accounts & Handover Phase
+    PR5 -- "Admin Action" --> H1{Admin Approves<br/>& Locks Project}
+    subgraph Handover[5. Handover & Accounts Phase]
+        H1 --> H2([Final Handover Complete])
+        A1 -.-> H3(Track Payments & Expenses)
+        H2 --> H3
+    end
     
-    A -.->|Draft Invoice| E
-    E -.->|Payment Clearance| D
+    style Sales fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Design fill:#e6f7ff,stroke:#0066cc,stroke-width:2px
+    style Procurement fill:#fff0f6,stroke:#eb2f96,stroke-width:2px
+    style Production fill:#f6ffed,stroke:#52c41a,stroke-width:2px
+    style Handover fill:#fffb8f,stroke:#faad14,stroke-width:2px
 ```
-
-### Detailed Lifecycle Steps
-
-#### 1. Sales & Quotation Phase
-- **Quotation Creation:** Sales creates a `Quotation` with detailed line items and Cloudinary-hosted images.
-- **Approval & Project Generation:** Once the Quotation is marked as `Approved` by Admin/Client, the system automatically:
-  - Generates a Draft `Invoice`.
-  - Creates a new `Project` record initialized in the **Design** stage.
-  - Automatically assigns a Design Manager and sends them a notification.
-
-#### 2. Design Phase
-- **Task Management:** The Design team uses Kanban boards and Checklists to track drawing and planning progress.
-- **Handoff:** Once the design is finalized, the Design Manager triggers the project handoff. 
-- **Transition:** The project `stage` automatically advances to **Procurement**, and notifications are dispatched to the Procurement Manager.
-
-#### 3. Procurement Phase
-- **Material Sourcing:** Procurement Staff handle `Material Requests`, compare `Vendors`, and generate `Purchase Orders` (POs).
-- **Inventory Updates:** Received materials update the `POInventory` and `Inventory` tracking systems.
-
-#### 4. Production Phase
-- **Production Project Creation:** An Admin formally creates a `ProductionProject` linked to the main `Project`.
-- **Team Assignment & Handoff:** The Production Manager assigns Site Engineers/Supervisors and accepts the handoff, moving the project to an `Active` state.
-- **Site Execution:** The team logs `SiteAttendance`, `SafetyLogs`, and `SiteProgressReports`.
-- **Production Completion:** The Production Manager submits the project for completion.
-
-#### 5. Handover & Accounts
-- **Final Admin Approval:** The Admin reviews the production completion and marks the project as `Admin Approved` (locked).
-- **Final Handover:** The main project `handoverComplete` flag is set to true.
-- **Accounts:** Finance tracks incoming payments against the generated invoices and logs `Expenses` against the project.
 
 ---
 
