@@ -32,6 +32,8 @@ import meetingRoutes from './src/routes/admin/meetingRoutes.js';
 import leaveRoutes from './src/routes/admin/leaveRoutes.js';
 import settingsRoutes from './src/routes/admin/settingsRoutes.js';
 import reportRoutes from './src/routes/admin/reportRoutes.js';
+import milestonesRoutes from './src/routes/admin/milestonesRoutes.js';
+
 
 // Sales
 import clientRoutes from './src/routes/sales/clientRoutes.js';
@@ -115,6 +117,8 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/admin/milestones', milestonesRoutes);
+
 
 // Sales
 app.use('/api/clients', clientRoutes);

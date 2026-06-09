@@ -36,6 +36,7 @@ export const updateQuotation = async (req, res) => {
             const versionSnapshot = {
                 version: quotation.currentVersion,
                 items: JSON.parse(JSON.stringify(quotation.items)),
+                categoryDiscounts: JSON.parse(JSON.stringify(quotation.categoryDiscounts || [])),
                 subtotal: quotation.subtotal,
                 taxRate: quotation.taxRate,
                 taxAmount: quotation.taxAmount,

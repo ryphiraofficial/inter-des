@@ -373,6 +373,10 @@ export const adminApi = createApi({
         adminClearPaymentToProcurement: builder.mutation({
             query: ({ id, ...body }) => ({ url: `/projects/${id}/admin-clear-payment`, method: 'PUT', body }),
             invalidatesTags: ['Projects', 'Approvals', 'Tasks'],
+        }),
+        getMilestones: builder.query({
+            query: () => '/admin/milestones',
+            providesTags: ['Dashboard', 'Projects', 'Tasks', 'Staff'],
         })
     }),
 });
@@ -451,5 +455,6 @@ export const {
     useGetProcurementManagersQuery,
     useGetMaterialRequestsQuery,
     useAccountsCollectPaymentMutation,
-    useAdminClearPaymentToProcurementMutation
+    useAdminClearPaymentToProcurementMutation,
+    useGetMilestonesQuery
 } = adminApi;

@@ -102,6 +102,11 @@ const QuotationVersionSchema = new mongoose.Schema({
         required: true
     },
     items: [QuotationItemSchema],
+    categoryDiscounts: [{
+        category: { type: String, required: true },
+        discountType: { type: String, enum: ['percentage', 'amount'], default: 'percentage' },
+        discountValue: { type: Number, default: 0 }
+    }],
     subtotal: Number,
     taxRate: Number,
     taxAmount: Number,
@@ -145,6 +150,11 @@ const QuotationSchema = new mongoose.Schema({
         trim: true
     },
     items: [QuotationItemSchema],
+    categoryDiscounts: [{
+        category: { type: String, required: true },
+        discountType: { type: String, enum: ['percentage', 'amount'], default: 'percentage' },
+        discountValue: { type: Number, default: 0 }
+    }],
     subtotal: {
         type: Number,
         required: true,
@@ -324,7 +334,9 @@ QuotationSchema.pre('save', async function (next) {
 // Calculate totals before saving
 QuotationSchema.pre('save', function (next) {
     let totalCost = 0;
-    this.subtotal = this.items.reduce((sum, item) => {
+    
+    // 1. Calculate base amounts, item-level discounts and costs
+    this.items.forEach(item => {
         const baseAmount = (item.quantity || 0) * (item.rate || 0);
         
         let itemDiscountAmount = 0;
@@ -339,12 +351,48 @@ QuotationSchema.pre('save', function (next) {
         
         item.profit = item.amount - ((item.quantity || 0) * (item.costPrice || 0));
         totalCost += (item.quantity || 0) * (item.costPrice || 0);
-        return sum + item.amount;
-    }, 0);
+    });
 
     this.totalCost = totalCost;
 
-    // Discount is a percentage
+    // 2. Group items by section to calculate category subtotals and discounts
+    const categorySubtotals = {};
+    this.items.forEach(item => {
+        const section = item.section || 'Uncategorized';
+        categorySubtotals[section] = (categorySubtotals[section] || 0) + (item.amount || 0);
+    });
+
+    let calculatedSubtotal = 0;
+    
+    // Group categoryDiscounts for quick lookup
+    const categoryDiscountsMap = {};
+    if (this.categoryDiscounts && this.categoryDiscounts.length > 0) {
+        this.categoryDiscounts.forEach(cd => {
+            if (cd.category) {
+                categoryDiscountsMap[cd.category] = cd;
+            }
+        });
+    }
+
+    Object.keys(categorySubtotals).forEach(section => {
+        const subtotalVal = categorySubtotals[section];
+        const cd = categoryDiscountsMap[section];
+        let catDiscountAmount = 0;
+        
+        if (cd && cd.discountValue > 0) {
+            if (cd.discountType === 'amount') {
+                catDiscountAmount = cd.discountValue;
+            } else {
+                catDiscountAmount = (subtotalVal * cd.discountValue) / 100;
+            }
+        }
+        
+        calculatedSubtotal += (subtotalVal - catDiscountAmount);
+    });
+
+    this.subtotal = calculatedSubtotal;
+
+    // 3. Discount is a percentage
     const discountAmount = (this.subtotal * (this.discount || 0)) / 100;
     this.offerPrice = this.subtotal - discountAmount;
 

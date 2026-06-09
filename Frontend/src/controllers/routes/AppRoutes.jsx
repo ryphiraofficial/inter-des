@@ -25,6 +25,7 @@ import Invoice from '../../views/admin/Invoice';
 import QuotationView from '../../views/admin/QuotationView';
 import Projects from '../../views/admin/Projects';
 import DesignApprovals from '../../views/admin/DesignApprovals';
+import Milestones from '../../views/admin/Milestones';
 
 // Views — Production Manager
 import ProductionDashboard from '../../views/production/project_manager/Dashboard';
@@ -120,6 +121,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="clients" element={isGeneralAdmin ? <Clients /> : <Navigate to="/" replace />} />
                     <Route path="staff" element={isGeneralAdmin ? <Staff /> : <Navigate to="/" replace />} />
                     <Route path="employee-analysis" element={isGeneralAdmin ? <EmployeeAnalysis /> : <Navigate to="/" replace />} />
+                    <Route path="milestones" element={isGeneralAdmin ? <Milestones /> : <Navigate to="/" replace />} />
                     <Route path="tasks" element={isGeneralAdmin ? <Tasks /> : <Navigate to="/" replace />} />
                     <Route path="reports" element={isGeneralAdmin ? <Reports /> : <Navigate to="/" replace />} />
                     <Route path="settings" element={isGeneralAdmin ? <Settings /> : <Navigate to="/" replace />} />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGetClientsQuery, useGetInventoryQuery, useGetQuotationByIdQuery } from '../../../../store/api/adminApi';
 
-export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount, setFetching, setError, setClients, setInventoryItems, clients, setClientSearchQuery }) => {
+export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setCategoryDiscounts, setTaxRate, setDiscount, setIncludeDiscount, setFetching, setError, setClients, setInventoryItems, clients, setClientSearchQuery }) => {
     
     const { data: clientsRes, isLoading: clientsLoading, error: clientsError } = useGetClientsQuery();
     const { data: inventoryRes, isLoading: inventoryLoading, error: inventoryError } = useGetInventoryQuery({ limit: 1000 });
@@ -73,6 +73,9 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
                 costPrice: item.costPrice || 0,
                 image: item.image || null
             })));
+            if (setCategoryDiscounts) {
+                setCategoryDiscounts(q.categoryDiscounts || []);
+            }
             if (q.taxRate) setTaxRate(q.taxRate);
             if (q.discount) {
                 setDiscount(q.discount);
@@ -80,7 +83,7 @@ export const useQuotationData = ({ isEdit, id, setFormData, setLineItems, setTax
             }
         }
         setFetching(false);
-    }, [clientsRes, inventoryRes, quoteRes, clientsLoading, inventoryLoading, quoteLoading, clientsError, inventoryError, quoteError, isEdit, id, setClients, setDiscount, setError, setFetching, setFormData, setIncludeDiscount, setInventoryItems, setLineItems, setTaxRate]);
+    }, [clientsRes, inventoryRes, quoteRes, clientsLoading, inventoryLoading, quoteLoading, clientsError, inventoryError, quoteError, isEdit, id, setClients, setDiscount, setError, setFetching, setFormData, setIncludeDiscount, setInventoryItems, setLineItems, setCategoryDiscounts, setTaxRate]);
 
     // AI Auto-Fill Listener
     useEffect(() => {
