@@ -293,3 +293,149 @@
     font-size: 0.9rem;
     color: #64748b;
 }
+
+/* Bill Template Styling */
+.client-bill-template {
+    background: #ffffff;
+    padding: 30px 24px;
+}
+
+.client-bill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.client-bill-company-name {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.client-bill-company-sub {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.client-bill-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.client-bill-id {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 0.85rem;
+    text-align: right;
+}
+
+.client-bill-section-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.client-bill-section-title {
+    margin: 0 0 8px;
+    color: #475569;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.client-bill-text-main {
+    margin: 0;
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.client-bill-text-sub {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.client-bill-calculation {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.client-bill-calc-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.client-bill-calc-row.current {
+    font-size: 1rem;
+}
+
+.client-bill-calc-row.total {
+    font-size: 1.05rem;
+    margin-bottom: 0;
+}
+
+.client-bill-calc-label {
+    color: #64748b;
+}
+
+.client-bill-calc-label.dark {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.client-bill-calc-value {
+    color: #0f172a;
+    font-weight: 500;
+}
+
+.client-bill-calc-value.highlight {
+    color: #166534;
+    font-weight: 700;
+}
+
+.client-bill-calc-value.bold {
+    font-weight: 700;
+}
+
+.client-bill-divider {
+    height: 1px;
+    background: #cbd5e1;
+    margin: 16px 0;
+}
+
+.client-bill-transaction-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    font-size: 0.85rem;
+}
+
+.client-bill-footer-note {
+    text-align: center;
+    margin-top: 32px;
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.client-bill-footer-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+    color: #166534;
+}

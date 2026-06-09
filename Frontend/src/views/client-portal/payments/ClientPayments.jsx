@@ -70,6 +70,15 @@ const ClientPayments = () => {
         setSelectedPayment(null);
     };
 
+    const getPreviousAmountPaid = () => {
+        if (!selectedPayment || payments.length === 0) return 0;
+        // payments are sorted by paymentDate descending
+        const index = payments.findIndex(p => p._id === selectedPayment._id);
+        if (index === -1) return 0;
+        const olderPayments = payments.slice(index + 1);
+        return olderPayments.reduce((sum, p) => sum + p.amount, 0);
+    };
+
     const handleDownloadReceipt = async () => {
         if (!receiptRef.current || !selectedPayment) return;
         
@@ -169,63 +178,85 @@ const ClientPayments = () => {
             {selectedPayment && (
                 <div className="client-payment-modal-overlay" onClick={closeModal}>
                     <div className="client-payment-modal-content" onClick={e => e.stopPropagation()}>
-                        <div ref={receiptRef} style={{ padding: '2rem', background: '#fff', borderRadius: '16px' }}>
-                            <div className="client-payment-modal-header">
-                            <div>
-                                <h3 className="client-payment-modal-title">Payment Receipt</h3>
-                                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                                    {selectedPayment.paymentNumber}
-                                </div>
-                            </div>
+                        <div className="client-payment-modal-header">
+                            <h3 className="client-payment-modal-title">Receipt Details</h3>
                             <button className="client-payment-modal-close" onClick={closeModal}>
                                 <X size={20} />
                             </button>
                         </div>
                         
-                        <div className="client-payment-modal-body">
-                            <div className="client-receipt-header">
-                                <div className="client-receipt-icon">
-                                    <CheckCircle2 size={32} />
+                        <div className="client-payment-modal-body" style={{ padding: 0 }}>
+                            <div ref={receiptRef} className="client-bill-template">
+                                <div className="client-bill-header">
+                                    <div>
+                                        <h2 className="client-bill-company-name">WOODAURA</h2>
+                                        <p className="client-bill-company-sub">Interior Design Studio</p>
+                                    </div>
+                                    <div>
+                                        <h3 className="client-bill-title">PAYMENT RECEIPT</h3>
+                                        <p className="client-bill-id">#{selectedPayment.paymentNumber}</p>
+                                    </div>
                                 </div>
-                                <div className="client-receipt-amount">{formatCurrency(selectedPayment.amount)}</div>
-                                <div className="client-receipt-status">Payment Successful</div>
-                            </div>
 
-                            <div className="client-receipt-details-list">
-                                <div className="client-receipt-detail-item">
-                                    <span className="client-receipt-detail-label">Date & Time</span>
-                                    <span className="client-receipt-detail-value">{formatDate(selectedPayment.paymentDate, true)}</span>
+                                <div className="client-bill-section-row">
+                                    <div>
+                                        <h4 className="client-bill-section-title">Project Details</h4>
+                                        <p className="client-bill-text-main">{selectedPayment.project?.name || 'Project Payment'}</p>
+                                        {selectedPayment.invoice && (
+                                            <p className="client-bill-text-sub">Invoice: {selectedPayment.invoice.invoiceNumber}</p>
+                                        )}
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <h4 className="client-bill-section-title">Payment Date</h4>
+                                        <p className="client-bill-text-main">{formatDate(selectedPayment.paymentDate, true)}</p>
+                                        <p className="client-bill-text-sub">Method: {selectedPayment.paymentMethod}</p>
+                                    </div>
                                 </div>
-                                <div className="client-receipt-detail-item">
-                                    <span className="client-receipt-detail-label">Payment Method</span>
-                                    <span className="client-receipt-detail-value">{selectedPayment.paymentMethod}</span>
+
+                                <div className="client-bill-calculation">
+                                    <div className="client-bill-calc-row">
+                                        <span className="client-bill-calc-label">Previous Amount Paid</span>
+                                        <span className="client-bill-calc-value">{formatCurrency(getPreviousAmountPaid())}</span>
+                                    </div>
+                                    <div className="client-bill-calc-row current">
+                                        <span className="client-bill-calc-label dark">Current Payment</span>
+                                        <span className="client-bill-calc-value highlight">{formatCurrency(selectedPayment.amount)}</span>
+                                    </div>
+                                    <div className="client-bill-divider"></div>
+                                    <div className="client-bill-calc-row total">
+                                        <span className="client-bill-calc-label dark" style={{ fontWeight: 700 }}>Total Paid to Date</span>
+                                        <span className="client-bill-calc-value bold">{formatCurrency(getPreviousAmountPaid() + selectedPayment.amount)}</span>
+                                    </div>
                                 </div>
-                                {selectedPayment.transactionId && (
-                                    <div className="client-receipt-detail-item">
-                                        <span className="client-receipt-detail-label">Transaction ID</span>
-                                        <span className="client-receipt-detail-value">{selectedPayment.transactionId}</span>
+
+                                {(selectedPayment.transactionId || selectedPayment.reference) && (
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <h4 className="client-bill-section-title">Transaction Details</h4>
+                                        <div className="client-bill-transaction-grid">
+                                            {selectedPayment.transactionId && (
+                                                <div>
+                                                    <span className="client-bill-calc-label" style={{ display: 'block', marginBottom: '4px' }}>Transaction ID</span>
+                                                    <span className="client-bill-calc-value">{selectedPayment.transactionId}</span>
+                                                </div>
+                                            )}
+                                            {selectedPayment.reference && (
+                                                <div>
+                                                    <span className="client-bill-calc-label" style={{ display: 'block', marginBottom: '4px' }}>Reference</span>
+                                                    <span className="client-bill-calc-value">{selectedPayment.reference}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 )}
-                                {selectedPayment.invoice && (
-                                    <div className="client-receipt-detail-item">
-                                        <span className="client-receipt-detail-label">Linked Invoice</span>
-                                        <span className="client-receipt-detail-value">{selectedPayment.invoice.invoiceNumber}</span>
+
+                                <div className="client-bill-footer-note">
+                                    <div className="client-bill-footer-icon">
+                                        <CheckCircle2 size={24} />
                                     </div>
-                                )}
-                                {selectedPayment.project && (
-                                    <div className="client-receipt-detail-item">
-                                        <span className="client-receipt-detail-label">Project</span>
-                                        <span className="client-receipt-detail-value">{selectedPayment.project.name}</span>
-                                    </div>
-                                )}
-                                {selectedPayment.reference && (
-                                    <div className="client-receipt-detail-item">
-                                        <span className="client-receipt-detail-label">Reference</span>
-                                        <span className="client-receipt-detail-value">{selectedPayment.reference}</span>
-                                    </div>
-                                )}
+                                    <p style={{ margin: 0 }}>Thank you for your payment.</p>
+                                    <p style={{ margin: '4px 0 0' }}>This is a computer-generated receipt and does not require a physical signature.</p>
+                                </div>
                             </div>
-                        </div>
                         </div>
 
                         <div className="client-payment-modal-footer">

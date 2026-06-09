@@ -82,7 +82,7 @@ export const useInvoiceLogic = () => {
             inv.client?.name?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'All' || inv.status === statusFilter;
         return matchesSearch && matchesStatus;
-    });
+    }).sort((a, b) => new Date(b.invoiceDate || b.createdAt) - new Date(a.invoiceDate || a.createdAt));
 
     return {
         invoices, clients, loading, submitting, error, searchTerm, setSearchTerm,

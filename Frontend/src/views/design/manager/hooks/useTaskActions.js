@@ -108,7 +108,6 @@ export const useTaskActions = () => {
     };
 
     const handleReassignTask = async (taskId, staffIds, reason) => {
-        if (!window.confirm('Are you sure you want to reassign this task?')) return;
         try {
             await reassignTask({ id: taskId, assignedTo: staffIds, reason }).unwrap();
             alert('Task reassigned successfully');

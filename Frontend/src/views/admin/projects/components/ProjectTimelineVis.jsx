@@ -51,7 +51,7 @@ const ProjectTimelineVis = ({ tasks = [] }) => {
             orientation: 'top',
             timeAxis: { scale: 'day', step: 1 },
             format: {
-                minorLabels: { day: 'D', month: 'MMM', year: 'YYYY' },
+                minorLabels: { day: 'D MMM', month: 'MMM', year: 'YYYY' },
                 majorLabels: { day: 'dddd, MMMM YYYY', month: 'YYYY', year: '' }
             }
         };

@@ -11,10 +11,10 @@ const ClearanceTable = ({
 }) => {
     const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, projectId: null, isVerified: false });
 
-    const handleConfirmOpen  = (projectId, isVerified) => setConfirmDialog({ isOpen: true, projectId, isVerified });
+    const handleConfirmOpen  = (projectId, isVerified, defaultAmount, defaultMode, defaultRef) => setConfirmDialog({ isOpen: true, projectId, isVerified, defaultAmount, defaultMode, defaultRef });
     const handleConfirmClose = () => setConfirmDialog({ isOpen: false, projectId: null, isVerified: false });
-    const handleConfirmSubmit = () => {
-        if (confirmDialog.projectId) handleClear(confirmDialog.projectId, confirmDialog.isVerified);
+    const handleConfirmSubmit = (details) => {
+        if (confirmDialog.projectId) handleClear(confirmDialog.projectId, confirmDialog.isVerified, details);
         handleConfirmClose();
     };
 
@@ -114,12 +114,12 @@ const ClearanceTable = ({
 
                                     <td className="clearance-td-actions" style={{ padding: '20px 24px' }}>
                                         {p.paymentCollectionStatus === 'Collected' ? (
-                                            <button onClick={() => handleConfirmOpen(p._id, true)} className="btn-primary-sm"
+                                            <button onClick={() => handleConfirmOpen(p._id, true, p.tempCollectionDetails?.amount || targetAmount, p.tempCollectionDetails?.paymentMode, p.tempCollectionDetails?.referenceNumber)} className="btn-primary-sm"
                                                 style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 10px rgba(59, 130, 246, 0.2)' }}>
                                                 <Shield size={14} /> Verify & Release
                                             </button>
                                         ) : (
-                                            <button onClick={() => handleConfirmOpen(p._id, false)} disabled={p.paymentStatus === 'Cleared' && !isBalance} className="btn-success-sm"
+                                            <button onClick={() => handleConfirmOpen(p._id, false, targetAmount)} disabled={p.paymentStatus === 'Cleared' && !isBalance} className="btn-success-sm"
                                                 style={{ display: 'flex', alignItems: 'center', gap: '6px', background: (p.paymentStatus === 'Cleared' && !isBalance) ? '#cbd5e1' : '#10b981', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: (p.paymentStatus === 'Cleared' && !isBalance) ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: (p.paymentStatus === 'Cleared' && !isBalance) ? 'none' : '0 4px 10px rgba(16, 185, 129, 0.2)' }}>
                                                 <CheckCircle size={14} /> Clear & Release
                                             </button>
@@ -131,7 +131,7 @@ const ClearanceTable = ({
                     </tbody>
                 </table>
             </div>
-            <ClearanceConfirmDialog isOpen={confirmDialog.isOpen} handleConfirmClose={handleConfirmClose} handleConfirmSubmit={handleConfirmSubmit} />
+            <ClearanceConfirmDialog isOpen={confirmDialog.isOpen} confirmData={confirmDialog} handleConfirmClose={handleConfirmClose} handleConfirmSubmit={handleConfirmSubmit} />
         </>
     );
 };

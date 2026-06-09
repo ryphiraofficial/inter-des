@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, Filter } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Search, Filter, Wallet, Hash, CalendarDays, TrendingUp } from 'lucide-react';
 import { usePaymentLogic } from '../hooks/usePaymentLogic';
 
 // Sub-components
@@ -7,11 +7,12 @@ import PaymentTable from './components/payments/PaymentTable';
 import PaymentModal from './components/payments/PaymentModal';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
+import '../css/Expenses.css'; // Import to use the shared KPI card styles
 
 const ManagerPayments = ({ search, setSearch }) => {
     const user = useAppSelector(selectUser);
     const {
-        clients, loading, showModal, setShowModal,
+        payments, clients, loading, showModal, setShowModal,
         submitting, form, setForm, filtered, handleSubmit, handleDelete,
         filterMethod, setFilterMethod
     } = usePaymentLogic(search, setSearch);
@@ -29,9 +30,74 @@ const ManagerPayments = ({ search, setSearch }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Calculate KPIs
+    const kpiData = useMemo(() => {
+        const validPayments = payments || [];
+        const totalAmount = validPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+        
+        const now = new Date();
+        const thisMonthAmount = validPayments.filter(p => {
+            if (!p.paymentDate) return false;
+            const d = new Date(p.paymentDate);
+            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+        const largestPayment = validPayments.reduce((max, p) => Math.max(max, Number(p.amount) || 0), 0);
+
+        return {
+            totalAmount,
+            totalTransactions: validPayments.length,
+            thisMonthAmount,
+            largestPayment
+        };
+    }, [payments]);
+
     return (
         <div className="accounts-manager-hub">
-            <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                {/* KPI Dashboard Boxes */}
+                <div className="invoice-stats-grid">
+                    <div className="invoice-stat-card">
+                        <div className="stat-content">
+                            <h4>Total Received</h4>
+                            <h2>₹{kpiData.totalAmount.toLocaleString('en-IN')}</h2>
+                        </div>
+                        <div className="stat-icon-wrapper green">
+                            <Wallet size={24} />
+                        </div>
+                    </div>
+                    
+                    <div className="invoice-stat-card">
+                        <div className="stat-content">
+                            <h4>Total Transactions</h4>
+                            <h2>{kpiData.totalTransactions}</h2>
+                        </div>
+                        <div className="stat-icon-wrapper blue">
+                            <Hash size={24} />
+                        </div>
+                    </div>
+
+                    <div className="invoice-stat-card">
+                        <div className="stat-content">
+                            <h4>Received This Month</h4>
+                            <h2>₹{kpiData.thisMonthAmount.toLocaleString('en-IN')}</h2>
+                        </div>
+                        <div className="stat-icon-wrapper yellow" style={{ background: '#fffbeb', color: '#f59e0b' }}>
+                            <CalendarDays size={24} />
+                        </div>
+                    </div>
+
+                    <div className="invoice-stat-card">
+                        <div className="stat-content">
+                            <h4>Largest Payment</h4>
+                            <h2>₹{kpiData.largestPayment.toLocaleString('en-IN')}</h2>
+                        </div>
+                        <div className="stat-icon-wrapper purple">
+                            <TrendingUp size={24} />
+                        </div>
+                    </div>
+                </div>
 
                 {/* Top Action Bar */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }} ref={dropdownRef}>

@@ -133,19 +133,19 @@ export const clearProjectPayment = async (req, res) => {
 
 export const verifyPaymentAndRelease = async (req, res) => {
     try {
-        const { projectId, collectedAmount, paymentNotes } = req.body;
+        const { projectId, collectedAmount, paymentNotes, paymentMode, referenceNumber } = req.body;
 
         const project = await Project.findById(projectId).populate('quotation');
         if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-        if (project.stage !== 'Pending Payment' && project.stage !== 'Accounts' && project.paymentCollectionStatus !== 'Collected') {
+        if (project.stage !== 'Pending Payment' && project.stage !== 'Accounts' && !['Collected', 'Pending Assignment', 'Assigned'].includes(project.paymentCollectionStatus)) {
             return res.status(400).json({ success: false, message: 'Project is not in a valid stage for payment verification' });
         }
 
         const tempDetails = project.tempCollectionDetails || {};
-        const paid = tempDetails.amount || Number(collectedAmount) || project.advanceAmount || 0;
-        const pMode = tempDetails.paymentMode || 'Bank Transfer';
-        const ref = tempDetails.referenceNumber || '';
+        const paid = Number(collectedAmount) || tempDetails.amount || project.advanceAmount || 0;
+        const pMode = paymentMode || tempDetails.paymentMode || 'Bank Transfer';
+        const ref = referenceNumber || tempDetails.referenceNumber || '';
         const notes = tempDetails.paymentNotes || '';
         const staffId = tempDetails.collectedBy || req.user.id;
 
@@ -179,7 +179,7 @@ export const verifyPaymentAndRelease = async (req, res) => {
             else if (lowerMode.includes('card')) pModeVal = 'Card';
         }
 
-        await Payment.create({ project: project._id, invoice: invoice._id, client: project.client, amount: paid, paymentDate: new Date(), paymentMethod: pModeVal, transactionId: ref, reference: ref, notes: notes || 'Advance payment verified by manager', receivedBy: staffId });
+        await Payment.create({ project: project._id, invoice: invoice._id, client: project.client, amount: paid, paymentDate: new Date(), paymentMethod: pModeVal, transactionId: ref, reference: ref, notes: notes || paymentNotes || 'Advance payment verified by manager', receivedBy: staffId });
 
         project.collectedAmount = (project.collectedAmount || 0) + paid;
         project.paymentStatus = project.collectedAmount >= project.budget ? 'Cleared' : (project.collectedAmount >= project.advanceAmount ? 'Cleared' : 'Partial Payment');

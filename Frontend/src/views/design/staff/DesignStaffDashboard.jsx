@@ -65,14 +65,7 @@ const DesignStaffDashboard = ({}) => {
     const renderContent = () => {
         if (activeTab === 'overview') return (
             <>
-                {/* Welcome Banner */}
-                <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', padding: '2.5rem', borderRadius: '24px', color: 'white', marginBottom: '2rem', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(79,70,229,0.2)' }}>
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>Designer Workspace</h3>
-                        <p style={{ fontSize: '1rem', opacity: 0.9, marginTop: '8px', maxWidth: '500px' }}>Welcome back! Track your assignments, manage your design pipeline, and collaborate with the team.</p>
-                    </div>
-                    <div style={{ position: 'absolute', right: '-20px', top: '-20px', opacity: 0.1 }}><PieChart size={200} /></div>
-                </div>
+
 
                 {/* Due Soon Alert */}
                 {dueSoonTasks.length > 0 && (

@@ -3,14 +3,21 @@ import { RefreshCw, User, UserPlus, Scissors, Calendar } from 'lucide-react';
 import '../css/ManagerDashboard.css';
 import ReassignPopover from './components/tasks/ReassignPopover';
 import WorkloadSidebar from './components/tasks/WorkloadSidebar';
+import ConfirmDialog from './components/tasks/ConfirmDialog';
 
 const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask, getPriorityColor, onReassign, onViewUpdates, onSplit }) => {
     const [showReassignDropdown, setShowReassignDropdown] = useState(null);
+    const [confirmState, setConfirmState] = useState(null);
 
     const handleReassignSubmit = (taskId, staffMember) => {
-        if (window.confirm(`Reassign this task to ${staffMember.name}?`)) {
-            onReassign(taskId, [staffMember._id], 'Reassigned by manager for studio optimization');
+        setConfirmState({ taskId, staffMember });
+    };
+
+    const confirmReassign = () => {
+        if (confirmState) {
+            onReassign(confirmState.taskId, [confirmState.staffMember._id], 'Reassigned by manager for studio optimization');
             setShowReassignDropdown(null);
+            setConfirmState(null);
         }
     };
 
@@ -22,6 +29,7 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                         const hasEmergency = task.dailyUpdates?.some(u => u.emergencies);
                         const overdue = task.dueDate && new Date(task.dueDate) < new Date();
                         const updatesCount = task.dailyUpdates?.length || 0;
+                        const isPostDesign = ['Pending Sales Review', 'Sales Approved', 'Pending Admin Review', 'Pending Payment', 'Assigned to Procurement', 'Pending Procurement Admin Review', 'Procurement Approved'].includes(task.status);
 
                         return (
                             <div key={task._id} className="card-premium task-card-grid" style={{
@@ -73,34 +81,38 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
                                         <RefreshCw size={18} color="#6366f1" />
                                     </button>
 
-                                    <button className="btn-action-round" onClick={() => onSplit(task)}
-                                        style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                                        title="Split Task">
-                                        <Scissors size={18} color="#8b5cf6" />
-                                    </button>
+                                    {!isPostDesign && (
+                                        <>
+                                            <button className="btn-action-round" onClick={() => onSplit(task)}
+                                                style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                                                title="Split Task">
+                                                <Scissors size={18} color="#8b5cf6" />
+                                            </button>
 
-                                    <div style={{ position: 'relative' }}>
-                                        <button className="btn-assign-staff"
-                                            onClick={() => setShowReassignDropdown(showReassignDropdown === task._id ? null : task._id)}
-                                            style={{
-                                                background: showReassignDropdown === task._id ? '#4f46e5' : '#eff6ff',
-                                                color: showReassignDropdown === task._id ? 'white' : '#2563eb',
-                                                border: '1px solid #dbeafe', padding: '10px 18px', borderRadius: '12px',
-                                                fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
-                                                display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s'
-                                            }}>
-                                            <UserPlus size={16} /> Reassign
-                                        </button>
+                                            <div style={{ position: 'relative' }}>
+                                                <button className="btn-assign-staff"
+                                                    onClick={() => setShowReassignDropdown(showReassignDropdown === task._id ? null : task._id)}
+                                                    style={{
+                                                        background: showReassignDropdown === task._id ? '#4f46e5' : '#eff6ff',
+                                                        color: showReassignDropdown === task._id ? 'white' : '#2563eb',
+                                                        border: '1px solid #dbeafe', padding: '10px 18px', borderRadius: '12px',
+                                                        fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s'
+                                                    }}>
+                                                    <UserPlus size={16} /> Reassign
+                                                </button>
 
-                                        {showReassignDropdown === task._id && (
-                                            <ReassignPopover
-                                                task={task}
-                                                teamStats={teamStats}
-                                                onClose={() => setShowReassignDropdown(null)}
-                                                onSubmit={handleReassignSubmit}
-                                            />
-                                        )}
-                                    </div>
+                                                {showReassignDropdown === task._id && (
+                                                    <ReassignPopover
+                                                        task={task}
+                                                        teamStats={teamStats}
+                                                        onClose={() => setShowReassignDropdown(null)}
+                                                        onSubmit={handleReassignSubmit}
+                                                    />
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -109,6 +121,14 @@ const Tasks = ({ tasks, teamStats, staffList, onOpenAssignModal, onOpenEditTask,
 
                 <WorkloadSidebar teamStats={teamStats} />
             </div>
+
+            {confirmState && (
+                <ConfirmDialog
+                    message={`Reassign this task to ${confirmState.staffMember.name}?`}
+                    onConfirm={confirmReassign}
+                    onCancel={() => setConfirmState(null)}
+                />
+            )}
         </div>
     );
 };

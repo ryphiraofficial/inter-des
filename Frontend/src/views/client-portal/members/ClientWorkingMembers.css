@@ -104,12 +104,17 @@
     margin-bottom: 10px;
 }
 
+.client-member-contact-item span {
+    word-break: break-word;
+}
+
 .client-member-contact-item:last-child {
     margin-bottom: 0;
 }
 
 .client-member-contact-item svg {
     color: #94a3b8;
+    flex-shrink: 0;
 }
 
 .client-member-actions {

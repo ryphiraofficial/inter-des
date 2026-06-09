@@ -72,16 +72,16 @@ const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit, edit
     const STATUSES = ['Paid', 'Pending', 'Overdue'];
 
     return (
-        <div className="modal-overlay" onClick={onClose} style={{ zIndex: 100 }}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="drawer-overlay" onClick={onClose} style={{ zIndex: 100 }}>
+            <div className="drawer-content" onClick={e => e.stopPropagation()}>
+                <div className="drawer-header">
                     <h3>{editingId ? 'Edit Expense' : 'Add New Expense'}</h3>
                     <button className="action-btn" onClick={onClose} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', borderRadius: '50%' }}>
                         <X size={18} />
                     </button>
                 </div>
                 
-                <div className="modal-body">
+                <div className="drawer-body">
                     <div className="form-group">
                         <label>DESCRIPTION *</label>
                         <input type="text" className="form-control" placeholder="What was this expense for?" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
@@ -153,7 +153,7 @@ const ExpenseModal = ({ show, onClose, form, setForm, submitting, onSubmit, edit
                     </div>
                 </div>
 
-                <div className="modal-footer" style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: '12px' }}>
+                <div className="drawer-footer" style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: '12px' }}>
                     <button 
                         className="btn-secondary"
                         onClick={onClose} 
