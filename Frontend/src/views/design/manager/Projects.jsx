@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Briefcase, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 import '../css/DesignStudio.css';
 import { useDesignProjects } from './hooks/useDesignProjects';
 import ProjectCard from './components/ProjectCard';
+import ProjectDetailsDrawer from './components/ProjectDetailsDrawer';
 
 const Projects = ({
     projects = [],
@@ -14,6 +15,8 @@ const Projects = ({
     onHandoffInitiate,
     onAssignStaff,
 }) => {
+    const [selectedProject, setSelectedProject] = useState(null);
+
     const {
         activeFilter,
         setActiveFilter,
@@ -23,6 +26,10 @@ const Projects = ({
         otherCount,
         filteredProjects
     } = useDesignProjects({ projects, tasks, materialRequests, getImageUrl });
+
+    const handleViewProject = (project) => {
+        setSelectedProject(project);
+    };
 
     return (
         <div className="portfolio-modern fade-in" style={{ paddingTop: '1rem' }}>
@@ -122,6 +129,7 @@ const Projects = ({
                         onHandoffInitiate={onHandoffInitiate}
                         onReviewRequest={onReviewRequest}
                         onAssignStaff={onAssignStaff}
+                        onViewProject={handleViewProject}
                     />
                 ))}
             </div>
@@ -131,6 +139,13 @@ const Projects = ({
                     <Briefcase size={48} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
                     <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>No projects found in this category</p>
                 </div>
+            )}
+
+            {selectedProject && (
+                <ProjectDetailsDrawer 
+                    project={selectedProject} 
+                    onClose={() => setSelectedProject(null)} 
+                />
             )}
         </div>
     );

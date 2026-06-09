@@ -1,9 +1,13 @@
 import React from 'react';
 import { Briefcase, Users, Clock, ArrowRight, Package } from 'lucide-react';
 
-const ProjectCard = ({ project, onHandoffInitiate, onReviewRequest, onAssignStaff }) => {
+const ProjectCard = ({ project, onHandoffInitiate, onReviewRequest, onAssignStaff, onViewProject }) => {
     return (
-        <div className="portfolio-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div 
+            className="portfolio-card" 
+            style={{ display: 'flex', flexDirection: 'column', height: '100%', cursor: onViewProject ? 'pointer' : 'default' }}
+            onClick={() => onViewProject && onViewProject(project)}
+        >
             <div className="card-media">
                 <img src={project.previewImage} alt={project.name} />
                 <div className={`status-tag ${project.statusClass}`}>{project.displayStatus}</div>
@@ -11,7 +15,7 @@ const ProjectCard = ({ project, onHandoffInitiate, onReviewRequest, onAssignStaf
             
             <div className="card-body" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div className="card-header-main">
-                    <h3 className="project-name">{project.name}</h3>
+                    <h3 className="project-name" style={{ transition: 'color 0.2s' }}>{project.name}</h3>
                     <span className="project-num">{project.projectNumber}</span>
                 </div>
 
