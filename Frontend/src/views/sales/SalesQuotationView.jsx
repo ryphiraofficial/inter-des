@@ -7,6 +7,8 @@ import { useQuotationViewState } from './quotations/view/hooks/useQuotationViewS
 import { useQuotationViewData } from './quotations/view/hooks/useQuotationViewData';
 import { useQuotationViewActions } from './quotations/view/hooks/useQuotationViewActions';
 import { useQuotationViewCalculations } from './quotations/view/hooks/useQuotationViewCalculations';
+import { useGetSettingsQuery } from '../../store/api/adminApi';
+import QuotationTemplateWrapper from '../admin/settings/components/templates/QuotationTemplateWrapper';
 
 // Components
 import { ActionHeader, DocHeader } from './quotations/view/components/HeaderComponents';
@@ -19,7 +21,8 @@ import './css/SalesQuotationView.css';
 const SalesQuotationView = ({ isStaff }) => {
     const { id } = useParams();
     const state = useQuotationViewState();
-    
+    const { data: settingsRes } = useGetSettingsQuery();
+
     useQuotationViewData({
         id,
         setQuotation: state.setQuotation,
@@ -27,8 +30,17 @@ const SalesQuotationView = ({ isStaff }) => {
         setError: state.setError
     });
 
-    const actions = useQuotationViewActions({ isStaff, id });
+    const printRef = React.useRef(null);
     const calc = useQuotationViewCalculations(state.quotation);
+    const actions = useQuotationViewActions({ 
+        isStaff, 
+        id, 
+        quotationNumber: state.quotation?.quotationNumber, 
+        printRef,
+        quotation: state.quotation,
+        settings: settingsRes?.data,
+        calc
+    });
 
     if (state.loading) {
         return (
@@ -65,41 +77,45 @@ const SalesQuotationView = ({ isStaff }) => {
 
     return (
         <div className="qv-wrapper">
-            <ActionHeader 
+            <ActionHeader
                 handleBack={actions.handleBack}
                 handleEdit={actions.handleEdit}
                 handlePrint={actions.handlePrint}
                 handleDownload={actions.handleDownload}
             />
 
-            <div className="quotation-document">
-                <DocHeader 
-                    quotationNumber={q.quotationNumber}
-                    createdAt={q.createdAt}
-                    status={q.status}
-                />
+            <div ref={printRef}>
+                <QuotationTemplateWrapper quotation={q} calc={calc} settings={settingsRes?.data}>
+                    <div className="quotation-document">
+                        <DocHeader
+                            quotationNumber={q.quotationNumber}
+                            createdAt={q.createdAt}
+                            status={q.status}
+                        />
 
-                <div className="doc-content">
-                    <PartiesGrid 
-                        client={q.client}
-                        projectName={q.projectName}
-                        projectDescription={q.projectDescription}
-                        validUntil={q.validUntil}
-                    />
+                        <div className="doc-content">
+                            <PartiesGrid
+                                client={q.client}
+                                projectName={q.projectName}
+                                projectDescription={q.projectDescription}
+                                validUntil={q.validUntil}
+                            />
 
-                    <ItemsTable items={q.items || []} />
+                            <ItemsTable items={q.items || []} />
 
-                    <DocSummary 
-                        {...calc}
-                        notes={q.notes}
-                        termsAndConditions={q.termsAndConditions}
-                        taxRate={q.taxRate}
-                        discount={q.discount}
-                        depositPercent={q.depositPercent}
-                    />
-                </div>
+                            <DocSummary
+                                {...calc}
+                                notes={q.notes}
+                                termsAndConditions={q.termsAndConditions}
+                                taxRate={q.taxRate}
+                                discount={q.discount}
+                                depositPercent={q.depositPercent}
+                            />
+                        </div>
 
-                <DocFooter />
+                        <DocFooter />
+                    </div>
+                </QuotationTemplateWrapper>
             </div>
         </div>
     );

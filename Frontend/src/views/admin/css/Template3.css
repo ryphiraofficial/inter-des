@@ -1,0 +1,403 @@
+/* --- Core Reset & Font Setup --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600;1,700&display=swap');
+
+.template3-container {
+  --primary-red: #D12C2C;
+  --text-dark: #111111;
+  --text-muted: #555555;
+  --border-gray: #E0E0E0;
+  --row-bg: #F5F5F7;
+  --page-bg: #F0F0F3;
+
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
+  background-color: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 850px;
+  margin: 0 auto;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* --- Top Red accent Strip --- */
+.template3-container .top-accent-strip {
+  height: 8px;
+  background-color: var(--primary-red);
+  width: 100%;
+}
+
+/* --- Paper Content Wrapper --- */
+.template3-container .invoice-content {
+  padding: 60px 65px;
+}
+
+/* --- Top Logo Brand --- */
+.template3-container .logo-container {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.template3-container .logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dark);
+}
+
+/* --- Bill to & Meta Grid --- */
+.template3-container .billing-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  gap: 40px;
+}
+
+.template3-container .bill-to-section {
+  flex: 1;
+}
+
+.template3-container .bill-to-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.template3-container .client-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+}
+
+.template3-container .contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.template3-container .contact-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark);
+}
+
+.template3-container .meta-section {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.template3-container .meta-table {
+  font-size: 13px;
+  margin-bottom: 15px;
+  border-collapse: collapse;
+}
+
+.template3-container .meta-table td {
+  padding: 3px 0;
+}
+
+.template3-container .meta-table td.label {
+  color: var(--text-muted);
+  font-weight: 500;
+  padding-right: 15px;
+  text-align: left;
+}
+
+.template3-container .meta-table td.value {
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: right;
+}
+
+.template3-container .invoice-title {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  line-height: 1;
+  margin-top: 10px;
+}
+
+/* --- Line Items Table --- */
+.template3-container .items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  table-layout: fixed;
+}
+
+.template3-container .table-header {
+  border-bottom: 2px solid var(--primary-red);
+}
+
+.template3-container .table-header th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary-red);
+  padding: 12px 14px;
+  box-sizing: border-box;
+}
+
+/* Explicit widths and alignments for Table columns */
+.template3-container .items-table th:nth-child(1),
+.template3-container .items-table td:nth-child(1) {
+  width: 8%;
+  text-align: center;
+}
+
+.template3-container .items-table th:nth-child(2),
+.template3-container .items-table td:nth-child(2) {
+  width: 48%;
+  text-align: left;
+}
+
+.template3-container .items-table th:nth-child(3),
+.template3-container .items-table td:nth-child(3) {
+  width: 10%;
+  text-align: center;
+}
+
+.template3-container .items-table th:nth-child(4),
+.template3-container .items-table td:nth-child(4) {
+  width: 16%;
+  text-align: right;
+}
+
+.template3-container .items-table th:nth-child(5),
+.template3-container .items-table td:nth-child(5) {
+  width: 18%;
+  text-align: right;
+}
+
+.template3-container .t3-item-row td {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: var(--text-dark);
+  vertical-align: top;
+  background-color: var(--row-bg);
+  box-sizing: border-box;
+}
+
+.template3-container .t3-item-row {
+  border-bottom: 4px solid #ffffff;
+}
+
+.template3-container .item-name {
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.4;
+  display: block;
+  overflow: visible;
+  padding-bottom: 2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.template3-container .item-desc {
+  display: block;
+  margin-top: 3px;
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.template3-container .item-image {
+  display: block;
+  clear: both;
+}
+
+.template3-container .item-price,
+.template3-container .item-qty,
+.template3-container .item-total {
+  font-weight: 500;
+}
+
+.template3-container .item-total {
+  font-weight: 600;
+}
+
+/* --- Calculations & Terms Area --- */
+.template3-container .bottom-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 35px;
+  gap: 40px;
+}
+
+.template3-container .terms-box {
+  width: 50%;
+}
+
+.template3-container .terms-title {
+  font-size: 15px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.template3-container .terms-content {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Full Width Centered Terms */
+.template3-container .full-width-terms {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.template3-container .terms-centered-title {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.template3-container .terms-centered-text {
+  white-space: pre-line;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.template3-container .summary-box {
+  width: 38%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.template3-container .summary-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 0 10px;
+  color: var(--text-muted);
+}
+
+.template3-container .summary-line .value {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+/* Styled crimson red total bar */
+.template3-container .total-row {
+  background-color: var(--primary-red);
+  color: white;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 3px double white;
+  border-bottom: 3px double white;
+  margin-top: 5px;
+}
+
+.template3-container .total-row .label {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.template3-container .total-row .value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* --- Bank & Paypal Info Bar --- */
+.template3-container .payment-methods-strip {
+  background-color: #EAEAEA;
+  padding: 12px 20px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 35px;
+}
+
+/* --- "Thanks" Banner Row --- */
+.template3-container .thanks-banner {
+  border-top: 1px solid var(--border-gray);
+  border-bottom: 1px solid var(--border-gray);
+  padding: 16px 0;
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.template3-container .thanks-text {
+  font-size: 24px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--text-dark);
+  letter-spacing: 0.5px;
+}
+
+/* --- Bottom Full-Bleed Footer --- */
+.template3-container .footer-bar {
+  background-color: var(--primary-red);
+  color: white;
+  padding: 24px 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.template3-container .footer-left {
+  max-width: 45%;
+  line-height: 1.5;
+}
+
+.template3-container .footer-center,
+.template3-container .footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.template3-container .footer-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- Responsive Zoom Scaling to Fit Phone Screen --- */
+@media (max-width: 890px) {
+  .template3-container {
+    zoom: calc((100vw - 40px) / 850px);
+  }
+}

@@ -39,6 +39,16 @@ const ApplicationSettings = ({ settings, updateSettingsField, saveSettings, savi
                         <option value="Asia/Dubai">Asia/Dubai (GST)</option>
                     </select>
                 </div>
+                <div className="settings-form-group">
+                    <label>Quotation Document Template</label>
+                    <select className="settings-select" value={settings?.application?.quotationTemplate || 'Template1'} onChange={(e) => updateSettingsField('application', 'quotationTemplate', e.target.value)}>
+                        <option value="Original">Default Dashboard Template</option>
+                        <option value="Template1">Template 1 (Interactive Premium Invoice)</option>
+                        <option value="Template2">Template 2 (Elegant/Dark)</option>
+                        <option value="Template3">Template 3 (Premium/Compact)</option>
+                        <option value="Template4">Template 4 (Professional/Corporate)</option>
+                    </select>
+                </div>
             </div>
 
             <div className="settings-save-row">

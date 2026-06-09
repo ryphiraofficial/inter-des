@@ -670,3 +670,466 @@
         justify-content: center;
     }
 }
+
+/* --- Quotation Templates UI --- */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    margin-top: 1.5rem;
+}
+
+.template-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+    border-color: #2563eb;
+}
+
+.template-card.active {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), 0 8px 16px -4px rgba(37, 99, 235, 0.1);
+}
+
+.template-thumbnail-wrapper {
+    height: 180px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+/* Mockups for the 4 templates inside the settings grid */
+.template-mockup {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Mockup 1: Interactive Premium Invoice (Purple Accent) */
+.mockup-1 .mockup-header {
+    height: 25px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+}
+.mockup-1 .mockup-logo {
+    width: 25px;
+    height: 8px;
+    background: #4D4495;
+    border-radius: 2px;
+}
+.mockup-1 .mockup-title {
+    width: 20px;
+    height: 6px;
+    background: #cbd5e1;
+    border-radius: 1px;
+}
+.mockup-1 .mockup-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.mockup-1 .mockup-meta {
+    display: flex;
+    justify-content: space-between;
+}
+.mockup-1 .mockup-meta-left {
+    width: 30px;
+    height: 10px;
+    background: #f1f5f9;
+}
+.mockup-1 .mockup-meta-right {
+    width: 30px;
+    height: 10px;
+    background: #f1f5f9;
+}
+.mockup-1 .mockup-table {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 5px;
+}
+.mockup-1 .mockup-table-header {
+    height: 8px;
+    background: #4D4495;
+}
+.mockup-1 .mockup-table-row {
+    height: 6px;
+    background: #f8fafc;
+}
+
+/* Mockup 2: Elegant Minimalist (Dark theme accent) */
+.mockup-2 .mockup-header-block {
+    height: 35px;
+    background: #111111;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.mockup-2 .mockup-logo {
+    width: 20px;
+    height: 10px;
+    background: white;
+}
+.mockup-2 .mockup-title {
+    width: 20px;
+    height: 8px;
+    background: #757575;
+}
+.mockup-2 .mockup-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.mockup-2 .mockup-addresses {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+}
+.mockup-2 .mockup-addr-card {
+    flex: 1;
+    height: 15px;
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+}
+.mockup-2 .mockup-table-header {
+    height: 8px;
+    background: #111111;
+}
+.mockup-2 .mockup-table-row {
+    height: 6px;
+    background: #f8f8f8;
+}
+
+/* Mockup 3: Modern Crimson Editorial (Red accent strip) */
+.mockup-3 .mockup-top-strip {
+    height: 3px;
+    background: #D12C2C;
+}
+.mockup-3 .mockup-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.mockup-3 .mockup-logo-center {
+    width: 40px;
+    height: 8px;
+    background: #111111;
+    margin: 4px auto;
+}
+.mockup-3 .mockup-grid {
+    display: flex;
+    justify-content: space-between;
+}
+.mockup-3 .mockup-client {
+    width: 35px;
+    height: 12px;
+    background: #f1f5f9;
+}
+.mockup-3 .mockup-meta {
+    width: 30px;
+    height: 12px;
+    background: #f1f5f9;
+}
+.mockup-3 .mockup-table-header {
+    height: 8px;
+    background: white;
+    border-bottom: 1px solid #D12C2C;
+}
+.mockup-3 .mockup-table-row {
+    height: 6px;
+    background: #F5F5F7;
+    border-bottom: 1px solid white;
+}
+
+/* Mockup 4: Modern Corporate (Slanted green/navy) */
+.mockup-4 .mockup-slant-header {
+    height: 35px;
+    background: #1F2E3D;
+    position: relative;
+    overflow: hidden;
+}
+.mockup-4 .mockup-slant-green {
+    position: absolute;
+    top: 0;
+    left: 45%;
+    width: 60%;
+    height: 100%;
+    background: #88BC3F;
+    transform: skewX(-20deg);
+}
+.mockup-4 .mockup-logo-side {
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 35px;
+    height: 8px;
+    background: white;
+}
+.mockup-4 .mockup-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.mockup-4 .mockup-addresses {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+}
+.mockup-4 .mockup-addr {
+    width: 30px;
+    height: 12px;
+    background: #f1f5f9;
+}
+.mockup-4 .mockup-table-header {
+    display: flex;
+}
+.mockup-4 .mockup-th-green {
+    flex: 3;
+    height: 8px;
+    background: #88BC3F;
+}
+.mockup-4 .mockup-th-navy {
+    flex: 2;
+    height: 8px;
+    background: #1F2E3D;
+}
+.mockup-4 .mockup-table-row {
+    height: 6px;
+    background: #F9FBF9;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+/* Hover effect preview overlay */
+.template-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.template-card:hover .template-hover-overlay {
+    opacity: 1;
+}
+
+.btn-preview-template {
+    background: white;
+    color: #0f172a;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-preview-template:hover {
+    transform: scale(1.05);
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.template-details-section {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.template-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.template-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.template-active-badge {
+    background: #dcfce7;
+    color: #166534;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+}
+
+.template-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Modal Backdrop & Premium UI */
+.template-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 2rem;
+}
+
+.template-modal-container {
+    background: #f8fafc;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 960px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.template-modal-header {
+    background: white;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.template-modal-info h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.template-modal-info p {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+.template-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-modal-select {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-modal-select:hover {
+    background: #1d4ed8;
+}
+
+.btn-modal-close {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-modal-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.template-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 3rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.template-modal-scale-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 900px) {
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+    .template-modal-backdrop {
+        padding: 0.5rem;
+    }
+    .template-modal-container {
+        height: 100vh;
+        border-radius: 0;
+    }
+}
+
