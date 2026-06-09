@@ -37,6 +37,19 @@ WoodAura digitises the complete interior design business workflow:
 5. **Accounts** — Payment tracking, expense management, and financial reporting.
 6. **Administration** — User/staff management, settings, meetings, notifications, and AI-assisted tools.
 
+### Project Lifecycle Flow
+
+```mermaid
+graph TD
+    A[Sales] -->|Approved Quotation| B[Design]
+    B -->|Material Approvals & Plans| C[Procurement]
+    C -->|Materials & POs| D[Production]
+    D -->|Site Completion| E[Accounts]
+    
+    A -.->|Draft Invoice| E
+    E -.->|Payment Clearance| D
+```
+
 ---
 
 ## Key Features
