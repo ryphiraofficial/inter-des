@@ -64,7 +64,10 @@ const ProjectDetailsDrawer = ({ project, onClose }) => {
                         <div className="dm-detail-row">
                             <span className="dm-detail-label">Design Progress</span>
                             <span className="dm-detail-value">
-                                {project.designStatus || 'Pending'}
+                                {project.designStatus || 
+                                (project.designComplete || ['Procurement', 'Production', 'Completed'].includes(project.stage) 
+                                    ? 'Design Complete' 
+                                    : 'Pending')}
                             </span>
                         </div>
                     </div>
