@@ -3,7 +3,7 @@ import { Download, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-rea
 import { TableSkeleton } from '../../components/Skeleton';
 
 const InvoiceTable = ({ 
-    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete 
+    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload
 }) => {
     if (loading) {
         return <TableSkeleton rows={10} cols={6} />;
@@ -60,7 +60,7 @@ const InvoiceTable = ({
                             </td>
                             <td className="desktop-hide">
                                 <div className="invoice-actions">
-                                    <button className="btn-inv-action primary" title="Download"><Download size={16} /></button>
+                                    <button className="btn-inv-action primary" title="Download" onClick={(e) => { e.stopPropagation(); onDownload && onDownload(inv); }}><Download size={16} /></button>
                                     {inv.status !== 'Paid' && (
                                         <button
                                             className="btn-inv-action success"
@@ -107,7 +107,7 @@ const InvoiceTable = ({
                                             </div>
                                         </div>
                                         <div className="expansion-actions">
-                                            <button className="btn-mobile-action primary"><Download size={16} /> Download PDF</button>
+                                            <button className="btn-mobile-action primary" onClick={() => onDownload && onDownload(inv)}><Download size={16} /> Download PDF</button>
                                             {inv.status !== 'Paid' && (
                                                 <button className="btn-mobile-action success" onClick={() => handleUpdatePayment(inv._id, inv.grandTotal - (inv.amountPaid || 0))}>
                                                     <CheckCircle size={16} /> Mark as Paid
