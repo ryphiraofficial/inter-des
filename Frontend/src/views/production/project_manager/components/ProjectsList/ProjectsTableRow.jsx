@@ -74,9 +74,11 @@ const ProjectsTableRow = ({ project, expandedRow, toggleRow, activeDropdown, set
                 <td className="pm-desktop-only">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <div className="pm-team-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem', background: '#eff6ff', color: '#3b82f6' }}>
-                            {(project.projectEngineer?.fullName || project.projectManager?.fullName || 'N A').split(' ').map(n=>n[0]).join('')}
+                            {((Array.isArray(project.projectEngineer) && project.projectEngineer.length > 0 ? project.projectEngineer[0].fullName : project.projectManager?.fullName) || 'N A').split(' ').map(n=>n[0]).join('')}
                         </div>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{project.projectEngineer?.fullName || project.projectManager?.fullName || 'Unassigned'}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500 }} title={Array.isArray(project.projectEngineer) ? project.projectEngineer.map(e => e.fullName).join(', ') : ''}>
+                            {Array.isArray(project.projectEngineer) && project.projectEngineer.length > 0 ? project.projectEngineer.map(e => e.fullName).join(', ') : (project.projectManager?.fullName || 'Unassigned')}
+                        </span>
                     </div>
                 </td>
                 <td style={{ position: 'relative' }}>
@@ -195,9 +197,9 @@ const ProjectsTableRow = ({ project, expandedRow, toggleRow, activeDropdown, set
                                     <div className="pm-expanded-value">
                                         <div className="pm-expanded-engineer">
                                             <div className="pm-team-avatar">
-                                                {(project.projectEngineer?.fullName || 'U').split(' ').map(n=>n[0]).join('')}
+                                                {((Array.isArray(project.projectEngineer) && project.projectEngineer.length > 0 ? project.projectEngineer[0].fullName : project.projectManager?.fullName) || 'U').split(' ').map(n=>n[0]).join('')}
                                             </div>
-                                            <strong>{project.projectEngineer?.fullName || 'Unassigned'}</strong>
+                                            <strong>{Array.isArray(project.projectEngineer) && project.projectEngineer.length > 0 ? project.projectEngineer.map(e => e.fullName).join(', ') : (project.projectManager?.fullName || 'Unassigned')}</strong>
                                         </div>
                                     </div>
                                 </div>

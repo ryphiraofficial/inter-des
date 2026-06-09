@@ -26,7 +26,7 @@ export const useProjectHandoff = () => {
             let changed = false;
             projects.forEach(p => {
                 if (!prev[p._id]) {
-                    initial[p._id] = { projectEngineer: '', siteEngineer: '', siteSupervisor: '' };
+                    initial[p._id] = { projectEngineer: [], siteEngineer: [], siteSupervisor: [] };
                     changed = true;
                 }
             });
@@ -34,18 +34,18 @@ export const useProjectHandoff = () => {
         });
     }, [projects]);
 
-    const handleAssign = (projectId, role, userId) => {
+    const handleAssign = (projectId, role, userIds) => {
         setAssignments(prev => ({
             ...prev,
-            [projectId]: { ...prev[projectId], [role]: userId }
+            [projectId]: { ...prev[projectId], [role]: userIds }
         }));
     };
 
     const handleAcceptHandoff = async (project) => {
         const projectAssignments = assignments[project._id] ?? {};
-        const noAssignments = !projectAssignments.projectEngineer &&
-            !projectAssignments.siteEngineer &&
-            !projectAssignments.siteSupervisor;
+        const noAssignments = (!projectAssignments.projectEngineer || projectAssignments.projectEngineer.length === 0) &&
+            (!projectAssignments.siteEngineer || projectAssignments.siteEngineer.length === 0) &&
+            (!projectAssignments.siteSupervisor || projectAssignments.siteSupervisor.length === 0);
 
         if (noAssignments) {
             const proceed = window.confirm("You haven't assigned any team members. Do you still want to activate this project?");
@@ -56,9 +56,9 @@ export const useProjectHandoff = () => {
             setSubmitting(prev => ({ ...prev, [project._id]: true }));
             await acceptHandoffMutation({
                 id: project._id,
-                projectEngineer: projectAssignments.projectEngineer || null,
-                siteEngineer: projectAssignments.siteEngineer || null,
-                siteSupervisor: projectAssignments.siteSupervisor || null,
+                projectEngineer: projectAssignments.projectEngineer || [],
+                siteEngineer: projectAssignments.siteEngineer || [],
+                siteSupervisor: projectAssignments.siteSupervisor || [],
             }).unwrap();
             showToast('Project activated and team assigned successfully');
         } catch (err) {

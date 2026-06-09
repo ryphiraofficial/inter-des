@@ -49,9 +49,9 @@ export const assignTeam = async (reqData) => {
         if (locked) return locked;
         const { projectEngineer, siteEngineer, siteSupervisor } = reqData.body;
         const project = await ProductionProject.findById(reqData.params.id);
-        if (projectEngineer) project.projectEngineer = projectEngineer;
-        if (siteEngineer) project.siteEngineer = siteEngineer;
-        if (siteSupervisor) project.siteSupervisor = siteSupervisor;
+        if (projectEngineer) project.projectEngineer = Array.isArray(projectEngineer) ? projectEngineer : [projectEngineer];
+        if (siteEngineer) project.siteEngineer = Array.isArray(siteEngineer) ? siteEngineer : [siteEngineer];
+        if (siteSupervisor) project.siteSupervisor = Array.isArray(siteSupervisor) ? siteSupervisor : [siteSupervisor];
         await project.save();
         await logActivity(project._id, reqData.user.id, 'ASSIGN_TEAM', `Team assignments updated.`);
         return { status: 200, success: true, data: project };
@@ -65,29 +65,31 @@ export const acceptHandoff = async (reqData) => {
         if (!project) return { status: 404, success: false, message: 'Project not found' };
         if (project.status !== 'Planning') return { status: 400, success: false, message: 'Project has already been activated' };
         
-        if (projectEngineer) project.projectEngineer = projectEngineer;
-        if (siteEngineer) project.siteEngineer = siteEngineer;
-        if (siteSupervisor) project.siteSupervisor = siteSupervisor;
+        if (projectEngineer) project.projectEngineer = Array.isArray(projectEngineer) ? projectEngineer : [projectEngineer];
+        if (siteEngineer) project.siteEngineer = Array.isArray(siteEngineer) ? siteEngineer : [siteEngineer];
+        if (siteSupervisor) project.siteSupervisor = Array.isArray(siteSupervisor) ? siteSupervisor : [siteSupervisor];
         
         project.status = 'Active';
         await project.save();
         await logActivity(project._id, reqData.user.id, 'ACCEPT_HANDOFF', 'Project accepted and team assigned by Production Manager.');
 
-        const assignedRoles = [
-            { userId: projectEngineer, role: 'Project Engineer' },
-            { userId: siteEngineer, role: 'Site Engineer' },
-            { userId: siteSupervisor, role: 'Site Supervisor' }
+        const rolesToNotify = [
+            { ids: project.projectEngineer, role: 'Project Engineer' },
+            { ids: project.siteEngineer, role: 'Site Engineer' },
+            { ids: project.siteSupervisor, role: 'Site Supervisor' }
         ];
 
-        for (const assignee of assignedRoles) {
-            if (assignee.userId) {
-                const user = await User.findById(assignee.userId);
-                if (user) {
-                    await notifyUser(assignee.userId, {
-                        title: `🏗️ Assigned as ${assignee.role}`,
-                        description: `You have been assigned as ${assignee.role} for project "${project.projectName}". The project is now active.`,
-                        type: 'Info', relatedModel: 'ProductionProject', relatedId: project._id
-                    });
+        for (const roleGroup of rolesToNotify) {
+            if (roleGroup.ids && roleGroup.ids.length > 0) {
+                for (const userId of roleGroup.ids) {
+                    const user = await User.findById(userId);
+                    if (user) {
+                        await notifyUser(userId, {
+                            title: `🏗️ Assigned as ${roleGroup.role}`,
+                            description: `You have been assigned as ${roleGroup.role} for project "${project.projectName}". The project is now active.`,
+                            type: 'Info', relatedModel: 'ProductionProject', relatedId: project._id
+                        });
+                    }
                 }
             }
         }

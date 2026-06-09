@@ -81,8 +81,8 @@ export const isProjectManagerOrEngineer = async (req, res, next) => {
 
         const isTaskAssignee = task && task.assignedTo && task.assignedTo.toString() === req.user.id;
         const isPM = project.projectManager && project.projectManager.toString() === req.user.id;
-        const isPE = project.projectEngineer && project.projectEngineer.toString() === req.user.id;
-        const isSE = project.siteEngineer && project.siteEngineer.toString() === req.user.id;
+        const isPE = project.projectEngineer && project.projectEngineer.some(id => id.toString() === req.user.id);
+        const isSE = project.siteEngineer && project.siteEngineer.some(id => id.toString() === req.user.id);
 
         if (!isPM && !isPE && !isSE && !isTaskAssignee) {
             return res.status(403).json({
@@ -134,11 +134,11 @@ export const isAssignedUser = async (req, res, next) => {
 
         // Check if user is assigned to any role in this project
         const assignedRoles = [
-            project.projectManager,
-            project.projectEngineer,
-            project.siteEngineer,
-            project.siteSupervisor
-        ].map(id => id?.toString());
+            project.projectManager?.toString(),
+            ...(project.projectEngineer || []).map(id => id.toString()),
+            ...(project.siteEngineer || []).map(id => id.toString()),
+            ...(project.siteSupervisor || []).map(id => id.toString())
+        ].filter(Boolean);
 
         if (!assignedRoles.includes(req.user.id)) {
             return res.status(403).json({

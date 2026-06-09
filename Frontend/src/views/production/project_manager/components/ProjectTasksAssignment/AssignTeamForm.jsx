@@ -1,6 +1,33 @@
 import React from 'react';
 import { UserPlus, Loader2, Check } from 'lucide-react';
 
+const MultiSelectCheckbox = ({ options, selectedValues = [], onChange }) => {
+    const handleToggle = (id) => {
+        if (selectedValues.includes(id)) {
+            onChange(selectedValues.filter(val => val !== id));
+        } else {
+            onChange([...selectedValues, id]);
+        }
+    };
+    
+    return (
+        <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px', maxHeight: '120px', overflowY: 'auto', background: '#fff' }}>
+            {options.length === 0 ? <span style={{fontSize: '0.8rem', color: '#94a3b8'}}>No users available</span> : null}
+            {options.map(s => (
+                <label key={s._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', fontSize: '0.85rem', cursor: 'pointer', color: '#334155' }}>
+                    <input 
+                        type="checkbox" 
+                        checked={selectedValues.includes(s._id)} 
+                        onChange={() => handleToggle(s._id)} 
+                        style={{ cursor: 'pointer' }}
+                    />
+                    {s.fullName}
+                </label>
+            ))}
+        </div>
+    );
+};
+
 const AssignTeamForm = ({ 
     handleUpdateTeam, 
     teamForm, 
@@ -25,52 +52,37 @@ const AssignTeamForm = ({
                 {/* Project Engineer */}
                 <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
-                        <UserPlus size={14} color="#3b82f6" /> Project Engineer (PE)
+                        <UserPlus size={14} color="#3b82f6" /> Project Engineer(s)
                     </label>
-                    <select 
-                        value={teamForm.projectEngineer}
-                        onChange={(e) => setTeamForm(prev => ({ ...prev, projectEngineer: e.target.value }))}
-                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
-                    >
-                        <option value="">-- Unassigned --</option>
-                        {projectEngineers.map(e => (
-                            <option key={e._id} value={e._id}>{e.fullName} ({e.email})</option>
-                        ))}
-                    </select>
+                    <MultiSelectCheckbox 
+                        options={projectEngineers} 
+                        selectedValues={teamForm.projectEngineer || []} 
+                        onChange={(vals) => setTeamForm(prev => ({ ...prev, projectEngineer: vals }))} 
+                    />
                 </div>
 
                 {/* Site Engineer */}
                 <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
-                        <UserPlus size={14} color="#10b981" /> Site Engineer (SE)
+                        <UserPlus size={14} color="#10b981" /> Site Engineer(s)
                     </label>
-                    <select 
-                        value={teamForm.siteEngineer}
-                        onChange={(e) => setTeamForm(prev => ({ ...prev, siteEngineer: e.target.value }))}
-                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
-                    >
-                        <option value="">-- Unassigned --</option>
-                        {siteEngineers.map(e => (
-                            <option key={e._id} value={e._id}>{e.fullName} ({e.email})</option>
-                        ))}
-                    </select>
+                    <MultiSelectCheckbox 
+                        options={siteEngineers} 
+                        selectedValues={teamForm.siteEngineer || []} 
+                        onChange={(vals) => setTeamForm(prev => ({ ...prev, siteEngineer: vals }))} 
+                    />
                 </div>
 
                 {/* Site Supervisor */}
                 <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
-                        <UserPlus size={14} color="#f59e0b" /> Site Supervisor (SS)
+                        <UserPlus size={14} color="#f59e0b" /> Site Supervisor(s)
                     </label>
-                    <select 
-                        value={teamForm.siteSupervisor}
-                        onChange={(e) => setTeamForm(prev => ({ ...prev, siteSupervisor: e.target.value }))}
-                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
-                    >
-                        <option value="">-- Unassigned --</option>
-                        {siteSupervisors.map(e => (
-                            <option key={e._id} value={e._id}>{e.fullName} ({e.email})</option>
-                        ))}
-                    </select>
+                    <MultiSelectCheckbox 
+                        options={siteSupervisors} 
+                        selectedValues={teamForm.siteSupervisor || []} 
+                        onChange={(vals) => setTeamForm(prev => ({ ...prev, siteSupervisor: vals }))} 
+                    />
                 </div>
             </div>
 
