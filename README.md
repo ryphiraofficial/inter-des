@@ -50,6 +50,35 @@ graph TD
     E -.->|Payment Clearance| D
 ```
 
+### Detailed Lifecycle Steps
+
+#### 1. Sales & Quotation Phase
+- **Quotation Creation:** Sales creates a `Quotation` with detailed line items and Cloudinary-hosted images.
+- **Approval & Project Generation:** Once the Quotation is marked as `Approved` by Admin/Client, the system automatically:
+  - Generates a Draft `Invoice`.
+  - Creates a new `Project` record initialized in the **Design** stage.
+  - Automatically assigns a Design Manager and sends them a notification.
+
+#### 2. Design Phase
+- **Task Management:** The Design team uses Kanban boards and Checklists to track drawing and planning progress.
+- **Handoff:** Once the design is finalized, the Design Manager triggers the project handoff. 
+- **Transition:** The project `stage` automatically advances to **Procurement**, and notifications are dispatched to the Procurement Manager.
+
+#### 3. Procurement Phase
+- **Material Sourcing:** Procurement Staff handle `Material Requests`, compare `Vendors`, and generate `Purchase Orders` (POs).
+- **Inventory Updates:** Received materials update the `POInventory` and `Inventory` tracking systems.
+
+#### 4. Production Phase
+- **Production Project Creation:** An Admin formally creates a `ProductionProject` linked to the main `Project`.
+- **Team Assignment & Handoff:** The Production Manager assigns Site Engineers/Supervisors and accepts the handoff, moving the project to an `Active` state.
+- **Site Execution:** The team logs `SiteAttendance`, `SafetyLogs`, and `SiteProgressReports`.
+- **Production Completion:** The Production Manager submits the project for completion.
+
+#### 5. Handover & Accounts
+- **Final Admin Approval:** The Admin reviews the production completion and marks the project as `Admin Approved` (locked).
+- **Final Handover:** The main project `handoverComplete` flag is set to true.
+- **Accounts:** Finance tracks incoming payments against the generated invoices and logs `Expenses` against the project.
+
 ---
 
 ## Key Features
