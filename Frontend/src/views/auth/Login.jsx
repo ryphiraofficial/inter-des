@@ -167,7 +167,6 @@ const Login = () => {
                         CLIENT LOGIN
                     </button>
                 </div>
-                </div>
             </div>
 
             <div className="page-footer">
