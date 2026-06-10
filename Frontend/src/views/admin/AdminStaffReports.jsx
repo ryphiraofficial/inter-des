@@ -82,114 +82,108 @@ const AdminStaffReports = () => {
             {isLoading ? (
                 <div className="loading-state">Loading reports...</div>
             ) : (
-                <div className="reports-table-container">
-                    <table className="reports-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Title</th>
-                                <th>Submitted By</th>
-                                <th>Type</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredReports.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" className="empty-state">No reports found.</td>
-                                </tr>
-                            ) : (
-                                filteredReports.map(report => (
-                                    <tr key={report._id}>
-                                        <td>{new Date(report.createdAt).toLocaleDateString()}</td>
-                                        <td className="fw-600">{report.title}</td>
-                                        <td>
-                                            <div className="user-cell">
-                                                <div className="avatar">
-                                                    {report.submittedBy?.fullName?.charAt(0) || 'U'}
-                                                </div>
-                                                <div className="user-info">
-                                                    <span className="user-name">{report.submittedBy?.fullName || 'Unknown'}</span>
-                                                    <span className="user-role">{report.submittedBy?.role || 'Staff'}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span className="type-badge"><FileText size={12}/> {report.type}</span></td>
-                                        <td>
-                                            <span className={`priority-badge priority-${report.priority}`}>
-                                                {report.priority}
-                                            </span>
-                                        </td>
-                                        <td>{getStatusBadge(report.status)}</td>
-                                        <td>
-                                            <button 
-                                                className="btn-view"
-                                                onClick={() => {
-                                                    setSelectedReport(report);
-                                                    setAdminNotes(report.adminNotes || '');
-                                                }}
-                                            >
-                                                Review
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                <div className="reports-grid">
+                    {filteredReports.length === 0 ? (
+                        <div className="empty-state">
+                            <FileText size={48} />
+                            <p>No reports found matching your criteria.</p>
+                        </div>
+                    ) : (
+                        filteredReports.map(report => (
+                            <div key={report._id} className="report-item-card">
+                                <div className="report-item-header">
+                                    <h3 className="report-title">{report.title}</h3>
+                                    {getStatusBadge(report.status)}
+                                </div>
+                                
+                                <div className="report-meta">
+                                    <span className="meta-type">
+                                        <FileText size={14}/> {report.type}
+                                    </span>
+                                    <span className={`meta-priority priority-${report.priority}`}>
+                                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>
+                                        {report.priority}
+                                    </span>
+                                    <span>{new Date(report.createdAt).toLocaleDateString()}</span>
+                                </div>
+
+                                <div className="user-row">
+                                    <div className="user-avatar">
+                                        {report.submittedBy?.fullName?.charAt(0) || 'U'}
+                                    </div>
+                                    <div className="user-details">
+                                        <span className="user-name">{report.submittedBy?.fullName || 'Unknown'}</span>
+                                        <span className="user-role">{report.submittedBy?.role || 'Staff'}</span>
+                                    </div>
+                                    <button 
+                                        className="btn-review"
+                                        onClick={() => {
+                                            setSelectedReport(report);
+                                            setAdminNotes(report.adminNotes || '');
+                                        }}
+                                    >
+                                        Review Details
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
 
             {selectedReport && (
-                <div className="modal-overlay" onClick={() => setSelectedReport(null)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Review Report</h2>
+                <div className="drawer-overlay" onClick={() => setSelectedReport(null)}>
+                    <div className="drawer-content" onClick={e => e.stopPropagation()}>
+                        <div className="drawer-header">
+                            <h2>Report Details</h2>
                             <button className="btn-close" onClick={() => setSelectedReport(null)}>
                                 <X size={20} />
                             </button>
                         </div>
-                        <div className="modal-body">
-                            <div className="report-details">
-                                <div className="detail-group">
-                                    <label>Title</label>
-                                    <p className="detail-title">{selectedReport.title}</p>
-                                </div>
-                                <div className="detail-row">
-                                    <div className="detail-group">
-                                        <label>Submitted By</label>
-                                        <p>{selectedReport.submittedBy?.fullName}</p>
+                        <div className="drawer-body">
+                            <div className="detail-section">
+                                <h3>Overview</h3>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <div style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>
+                                        {selectedReport.title}
                                     </div>
-                                    <div className="detail-group">
-                                        <label>Type</label>
-                                        <p>{selectedReport.type}</p>
-                                    </div>
-                                    <div className="detail-group">
-                                        <label>Priority</label>
-                                        <p className={`priority-text priority-${selectedReport.priority}`}>{selectedReport.priority}</p>
+                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                        {getStatusBadge(selectedReport.status)}
+                                        <span className={`meta-priority priority-${selectedReport.priority}`}>
+                                            {selectedReport.priority} Priority
+                                        </span>
+                                        <span className="meta-type">{selectedReport.type}</span>
                                     </div>
                                 </div>
-                                <div className="detail-group">
-                                    <label>Description</label>
-                                    <div className="description-box">
-                                        {selectedReport.description}
+                                <div className="user-row" style={{ borderTop: 'none', padding: '16px 0', borderBottom: '1px solid #f1f5f9', margin: '0 0 24px 0' }}>
+                                    <div className="user-avatar" style={{ width: '48px', height: '48px', fontSize: '18px' }}>
+                                        {selectedReport.submittedBy?.fullName?.charAt(0)}
+                                    </div>
+                                    <div className="user-details">
+                                        <span className="user-name" style={{ fontSize: '16px' }}>{selectedReport.submittedBy?.fullName}</span>
+                                        <span className="user-role">{selectedReport.submittedBy?.role} • Submitted on {new Date(selectedReport.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div className="admin-actions">
-                                <h3><MessageSquare size={18} /> Admin Response</h3>
-                                <div className="form-group">
-                                    <label>Add Notes/Response (Visible to Staff)</label>
-                                    <textarea 
-                                        className="admin-textarea"
-                                        placeholder="Enter your response or resolution details here..."
-                                        value={adminNotes}
-                                        onChange={(e) => setAdminNotes(e.target.value)}
-                                    />
+                            <div className="detail-section">
+                                <h3>Description</h3>
+                                <div className="report-description">
+                                    {selectedReport.description}
                                 </div>
+                            </div>
+
+                            <div className="admin-response-section">
+                                <h3><MessageSquare size={18} /> Admin Response & Resolution</h3>
+                                <p style={{ fontSize: '13px', color: '#92400e', marginBottom: '16px' }}>
+                                    Notes entered here will be visible to the staff member who submitted the report.
+                                </p>
+                                <textarea 
+                                    className="admin-textarea"
+                                    placeholder="Enter your response or resolution details here..."
+                                    value={adminNotes}
+                                    onChange={(e) => setAdminNotes(e.target.value)}
+                                />
                                 <div className="action-buttons">
                                     {selectedReport.status !== 'Pending' && (
                                         <button 
@@ -215,6 +209,7 @@ const AdminStaffReports = () => {
                                             onClick={() => handleUpdateStatus(selectedReport._id, 'Resolved')}
                                             disabled={isUpdating}
                                         >
+                                            <CheckCircle size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
                                             Mark Resolved
                                         </button>
                                     )}
