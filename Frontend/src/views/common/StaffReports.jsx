@@ -52,68 +52,102 @@ const StaffReports = () => {
         <div className="staff-reports-container">
 
             {showForm && (
-                <div className="report-form-card">
-                    <h2><FileText size={22} className="text-indigo-500" /> Submit New Report</h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-grid-3">
-                            <div className="report-form-group">
-                                <label>Title</label>
-                                <input 
-                                    type="text" 
-                                    className="report-input"
-                                    required
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                    placeholder="Enter report title..."
-                                />
-                            </div>
-                            <div className="report-form-group">
-                                <label>Type</label>
-                                <select 
-                                    className="report-input"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                >
-                                    <option value="Daily Update">Daily Update</option>
-                                    <option value="Issue">Issue</option>
-                                    <option value="Feedback">Feedback</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div className="report-form-group">
-                                <label>Priority</label>
-                                <select 
-                                    className="report-input"
-                                    value={formData.priority}
-                                    onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                                >
-                                    <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="High">High</option>
-                                    <option value="Critical">Critical</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="report-form-group" style={{ marginBottom: '1.5rem' }}>
-                            <label>Description</label>
-                            <textarea 
-                                className="report-input"
-                                required
-                                value={formData.description}
-                                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                placeholder="Provide detailed information..."
-                            />
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="modal-overlay">
+                    <div className="modal-content-styled" style={{ maxWidth: '600px', width: '90%' }}>
+                        <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9' }}>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                                <FileText size={20} style={{ color: '#4f46e5' }} /> Submit New Report
+                            </h3>
                             <button 
-                                type="submit" 
-                                className="btn-submit-report"
-                                disabled={isSubmitting}
+                                type="button"
+                                onClick={() => {
+                                    const p = new URLSearchParams(searchParams);
+                                    p.delete('action');
+                                    setSearchParams(p);
+                                }}
+                                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '50%', transition: 'all 0.2s' }}
                             >
-                                {isSubmitting ? 'Submitting...' : <><Send size={18} /> Submit Report</>}
+                                <X size={20} />
                             </button>
                         </div>
-                    </form>
+                        <div className="modal-body">
+                            <form onSubmit={handleSubmit}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    <div className="report-form-group">
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Title</label>
+                                        <input 
+                                            type="text" 
+                                            className="report-input"
+                                            required
+                                            value={formData.title}
+                                            onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                            placeholder="Enter report title..."
+                                        />
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <div className="report-form-group">
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Type</label>
+                                            <select 
+                                                className="report-input"
+                                                value={formData.type}
+                                                onChange={(e) => setFormData({...formData, type: e.target.value})}
+                                            >
+                                                <option value="Daily Update">Daily Update</option>
+                                                <option value="Issue">Issue</option>
+                                                <option value="Feedback">Feedback</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div className="report-form-group">
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Priority</label>
+                                            <select 
+                                                className="report-input"
+                                                value={formData.priority}
+                                                onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                                            >
+                                                <option value="Low">Low</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="High">High</option>
+                                                <option value="Critical">Critical</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="report-form-group">
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Description</label>
+                                        <textarea 
+                                            className="report-input"
+                                            required
+                                            value={formData.description}
+                                            onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                            placeholder="Provide detailed information..."
+                                            style={{ minHeight: '120px' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => {
+                                            const p = new URLSearchParams(searchParams);
+                                            p.delete('action');
+                                            setSearchParams(p);
+                                        }}
+                                        style={{ padding: '0.75rem 1.5rem', border: '1px solid #cbd5e1', borderRadius: '8px', background: 'white', color: '#475569', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="btn-submit-report"
+                                        disabled={isSubmitting}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}
+                                    >
+                                        {isSubmitting ? 'Submitting...' : <><Send size={16} /> Submit Report</>}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             )}
 

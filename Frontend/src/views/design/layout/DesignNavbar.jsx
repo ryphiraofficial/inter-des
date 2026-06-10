@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
     RefreshCw, Plus, Menu, Bell
 } from 'lucide-react';
@@ -12,6 +12,7 @@ import { selectUser } from '../../../store/slices/authSlice';
 
 const DesignNavbar = ({ onRefresh, isLoading, toggleSidebar }) => {
     const user = useAppSelector(selectUser);
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [showNotifications, setShowNotifications] = useState(false);
@@ -89,6 +90,16 @@ const DesignNavbar = ({ onRefresh, isLoading, toggleSidebar }) => {
                     >
                         <Plus size={16} />
                         <span>Assign New Design</span>
+                    </button>
+                )}
+                {!isManager && activeTab === 'reports' && (
+                    <button 
+                        className="design-navbar-action-btn" 
+                        onClick={() => navigate('?tab=reports&action=new')}
+                        title="Create Report"
+                    >
+                        <Plus size={16} />
+                        <span>Create Report</span>
                     </button>
                 )}
                 {onRefresh && (
