@@ -25,6 +25,7 @@ export const usePOActions = ({
                 expectedDeliveryDate: formData.deliveryDate,
                 poNumber: `PO-${Date.now().toString().slice(-6)}`,
                 orderDate: new Date(),
+                taxRate: Number(formData.taxRate) || 0,
                 items: formData.items.map(item => {
                     const qty = Number(item.quantity) || 0;
                     const r = Number(item.rate) || 0;
@@ -39,12 +40,25 @@ export const usePOActions = ({
                 status: 'Ordered'
             };
 
-            poData.totalAmount = poData.items.reduce((sum, item) => sum + item.amount, 0);
+            const subtotal = poData.items.reduce((sum, item) => sum + item.amount, 0);
+            poData.subtotal = subtotal;
+            poData.taxAmount = (subtotal * poData.taxRate) / 100;
+            poData.totalAmount = subtotal + poData.taxAmount;
 
             await createPurchaseOrder(poData).unwrap();
             setShowCreateModal(false);
             fetchPurchaseOrders();
-            setFormData({ supplier: '', deliveryAddress: '', deliveryDate: '', paymentTerms: '', notes: '', items: [] });
+            setFormData({ 
+                supplier: '', 
+                supplierContact: '', 
+                supplierEmail: '', 
+                deliveryAddress: '', 
+                deliveryDate: '', 
+                paymentTerms: 'Net 30 days', 
+                taxRate: 18, 
+                notes: '', 
+                items: [] 
+            });
         } catch (err) {
             alert('Error creating PO: ' + (err.data?.message || err.message));
         } finally {

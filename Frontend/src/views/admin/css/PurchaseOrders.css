@@ -393,6 +393,25 @@
     background: #f8fafc;
 }
 
+.po-form-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 1.5rem 0 0.75rem 0;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px dashed #e2e8f0;
+}
+.po-form-section-title:first-of-type {
+    margin-top: 0;
+}
+
+.po-form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
 @keyframes modalSlideIn {
     from {
         transform: translateY(30px);
