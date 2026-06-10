@@ -58,11 +58,11 @@ const InvoiceDocument = forwardRef(({ invoice }, ref) => {
                 <div style={{ width: '300px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', color: '#64748b' }}>
                         <span>Subtotal</span>
-                        <span>₹{Number(invoice.subTotal || 0).toLocaleString('en-IN')}</span>
+                        <span>₹{Number(invoice.subtotal || invoice.subTotal || 0).toLocaleString('en-IN')}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', color: '#64748b' }}>
                         <span>Tax</span>
-                        <span>₹{Number(invoice.tax || 0).toLocaleString('en-IN')}</span>
+                        <span>₹{Number(invoice.totalTax || invoice.tax || 0).toLocaleString('en-IN')}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderTop: '2px solid #e2e8f0', fontWeight: 'bold', fontSize: '18px', color: '#0f172a' }}>
                         <span>Total</span>

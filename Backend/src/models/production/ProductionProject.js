@@ -41,18 +41,18 @@ const ProductionProjectSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    projectEngineer: {
+    projectEngineer: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
-    siteEngineer: {
+    }],
+    siteEngineer: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
-    siteSupervisor: {
+    }],
+    siteSupervisor: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
+    }],
     sourceProject: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project'

@@ -37,6 +37,63 @@ WoodAura digitises the complete interior design business workflow:
 5. **Accounts** — Payment tracking, expense management, and financial reporting.
 6. **Administration** — User/staff management, settings, meetings, notifications, and AI-assisted tools.
 
+### Project Lifecycle Flow
+
+```mermaid
+flowchart TD
+    %% Sales Phase
+    subgraph Sales[1. Sales & Quotation Phase]
+        S1(Create Quotation<br/>with Line Items & Images) --> S2{Admin/Client<br/>Approval}
+    end
+
+    %% Automatic Triggers
+    S2 -- "Auto-Generates" --> A1(Draft Invoice)
+    S2 -- "Auto-Creates" --> D1(Project initialized in 'Design')
+    S2 -- "Auto-Assigns" --> D2(Notify Design Manager)
+
+    %% Design Phase
+    subgraph Design[2. Design Phase]
+        D1 --> D3(Task Management:<br/>Kanban & Checklists)
+        D3 --> D4(Design Finalized)
+        D4 --> D5([Design Manager Handoff])
+    end
+
+    %% Transition to Procurement
+    D5 -- "Stage transitions to" --> P1(Procurement Stage)
+    D5 -- "Notifies" --> P2(Procurement Manager)
+
+    %% Procurement Phase
+    subgraph Procurement[3. Procurement Phase]
+        P1 --> P3(Material Requests)
+        P3 --> P4(Vendor Comparison)
+        P4 --> P5(Generate Purchase Orders)
+        P5 --> P6(Receive Materials<br/>& Update Inventory)
+    end
+
+    %% Production Phase
+    P6 -- "Admin creates linked" --> PR1(Production Project)
+    subgraph Production[4. Production Phase]
+        PR1 --> PR2(Prod Manager Accepts Handoff)
+        PR2 --> PR3(Assign Site Team)
+        PR3 --> PR4(Site Execution:<br/>Attendance, Safety, Progress)
+        PR4 --> PR5([Prod Manager Submits Completion])
+    end
+
+    %% Accounts & Handover Phase
+    PR5 -- "Admin Action" --> H1{Admin Approves<br/>& Locks Project}
+    subgraph Handover[5. Handover & Accounts Phase]
+        H1 --> H2([Final Handover Complete])
+        A1 -.-> H3(Track Payments & Expenses)
+        H2 --> H3
+    end
+    
+    style Sales fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Design fill:#e6f7ff,stroke:#0066cc,stroke-width:2px
+    style Procurement fill:#fff0f6,stroke:#eb2f96,stroke-width:2px
+    style Production fill:#f6ffed,stroke:#52c41a,stroke-width:2px
+    style Handover fill:#fffb8f,stroke:#faad14,stroke-width:2px
+```
+
 ---
 
 ## Key Features

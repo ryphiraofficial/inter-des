@@ -22,9 +22,9 @@ export const useProjectTasksAssignment = (project, onProjectUpdate) => {
 
     // Form states
     const [teamForm, setTeamForm] = useState({
-        projectEngineer: project?.projectEngineer?._id || project?.projectEngineer || '',
-        siteEngineer: project?.siteEngineer?._id || project?.siteEngineer || '',
-        siteSupervisor: project?.siteSupervisor?._id || project?.siteSupervisor || ''
+        projectEngineer: Array.isArray(project?.projectEngineer) ? project.projectEngineer.map(u => u._id || u) : (project?.projectEngineer ? [project.projectEngineer._id || project.projectEngineer] : []),
+        siteEngineer: Array.isArray(project?.siteEngineer) ? project.siteEngineer.map(u => u._id || u) : (project?.siteEngineer ? [project.siteEngineer._id || project.siteEngineer] : []),
+        siteSupervisor: Array.isArray(project?.siteSupervisor) ? project.siteSupervisor.map(u => u._id || u) : (project?.siteSupervisor ? [project.siteSupervisor._id || project.siteSupervisor] : [])
     });
 
     const [newTaskForm, setNewTaskForm] = useState({

@@ -167,14 +167,14 @@ const Login = () => {
                         CLIENT LOGIN
                     </button>
                 </div>
+            </div>
 
-                <div className="page-footer">
+            <div className="page-footer">
                 <a href="#">Privacy Policy</a>
                 <span className="dot">•</span>
                 <a href="#">Terms of Service</a>
                 <span className="dot">•</span>
                 <a href="#">Support</a>
-                </div>
             </div>
         </div>
     );

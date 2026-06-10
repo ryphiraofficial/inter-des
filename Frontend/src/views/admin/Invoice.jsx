@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useInvoiceState } from './invoice/hooks/useInvoiceState';
 import { useInvoiceData } from './invoice/hooks/useInvoiceData';
 import { useInvoiceActions } from './invoice/hooks/useInvoiceActions';
@@ -7,7 +7,11 @@ import InvoiceStats from './invoice/components/InvoiceStats';
 import InvoiceFilterBar from './invoice/components/InvoiceFilterBar';
 import InvoiceTable from './invoice/components/InvoiceTable';
 import InvoiceFormModal from './invoice/components/InvoiceFormModal';
+import InvoiceDocument from '../Accounts/common/components/invoices/InvoiceDocument';
 import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
+
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 import './css/Invoice.css';
 
@@ -31,6 +35,36 @@ const Invoice = () => {
         setInvoices: state.setInvoices,
         invoices: state.invoices
     });
+
+    const [downloadingInvoice, setDownloadingInvoice] = useState(null);
+    const invoiceRef = useRef(null);
+
+    const handleDownload = (invoice) => {
+        setDownloadingInvoice(invoice);
+    };
+
+    useEffect(() => {
+        if (downloadingInvoice && invoiceRef.current) {
+            const generatePdf = async () => {
+                try {
+                    const canvas = await html2canvas(invoiceRef.current, { scale: 2, useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save(`Invoice_${downloadingInvoice.invoiceNumber}.pdf`);
+                } catch (error) {
+                    console.error("Error generating PDF", error);
+                    alert("Failed to generate PDF");
+                } finally {
+                    setDownloadingInvoice(null);
+                }
+            };
+            // Small delay to ensure render
+            setTimeout(generatePdf, 100);
+        }
+    }, [downloadingInvoice]);
 
     const toggleRow = (id) => {
         state.setExpandedRow(state.expandedRow === id ? null : id);
@@ -75,6 +109,7 @@ const Invoice = () => {
                         toggleRow={toggleRow}
                         handleUpdatePayment={actions.handleUpdatePayment}
                         handleDelete={actions.handleDelete}
+                        onDownload={handleDownload}
                     />
                 </div>
             </div>
@@ -88,6 +123,13 @@ const Invoice = () => {
                 submitting={state.submitting}
                 handleCreateInvoice={actions.handleCreateInvoice}
             />
+
+            {/* Hidden template for PDF generation */}
+            {downloadingInvoice && (
+                <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '800px' }}>
+                    <InvoiceDocument ref={invoiceRef} invoice={downloadingInvoice} />
+                </div>
+            )}
         </div>
     );
 };

@@ -1,6 +1,33 @@
 import React from 'react';
 import { Building, Clock, AlertCircle, UserPlus, CheckCircle } from 'lucide-react';
 
+const MultiSelectCheckbox = ({ options, selectedValues = [], onChange }) => {
+    const handleToggle = (id) => {
+        if (selectedValues.includes(id)) {
+            onChange(selectedValues.filter(val => val !== id));
+        } else {
+            onChange([...selectedValues, id]);
+        }
+    };
+    
+    return (
+        <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px', maxHeight: '120px', overflowY: 'auto', background: '#fff' }}>
+            {options.length === 0 ? <span style={{fontSize: '0.8rem', color: '#94a3b8'}}>No users available</span> : null}
+            {options.map(s => (
+                <label key={s._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', fontSize: '0.85rem', cursor: 'pointer', color: '#334155' }}>
+                    <input 
+                        type="checkbox" 
+                        checked={selectedValues.includes(s._id)} 
+                        onChange={() => handleToggle(s._id)} 
+                        style={{ cursor: 'pointer' }}
+                    />
+                    {s.fullName}
+                </label>
+            ))}
+        </div>
+    );
+};
+
 const HandoffCard = ({ 
     project, 
     submitting, 
@@ -47,50 +74,35 @@ const HandoffCard = ({
                 <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
                     <div>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '0.5rem' }}>
-                            <UserPlus size={14} /> Project Engineer
+                            <UserPlus size={14} /> Project Engineer(s)
                         </label>
-                        <select 
-                            value={currAssigned.projectEngineer || ''}
-                            onChange={(e) => handleAssign(project._id, 'projectEngineer', e.target.value)}
-                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-                        >
-                            <option value="">-- Optional --</option>
-                            {projectEngineers.map(s => (
-                                <option key={s._id} value={s._id}>{s.fullName} ({s.email})</option>
-                            ))}
-                        </select>
+                        <MultiSelectCheckbox 
+                            options={projectEngineers} 
+                            selectedValues={currAssigned.projectEngineer || []} 
+                            onChange={(vals) => handleAssign(project._id, 'projectEngineer', vals)} 
+                        />
                     </div>
 
                     <div>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '0.5rem' }}>
-                            <UserPlus size={14} /> Site Engineer
+                            <UserPlus size={14} /> Site Engineer(s)
                         </label>
-                        <select 
-                            value={currAssigned.siteEngineer || ''}
-                            onChange={(e) => handleAssign(project._id, 'siteEngineer', e.target.value)}
-                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-                        >
-                            <option value="">-- Optional --</option>
-                            {siteEngineers.map(s => (
-                                <option key={s._id} value={s._id}>{s.fullName} ({s.email})</option>
-                            ))}
-                        </select>
+                        <MultiSelectCheckbox 
+                            options={siteEngineers} 
+                            selectedValues={currAssigned.siteEngineer || []} 
+                            onChange={(vals) => handleAssign(project._id, 'siteEngineer', vals)} 
+                        />
                     </div>
 
                     <div>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '0.5rem' }}>
-                            <UserPlus size={14} /> Site Supervisor
+                            <UserPlus size={14} /> Site Supervisor(s)
                         </label>
-                        <select 
-                            value={currAssigned.siteSupervisor || ''}
-                            onChange={(e) => handleAssign(project._id, 'siteSupervisor', e.target.value)}
-                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-                        >
-                            <option value="">-- Optional --</option>
-                            {siteSupervisors.map(s => (
-                                <option key={s._id} value={s._id}>{s.fullName} ({s.email})</option>
-                            ))}
-                        </select>
+                        <MultiSelectCheckbox 
+                            options={siteSupervisors} 
+                            selectedValues={currAssigned.siteSupervisor || []} 
+                            onChange={(vals) => handleAssign(project._id, 'siteSupervisor', vals)} 
+                        />
                     </div>
                 </div>
 
