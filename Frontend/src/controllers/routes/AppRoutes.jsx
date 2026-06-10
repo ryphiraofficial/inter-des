@@ -19,6 +19,7 @@ import Staff from '../../views/admin/Staff';
 import EmployeeAnalysis from '../../views/admin/EmployeeAnalysis';
 import Tasks from '../../views/admin/Tasks';
 import Reports from '../../views/admin/Reports';
+import AdminStaffReports from '../../views/admin/AdminStaffReports';
 import Settings from '../../views/admin/Settings';
 import Users from '../../views/admin/Users';
 import Invoice from '../../views/admin/Invoice';
@@ -127,6 +128,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="milestones" element={isGeneralAdmin ? <Milestones /> : <Navigate to="/" replace />} />
                     <Route path="tasks" element={isGeneralAdmin ? <Tasks /> : <Navigate to="/" replace />} />
                     <Route path="reports" element={isGeneralAdmin ? <Reports /> : <Navigate to="/" replace />} />
+                    <Route path="staff-reports" element={isGeneralAdmin ? <AdminStaffReports /> : <Navigate to="/" replace />} />
                     <Route path="settings" element={isGeneralAdmin ? <Settings /> : <Navigate to="/" replace />} />
                     <Route path="users" element={isGeneralAdmin ? <Users /> : <Navigate to="/" replace />} />
                     <Route path="invoice" element={isGeneralAdmin ? <Invoice /> : <Navigate to="/" replace />} />
