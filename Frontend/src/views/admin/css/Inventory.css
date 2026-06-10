@@ -172,7 +172,7 @@
     overflow: hidden;
 }
 
-.item-thumbnail-wrapper {
+.inventory-table .item-thumbnail-wrapper {
     width: 48px;
     height: 48px;
     border-radius: 8px;
@@ -205,7 +205,7 @@
     overflow: hidden;
 }
 
-.item-name {
+.inventory-table .item-name {
     font-weight: 700;
     color: #0f172a;
     font-size: 1.25rem;
@@ -214,7 +214,7 @@
     text-overflow: ellipsis;
 }
 
-.item-desc {
+.inventory-table .item-desc {
     font-size: 1.05rem;
     color: #64748b;
     white-space: nowrap;
@@ -223,7 +223,7 @@
     max-width: 100%;
 }
 
-.section-badge {
+.inventory-table .section-badge {
     display: inline-flex;
     padding: 0.3rem 0.75rem;
     background: #eff6ff;
@@ -233,19 +233,19 @@
     font-weight: 700;
 }
 
-.stock-value {
+.inventory-table .stock-value {
     font-weight: 700;
     font-size: 1.15rem;
 }
 
-.stock-value.low {
+.inventory-table .stock-value.low {
     color: #ef4444;
     padding: 2px 6px;
     background: #fef2f2;
     border-radius: 4px;
 }
 
-.price-value {
+.inventory-table .price-value {
     font-weight: 700;
     color: #0f172a;
     font-size: 1.15rem;
