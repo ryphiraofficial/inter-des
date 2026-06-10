@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useGetSalesClientsQuery, useGetSalesInventoryQuery, useGetSalesQuotationByIdQuery } from '../../../../store/api/salesApi';
 
 export const useQuotationData = ({ 
-    isEdit, id, setFormData, setLineItems, setTaxRate, setDiscount, 
+    isEdit, id, setFormData, setLineItems, setCategoryDiscounts, setTaxRate, setDiscount, 
     setIncludeDiscount, setFetching, setError, setClients, setInventoryItems,
     clients, setClientSearchQuery
 }) => {
@@ -83,13 +83,16 @@ export const useQuotationData = ({
                 image: item.image || null
             })));
             
+            if (setCategoryDiscounts) {
+                setCategoryDiscounts(q.categoryDiscounts || []);
+            }
             if (q.taxRate) setTaxRate(q.taxRate);
             if (q.discount) {
                 setDiscount(q.discount);
                 setIncludeDiscount(true);
             }
         }
-    }, [isEdit, id, quoteRes, setFormData, setLineItems, setTaxRate, setDiscount, setIncludeDiscount]);
+    }, [isEdit, id, quoteRes, setFormData, setLineItems, setCategoryDiscounts, setTaxRate, setDiscount, setIncludeDiscount]);
 
     // AI Populate Listener
     useEffect(() => {

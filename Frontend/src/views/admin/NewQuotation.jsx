@@ -49,19 +49,20 @@ const NewQuotation = ({ isEdit, isStaff }) => {
 
     useQuotationData({
         isEdit, id, setFormData: state.setFormData, setLineItems: state.setLineItems,
+        setCategoryDiscounts: state.setCategoryDiscounts,
         setTaxRate: state.setTaxRate, setDiscount: state.setDiscount,
         setIncludeDiscount: state.setIncludeDiscount, setFetching, setError,
         setClients, setInventoryItems, clients, setClientSearchQuery: search.setClientSearchQuery
     });
 
     const calc = useQuotationCalculations({
-        lineItems: state.lineItems, includeDiscount: state.includeDiscount,
+        lineItems: state.lineItems, categoryDiscounts: state.categoryDiscounts, includeDiscount: state.includeDiscount,
         discount: state.discount, includeTax: state.includeTax,
         taxRate: state.taxRate, formData: state.formData
     });
 
     const actions = useQuotationActions({
-        formData: state.formData, lineItems: state.lineItems, taxRate: state.taxRate,
+        formData: state.formData, lineItems: state.lineItems, categoryDiscounts: state.categoryDiscounts, taxRate: state.taxRate,
         discount: state.discount, includeDiscount: state.includeDiscount,
         offerPrice: calc.offerPrice, isEdit, id, isStaff, navigate, setError,
         setIsSaving, setShowBillPreview, setPendingStatus, setClients,
@@ -139,6 +140,8 @@ const NewQuotation = ({ isEdit, isStaff }) => {
 
                     <LineItemsSection
                         lineItems={state.lineItems}
+                        categoryDiscounts={state.categoryDiscounts}
+                        updateCategoryDiscount={state.updateCategoryDiscount}
                         addLineItem={state.addLineItem}
                         removeLineItem={state.removeLineItem}
                         updateLineItem={state.updateLineItem}

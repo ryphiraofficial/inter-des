@@ -1,10 +1,41 @@
 import { useMemo } from 'react';
 
-export const useQuotationCalculations = ({ lineItems, includeDiscount, discount, includeTax, taxRate, formData }) => {
+export const useQuotationCalculations = ({ lineItems, categoryDiscounts = [], includeDiscount, discount, includeTax, taxRate, formData }) => {
     
-    const subtotal = useMemo(() => 
-        lineItems.reduce((sum, item) => sum + (item.amount || 0), 0)
-    , [lineItems]);
+    const categorySubtotals = useMemo(() => {
+        const subs = {};
+        lineItems.forEach(item => {
+            const section = item.section || 'Uncategorized';
+            subs[section] = (subs[section] || 0) + (Number(item.amount) || 0);
+        });
+        return subs;
+    }, [lineItems]);
+
+    const subtotal = useMemo(() => {
+        const cdMap = {};
+        if (Array.isArray(categoryDiscounts)) {
+            categoryDiscounts.forEach(cd => {
+                if (cd.category) {
+                    cdMap[cd.category] = cd;
+                }
+            });
+        }
+        
+        let totalSub = 0;
+        Object.entries(categorySubtotals).forEach(([section, subtotalVal]) => {
+            const cd = cdMap[section];
+            let catDiscountAmount = 0;
+            if (cd && Number(cd.discountValue) > 0) {
+                if (cd.discountType === 'amount') {
+                    catDiscountAmount = Number(cd.discountValue) || 0;
+                } else {
+                    catDiscountAmount = (subtotalVal * (Number(cd.discountValue) || 0)) / 100;
+                }
+            }
+            totalSub += Math.max(0, subtotalVal - catDiscountAmount);
+        });
+        return totalSub;
+    }, [categorySubtotals, categoryDiscounts]);
 
     const discountAmount = useMemo(() => 
         includeDiscount ? (subtotal * discount) / 100 : 0
@@ -47,6 +78,7 @@ export const useQuotationCalculations = ({ lineItems, includeDiscount, discount,
         depositAmount,
         totalCost,
         totalProfit,
-        profitMargin
+        profitMargin,
+        categorySubtotals
     };
 };

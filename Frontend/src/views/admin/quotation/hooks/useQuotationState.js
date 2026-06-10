@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 export const useQuotationState = () => {
     const [lineItems, setLineItems] = useState([]);
+    const [categoryDiscounts, setCategoryDiscounts] = useState([]);
     const [taxRate, setTaxRate] = useState(18);
     const [includeTax, setIncludeTax] = useState(true);
     const [discount, setDiscount] = useState(0);
@@ -75,6 +76,18 @@ export const useQuotationState = () => {
         }));
     };
 
+    const updateCategoryDiscount = (category, field, value) => {
+        setCategoryDiscounts(prev => {
+            const list = Array.isArray(prev) ? prev : [];
+            const existing = list.find(cd => cd.category === category);
+            if (existing) {
+                return list.map(cd => cd.category === category ? { ...cd, [field]: value } : cd);
+            } else {
+                return [...list, { category, discountType: 'percentage', discountValue: 0, [field]: value }];
+            }
+        });
+    };
+
     const createNewItem = () => ({
         id: Date.now() + Math.random(),
         name: '',
@@ -98,6 +111,7 @@ export const useQuotationState = () => {
 
     return {
         lineItems, setLineItems,
+        categoryDiscounts, setCategoryDiscounts, updateCategoryDiscount,
         taxRate, setTaxRate,
         includeTax, setIncludeTax,
         discount, setDiscount,

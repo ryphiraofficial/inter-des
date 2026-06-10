@@ -2,7 +2,7 @@ import {
     LayoutDashboard, FileText, Box, ShoppingCart, Package, Users, 
     CheckSquare, BarChart, Settings, Shield, Receipt, Briefcase, 
     Target, Palette, Wrench, ClipboardCheck, Calendar, FolderOpen, 
-    Bell, MessageSquare, Award, Clock, DollarSign, Building2, Video
+    Bell, MessageSquare, Award, Clock, DollarSign, Building2, Video, Trophy
 } from 'lucide-react';
 import { getRoleDepartment, useRoleDashboard, isSuperAdmin } from '../../hooks/useRoleDashboard';
 import { useAppSelector } from '../../../../store/hooks';
@@ -37,6 +37,7 @@ export const useNavGroups = () => {
         const systemItems = [
             { name: 'Staff', icon: Briefcase, path: '/staff' },
             { name: 'Employee Analysis', icon: Award, path: '/employee-analysis' },
+            { name: 'Milestones', icon: Trophy, path: '/milestones' },
             { name: 'Reports', icon: BarChart, path: '/reports' },
             { name: 'Users', icon: Shield, path: '/users' },
             { name: 'Settings', icon: Settings, path: '/settings' },
@@ -122,7 +123,7 @@ export const useNavGroups = () => {
                 if (roleLower.includes('design')) return ['/', '/?tab=pipeline', '/?tab=dashboard', '/material-review', '/tasks', '/projects'].includes(path);
                 if (roleLower.includes('procurement')) return ['/inventory', '/purchase-orders', '/po-inventory', '/tasks'].includes(path);
                 if (roleLower.includes('production')) return ['/tasks', '/inventory', '/projects'].includes(path);
-                if (roleLower === 'manager') return ['/quotations', '/clients', '/tasks', '/projects', '/reports'].includes(path);
+                if (roleLower === 'manager') return ['/quotations', '/clients', '/tasks', '/projects', '/reports', '/milestones'].includes(path);
                 if (roleLower === 'sales') return ['/quotations', '/clients', '/tasks', '/projects'].includes(path);
                 return true;
             });

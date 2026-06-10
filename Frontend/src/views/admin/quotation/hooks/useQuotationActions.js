@@ -8,6 +8,7 @@ import { useUploadImageMutation } from '../../../../store/api/sharedApi';
 export const useQuotationActions = ({
     formData,
     lineItems,
+    categoryDiscounts,
     taxRate,
     discount,
     includeDiscount,
@@ -79,6 +80,7 @@ export const useQuotationActions = ({
                 taxRate,
                 discount: includeDiscount ? discount : 0,
                 offerPrice,
+                categoryDiscounts,
                 items: lineItems.map(item => ({
                     itemName: item.name,
                     description: item.description,
@@ -123,6 +125,7 @@ export const useQuotationActions = ({
                 status: 'Draft',
                 taxRate,
                 discount: includeDiscount ? discount : 0,
+                categoryDiscounts,
                 items: lineItems.map(item => ({
                     itemName: item.name,
                     description: item.description,
