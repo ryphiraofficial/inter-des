@@ -15,6 +15,7 @@ import MaterialRequestModal from './components/MaterialRequestModal';
 import RevisionsTab from './components/RevisionsTab';
 import SubmissionsTab from './components/SubmissionsTab';
 import MeetingsPage from '../../common/MeetingsPage';
+import StaffReports from '../../common/StaffReports';
 
 import { useStaffData } from './hooks/useStaffData';
 import { useUploadActions } from './hooks/useUploadActions';
@@ -355,6 +356,8 @@ const DesignStaffDashboard = ({}) => {
         );
 
         if (activeTab === 'meetings') return <MeetingsPage user={user} />;
+        
+        if (activeTab === 'reports') return <StaffReports />;
 
         return null;
     };

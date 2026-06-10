@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckSquare, RefreshCw,
-    CheckCircle, Package, LogOut, Video
+    CheckCircle, Package, LogOut, Video, FileText, History
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
     { tab: 'submissions',  label: 'Submissions',    icon: CheckCircle },
     { tab: 'materials',    label: 'Material Requests', icon: Package },
     { tab: 'meetings',     label: 'Meetings',         icon: Video },
+    { tab: 'reports',      label: 'Reports',          icon: FileText },
 ];
 
 const DesignStaffSidebar = ({ onLogout }) => {
@@ -40,16 +41,47 @@ const DesignStaffSidebar = ({ onLogout }) => {
             <div className="design-sidebar-nav-container">
                 <nav className="design-sidebar-nav">
                     <div className="design-sidebar-section-label">WORKSPACE</div>
-                    {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
-                        <button
-                            key={tab}
-                            className={`design-sidebar-item ${activeTab === tab ? 'active' : ''}`}
-                            onClick={() => navigate(`?tab=${tab}`)}
-                        >
-                            <Icon size={18} />
-                            <span>{label}</span>
-                        </button>
-                    ))}
+                    {NAV_ITEMS.map(({ tab, label, icon: Icon }) => {
+                        const isReportsActive = activeTab === 'reports';
+                        const isMainReportsActive = isReportsActive && searchParams.get('action') === 'new';
+                        const isSubReportsActive = isReportsActive && searchParams.get('action') !== 'new';
+
+                        return (
+                            <div key={tab} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                <button
+                                    className={`design-sidebar-item ${tab === 'reports' ? (isMainReportsActive ? 'active' : '') : (activeTab === tab ? 'active' : '')}`}
+                                    onClick={() => navigate(tab === 'reports' ? `?tab=${tab}&action=new` : `?tab=${tab}`)}
+                                    style={{ width: '100%' }}
+                                >
+                                    <Icon size={18} />
+                                    <span>{label}</span>
+                                </button>
+                                {tab === 'reports' && isReportsActive && (
+                                    <div style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px', marginBottom: '4px' }}>
+                                        <button
+                                            className={`design-sidebar-item ${isSubReportsActive ? 'active' : ''}`}
+                                            onClick={() => navigate(`?tab=reports`)}
+                                            style={{
+                                                fontSize: '0.82rem',
+                                                padding: '0.5rem 0.75rem',
+                                                borderRadius: '8px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                width: '100%',
+                                                background: isSubReportsActive ? '#eef2ff' : 'transparent',
+                                                color: isSubReportsActive ? '#4f46e5' : '#64748b',
+                                                fontWeight: isSubReportsActive ? '700' : '500'
+                                            }}
+                                        >
+                                            <History size={15} />
+                                            <span>Previous Reports</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </nav>
             </div>
 
