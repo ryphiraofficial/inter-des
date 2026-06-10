@@ -45,7 +45,7 @@ const AdminStaffReports = () => {
         const matchesSearch = searchQuery === '' ||
             r.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             r.submittedBy?.fullName?.toLowerCase().includes(searchQuery.toLowerCase());
-        const reportDate = new Date(r.createdAt);
+        const reportDate = new Date(r.reportDate || r.createdAt);
         const matchesFrom = !dateFrom || reportDate >= new Date(dateFrom);
         const matchesTo   = !dateTo   || reportDate <= new Date(dateTo + 'T23:59:59');
         return matchesSearch && matchesFrom && matchesTo;
@@ -80,14 +80,14 @@ const AdminStaffReports = () => {
     const getDailyUpdatesForReport = (report) => {
         if (report.dailyEntries?.length > 0) {
             return report.dailyEntries.map(e => ({
-                date: new Date(e.date || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                date: new Date(e.date || report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 name: e.submittedBy?.fullName || report.submittedBy?.fullName || 'Staff Member',
                 role: e.submittedBy?.role || report.submittedBy?.role || 'Staff',
                 content: e.content || e.description || ''
             }));
         }
         return [{
-            date: new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            date: new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             name: report.submittedBy?.fullName || 'Staff Member',
             role: report.submittedBy?.role || 'Staff',
             content: report.description || 'No details provided.'
@@ -109,12 +109,17 @@ const AdminStaffReports = () => {
                     </div>
                     <div className="asr-item-title-desc">
                         <h3 className="asr-item-title">{report.title}</h3>
+                        {report.project && (
+                            <span className="asr-project-badge" style={{ fontSize: '11px', background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block', fontWeight: 600 }}>
+                                PRJ: {report.project.projectNumber} {report.isAssignedToMe ? '(Assigned)' : ''}
+                            </span>
+                        )}
                     </div>
                 </div>
 
                 <div className="asr-item-meta">
                     <div className="asr-item-date">
-                        {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                     <div className="asr-item-user">
                         <div className="asr-item-avatar">{report.submittedBy?.fullName?.charAt(0) || 'U'}</div>
@@ -211,6 +216,35 @@ const AdminStaffReports = () => {
                                                 </div>
                                             </div>
                                             <p className="asr-daily-content">{update.content}</p>
+
+                                            {selectedReport.project && (
+                                                <div style={{ marginTop: '16px', padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <div>
+                                                        <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Associated Project</span>
+                                                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                                                            {selectedReport.project.projectNumber} - {selectedReport.project.name}
+                                                        </div>
+                                                    </div>
+                                                    {selectedReport.isAssignedToMe && (
+                                                        <span style={{ fontSize: '11px', color: '#16a34a', background: '#dcfce7', padding: '4px 10px', borderRadius: '9999px', fontWeight: 600 }}>
+                                                            Assigned to Staff
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {selectedReport.image && (
+                                                <div style={{ marginTop: '16px' }}>
+                                                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Attached Image</span>
+                                                    <a href={selectedReport.image} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block' }}>
+                                                        <img 
+                                                            src={selectedReport.image} 
+                                                            alt="Report attachment" 
+                                                            style={{ maxWidth: '100%', maxHeight: '320px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', cursor: 'zoom-in' }} 
+                                                        />
+                                                    </a>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -249,6 +283,12 @@ const AdminStaffReports = () => {
                                 <div className="asr-panel-summary-row"><span>Department</span><strong>{dept}</strong></div>
                                 <div className="asr-panel-summary-row"><span>Submitted By</span><strong>{selectedReport.submittedBy?.fullName || '—'}</strong></div>
                                 <div className="asr-panel-summary-row"><span>Type</span><strong>{selectedReport.type || 'Weekly Report'}</strong></div>
+                                {selectedReport.project && (
+                                    <div className="asr-panel-summary-row"><span>Project</span><strong>{selectedReport.project.projectNumber}</strong></div>
+                                )}
+                                {selectedReport.isAssignedToMe && (
+                                    <div className="asr-panel-summary-row"><span>Assigned Status</span><strong style={{ color: '#16a34a' }}>Assigned</strong></div>
+                                )}
                             </div>
                         </div>
 

@@ -31,6 +31,24 @@ const staffReportSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project'
+    },
+    isAssignedToMe: {
+        type: Boolean,
+        default: false
+    },
+    reportDate: {
+        type: Date,
+        default: Date.now
+    },
+    image: {
+        type: String
+    },
+    images: [{
+        type: String
+    }],
     adminNotes: {
         type: String,
         trim: true

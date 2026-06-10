@@ -7,18 +7,24 @@ import User from '../../models/admin/User.js';
 // @access  Private
 export const submitStaffReport = async (req, res) => {
     try {
-        const { title, description, type, priority } = req.body;
+        const { title, description, type, priority, project, isAssignedToMe, reportDate, image, images } = req.body;
 
         const report = await StaffReport.create({
             title,
             description,
             type,
             priority,
+            project: project || null,
+            isAssignedToMe: isAssignedToMe || false,
+            reportDate: reportDate || Date.now(),
+            image,
+            images,
             submittedBy: req.user._id
         });
 
         const populatedReport = await StaffReport.findById(report._id)
-            .populate('submittedBy', 'fullName role avatar department');
+            .populate('submittedBy', 'fullName role avatar department')
+            .populate('project', 'name projectNumber');
 
         // Optional: Notify admins
         const admins = await User.find({ role: { $in: ['Super Admin', 'Admin', 'Manager', 'super admin', 'admin', 'superadmin', 'manager'] } });
@@ -64,6 +70,7 @@ export const getStaffReports = async (req, res) => {
 
         const reports = await StaffReport.find(query)
             .populate('submittedBy', 'fullName role avatar department')
+            .populate('project', 'name projectNumber')
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -88,14 +95,15 @@ export const updateStaffReportStatus = async (req, res) => {
         if (!report) {
             return res.status(404).json({ success: false, message: 'Report not found' });
         }
-
+ 
         if (status) report.status = status;
         if (adminNotes) report.adminNotes = adminNotes;
-
+ 
         await report.save();
-
+ 
         const updatedReport = await StaffReport.findById(report._id)
-            .populate('submittedBy', 'fullName role avatar department');
+            .populate('submittedBy', 'fullName role avatar department')
+            .populate('project', 'name projectNumber');
 
         res.status(200).json({
             success: true,
