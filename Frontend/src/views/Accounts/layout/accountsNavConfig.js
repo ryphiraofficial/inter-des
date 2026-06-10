@@ -11,7 +11,8 @@ export const TAB_META = {
     vendors:           { label: 'Vendors',                description: 'Manage supplier and vendor accounts' },
     projects:          { label: 'Projects',               description: 'Financial overview of active projects' },
     reports:           { label: 'Financial Reports',      description: 'Generate detailed financial analytics' },
-    meetings:          { label: 'Meetings',               description: 'Schedule and manage finance meetings' }
+    performance:       { label: 'Performance Analytics',  description: 'Monitor staff and manager KPIs and performance scores' },
+    meetings:          { label: 'Meetings',               description: 'Schedule and manage finance finance meetings' }
 };
 
 export const SEARCH_CONFIGS = {

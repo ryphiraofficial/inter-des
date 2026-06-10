@@ -821,3 +821,54 @@
         max-width: 100%;
     }
 }
+
+/* Birthday Announcement Banner */
+.birthday-announcement-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+    border: 1.5px solid #fde68a;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 18px rgba(251, 191, 36, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.birthday-announcement-banner::before {
+    content: '🎉';
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 5rem;
+    opacity: 0.15;
+    transform: rotate(-15deg);
+}
+
+.birthday-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fef3c7;
+    color: #d97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);
+    flex-shrink: 0;
+}
+
+.birthday-banner-content h4 {
+    margin: 0 0 2px 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #92400e;
+}
+
+.birthday-banner-content p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #b45309;
+}

@@ -3,6 +3,8 @@ import Task from '../../models/design/Task.js';
 import Staff from '../../models/admin/Staff.js';
 import User from '../../models/admin/User.js';
 import Quotation from '../../models/sales/Quotation.js';
+import Notification from '../../models/shared/Notification.js';
+import { createNotification } from '../../utils/notificationHelper.js';
 
 const COMPLETED_STATUSES = [
     'Completed',
@@ -176,6 +178,40 @@ export const getMilestonesData = async (req, res) => {
             .sort((a, b) => b.totalValue - a.totalValue)
             .slice(0, 3);
 
+        // --- 4. TODAY'S BIRTHDAYS & NOTIFICATIONS ---
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1;
+        const currentDay = today.getDate();
+
+        const birthdaysToday = await Staff.find({
+            status: { $ne: 'Inactive' },
+            dob: { $exists: true },
+            $expr: {
+                $and: [
+                    { $eq: [{ $month: '$dob' }, currentMonth] },
+                    { $eq: [{ $dayOfMonth: '$dob' }, currentDay] }
+                ]
+            }
+        });
+
+        // Trigger notifications for today's birthdays if not already triggered today
+        for (const staff of birthdaysToday) {
+            const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const existingNotif = await Notification.findOne({
+                title: '🎂 Staff Birthday',
+                description: new RegExp(staff.name, 'i'),
+                createdAt: { $gte: startOfToday }
+            });
+
+            if (!existingNotif) {
+                await createNotification({
+                    title: '🎂 Staff Birthday',
+                    description: `Today is ${staff.name}'s birthday! Wish them a very Happy Birthday! 🎉`,
+                    type: 'Info'
+                });
+            }
+        }
+
         res.status(200).json({
             success: true,
             data: {
@@ -193,7 +229,8 @@ export const getMilestonesData = async (req, res) => {
                 staffList: staffList.sort((a, b) => b.completedTasks - a.completedTasks),
                 podium: staffPodium,
                 topManagers,
-                topSales
+                topSales,
+                birthdaysToday
             }
         });
     } catch (error) {

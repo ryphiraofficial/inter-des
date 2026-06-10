@@ -87,6 +87,10 @@ export const accountsApi = createApi({
             query: (body) => ({ url: '/accounts/projects/collect', method: 'POST', body }),
             invalidatesTags: ['PendingCollections', 'Stats'],
         }),
+        getAccountsPerformance: builder.query({
+            query: () => '/accounts/performance',
+            providesTags: ['Stats'],
+        }),
 
         // ── Admin-level APIs used by accounts ───────────────────────────────────
         getVendors: builder.query({
@@ -191,5 +195,6 @@ export const {
     useDeleteAccountsClientMutation,
     useGetAccountsStaffQuery,
     useGetAccountsReportsQuery,
-    useGetAccountsQuotationsQuery
+    useGetAccountsQuotationsQuery,
+    useGetAccountsPerformanceQuery
 } = accountsApi;
