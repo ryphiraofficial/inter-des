@@ -26,13 +26,13 @@ const StaffAnalyticsModal = ({ show, setShow, analyticsLoading, selectedAnalytic
     const circularProgress = `radial-gradient(closest-side, white 78%, transparent 79% 100%), conic-gradient(#2563eb ${rewardScore}%, #e2e8f0 0)`;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content analytics-modal">
-                <div className="modal-header">
+        <div className="staff-drawer-overlay" onClick={() => setShow(false)}>
+            <div className="staff-drawer-content wide analytics-modal" onClick={e => e.stopPropagation()}>
+                <div className="staff-drawer-header">
                     <div className="header-title"><BarChart2 size={24} /><h3>Staff Performance Analytics</h3></div>
                     <button className="modal-close" onClick={() => setShow(false)}><X size={20} /></button>
                 </div>
-                <div className="modal-body">
+                <div className="staff-drawer-body">
                     {analyticsLoading ? (
                         <div className="analytics-skeleton">
                             <Skeleton width="100%" height="200px" borderRadius="16px" />

@@ -8,13 +8,13 @@ const StaffSalaryModal = ({
 }) => {
     if (!show) return null;
     return (
-        <div className="modal-overlay" onClick={() => { setShow(false); setSalaryEditMode(false); }}>
-            <div className="modal-content salary-modal" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="staff-drawer-overlay" onClick={() => { setShow(false); setSalaryEditMode(false); }}>
+            <div className="staff-drawer-content salary salary-modal" onClick={e => e.stopPropagation()}>
+                <div className="staff-drawer-header">
                     <div className="header-title"><IndianRupee size={22} color="#10b981" /><h3>Salary Management</h3></div>
                     <button className="modal-close" onClick={() => { setShow(false); setSalaryEditMode(false); }}><X size={20} /></button>
                 </div>
-                <div className="modal-body" data-lenis-prevent>
+                <div className="staff-drawer-body" data-lenis-prevent>
                     {salaryLoading ? (
                         <div className="salary-skeleton">Loading...</div>
                     ) : salaryStaff ? (
@@ -58,7 +58,7 @@ const StaffSalaryModal = ({
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="modal-footer" style={{ paddingTop: 0 }}>
+                                    <div className="staff-drawer-footer" style={{ paddingTop: 0 }}>
                                         <button type="button" className="btn-cancel" onClick={() => setSalaryEditMode(false)} disabled={salarySubmitting}>Cancel</button>
                                         <button type="submit" className="btn-submit" disabled={salarySubmitting}>{salarySubmitting ? <Loader size={16} className="spinner" /> : 'Save Salary'}</button>
                                     </div>

@@ -22,6 +22,7 @@ export const useClientState = () => {
         billingPincode: '',
         contact1: '',
         contact2: '',
+        dateOfBirth: '',
         status: 'Active'
     };
 
