@@ -34,10 +34,12 @@ const Tasks = ({
     } = useStaffTasks();
 
     return (
-        <div className="tasks-board-view fade-in">
-
-
-            <div className="premium-tasks-grid">
+        <div className="tasks-board-view fade-in" style={{ padding: '0.5rem 0' }}>
+            <div className="premium-tasks-grid" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                gap: '1.5rem'
+            }}>
                 {myTasks.length > 0 ? myTasks.map(task => (
                     <TaskCard 
                         key={task._id} 
@@ -51,12 +53,30 @@ const Tasks = ({
                         handleOpenComments={handleOpenComments}
                     />
                 )) : (
-                    <div className="premium-empty-state">
-                        <div className="premium-empty-icon">
-                            <CheckCircle size={40} />
+                    <div className="premium-empty-state" style={{
+                        gridColumn: '1 / -1',
+                        background: 'white',
+                        padding: '4rem 2rem',
+                        borderRadius: '24px',
+                        border: '2px dashed #e2e8f0',
+                        textAlign: 'center',
+                        color: '#64748b'
+                    }}>
+                        <div className="premium-empty-icon" style={{
+                            width: '72px',
+                            height: '72px',
+                            background: '#f0fdf4',
+                            color: '#10b981',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 1.5rem auto'
+                        }}>
+                            <CheckCircle size={36} />
                         </div>
-                        <h3>You're All Caught Up!</h3>
-                        <p>No active tasks assigned to you right now. Take a break or check back later.</p>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>You're All Caught Up!</h3>
+                        <p style={{ margin: 0, fontSize: '0.92rem', color: '#64748b' }}>No active tasks assigned to you right now. Take a break or check back later.</p>
                     </div>
                 )}
             </div>
