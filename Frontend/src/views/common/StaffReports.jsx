@@ -62,6 +62,29 @@ const StaffReports = () => {
         }
     };
 
+    const getUserDepartment = (userObj) => {
+        if (!userObj) return '';
+        if (userObj.department) return userObj.department;
+        const role = userObj.role || '';
+        if (role.includes('Sales')) return 'Sales';
+        if (role.includes('Design')) return 'Design';
+        if (role.includes('Procurement')) return 'Procurement';
+        if (role.includes('Accounts')) return 'Accounts';
+        if (role.includes('Production') || role.includes('Project') || role.includes('Site')) return 'Production';
+        return 'Sales';
+    };
+
+    const getAssignedManagerForDept = (project, dept) => {
+        if (!project) return null;
+        switch(dept) {
+            case 'Design': return project.assignedDesignManager;
+            case 'Procurement': return project.assignedProcurementManager;
+            case 'Accounts': return project.assignedAccountsStaff;
+            case 'Production': return project.assignedProductionManager;
+            default: return null;
+        }
+    };
+
     const handleProjectChange = (projectId) => {
         if (!projectId) {
             setFormData(prev => ({ ...prev, project: '', isAssignedToMe: false }));
@@ -71,10 +94,10 @@ const StaffReports = () => {
         let assigned = false;
         if (selectedProj && user?._id) {
             assigned = (
-                selectedProj.assignedDesignManager === user._id ||
-                selectedProj.assignedProcurementManager === user._id ||
-                selectedProj.assignedProductionManager === user._id ||
-                selectedProj.assignedAccountsStaff === user._id
+                (selectedProj.assignedDesignManager?._id || selectedProj.assignedDesignManager) === user._id ||
+                (selectedProj.assignedProcurementManager?._id || selectedProj.assignedProcurementManager) === user._id ||
+                (selectedProj.assignedProductionManager?._id || selectedProj.assignedProductionManager) === user._id ||
+                (selectedProj.assignedAccountsStaff?._id || selectedProj.assignedAccountsStaff) === user._id
             );
         }
         setFormData(prev => ({
@@ -131,8 +154,8 @@ const StaffReports = () => {
                 }}>
                     <div className="drawer-content">
                         <div className="drawer-header">
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                                <FileText size={20} style={{ color: '#4f46e5' }} /> Submit New Report
+                            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                                <FileText size={18} style={{ color: '#4f46e5' }} /> Submit New Report
                             </h3>
                             <button 
                                 type="button"
@@ -141,17 +164,17 @@ const StaffReports = () => {
                                     p.delete('action');
                                     setSearchParams(p);
                                 }}
-                                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '50%', transition: 'all 0.2s' }}
+                                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', borderRadius: '50%', transition: 'all 0.2s' }}
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 73px)' }}>
-                            <div className="drawer-body">
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
+                            <div className="drawer-body" style={{ padding: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Title</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Title</label>
                                             <input 
                                                 type="text" 
                                                 className="report-input"
@@ -162,7 +185,7 @@ const StaffReports = () => {
                                             />
                                         </div>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Date</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Date</label>
                                             <input 
                                                 type="date" 
                                                 className="report-input"
@@ -173,9 +196,9 @@ const StaffReports = () => {
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Project (Optional)</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project (Optional)</label>
                                             <select 
                                                 className="report-input"
                                                 value={formData.project}
@@ -190,23 +213,42 @@ const StaffReports = () => {
                                             </select>
                                         </div>
                                         <div className="report-form-group" style={{ display: 'flex', alignItems: 'center', height: '100%', paddingTop: '28px' }}>
-                                            {formData.project && (
-                                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
-                                                    <input 
-                                                        type="checkbox" 
-                                                        checked={formData.isAssignedToMe}
-                                                        onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
-                                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
-                                                    />
-                                                    <span style={{ fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Assigned to me</span>
-                                                </label>
-                                            )}
+                                            {formData.project && (() => {
+                                                const selectedProjectObj = projects.find(p => p._id === formData.project);
+                                                const userDept = getUserDepartment(user);
+                                                const assignedManager = getAssignedManagerForDept(selectedProjectObj, userDept);
+                                                return (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={formData.isAssignedToMe}
+                                                                onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
+                                                                style={{ cursor: 'pointer', width: '14px', height: '14px' }}
+                                                            />
+                                                            <span style={{ fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Assigned to me</span>
+                                                        </label>
+                                                        {assignedManager && (
+                                                            <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <Send size={12} />
+                                                                Reporting to: <strong style={{ color: '#4f46e5' }}>{assignedManager.fullName || 'Manager'}</strong>
+                                                            </div>
+                                                        )}
+                                                        {!assignedManager && (
+                                                            <div style={{ fontSize: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <AlertCircle size={12} />
+                                                                No manager assigned.
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Type</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Type</label>
                                             <select 
                                                 className="report-input"
                                                 value={formData.type}
@@ -219,7 +261,7 @@ const StaffReports = () => {
                                             </select>
                                         </div>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Priority</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Priority</label>
                                             <select 
                                                 className="report-input"
                                                 value={formData.priority}
@@ -234,22 +276,22 @@ const StaffReports = () => {
                                     </div>
 
                                     <div className="report-form-group">
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Description</label>
+                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Description</label>
                                         <textarea 
                                             className="report-input"
                                             required
                                             value={formData.description}
                                             onChange={(e) => setFormData({...formData, description: e.target.value})}
                                             placeholder="Provide detailed information..."
-                                            style={{ minHeight: '140px' }}
+                                            style={{ minHeight: '100px' }}
                                         />
                                     </div>
 
                                     <div className="report-form-group">
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#45464d', fontSize: '14px' }}>Image Attachment (Optional)</label>
+                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Image Attachment (Optional)</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#475569', transition: 'all 0.2s' }} className="image-upload-label">
-                                                <Image size={18} />
+                                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#475569', transition: 'all 0.2s' }} className="image-upload-label">
+                                                <Image size={16} />
                                                 Choose Image
                                                 <input 
                                                     type="file" 
@@ -271,7 +313,7 @@ const StaffReports = () => {
                                                 <img 
                                                     src={formData.image} 
                                                     alt="Preview" 
-                                                    style={{ maxWidth: '100%', maxHeight: '120px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'block' }} 
+                                                    style={{ maxWidth: '100%', maxHeight: '90px', borderRadius: '6px', border: '1px solid #cbd5e1', display: 'block' }} 
                                                 />
                                                 <button 
                                                     type="button"
@@ -293,7 +335,7 @@ const StaffReports = () => {
                                         p.delete('action');
                                         setSearchParams(p);
                                     }}
-                                    style={{ padding: '0.75rem 1.5rem', border: '1px solid #cbd5e1', borderRadius: '8px', background: 'white', color: '#475569', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}
+                                    style={{ padding: '0.6rem 1.25rem', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white', color: '#475569', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
                                 >
                                     Cancel
                                 </button>
@@ -301,9 +343,9 @@ const StaffReports = () => {
                                     type="submit" 
                                     className="btn-submit-report"
                                     disabled={isSubmitting}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
                                 >
-                                    {isSubmitting ? 'Submitting...' : <><Send size={16} /> Submit Report</>}
+                                    {isSubmitting ? 'Submitting...' : <><Send size={14} /> Submit Report</>}
                                 </button>
                             </div>
                         </form>

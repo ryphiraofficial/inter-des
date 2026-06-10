@@ -117,21 +117,21 @@
 
 .report-form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 600;
     color: #45464d;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0.05em;
 }
 
 .report-input {
     width: 100%;
-    padding: 0.875rem 1rem;
-    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
     border: 1px solid transparent;
     outline: none;
-    font-size: 16px;
+    font-size: 14px;
     color: #191c1e;
     background-color: #f1f5f9;
     transition: all 0.2s ease;
