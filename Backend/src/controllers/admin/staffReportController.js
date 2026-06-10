@@ -21,7 +21,7 @@ export const submitStaffReport = async (req, res) => {
             .populate('submittedBy', 'fullName role avatar department');
 
         // Optional: Notify admins
-        const admins = await User.find({ role: { $in: ['admin', 'superadmin', 'manager'] } });
+        const admins = await User.find({ role: { $in: ['Super Admin', 'Admin', 'Manager', 'super admin', 'admin', 'superadmin', 'manager'] } });
         const notifications = admins.map(admin => ({
             title: `New Staff Report: ${type}`,
             description: `${req.user.fullName} submitted a new ${type} report: ${title}`,
@@ -50,7 +50,7 @@ export const submitStaffReport = async (req, res) => {
 // @access  Private
 export const getStaffReports = async (req, res) => {
     try {
-        const isAdmin = ['admin', 'superadmin', 'manager'].includes(req.user.role.toLowerCase());
+        const isAdmin = ['admin', 'super admin', 'superadmin', 'manager', 'design manager', 'procurement manager', 'project manager', 'accounts manager'].includes(req.user.role?.toLowerCase());
         
         let query = {};
         if (!isAdmin) {

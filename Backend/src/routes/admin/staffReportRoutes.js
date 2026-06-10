@@ -17,6 +17,6 @@ router.route('/')
     .get(getStaffReports);
 
 // Routes for admins only
-router.patch('/:id/status', authorize('admin', 'superadmin', 'manager'), updateStaffReportStatus);
+router.patch('/:id/status', authorize('Super Admin', 'Admin', 'Manager', 'super admin', 'admin', 'superadmin', 'manager'), updateStaffReportStatus);
 
 export default router;
