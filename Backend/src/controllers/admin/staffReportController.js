@@ -18,7 +18,7 @@ export const submitStaffReport = async (req, res) => {
         });
 
         const populatedReport = await StaffReport.findById(report._id)
-            .populate('submittedBy', 'fullName role avatar');
+            .populate('submittedBy', 'fullName role avatar department');
 
         // Optional: Notify admins
         const admins = await User.find({ role: { $in: ['admin', 'superadmin', 'manager'] } });
@@ -63,7 +63,7 @@ export const getStaffReports = async (req, res) => {
         if (req.query.priority) query.priority = req.query.priority;
 
         const reports = await StaffReport.find(query)
-            .populate('submittedBy', 'fullName role avatar')
+            .populate('submittedBy', 'fullName role avatar department')
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -95,7 +95,7 @@ export const updateStaffReportStatus = async (req, res) => {
         await report.save();
 
         const updatedReport = await StaffReport.findById(report._id)
-            .populate('submittedBy', 'fullName role avatar');
+            .populate('submittedBy', 'fullName role avatar department');
 
         res.status(200).json({
             success: true,

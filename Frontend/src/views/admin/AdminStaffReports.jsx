@@ -1,224 +1,359 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     useGetStaffReportsQuery,
     useUpdateStaffReportStatusMutation
 } from '../../store/api/sharedApi';
-import { FileText, MessageSquare, AlertCircle, Clock, CheckCircle, Search, Filter, X } from 'lucide-react';
+import { FileText, Clock, CheckCircle, Filter, Download, ArrowLeft } from 'lucide-react';
 import { useToast } from '../../models/context/ToastContext';
+import DateRangePicker from '../../components/DateRangePicker';
 import './css/AdminStaffReports.css';
+
 
 const AdminStaffReports = () => {
     const { showToast } = useToast();
     const { data: reportsRes, isLoading, refetch } = useGetStaffReportsQuery();
-    const reports = reportsRes?.data || [];
-    
-    const [updateStatus, { isLoading: isUpdating }] = useUpdateStaffReportStatusMutation();
+    const allReports = reportsRes?.data || [];
 
+    const [updateStatus, { isLoading: isUpdating }] = useUpdateStaffReportStatusMutation();
     const [selectedReport, setSelectedReport] = useState(null);
     const [adminNotes, setAdminNotes] = useState('');
-    const [statusFilter, setStatusFilter] = useState('All');
+    const [activeTab, setActiveTab] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+
+
+    useEffect(() => {
+        const handleSearch = (e) => setSearchQuery(e.detail || '');
+        window.addEventListener('header-search', handleSearch);
+        return () => window.removeEventListener('header-search', handleSearch);
+    }, []);
 
     const handleUpdateStatus = async (reportId, newStatus) => {
         try {
             await updateStatus({ id: reportId, status: newStatus, adminNotes }).unwrap();
-            showToast('Report updated successfully', 'success');
+            showToast('Report status updated', 'success');
             setSelectedReport(null);
             setAdminNotes('');
             refetch();
         } catch (err) {
-            showToast(err?.data?.message || 'Failed to update report', 'error');
+            showToast(err?.data?.message || 'Failed to update status', 'error');
         }
     };
 
-    const getStatusBadge = (status) => {
-        const className = `status-badge ${status.replace(' ', '-')}`;
-        switch(status) {
-            case 'Resolved': return <span className={className}><CheckCircle size={14}/> Resolved</span>;
-            case 'In Progress': return <span className={className}><Clock size={14}/> In Progress</span>;
-            default: return <span className={className}><AlertCircle size={14}/> Pending</span>;
-        }
-    };
-
-    const filteredReports = reports.filter(r => {
-        const matchesStatus = statusFilter === 'All' || r.status === statusFilter;
-        const searchLower = searchQuery.toLowerCase();
-        const matchesSearch = r.title.toLowerCase().includes(searchLower) || 
-                              r.submittedBy?.fullName?.toLowerCase().includes(searchLower) ||
-                              r.type.toLowerCase().includes(searchLower);
-        return matchesStatus && matchesSearch;
+    const filteredReports = allReports.filter(r => {
+        const matchesSearch = searchQuery === '' ||
+            r.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.submittedBy?.fullName?.toLowerCase().includes(searchQuery.toLowerCase());
+        const reportDate = new Date(r.createdAt);
+        const matchesFrom = !dateFrom || reportDate >= new Date(dateFrom);
+        const matchesTo   = !dateTo   || reportDate <= new Date(dateTo + 'T23:59:59');
+        return matchesSearch && matchesFrom && matchesTo;
     });
 
-    return (
-        <div className="admin-staff-reports">
-            <div className="page-header">
-                <div>
-                    <h1>Staff Reports</h1>
-                    <p>Manage and resolve issues, feedback, and daily updates submitted by staff.</p>
+
+    const getReportDept = (report) => {
+        if (report.department) return report.department;
+        const dept = report.submittedBy?.department;
+        if (dept) return dept;
+        const role = report.submittedBy?.role || '';
+        if (role.includes('Sales')) return 'Sales';
+        if (role.includes('Procurement')) return 'Procurement';
+        if (role.includes('Accounts')) return 'Accounts';
+        if (role.includes('Design')) return 'Design';
+        if (role.includes('Production') || role.includes('Project') || role.includes('Site')) return 'Production';
+        return 'Sales';
+    };
+
+    const getReportsByDept = (deptName) =>
+        filteredReports.filter(r => getReportDept(r) === deptName);
+
+    const getStatusBadge = (status) => {
+        if (status === 'Resolved' || status === 'Approved')
+            return <span className="asr-status approved"><CheckCircle size={12}/> Approved</span>;
+        if (status === 'In Progress')
+            return <span className="asr-status progress"><Clock size={12}/> In Progress</span>;
+        return <span className="asr-status pending">Pending Review</span>;
+    };
+
+    // Build daily entries from real data — supports a dailyEntries array or falls back to the report itself
+    const getDailyUpdatesForReport = (report) => {
+        if (report.dailyEntries?.length > 0) {
+            return report.dailyEntries.map(e => ({
+                date: new Date(e.date || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                name: e.submittedBy?.fullName || report.submittedBy?.fullName || 'Staff Member',
+                role: e.submittedBy?.role || report.submittedBy?.role || 'Staff',
+                content: e.content || e.description || ''
+            }));
+        }
+        return [{
+            date: new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            name: report.submittedBy?.fullName || 'Staff Member',
+            role: report.submittedBy?.role || 'Staff',
+            content: report.description || 'No details provided.'
+        }];
+    };
+
+    const getDeptColorClass = (dept) => {
+        const map = { Sales: 'sales', Procurement: 'procurement', Accounts: 'accounts', Design: 'design', Production: 'production' };
+        return map[dept] || '';
+    };
+
+    const renderListItem = (report) => {
+        const dept = getReportDept(report);
+        return (
+            <div key={report._id} className="asr-list-item">
+                <div className="asr-item-left">
+                    <div className={`asr-item-icon-box ${getDeptColorClass(dept)}`}>
+                        <FileText size={18} />
+                    </div>
+                    <div className="asr-item-title-desc">
+                        <h3 className="asr-item-title">{report.title}</h3>
+                    </div>
+                </div>
+
+                <div className="asr-item-meta">
+                    <div className="asr-item-date">
+                        {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    <div className="asr-item-user">
+                        <div className="asr-item-avatar">{report.submittedBy?.fullName?.charAt(0) || 'U'}</div>
+                        <span className="asr-item-username">{report.submittedBy?.fullName}</span>
+                    </div>
+                </div>
+
+                <div className="asr-item-right">
+                    {getStatusBadge(report.status)}
+                    <button
+                        className="asr-open-btn"
+                        onClick={() => { setSelectedReport(report); setAdminNotes(report.adminNotes || ''); }}
+                    >
+                        Open
+                    </button>
                 </div>
             </div>
+        );
+    };
 
-            <div className="controls-bar">
-                <div className="search-box">
-                    <Search size={18} className="search-icon" />
-                    <input 
-                        type="text" 
-                        placeholder="Search reports..." 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-                <div className="filter-box">
-                    <Filter size={18} className="filter-icon" />
-                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                        <option value="All">All Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                    </select>
-                </div>
-            </div>
+    // ── Full-page detail view (early return) ───────────────────────────────────
+    if (selectedReport) {
+        const dailyUpdates = getDailyUpdatesForReport(selectedReport);
+        const dept = selectedReport.department || getReportDept(selectedReport);
+        const deptColorMap = {
+            Sales:       { primary: '#b45309', bg: '#ffedd5' },
+            Procurement: { primary: '#059669', bg: '#d1fae5' },
+            Accounts:    { primary: '#475569', bg: '#f1f5f9' },
+            Design:      { primary: '#7e22ce', bg: '#f3e8ff' },
+            Production:  { primary: '#1d4ed8', bg: '#dbeafe' }
+        };
+        const colors = deptColorMap[dept] || deptColorMap.Sales;
 
-            {isLoading ? (
-                <div className="loading-state">Loading reports...</div>
-            ) : (
-                <div className="reports-grid">
-                    {filteredReports.length === 0 ? (
-                        <div className="empty-state">
-                            <FileText size={48} />
-                            <p>No reports found matching your criteria.</p>
-                        </div>
-                    ) : (
-                        filteredReports.map(report => (
-                            <div key={report._id} className="report-item-card">
-                                <div className="report-item-header">
-                                    <h3 className="report-title">{report.title}</h3>
-                                    {getStatusBadge(report.status)}
-                                </div>
-                                
-                                <div className="report-meta">
-                                    <span className="meta-type">
-                                        <FileText size={14}/> {report.type}
-                                    </span>
-                                    <span className={`meta-priority priority-${report.priority}`}>
-                                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>
-                                        {report.priority}
-                                    </span>
-                                    <span>{new Date(report.createdAt).toLocaleDateString()}</span>
-                                </div>
+        return (
+            <div className="asr-container">
+                <div className="asr-wrapper">
 
-                                <div className="user-row">
-                                    <div className="user-avatar">
-                                        {report.submittedBy?.fullName?.charAt(0) || 'U'}
-                                    </div>
-                                    <div className="user-details">
-                                        <span className="user-name">{report.submittedBy?.fullName || 'Unknown'}</span>
-                                        <span className="user-role">{report.submittedBy?.role || 'Staff'}</span>
-                                    </div>
-                                    <button 
-                                        className="btn-review"
-                                        onClick={() => {
-                                            setSelectedReport(report);
-                                            setAdminNotes(report.adminNotes || '');
-                                        }}
-                                    >
-                                        Review Details
-                                    </button>
+                    <div className="asr-detail-header">
+                        <button className="asr-back-btn" onClick={() => setSelectedReport(null)}>
+                            <ArrowLeft size={16} /> Back to Reports
+                        </button>
+                        <div className="asr-detail-title-row">
+                            <div>
+                                <div className="asr-detail-dept-tag" style={{ backgroundColor: colors.bg, color: colors.primary }}>
+                                    {dept} Department
                                 </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-
-            {selectedReport && (
-                <div className="drawer-overlay" onClick={() => setSelectedReport(null)}>
-                    <div className="drawer-content" onClick={e => e.stopPropagation()}>
-                        <div className="drawer-header">
-                            <h2>Report Details</h2>
-                            <button className="btn-close" onClick={() => setSelectedReport(null)}>
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="drawer-body">
-                            <div className="detail-section">
-                                <h3>Overview</h3>
-                                <div style={{ marginBottom: '16px' }}>
-                                    <div style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '8px' }}>
-                                        {selectedReport.title}
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                        {getStatusBadge(selectedReport.status)}
-                                        <span className={`meta-priority priority-${selectedReport.priority}`}>
-                                            {selectedReport.priority} Priority
-                                        </span>
-                                        <span className="meta-type">{selectedReport.type}</span>
-                                    </div>
-                                </div>
-                                <div className="user-row" style={{ borderTop: 'none', padding: '16px 0', borderBottom: '1px solid #f1f5f9', margin: '0 0 24px 0' }}>
-                                    <div className="user-avatar" style={{ width: '48px', height: '48px', fontSize: '18px' }}>
-                                        {selectedReport.submittedBy?.fullName?.charAt(0)}
-                                    </div>
-                                    <div className="user-details">
-                                        <span className="user-name" style={{ fontSize: '16px' }}>{selectedReport.submittedBy?.fullName}</span>
-                                        <span className="user-role">{selectedReport.submittedBy?.role} • Submitted on {new Date(selectedReport.createdAt).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="detail-section">
-                                <h3>Description</h3>
-                                <div className="report-description">
-                                    {selectedReport.description}
-                                </div>
-                            </div>
-
-                            <div className="admin-response-section">
-                                <h3><MessageSquare size={18} /> Admin Response & Resolution</h3>
-                                <p style={{ fontSize: '13px', color: '#92400e', marginBottom: '16px' }}>
-                                    Notes entered here will be visible to the staff member who submitted the report.
+                                <h1 className="asr-detail-title">{selectedReport.title}</h1>
+                                <p className="asr-detail-subtitle">
+                                    Submitted by <span className="highlight">{selectedReport.submittedBy?.fullName}</span>
+                                    {selectedReport.submittedBy?.role ? ` · ${selectedReport.submittedBy.role}` : ''}
+                                    {' · '}{dailyUpdates.length} daily {dailyUpdates.length === 1 ? 'entry' : 'entries'}
                                 </p>
-                                <textarea 
-                                    className="admin-textarea"
-                                    placeholder="Enter your response or resolution details here..."
-                                    value={adminNotes}
-                                    onChange={(e) => setAdminNotes(e.target.value)}
-                                />
-                                <div className="action-buttons">
-                                    {selectedReport.status !== 'Pending' && (
-                                        <button 
-                                            className="btn-status btn-pending"
-                                            onClick={() => handleUpdateStatus(selectedReport._id, 'Pending')}
-                                            disabled={isUpdating}
-                                        >
-                                            Mark Pending
-                                        </button>
-                                    )}
-                                    {selectedReport.status !== 'In Progress' && (
-                                        <button 
-                                            className="btn-status btn-progress"
-                                            onClick={() => handleUpdateStatus(selectedReport._id, 'In Progress')}
-                                            disabled={isUpdating}
-                                        >
-                                            Mark In Progress
-                                        </button>
-                                    )}
-                                    {selectedReport.status !== 'Resolved' && (
-                                        <button 
-                                            className="btn-status btn-resolve"
-                                            onClick={() => handleUpdateStatus(selectedReport._id, 'Resolved')}
-                                            disabled={isUpdating}
-                                        >
-                                            <CheckCircle size={16} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
-                                            Mark Resolved
-                                        </button>
-                                    )}
-                                </div>
+                            </div>
+                            <div className="asr-detail-badges">
+                                {getStatusBadge(selectedReport.status)}
+                                {selectedReport.priority && (
+                                    <span className={`asr-priority-badge ${selectedReport.priority.toLowerCase()}`}>
+                                        {selectedReport.priority} Priority
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
+
+                    <div className="asr-detail-grid">
+
+                        {/* Daily Reports List */}
+                        <div>
+                            <div className="asr-daily-list-header">
+                                <h2 className="asr-daily-list-title">Daily Reports</h2>
+                                <span className="asr-daily-count">
+                                    {dailyUpdates.length} {dailyUpdates.length === 1 ? 'entry' : 'entries'} this week
+                                </span>
+                            </div>
+
+                            <div className="asr-daily-list">
+                                {dailyUpdates.map((update, index) => (
+                                    <div key={index} className="asr-daily-card">
+                                        <div className="asr-daily-date-strip" style={{ backgroundColor: colors.bg }}>
+                                            <div className="asr-daily-date-left">
+                                                <div className="asr-daily-date-dot" style={{ backgroundColor: colors.primary }} />
+                                                <span className="asr-daily-date-text" style={{ color: colors.primary }}>{update.date}</span>
+                                            </div>
+                                            <span className="asr-daily-entry-label">Day {dailyUpdates.length - index}</span>
+                                        </div>
+                                        <div className="asr-daily-card-body">
+                                            <div className="asr-daily-sender">
+                                                <div className="asr-daily-avatar" style={{ backgroundColor: colors.bg, color: colors.primary }}>
+                                                    {update.name.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="asr-daily-sender-info">
+                                                    <span className="asr-daily-sender-name">{update.name}</span>
+                                                    <span className="asr-daily-sender-role">{update.role}</span>
+                                                </div>
+                                            </div>
+                                            <p className="asr-daily-content">{update.content}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Admin Action Panel */}
+                        <div className="asr-admin-panel">
+                            <h3>Admin Action Center</h3>
+
+                            <div className="asr-panel-field">
+                                <label>Report Status</label>
+                                <div className="asr-status-actions">
+                                    <button className={`asr-status-opt pending ${selectedReport.status === 'Pending' ? 'active' : ''}`} onClick={() => handleUpdateStatus(selectedReport._id, 'Pending')} disabled={isUpdating}>Pending</button>
+                                    <button className={`asr-status-opt progress ${selectedReport.status === 'In Progress' ? 'active' : ''}`} onClick={() => handleUpdateStatus(selectedReport._id, 'In Progress')} disabled={isUpdating}>In Progress</button>
+                                    <button className={`asr-status-opt approved ${selectedReport.status === 'Resolved' || selectedReport.status === 'Approved' ? 'active' : ''}`} onClick={() => handleUpdateStatus(selectedReport._id, 'Resolved')} disabled={isUpdating}>Approved</button>
+                                </div>
+                            </div>
+
+                            <div className="asr-panel-field">
+                                <label>Resolution Notes</label>
+                                <textarea
+                                    className="asr-panel-textarea"
+                                    placeholder="Add response, notes or follow-up feedback..."
+                                    value={adminNotes}
+                                    onChange={(e) => setAdminNotes(e.target.value)}
+                                />
+                            </div>
+
+                            <button className="asr-save-notes-btn" onClick={() => handleUpdateStatus(selectedReport._id, selectedReport.status)} disabled={isUpdating}>
+                                {isUpdating ? 'Saving...' : 'Save Notes & Response'}
+                            </button>
+
+                            <div className="asr-panel-summary">
+                                <div className="asr-panel-summary-row"><span>Total Entries</span><strong>{dailyUpdates.length}</strong></div>
+                                <div className="asr-panel-summary-row"><span>Department</span><strong>{dept}</strong></div>
+                                <div className="asr-panel-summary-row"><span>Submitted By</span><strong>{selectedReport.submittedBy?.fullName || '—'}</strong></div>
+                                <div className="asr-panel-summary-row"><span>Type</span><strong>{selectedReport.type || 'Weekly Report'}</strong></div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-            )}
+            </div>
+        );
+    }
+
+    // ── Main list view ──────────────────────────────────────────────────────────
+    return (
+        <div className="asr-container">
+            <div className="asr-wrapper">
+
+                {/* Stats */}
+                <div className="asr-stats-bar">
+                    <div className="asr-stat-card">
+                        <div className="asr-stat-card-icon total"><FileText size={20} /></div>
+                        <div className="asr-stat-card-info">
+                            <span className="asr-stat-card-label">Total Reports</span>
+                            <h3 className="asr-stat-card-value">{allReports.length}</h3>
+                        </div>
+                    </div>
+                    <div className="asr-stat-card">
+                        <div className="asr-stat-card-icon pending"><Clock size={20} /></div>
+                        <div className="asr-stat-card-info">
+                            <span className="asr-stat-card-label">Pending Review</span>
+                            <h3 className="asr-stat-card-value">
+                                {allReports.filter(r => !r.status || r.status === 'Pending' || r.status === 'Pending Review').length}
+                            </h3>
+                        </div>
+                    </div>
+                    <div className="asr-stat-card">
+                        <div className="asr-stat-card-icon progress"><Clock size={20} /></div>
+                        <div className="asr-stat-card-info">
+                            <span className="asr-stat-card-label">In Progress</span>
+                            <h3 className="asr-stat-card-value">{allReports.filter(r => r.status === 'In Progress').length}</h3>
+                        </div>
+                    </div>
+                    <div className="asr-stat-card">
+                        <div className="asr-stat-card-icon approved"><CheckCircle size={20} /></div>
+                        <div className="asr-stat-card-info">
+                            <span className="asr-stat-card-label">Resolved Reports</span>
+                            <h3 className="asr-stat-card-value">{allReports.filter(r => r.status === 'Resolved' || r.status === 'Approved').length}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filters */}
+                <div className="asr-filters-bar">
+                    <div className="asr-pills">
+                        {['All', 'Sales', 'Procurement', 'Accounts', 'Design', 'Production'].map(tab => (
+                            <button
+                                key={tab}
+                                className={`asr-pill ${activeTab === tab ? 'black' : 'gray'}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab === 'All' ? 'All Departments' : tab}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="asr-actions">
+                        <DateRangePicker
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                            onFromChange={setDateFrom}
+                            onToChange={setDateTo}
+                        />
+                        <button className="asr-icon-btn"><Filter size={16} /></button>
+                        <button className="asr-icon-btn brown"><Download size={16} /></button>
+                    </div>
+
+                </div>
+
+
+                {/* Loading state */}
+                {isLoading && <div className="no-reports-msg">Loading reports...</div>}
+
+                {/* Empty state */}
+                {!isLoading && allReports.length === 0 && (
+                    <div className="no-reports-msg">No reports have been submitted yet.</div>
+                )}
+
+                {/* Department sections */}
+                {['Sales', 'Procurement', 'Accounts', 'Design', 'Production'].map(dept => {
+                    if (activeTab !== 'All' && activeTab !== dept) return null;
+                    const deptReports = getReportsByDept(dept);
+                    if (deptReports.length === 0) return null;
+                    const lineColors = { Sales: '#b45309', Procurement: '#059669', Accounts: '#475569', Design: '#7e22ce', Production: '#1d4ed8' };
+                    const pillClasses = { Sales: '', Procurement: 'green', Accounts: 'gray', Design: 'purple', Production: 'blue' };
+                    return (
+                        <div key={dept} className="asr-section">
+                            <div className="asr-section-header">
+                                <div className="asr-section-line" style={{ backgroundColor: lineColors[dept] }} />
+                                <h2>{dept} Department</h2>
+                                <span className={`asr-badge-pill ${pillClasses[dept]}`}>
+                                    {deptReports.filter(r => r.status === 'Pending').length} PENDING
+                                </span>
+                            </div>
+                            <div className="asr-list">{deptReports.map(renderListItem)}</div>
+                        </div>
+                    );
+                })}
+
+            </div>
         </div>
     );
 };
