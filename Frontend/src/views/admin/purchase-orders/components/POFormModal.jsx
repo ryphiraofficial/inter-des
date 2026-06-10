@@ -8,13 +8,13 @@ const POFormModal = ({
     if (!showCreateModal) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content-wide" data-lenis-prevent>
-                <div className="modal-header">
+        <div className="po-drawer-overlay" onClick={() => setShowCreateModal(false)}>
+            <div className="po-drawer-content" data-lenis-prevent onClick={(e) => e.stopPropagation()}>
+                <div className="po-drawer-header">
                     <h3>Create Purchase Order</h3>
                     <button className="modal-close" onClick={() => setShowCreateModal(false)}><X size={24} /></button>
                 </div>
-                <div className="modal-form-body">
+                <div className="po-drawer-body">
                     <div className="modal-form-grid">
                         <div className="form-field">
                             <label>Supplier <span>*</span></label>
@@ -115,7 +115,7 @@ const POFormModal = ({
                         ))}
                     </div>
                 </div>
-                <div className="modal-footer">
+                <div className="po-drawer-footer">
                     <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
                     <button
                         className="btn-create-po"
