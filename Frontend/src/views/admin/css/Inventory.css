@@ -149,7 +149,7 @@
 .inventory-table th {
     background: #f8fafc;
     padding: 1rem 1.5rem;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
@@ -162,6 +162,7 @@
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     vertical-align: middle;
+    font-size: 0.95rem;
 }
 
 .item-details-cell {
@@ -207,14 +208,14 @@
 .item-name {
     font-weight: 700;
     color: #0f172a;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .item-desc {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: #64748b;
     white-space: nowrap;
     overflow: hidden;
@@ -228,13 +229,13 @@
     background: #eff6ff;
     color: #2563eb;
     border-radius: 99px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 700;
 }
 
 .stock-value {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .stock-value.low {
@@ -247,6 +248,7 @@
 .price-value {
     font-weight: 700;
     color: #0f172a;
+    font-size: 1rem;
 }
 
 .table-actions {
