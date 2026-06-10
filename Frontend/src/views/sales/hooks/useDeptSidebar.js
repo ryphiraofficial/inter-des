@@ -145,6 +145,7 @@ const NAV_CONFIG = {
             { name: 'Clients',          icon: Users,           path: '/staff/clients' },
             { name: 'Quotations',       icon: FileText,        path: '/staff/quotations' },
             { name: 'Meetings',         icon: Video,           path: '/staff/meetings' },
+            { name: 'Reports',          icon: FileText,        path: '/staff/reports' },
         ],
     },
     'Sales Manager': {
@@ -160,6 +161,7 @@ const NAV_CONFIG = {
             { name: 'Clients',          icon: Users,           path: '/staff/clients' },
             { name: 'Quotations',       icon: FileText,        path: '/staff/quotations' },
             { name: 'Meetings',         icon: Video,           path: '/staff/meetings' },
+            { name: 'Reports',          icon: FileText,        path: '/staff/reports' },
         ],
     },
 };

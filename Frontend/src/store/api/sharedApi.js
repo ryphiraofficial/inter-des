@@ -13,7 +13,7 @@ export const sharedApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['Approvals'],
+    tagTypes: ['Approvals', 'StaffReports'],
     endpoints: (builder) => ({
         uploadImage: builder.mutation({
             query: (formData) => ({
@@ -77,6 +77,29 @@ export const sharedApi = createApi({
             }),
             invalidatesTags: ['Approvals'],
         }),
+        getStaffReports: builder.query({
+            query: (params) => ({
+                url: '/staff-reports',
+                params
+            }),
+            providesTags: ['StaffReports'],
+        }),
+        submitStaffReport: builder.mutation({
+            query: (body) => ({
+                url: '/staff-reports',
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: ['StaffReports'],
+        }),
+        updateStaffReportStatus: builder.mutation({
+            query: ({ id, status, adminNotes }) => ({
+                url: `/staff-reports/${id}/status`,
+                method: 'PATCH',
+                body: { status, adminNotes },
+            }),
+            invalidatesTags: ['StaffReports'],
+        }),
     }),
 });
 
@@ -89,5 +112,8 @@ export const {
     useCreateApprovalMutation,
     useUpdateApprovalMutation,
     useDeleteApprovalMutation,
-    useSubscribePushMutation
+    useSubscribePushMutation,
+    useGetStaffReportsQuery,
+    useSubmitStaffReportMutation,
+    useUpdateStaffReportStatusMutation
 } = sharedApi;

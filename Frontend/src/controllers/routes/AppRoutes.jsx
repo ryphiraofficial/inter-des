@@ -64,6 +64,9 @@ import SSSiteLeave from '../../views/production/site_supervisor/SiteLeave';
 import AdminMeetings from '../../views/admin/Meetings';
 import MeetingsPage from '../../views/common/MeetingsPage';
 
+// Views — Staff Reports
+import StaffReports from '../../views/common/StaffReports';
+
 // Views — Staff
 import SalesDashboard from '../../views/sales/SalesDashboard';
 import SiteVisit from '../../views/sales/SiteVisit';
@@ -194,6 +197,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="projects/:id" element={<Projects />} />
                     <Route path="material-review" element={<MaterialReviewHub />} />
                     <Route path="meetings" element={<MeetingsPage />} />
+                    <Route path="reports" element={<StaffReports />} />
                     <Route path="*" element={<Navigate to="/staff/dashboard" replace />} />
                 </Route>
             )}
