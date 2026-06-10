@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { Bell, Menu, Plus, Search } from 'lucide-react';
+import { Bell, Menu, Plus, Search, X } from 'lucide-react';
 import { useNotifications } from './hooks/useNotifications';
 import SalesNotificationPopup from './components/SalesNotificationPopup';
 import ProfileDropdown from './components/ProfileDropdown';
@@ -80,6 +80,20 @@ const SalesHeader = ({ title, subtitle, toggleSidebar, user, onLogout }) => {
                 {location.pathname === '/staff/clients' && (
                     <button className="sales-new-btn" onClick={() => { const p = new URLSearchParams(searchParams); p.set('action', 'new'); setSearchParams(p); }}>
                         <Plus size={15} /><span className="desktop-hide-text">Add Client</span>
+                    </button>
+                )}
+
+                {location.pathname === '/staff/reports' && (
+                    <button className="sales-new-btn" onClick={() => { 
+                        const p = new URLSearchParams(searchParams); 
+                        if (p.get('action') === 'new') p.delete('action');
+                        else p.set('action', 'new');
+                        setSearchParams(p); 
+                    }}>
+                        {searchParams.get('action') === 'new' ? <X size={15} /> : <Plus size={15} />}
+                        <span className="desktop-hide-text">
+                            {searchParams.get('action') === 'new' ? 'Close Form' : 'New Report'}
+                        </span>
                     </button>
                 )}
 

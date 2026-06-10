@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
     useGetStaffReportsQuery, 
     useSubmitStaffReportMutation 
@@ -13,7 +14,8 @@ const StaffReports = () => {
     const reports = reportsRes?.data || [];
     
     const [submitReport, { isLoading: isSubmitting }] = useSubmitStaffReportMutation();
-    const [showForm, setShowForm] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const showForm = searchParams.get('action') === 'new';
     
     const [formData, setFormData] = useState({
         title: '',
@@ -27,7 +29,9 @@ const StaffReports = () => {
         try {
             await submitReport(formData).unwrap();
             showToast('Report submitted successfully', 'success');
-            setShowForm(false);
+            const p = new URLSearchParams(searchParams);
+            p.delete('action');
+            setSearchParams(p);
             setFormData({ title: '', type: 'Daily Update', priority: 'Low', description: '' });
             refetch();
         } catch (err) {
@@ -46,19 +50,6 @@ const StaffReports = () => {
 
     return (
         <div className="staff-reports-container">
-            <div className="page-header">
-                <div>
-                    <h1>Reports</h1>
-                    <p>Submit daily updates, feedback, or report issues to administration.</p>
-                </div>
-                <button 
-                    className={`btn-new-report ${showForm ? 'close-mode' : ''}`}
-                    onClick={() => setShowForm(!showForm)}
-                >
-                    {showForm ? <X size={20} /> : <Plus size={20} />}
-                    {showForm ? 'Close Form' : 'New Report'}
-                </button>
-            </div>
 
             {showForm && (
                 <div className="report-form-card">
