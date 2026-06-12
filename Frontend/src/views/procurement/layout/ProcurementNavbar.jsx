@@ -49,7 +49,6 @@ const ProcurementNavbar = ({ role, onRefresh, isLoading, onMenuClick, onLogout }
         requests: { title: 'Material Requests', icon: Package, description: 'Manage and track material requests' },
         assignments: { title: 'Assignments', icon: CheckSquare, description: 'Assign tasks to procurement staff' },
         vendors: { title: 'Vendors', icon: Building2, description: 'Manage vendor relationships' },
-        completed: { title: 'Completed & Handoff', icon: CheckCircle, description: 'View completed procurement handoffs' },
         meetings: { title: 'Meetings', icon: Video, description: 'Schedule and manage vendor meetings' },
         reports: { title: 'Staff Reports', icon: FileText, description: 'Review and manage reports submitted by staff.' }
     } : {

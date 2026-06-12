@@ -14,7 +14,6 @@ const NAV_ITEMS = [
     { tab: 'requests',         label: 'Material Requests', icon: Package },
     { tab: 'assignments',      label: 'Approvals & Assignments', icon: CheckSquare },
     { tab: 'vendors',          label: 'Vendors',           icon: Building2 },
-    { tab: 'completed',        label: 'Completed & Handoff', icon: CheckCircle },
     { tab: 'meetings',         label: 'Meetings',          icon: Video },
     { tab: 'reports',          label: 'Reports',           icon: FileText },
 ];

@@ -5,7 +5,6 @@ import DesignHandoffs from './DesignHandoffs';
 import MaterialRequests from './MaterialRequests';
 import Assignments from './Assignments';
 import Vendors from './Vendors';
-import CompletedHandoffs from './CompletedHandoffs';
 import ProcurementSkeleton from './ProcurementSkeleton';
 import MeetingsPage from '../../common/MeetingsPage';
 import StaffReports from '../../common/StaffReports';
@@ -43,7 +42,6 @@ const ProcurementManagerDashboard = ({ onLogout }) => {
             case 'requests':    return <MaterialRequests pendingRequests={pendingRequests} setSelectedRequest={setSelectedRequest} setShowAssignModal={setShowAssignModal} />;
             case 'assignments': return <Assignments assignedRequests={assignedRequests} pendingReviews={pendingReviews} handleApproveToAdmin={handleApproveToAdmin} />;
             case 'vendors':     return <Vendors vendors={vendors} setShowAddVendorModal={setShowAddVendorModal} handleViewVendorDetails={handleViewVendorDetails} />;
-            case 'completed':   return <CompletedHandoffs completedRequests={completedRequests} handleHandoff={handleHandoff} />;
             case 'meetings':    return <MeetingsPage />;
             case 'reports':     return <StaffReports />;
             default:            return null;
