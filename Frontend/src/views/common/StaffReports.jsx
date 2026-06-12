@@ -488,9 +488,10 @@ const StaffReports = () => {
 
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project (Optional)</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project <span style={{ color: '#ef4444' }}>*</span></label>
                                             <select 
                                                 className="report-input"
+                                                required
                                                 value={formData.project}
                                                 onChange={(e) => handleProjectChange(e.target.value)}
                                             >
@@ -654,8 +655,8 @@ const StaffReports = () => {
                                 <button 
                                     type="submit" 
                                     className="btn-submit-report"
-                                    disabled={isSubmitting || isUpdating}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                                    disabled={isSubmitting || isUpdating || isUploading}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '6px', cursor: (isSubmitting || isUpdating || isUploading) ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '13px', opacity: (isSubmitting || isUpdating || isUploading) ? 0.7 : 1 }}
                                 >
                                     {isSubmitting || isUpdating ? 'Saving...' : <><Send size={14} /> {isEditMode ? 'Update Report' : 'Submit Report'}</>}
                                 </button>
