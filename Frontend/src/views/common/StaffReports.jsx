@@ -301,6 +301,17 @@ const StaffReports = () => {
         if (isAdmin) {
             if (viewTab === 'Staff Reports' && r.type === 'Weekly Bundle') return false;
             if (viewTab === 'Weekly Bundles' && r.type !== 'Weekly Bundle') return false;
+
+            const managerRole = user?.role?.toLowerCase() || '';
+            if (managerRole.includes('manager') && !managerRole.includes('super admin')) {
+                const subRole = r.submittedBy?.role?.toLowerCase() || '';
+                const subDept = r.submittedBy?.department?.toLowerCase() || '';
+                
+                if (managerRole.includes('procurement') && !subRole.includes('procurement') && !subDept.includes('procurement')) return false;
+                if (managerRole.includes('design') && !subRole.includes('design') && !subDept.includes('design')) return false;
+                if (managerRole.includes('accounts') && !subRole.includes('account') && !subDept.includes('account')) return false;
+                if (managerRole.includes('project') && !subRole.includes('production') && !subRole.includes('project') && !subRole.includes('site') && !subDept.includes('production')) return false;
+            }
         }
         
         if (!isAdmin || !filterDate) return true;
