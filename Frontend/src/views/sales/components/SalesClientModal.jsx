@@ -42,6 +42,10 @@ const SalesClientModal = ({ showModal, closeModal, handleSubmit, formData, handl
                                 <input type="tel" name="contact2" value={formData.contact2} onChange={handleInputChange} placeholder="Primary WhatsApp" />
                             </div>
                             <div className="sc-input-group">
+                                <label>Date of Birth</label>
+                                <input type="date" name="dateOfBirth" value={formData.dateOfBirth || ''} onChange={handleInputChange} />
+                            </div>
+                            <div className="sc-input-group">
                                 <label>Site Address</label>
                                 <input type="text" name="siteAddress" value={formData.siteAddress} onChange={handleInputChange} placeholder="Project site location" />
                             </div>

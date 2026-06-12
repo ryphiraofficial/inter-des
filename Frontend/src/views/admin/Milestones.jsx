@@ -23,7 +23,7 @@ const Milestones = () => {
     const formatCurrency = (amount) => {
         if (!amount) return '₹0';
         if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
-        return `₹${amount.toLocaleString()}`;
+        return `₹${Math.round(amount).toLocaleString('en-IN')}`;
     };
 
     if (error) {

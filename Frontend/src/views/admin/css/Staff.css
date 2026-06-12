@@ -922,6 +922,14 @@
     animation: staffSlideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.staff-drawer-content.wide {
+    max-width: 800px;
+}
+
+.staff-drawer-content.salary {
+    max-width: 600px;
+}
+
 .staff-drawer-header {
     display: flex;
     justify-content: space-between;

@@ -113,6 +113,7 @@ export const getMilestonesData = async (req, res) => {
         
         // A. Staff Podium (Top 3 completed tasks)
         const staffPodium = [...staffList]
+            .filter(s => s.completedTasks > 0)
             .sort((a, b) => b.completedTasks - a.completedTasks)
             .slice(0, 5); // top 5, top 3 for podium, 4th/5th for mentions
 
@@ -145,7 +146,7 @@ export const getMilestonesData = async (req, res) => {
             .slice(0, 3);
 
         // C. Quotation King (Sales Performance)
-        const quotations = await Quotation.find();
+        const quotations = await Quotation.find({ status: 'Approved' });
         const salesStats = {};
 
         quotations.forEach(q => {

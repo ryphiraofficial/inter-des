@@ -12,9 +12,12 @@ export const usePOState = () => {
 
     const [formData, setFormData] = useState({
         supplier: '',
+        supplierContact: '',
+        supplierEmail: '',
         deliveryAddress: '',
         deliveryDate: '',
-        paymentTerms: '',
+        paymentTerms: 'Net 30 days',
+        taxRate: 18,
         notes: '',
         items: []
     });

@@ -61,6 +61,7 @@ import poInventoryRoutes from './src/routes/procurement/poInventoryRoutes.js';
 import productionRoutes from './src/routes/production/productionRoutes.js';
 import productionManagementRoutes from './src/routes/production/productionManagementRoutes.js';
 import siteVisitRoutes from './src/routes/production/siteVisitRoutes.js';
+import staffReportRoutes from './src/routes/admin/staffReportRoutes.js';
 
 import errorHandler from './src/middleware/errorHandler.js';
 import { checkTaskDeadlines } from './src/utils/notificationHelper.js';
@@ -118,7 +119,7 @@ app.use('/api/leaves', leaveRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin/milestones', milestonesRoutes);
-
+app.use('/api/staff-reports', staffReportRoutes);
 
 // Sales
 app.use('/api/clients', clientRoutes);

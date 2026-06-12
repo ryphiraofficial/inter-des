@@ -162,6 +162,7 @@
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     vertical-align: middle;
+    font-size: 1rem;
 }
 
 .item-details-cell {
@@ -171,9 +172,9 @@
     overflow: hidden;
 }
 
-.item-thumbnail-wrapper {
-    width: 40px;
-    height: 40px;
+.inventory-table .item-thumbnail-wrapper {
+    width: 48px;
+    height: 48px;
     border-radius: 8px;
     overflow: hidden;
     background: #f1f5f9;
@@ -204,17 +205,17 @@
     overflow: hidden;
 }
 
-.item-name {
+.inventory-table .item-name {
     font-weight: 700;
     color: #0f172a;
-    font-size: 0.95rem;
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.item-desc {
-    font-size: 0.8rem;
+.inventory-table .item-desc {
+    font-size: 1.05rem;
     color: #64748b;
     white-space: nowrap;
     overflow: hidden;
@@ -222,31 +223,32 @@
     max-width: 100%;
 }
 
-.section-badge {
+.inventory-table .section-badge {
     display: inline-flex;
     padding: 0.3rem 0.75rem;
     background: #eff6ff;
     color: #2563eb;
     border-radius: 99px;
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     font-weight: 700;
 }
 
-.stock-value {
+.inventory-table .stock-value {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
-.stock-value.low {
+.inventory-table .stock-value.low {
     color: #ef4444;
     padding: 2px 6px;
     background: #fef2f2;
     border-radius: 4px;
 }
 
-.price-value {
+.inventory-table .price-value {
     font-weight: 700;
     color: #0f172a;
+    font-size: 1rem;
 }
 
 .table-actions {

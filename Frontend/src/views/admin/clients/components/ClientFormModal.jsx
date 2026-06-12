@@ -54,6 +54,10 @@ const ClientFormModal = ({
                                     <input type="tel" name="contact2" className="c-client-input" value={formData.contact2} onChange={handleInputChange} placeholder="Primary WhatsApp" />
                                 </div>
                                 <div className="form-field">
+                                    <label>Date of Birth</label>
+                                    <input type="date" name="dateOfBirth" className="c-client-input" value={formData.dateOfBirth || ''} onChange={handleInputChange} />
+                                </div>
+                                <div className="form-field">
                                     <label>Status</label>
                                     <CustomSelect
                                         name="status"

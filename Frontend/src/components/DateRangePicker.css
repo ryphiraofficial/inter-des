@@ -1,0 +1,255 @@
+/* DateRangePicker – scoped styles with sdrp prefix to prevent collisions */
+
+.sdrp-root {
+    position: relative;
+    display: inline-block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Trigger ──────────────────────────────────────────────── */
+.sdrp-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 14px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 13.5px;
+    font-weight: 400;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.sdrp-trigger:hover { border-color: #cbd5e1; }
+.sdrp-trigger.active {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15,23,42,0.07);
+}
+.sdrp-trigger.filled { color: #0f172a; font-weight: 500; }
+.sdrp-trigger svg   { color: #94a3b8; flex-shrink: 0; }
+.sdrp-trigger.filled svg,
+.sdrp-trigger.active svg { color: #475569; }
+
+.sdrp-x-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    color: #94a3b8;
+    transition: background 0.1s, color 0.1s;
+    flex-shrink: 0;
+}
+.sdrp-x-btn:hover { background: #f1f5f9; color: #e11d48; }
+
+/* ── Popover ─────────────────────────────────────────────── */
+.sdrp-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0 !important;
+    left: auto !important;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+    padding: 16px 20px 14px;
+    animation: sdrp-pop .12s ease;
+    width: 586px !important;
+    box-sizing: border-box;
+}
+@keyframes sdrp-pop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Calendar container & header ─────────────────────────── */
+.sdrp-calendar-container {
+    display: flex;
+    flex-direction: column;
+    width: 252px;
+}
+
+.sdrp-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    height: 30px;
+    width: 252px;
+}
+
+.sdrp-month-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    text-align: center;
+    flex: 1;
+}
+
+.sdrp-arrow-placeholder {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.sdrp-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .1s, color .1s, border-color .1s;
+}
+.sdrp-arrow:hover { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
+
+/* ── Two calendar grids ──────────────────────────────────── */
+.sdrp-grids {
+    display: flex;
+    align-items: flex-start;
+}
+
+.sdrp-vline {
+    width: 1px;
+    background: #f1f5f9;
+    align-self: stretch;
+    margin: 0 20px;
+}
+
+/* ── Calendar table ─────────────────────────────────────── */
+.sdrp-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 252px;  /* 7 × 36px */
+}
+
+.sdrp-th {
+    width: 36px;
+    height: 32px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 0;
+    letter-spacing: 0.3px;
+}
+
+.sdrp-td {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    text-align: center;
+}
+
+/* ── Day button ─────────────────────────────────────────── */
+.sdrp-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1e293b;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .1s, color .1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.sdrp-btn:hover:not(.sdrp-start):not(.sdrp-end):not(.sdrp-single) {
+    background: #f1f5f9;
+}
+
+/* Today */
+.sdrp-today {
+    font-weight: 700;
+    position: relative;
+}
+.sdrp-today::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #0f172a;
+}
+
+/* Start of range */
+.sdrp-start {
+    background: #0f172a !important;
+    color: #fff !important;
+    border-radius: 6px 0 0 6px !important;
+}
+
+/* End of range */
+.sdrp-end {
+    background: #0f172a !important;
+    color: #fff !important;
+    border-radius: 0 6px 6px 0 !important;
+}
+
+/* Single-day selection */
+.sdrp-single {
+    background: #0f172a !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+}
+
+/* Days inside range */
+.sdrp-range {
+    background: #f1f5f9 !important;
+    border-radius: 0 !important;
+    color: #0f172a !important;
+}
+
+/* Hover preview of end-date */
+.sdrp-hover-end {
+    background: #e2e8f0 !important;
+    border-radius: 0 6px 6px 0 !important;
+    color: #0f172a !important;
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+.sdrp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.sdrp-hint {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.sdrp-clear {
+    font-size: 12px;
+    font-weight: 500;
+    color: #475569;
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .1s, color .1s, border-color .1s;
+}
+.sdrp-clear:hover { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }

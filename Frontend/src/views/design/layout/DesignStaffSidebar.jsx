@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckSquare, RefreshCw,
-    CheckCircle, Package, LogOut, Video
+    CheckCircle, Package, LogOut, Video, FileText
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
     { tab: 'submissions',  label: 'Submissions',    icon: CheckCircle },
     { tab: 'materials',    label: 'Material Requests', icon: Package },
     { tab: 'meetings',     label: 'Meetings',         icon: Video },
+    { tab: 'reports',      label: 'Reports',          icon: FileText },
 ];
 
 const DesignStaffSidebar = ({ onLogout }) => {
@@ -40,16 +41,20 @@ const DesignStaffSidebar = ({ onLogout }) => {
             <div className="design-sidebar-nav-container">
                 <nav className="design-sidebar-nav">
                     <div className="design-sidebar-section-label">WORKSPACE</div>
-                    {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
-                        <button
-                            key={tab}
-                            className={`design-sidebar-item ${activeTab === tab ? 'active' : ''}`}
-                            onClick={() => navigate(`?tab=${tab}`)}
-                        >
-                            <Icon size={18} />
-                            <span>{label}</span>
-                        </button>
-                    ))}
+                    {NAV_ITEMS.map(({ tab, label, icon: Icon }) => {
+                        return (
+                            <div key={tab} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                <button
+                                    className={`design-sidebar-item ${activeTab === tab ? 'active' : ''}`}
+                                    onClick={() => navigate(`?tab=${tab}`)}
+                                    style={{ width: '100%' }}
+                                >
+                                    <Icon size={18} />
+                                    <span>{label}</span>
+                                </button>
+                            </div>
+                        );
+                    })}
                 </nav>
             </div>
 
@@ -57,10 +62,10 @@ const DesignStaffSidebar = ({ onLogout }) => {
             <div className="design-sidebar-footer">
                 <div className="design-sidebar-user-block">
                     <div className="design-sidebar-avatar">
-                        {getInitials(user?.name)}
+                        {getInitials(user?.fullName)}
                     </div>
                     <div className="design-sidebar-user-info">
-                        <span className="design-sidebar-user-name">{user?.name || 'Designer'}</span>
+                        <span className="design-sidebar-user-name">{user?.fullName || 'Designer'}</span>
                         <span className="design-sidebar-user-role">{user?.role?.replace(/_/g, ' ')}</span>
                     </div>
                 </div>

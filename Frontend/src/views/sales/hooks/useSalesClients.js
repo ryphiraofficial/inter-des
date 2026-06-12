@@ -13,6 +13,7 @@ const initialFormData = {
     billingPincode: '',
     contact1: '',
     contact2: '',
+    dateOfBirth: '',
     status: 'Active'
 };
 

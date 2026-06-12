@@ -49,6 +49,9 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    dateOfBirth: {
+        type: Date
+    },
 
     status: {
         type: String,

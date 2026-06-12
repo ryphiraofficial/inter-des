@@ -51,6 +51,7 @@ export const useClientActions = ({
             billingPincode: client.billingPincode || '',
             contact1: client.contact1 || '',
             contact2: client.contact2 || '',
+            dateOfBirth: client.dateOfBirth ? client.dateOfBirth.split('T')[0] : '',
             status: client.status || 'Active'
         });
         setShowNewClientModal(true);

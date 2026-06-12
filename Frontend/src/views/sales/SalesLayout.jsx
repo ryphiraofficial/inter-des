@@ -14,6 +14,7 @@ const PAGE_MAP = {
     '/staff/clients':     { title: 'Clients',      subtitle: 'View your assigned client details.'       },
     '/staff/quotations':  { title: 'Quotations',   subtitle: 'View project quotations assigned to you.' },
     '/staff/meetings':    { title: 'Meetings',     subtitle: 'View and join your scheduled team and client meetings.' },
+    '/staff/reports':     { title: 'Reports',      subtitle: 'Submit daily updates, feedback, or report issues to administration.' },
 };
 
 const SalesLayout = ({ onLogout }) => {
