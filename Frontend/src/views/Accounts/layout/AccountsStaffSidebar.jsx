@@ -14,6 +14,7 @@ const NAV_ITEMS = [
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
     { tab: 'clients',    label: 'Clients',             icon: Users },
     { tab: 'vendors',    label: 'Vendors',             icon: ShoppingBag },
+    { tab: 'reports',    label: 'Reports',             icon: FileText },
     { tab: 'performance',label: 'Performance Analytics',icon: BarChart3 },
     { tab: 'meetings',   label: 'Meetings',            icon: Video },
 ];

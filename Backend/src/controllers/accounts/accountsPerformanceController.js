@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import mongoose from 'mongoose';
 import Payment from '../../models/accounts/Payment.js';
 import Invoice from '../../models/sales/Invoice.js';
 import Project from '../../models/design/Project.js';
@@ -27,16 +28,16 @@ export const getAccountsPerformance = async (req, res) => {
 
             // KPI 1: Collection Rate (40%)
             const assignedProjects = await Project.countDocuments({ assignedAccountsStaff: userId });
-            const collectedProjects = await Project.countDocuments({ 
-                assignedAccountsStaff: userId, 
-                paymentCollectionStatus: { $in: ['Verified', 'Collected'] } 
+            const collectedProjects = await Project.countDocuments({
+                assignedAccountsStaff: userId,
+                paymentCollectionStatus: { $in: ['Verified', 'Collected'] }
             });
             const collectionRate = assignedProjects > 0 ? (collectedProjects / assignedProjects) * 100 : 85.0; // Fallback to a realistic default if no assignments
 
             // KPI 2: Collection Amount (25%)
             const payments = await Payment.find({ receivedBy: userId });
             const totalCollectedAmount = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
-            
+
             // KPI 3: Follow-up Completion Rate (15%)
             // Simulating follow-up completion rate since no dedicated model exists
             const followUpRate = assignedProjects > 0 ? 90.0 : 80.0;
@@ -62,12 +63,14 @@ export const getAccountsPerformance = async (req, res) => {
                 let totalDays = 0;
                 let count = 0;
                 for (const p of payments) {
-                    const inv = await Invoice.findById(p.invoice);
-                    if (inv && inv.createdAt) {
-                        const diffTime = Math.abs(new Date(p.paymentDate) - new Date(inv.createdAt));
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        totalDays += diffDays;
-                        count++;
+                    if (p.invoice && mongoose.Types.ObjectId.isValid(p.invoice)) {
+                        const inv = await Invoice.findById(p.invoice);
+                        if (inv && inv.createdAt) {
+                            const diffTime = Math.abs(new Date(p.paymentDate) - new Date(inv.createdAt));
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            totalDays += diffDays;
+                            count++;
+                        }
                     }
                 }
                 if (count > 0) {
@@ -100,7 +103,7 @@ export const getAccountsPerformance = async (req, res) => {
             let improvements = 'Reduce Average Collection Time';
             if (process.env.GEMINI_API_KEY) {
                 try {
-                    const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+                    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                     const prompt = `Generate a 2-sentence performance insight and a short "Area needing improvement" for Accounts Staff named "${staff.fullName}" with these stats: Collection Rate: ${collectionRate.toFixed(1)}%, Collection Amount: ₹${totalCollectedAmount.toLocaleString('en-IN')}, Accuracy: ${accuracyRate.toFixed(1)}%, Avg Collection Time: ${avgDays.toFixed(1)} days. Overall Score: ${overallScore}/100. Return raw JSON format: { "insight": "...", "improvement": "..." }`;
                     const result = await model.generateContent(prompt);
                     const parsed = JSON.parse(result.response.text().trim().replace(/```json|```/g, ''));
@@ -147,7 +150,7 @@ export const getAccountsPerformance = async (req, res) => {
         // Outstanding Recovery Rate
         // Outstanding is total unpaid invoice balances
         const invoices = await Invoice.find();
-        const totalOutstanding = invoices.reduce((sum, i) => sum + (i.grandTotal - i.amountPaid), 0);
+        const totalOutstanding = invoices.reduce((sum, i) => sum + ((i.grandTotal || 0) - (i.amountPaid || 0)), 0);
         const recoveryRate = totalOutstanding > 0 ? (totalTeamCollections / (totalTeamCollections + totalOutstanding)) * 100 : 82.0;
 
         // Verification Accuracy
@@ -171,7 +174,7 @@ export const getAccountsPerformance = async (req, res) => {
         let managerAiInsights = 'Efficiently cleared pending payment entries. Team collection targets are well managed.';
         if (process.env.GEMINI_API_KEY) {
             try {
-                const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                 const prompt = `Generate a 2-sentence manager performance insight and a key area of improvement for Accounts Manager named "${managerUser.fullName || 'Accounts Manager'}" with these stats: Clearance Efficiency: ${clearanceEfficiency.toFixed(1)}%, Team collections: ₹${totalTeamCollections.toLocaleString('en-IN')}, Recovery Rate: ${recoveryRate.toFixed(1)}%, Accuracy: ${verificationAccuracy.toFixed(1)}%. Overall Score: ${managerScore}/100. Return raw JSON format: { "insight": "...", "improvement": "..." }`;
                 const result = await model.generateContent(prompt);
                 const parsed = JSON.parse(result.response.text().trim().replace(/```json|```/g, ''));

@@ -26,6 +26,7 @@ const StaffReports = () => {
     const projects = projectsRes?.data || [];
     const user = useAppSelector(selectUser);
     const isAdmin = ['admin', 'super admin', 'superadmin', 'manager', 'design manager', 'procurement manager', 'project manager', 'accounts manager'].includes(user?.role?.toLowerCase() || '');
+    const isAccounts = user?.role?.toLowerCase().includes('accounts') || user?.department === 'Accounts';
 
     const [submitReport, { isLoading: isSubmitting }] = useSubmitStaffReportMutation();
     const [updateReport, { isLoading: isUpdating }] = useUpdateStaffReportMutation();
@@ -301,6 +302,15 @@ const StaffReports = () => {
         if (isAdmin) {
             if (viewTab === 'Staff Reports' && r.type === 'Weekly Bundle') return false;
             if (viewTab === 'Weekly Bundles' && r.type !== 'Weekly Bundle') return false;
+            
+            const role = user?.role?.toLowerCase() || '';
+            if (!['admin', 'super admin', 'superadmin'].includes(role)) {
+                const managerDept = getUserDepartment(user);
+                const reportDept = getUserDepartment(r.submittedBy);
+                if (managerDept && reportDept && managerDept !== reportDept) {
+                    return false;
+                }
+            }
         }
         
         if (!isAdmin || !filterDate) return true;
@@ -453,7 +463,9 @@ const StaffReports = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Title</label>
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>
+                                                {isAccounts ? 'Report Title / Subject' : 'Title'}
+                                            </label>
                                             <input 
                                                 type="text" 
                                                 className="report-input"
@@ -475,55 +487,57 @@ const StaffReports = () => {
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                        <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project (Optional)</label>
-                                            <select 
-                                                className="report-input"
-                                                value={formData.project}
-                                                onChange={(e) => handleProjectChange(e.target.value)}
-                                            >
-                                                <option value="">Select a project...</option>
-                                                {projects.map(p => (
-                                                    <option key={p._id} value={p._id}>
-                                                        {p.projectNumber} - {p.name}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                    {!isAccounts && (
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                            <div className="report-form-group">
+                                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project (Optional)</label>
+                                                <select 
+                                                    className="report-input"
+                                                    value={formData.project}
+                                                    onChange={(e) => handleProjectChange(e.target.value)}
+                                                >
+                                                    <option value="">Select a project...</option>
+                                                    {projects.map(p => (
+                                                        <option key={p._id} value={p._id}>
+                                                            {p.projectNumber} - {p.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="report-form-group" style={{ display: 'flex', alignItems: 'center', height: '100%', paddingTop: '28px' }}>
+                                                {formData.project && (() => {
+                                                    const selectedProjectObj = projects.find(p => p._id === formData.project);
+                                                    const userDept = getUserDepartment(user);
+                                                    const assignedManager = getAssignedManagerForDept(selectedProjectObj, userDept);
+                                                    return (
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    checked={formData.isAssignedToMe}
+                                                                    onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
+                                                                    style={{ cursor: 'pointer', width: '14px', height: '14px' }}
+                                                                />
+                                                                <span style={{ fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Assigned to me</span>
+                                                            </label>
+                                                            {assignedManager && (
+                                                                <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                    <Send size={12} />
+                                                                    Reporting to: <strong style={{ color: '#4f46e5' }}>{assignedManager.fullName || 'Manager'}</strong>
+                                                                </div>
+                                                            )}
+                                                            {!assignedManager && (
+                                                                <div style={{ fontSize: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                    <AlertCircle size={12} />
+                                                                    No manager assigned.
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
                                         </div>
-                                        <div className="report-form-group" style={{ display: 'flex', alignItems: 'center', height: '100%', paddingTop: '28px' }}>
-                                            {formData.project && (() => {
-                                                const selectedProjectObj = projects.find(p => p._id === formData.project);
-                                                const userDept = getUserDepartment(user);
-                                                const assignedManager = getAssignedManagerForDept(selectedProjectObj, userDept);
-                                                return (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
-                                                            <input 
-                                                                type="checkbox" 
-                                                                checked={formData.isAssignedToMe}
-                                                                onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
-                                                                style={{ cursor: 'pointer', width: '14px', height: '14px' }}
-                                                            />
-                                                            <span style={{ fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Assigned to me</span>
-                                                        </label>
-                                                        {assignedManager && (
-                                                            <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <Send size={12} />
-                                                                Reporting to: <strong style={{ color: '#4f46e5' }}>{assignedManager.fullName || 'Manager'}</strong>
-                                                            </div>
-                                                        )}
-                                                        {!assignedManager && (
-                                                            <div style={{ fontSize: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <AlertCircle size={12} />
-                                                                No manager assigned.
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
-                                        </div>
-                                    </div>
+                                    )}
 
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                         <div className="report-form-group">
@@ -536,6 +550,8 @@ const StaffReports = () => {
                                                 <option value="Daily Update">Daily Update</option>
                                                 <option value="Issue">Issue</option>
                                                 <option value="Feedback">Feedback</option>
+                                                {isAccounts && <option value="Expense Report">Expense Report</option>}
+                                                {isAccounts && <option value="Payment Update">Payment Update</option>}
                                                 <option value="Other">Other</option>
                                             </select>
                                         </div>
@@ -555,13 +571,15 @@ const StaffReports = () => {
                                     </div>
 
                                     <div className="report-form-group">
-                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Description</label>
+                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>
+                                            {isAccounts ? 'Details / Expense Breakdown' : 'Description'}
+                                        </label>
                                         <textarea 
                                             className="report-input"
                                             required
                                             value={formData.description}
                                             onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                            placeholder="Provide detailed information..."
+                                            placeholder={isAccounts ? "Provide detailed breakdown of expenses, amounts, or payment updates..." : "Provide detailed information..."}
                                             style={{ minHeight: '100px' }}
                                         />
                                     </div>
@@ -666,22 +684,36 @@ const StaffReports = () => {
                         </div>
                     </div>
 
-                    {isAdmin && (
-                        <div style={{ display: 'flex', gap: '6px', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        {!isAdmin && (
                             <button 
-                                onClick={() => { setViewTab('Staff Reports'); setCurrentPage(1); }}
-                                style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Staff Reports' ? 'white' : 'transparent', color: viewTab === 'Staff Reports' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Staff Reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                onClick={() => {
+                                    const p = new URLSearchParams(searchParams);
+                                    p.set('action', 'new');
+                                    setSearchParams(p);
+                                }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}
                             >
-                                Staff Reports
+                                <Plus size={16} /> New Report
                             </button>
-                            <button 
-                                onClick={() => { setViewTab('Weekly Bundles'); setCurrentPage(1); }}
-                                style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Weekly Bundles' ? 'white' : 'transparent', color: viewTab === 'Weekly Bundles' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Weekly Bundles' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-                            >
-                                Weekly Bundles
-                            </button>
-                        </div>
-                    )}
+                        )}
+                        {isAdmin && (
+                            <div style={{ display: 'flex', gap: '6px', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
+                                <button 
+                                    onClick={() => { setViewTab('Staff Reports'); setCurrentPage(1); }}
+                                    style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Staff Reports' ? 'white' : 'transparent', color: viewTab === 'Staff Reports' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Staff Reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    Staff Reports
+                                </button>
+                                <button 
+                                    onClick={() => { setViewTab('Weekly Bundles'); setCurrentPage(1); }}
+                                    style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Weekly Bundles' ? 'white' : 'transparent', color: viewTab === 'Weekly Bundles' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Weekly Bundles' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    Weekly Bundles
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div style={{ padding: '24px' }}>
@@ -842,7 +874,7 @@ const StaffReports = () => {
                                         <th>Date</th>
                                         <th>Submitted By</th>
                                         <th>Type</th>
-                                        <th>Project</th>
+                                        {!isAccounts && <th>Project</th>}
                                         <th>Priority</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -860,7 +892,7 @@ const StaffReports = () => {
                                                 </td>
                                                 <td style={{ fontWeight: 600 }}>{report.submittedBy?.fullName || 'Unknown'}</td>
                                                 <td>{report.type}</td>
-                                                <td>{report.project ? `${report.project.projectNumber} - ${report.project.name}` : '-'}</td>
+                                                {!isAccounts && <td>{report.project ? `${report.project.projectNumber} - ${report.project.name}` : '-'}</td>}
                                                 <td>
                                                     <span className={`meta-priority priority-${report.priority}`}>
                                                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>

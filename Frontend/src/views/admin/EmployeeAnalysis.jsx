@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Award, BarChart2, Eye, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Award, BarChart2, Eye, ShieldCheck, TrendingUp, Users, Calculator } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { adminApi, useGetStaffAnalyticsOverviewQuery } from '../../store/api/adminApi';
 import { useToast } from '../../models/context/ToastContext';
 import StaffRewardOverview from './staff/components/StaffRewardOverview';
 import StaffAnalyticsModal from './staff/components/StaffAnalyticsModal';
+import AccountsPerformance from '../Accounts/common/AccountsPerformance';
 import './css/Staff.css';
 import './css/EmployeeAnalysis.css';
 
@@ -14,6 +15,10 @@ const EmployeeAnalysis = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
     const { data: analyticsOverview, isLoading, error } = useGetStaffAnalyticsOverviewQuery();
+    
+    // Tab State: general (Design/Production/Sales) vs accounts
+    const [departmentTab, setDepartmentTab] = useState('general');
+    
     const [roleFilter, setRoleFilter] = useState('all');
     const [bandFilter, setBandFilter] = useState('all');
     const [showAnalytics, setShowAnalytics] = useState(false);
@@ -56,6 +61,23 @@ const EmployeeAnalysis = () => {
 
     return (
         <div className="employee-analysis-page">
+            <div className="perf-tabs-container" style={{ marginBottom: '24px' }}>
+                <button 
+                    className={`perf-tab-btn ${departmentTab === 'general' ? 'active' : ''}`}
+                    onClick={() => setDepartmentTab('general')}
+                >
+                    <Users size={18} /> General Staff Performance
+                </button>
+                <button 
+                    className={`perf-tab-btn ${departmentTab === 'accounts' ? 'active' : ''}`}
+                    onClick={() => setDepartmentTab('accounts')}
+                >
+                    <Calculator size={18} /> Accounts Department Performance
+                </button>
+            </div>
+
+            {departmentTab === 'general' ? (
+                <>
             <div className="employee-analysis-hero">
                 <div>
                     <span className="employee-analysis-kicker"><ShieldCheck size={16} /> Fair Reward System</span>
@@ -177,6 +199,10 @@ const EmployeeAnalysis = () => {
                 analyticsLoading={analyticsLoading}
                 selectedAnalytics={selectedAnalytics}
             />
+                </>
+            ) : (
+                <AccountsPerformance />
+            )}
         </div>
     );
 };
