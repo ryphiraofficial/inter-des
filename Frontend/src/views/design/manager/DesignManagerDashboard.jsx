@@ -8,7 +8,7 @@ import Projects from './Projects';
 import Tasks from './Tasks';
 import DesignSkeleton from './DesignSkeleton';
 import MaterialReviewHub from './MaterialReviewHub';
-import Reports from './Reports';
+import StaffReports from '../../common/StaffReports';
 import PipelineTab from './components/PipelineTab';
 import TaskAssignModal from './components/TaskAssignModal';
 import SubmissionReviewModal from './components/SubmissionReviewModal';
@@ -138,7 +138,7 @@ const DesignManagerDashboard = ({}) => {
                 return <MeetingsPage user={user} />;
             case 'reports':
                 return (
-                    <Reports staffList={staffList} tasks={tasks} />
+                    <StaffReports />
                 );
             default:
                 return (

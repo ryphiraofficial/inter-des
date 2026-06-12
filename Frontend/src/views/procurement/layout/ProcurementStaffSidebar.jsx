@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Package,
-    Box, LogOut, Video
+    Box, LogOut, Video, FileText
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
     { tab: 'history',      label: 'Purchase History', icon: Package },
     { tab: 'vendors',      label: 'Vendors',          icon: Box },
     { tab: 'meetings',     label: 'Meetings',         icon: Video },
+    { tab: 'reports',      label: 'Reports',          icon: FileText },
 ];
 
 const ProcurementStaffSidebar = ({ onLogout, isMobileOpen, onCloseMobile }) => {

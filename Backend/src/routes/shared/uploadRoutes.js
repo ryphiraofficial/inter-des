@@ -22,9 +22,23 @@ if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !pr
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'interior-design',
-    allowed_formats: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'heic', 'heif', 'svg']
+  params: async (req, file) => {
+    // Check if the file is an image
+    const isImage = file.mimetype.startsWith('image/') || file.originalname.match(/\.(jpeg|jpg|png|webp|gif|heic|heif|svg)$/i);
+    
+    if (isImage) {
+        return {
+            folder: 'interior-design',
+            allowed_formats: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'heic', 'heif', 'svg'],
+            resource_type: 'image'
+        };
+    } else {
+        // For PDFs, DOCs, ZIPs, etc., use 'raw' so Cloudinary doesn't process them as images
+        return {
+            folder: 'interior-design',
+            resource_type: 'raw'
+        };
+    }
   }
 });
 

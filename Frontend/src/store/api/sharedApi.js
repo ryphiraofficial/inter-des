@@ -100,6 +100,22 @@ export const sharedApi = createApi({
             }),
             invalidatesTags: ['StaffReports'],
         }),
+        forwardWeeklyReports: builder.mutation({
+            query: (body) => ({
+                url: '/staff-reports/forward-weekly',
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['StaffReports'],
+        }),
+        updateStaffReport: builder.mutation({
+            query: ({ id, ...body }) => ({
+                url: `/staff-reports/${id}`,
+                method: 'PUT',
+                body,
+            }),
+            invalidatesTags: ['StaffReports'],
+        }),
     }),
 });
 
@@ -115,5 +131,7 @@ export const {
     useSubscribePushMutation,
     useGetStaffReportsQuery,
     useSubmitStaffReportMutation,
-    useUpdateStaffReportStatusMutation
+    useUpdateStaffReportStatusMutation,
+    useUpdateStaffReportMutation,
+    useForwardWeeklyReportsMutation
 } = sharedApi;

@@ -41,6 +41,23 @@ const AdminStaffReports = () => {
         }
     };
 
+    const handleUpdateIndividualStatus = async (originalReportId, newStatus) => {
+        try {
+            await updateStatus({ id: originalReportId, status: newStatus }).unwrap();
+            showToast('Individual entry approved', 'success');
+            // Update local state so UI reflects immediately without closing the modal
+            if (selectedReport) {
+                const updatedEntries = selectedReport.dailyEntries?.map(entry => 
+                    entry.originalReportId === originalReportId ? { ...entry, status: newStatus } : entry
+                );
+                setSelectedReport({ ...selectedReport, dailyEntries: updatedEntries });
+            }
+            refetch();
+        } catch (err) {
+            showToast(err?.data?.message || 'Failed to approve entry', 'error');
+        }
+    };
+
     const filteredReports = allReports.filter(r => {
         const matchesSearch = searchQuery === '' ||
             r.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,14 +100,20 @@ const AdminStaffReports = () => {
                 date: new Date(e.date || report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 name: e.submittedBy?.fullName || report.submittedBy?.fullName || 'Staff Member',
                 role: e.submittedBy?.role || report.submittedBy?.role || 'Staff',
-                content: e.content || e.description || ''
+                content: e.content || e.description || '',
+                originalReportId: e.originalReportId,
+                status: e.status || 'Pending',
+                image: e.image || ''
             }));
         }
         return [{
             date: new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             name: report.submittedBy?.fullName || 'Staff Member',
             role: report.submittedBy?.role || 'Staff',
-            content: report.description || 'No details provided.'
+            content: report.description || 'No details provided.',
+            originalReportId: report._id,
+            status: report.status || 'Pending',
+            image: report.image || ''
         }];
     };
 
@@ -206,23 +229,55 @@ const AdminStaffReports = () => {
                                             <span className="asr-daily-entry-label">Day {dailyUpdates.length - index}</span>
                                         </div>
                                         <div className="asr-daily-card-body">
-                                            <div className="asr-daily-sender">
-                                                <div className="asr-daily-avatar" style={{ backgroundColor: colors.bg, color: colors.primary }}>
-                                                    {update.name.charAt(0).toUpperCase()}
+                                            <div className="asr-daily-sender" style={{ justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <div className="asr-daily-avatar" style={{ backgroundColor: colors.bg, color: colors.primary }}>
+                                                        {update.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div className="asr-daily-sender-info">
+                                                        <span className="asr-daily-sender-name">{update.name}</span>
+                                                        <span className="asr-daily-sender-role">{update.role}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="asr-daily-sender-info">
-                                                    <span className="asr-daily-sender-name">{update.name}</span>
-                                                    <span className="asr-daily-sender-role">{update.role}</span>
-                                                </div>
+                                                {update.originalReportId && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        {update.status === 'Resolved' || update.status === 'Approved' ? (
+                                                            <span style={{ fontSize: '11px', color: '#16a34a', background: '#dcfce7', padding: '4px 10px', borderRadius: '9999px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                                                <CheckCircle size={12} /> Verified by {selectedReport?.submittedBy?.fullName?.split(' ')[0] || 'Manager'} ({selectedReport?.submittedBy?.role || 'Manager'})
+                                                            </span>
+                                                        ) : (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleUpdateIndividualStatus(update.originalReportId, 'Resolved'); }}
+                                                                disabled={isUpdating}
+                                                                style={{ fontSize: '11px', color: colors.primary, background: colors.bg, border: `1px solid ${colors.primary}40`, padding: '4px 10px', borderRadius: '6px', fontWeight: 600, cursor: isUpdating ? 'not-allowed' : 'pointer', transition: 'all 0.2s', opacity: isUpdating ? 0.7 : 1 }}
+                                                            >
+                                                                Approve Entry
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
+                                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', marginTop: '12px' }}>
+                                                {update.type && (
+                                                    <span style={{ fontSize: '11px', background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                                                        {update.type}
+                                                    </span>
+                                                )}
+                                                {update.priority && (
+                                                    <span className={`asr-priority-badge ${update.priority.toLowerCase()}`} style={{ margin: 0, padding: '3px 8px' }}>
+                                                        {update.priority}
+                                                    </span>
+                                                )}
+                                            </div>
+
                                             <p className="asr-daily-content">{update.content}</p>
 
-                                            {selectedReport.project && (
+                                            {(selectedReport.project || update.projectStr) && (
                                                 <div style={{ marginTop: '16px', padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                     <div>
                                                         <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Associated Project</span>
                                                         <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
-                                                            {selectedReport.project.projectNumber} - {selectedReport.project.name}
+                                                            {update.projectStr || (selectedReport.project ? `${selectedReport.project.projectNumber} - ${selectedReport.project.name}` : '')}
                                                         </div>
                                                     </div>
                                                     {selectedReport.isAssignedToMe && (
@@ -233,12 +288,12 @@ const AdminStaffReports = () => {
                                                 </div>
                                             )}
 
-                                            {selectedReport.image && (
+                                            {update.image && (
                                                 <div style={{ marginTop: '16px' }}>
                                                     <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Attached Image</span>
-                                                    <a href={selectedReport.image} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block' }}>
+                                                    <a href={update.image} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block' }}>
                                                         <img 
-                                                            src={selectedReport.image} 
+                                                            src={update.image} 
                                                             alt="Report attachment" 
                                                             style={{ maxWidth: '100%', maxHeight: '320px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', cursor: 'zoom-in' }} 
                                                         />

@@ -13,7 +13,7 @@ const staffReportSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['Issue', 'Feedback', 'Daily Update', 'Other'],
+        enum: ['Issue', 'Feedback', 'Daily Update', 'Weekly Bundle', 'Other'],
         default: 'Daily Update'
     },
     priority: {
@@ -52,7 +52,35 @@ const staffReportSchema = new mongoose.Schema({
     adminNotes: {
         type: String,
         trim: true
-    }
+    },
+    forwardedToAdmin: {
+        type: Boolean,
+        default: false
+    },
+    department: {
+        type: String,
+        trim: true
+    },
+    dailyEntries: [{
+        date: Date,
+        content: String,
+        originalReportId: mongoose.Schema.Types.ObjectId,
+        status: {
+            type: String,
+            enum: ['Pending', 'In Progress', 'Resolved', 'Approved'],
+            default: 'Pending'
+        },
+        image: String,
+        images: [String],
+        type: { type: String },
+        priority: String,
+        projectStr: String,
+        submittedBy: {
+            fullName: String,
+            role: String,
+            _id: mongoose.Schema.Types.ObjectId
+        }
+    }]
 }, {
     timestamps: true
 });

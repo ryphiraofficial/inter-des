@@ -59,10 +59,10 @@ const DesignManagerSidebar = ({ onLogout }) => {
             <div className="design-sidebar-footer">
                 <div className="design-sidebar-user-block">
                     <div className="design-sidebar-avatar">
-                        {getInitials(user?.name)}
+                        {getInitials(user?.fullName)}
                     </div>
                     <div className="design-sidebar-user-info">
-                        <span className="design-sidebar-user-name">{user?.name || 'Design Manager'}</span>
+                        <span className="design-sidebar-user-name">{user?.fullName || 'Design Manager'}</span>
                         <span className="design-sidebar-user-role">{user?.role?.replace(/_/g, ' ')}</span>
                     </div>
                 </div>
