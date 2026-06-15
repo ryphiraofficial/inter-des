@@ -37,6 +37,14 @@ const siteProgressReportSchema = new mongoose.Schema({
     },
     nextDayPlan: { 
         type: String 
+    },
+    sendToRole: {
+        type: String,
+        enum: ['Project Manager', 'Admin', 'Manager', 'Design Manager', 'Procurement Manager', 'Accounts Manager']
+    },
+    sendToUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, { timestamps: true });
 

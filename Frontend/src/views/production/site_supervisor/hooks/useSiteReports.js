@@ -14,7 +14,12 @@ export const useSiteReports = () => {
         issues: '',
         nextDayPlan: '',
         workersPresent: '',
+        sendToRole: 'Project Manager',
+        sendToUser: '',
     });
+
+    const [roleUsers, setRoleUsers] = useState([]);
+    const [fetchingUsers, setFetchingUsers] = useState(false);
 
     const { data: projectsRes } = useGetEngineerProjectsQuery();
     const projects = useMemo(() => projectsRes?.success ? projectsRes.data : [], [projectsRes]);
@@ -23,6 +28,33 @@ export const useSiteReports = () => {
     const reports = reportsRes?.success ? reportsRes.data : [];
 
     const [submitDailyReport, { isLoading: submitting }] = useSubmitDailyReportMutation();
+
+    useEffect(() => {
+        const fetchUsersByRole = async () => {
+            if (!form.sendToRole) return;
+            setFetchingUsers(true);
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`http://localhost:5000/api/admin/users?role=${encodeURIComponent(form.sendToRole)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setRoleUsers(data.data || []);
+                    if (data.data && data.data.length > 0) {
+                        setForm(f => ({ ...f, sendToUser: data.data[0]._id }));
+                    } else {
+                        setForm(f => ({ ...f, sendToUser: '' }));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch users by role", err);
+            } finally {
+                setFetchingUsers(false);
+            }
+        };
+        fetchUsersByRole();
+    }, [form.sendToRole]);
 
     useEffect(() => {
         let timer;
@@ -83,6 +115,8 @@ export const useSiteReports = () => {
         form, setForm,
         handleProjectChange,
         handleSubmit,
-        loadingReports
+        loadingReports,
+        roleUsers,
+        fetchingUsers
     };
 };

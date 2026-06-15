@@ -17,7 +17,9 @@ const DailyReports = () => {
         errors, setErrors,
         form, setForm,
         handleProjectChange,
-        handleSubmit
+        handleSubmit,
+        roleUsers,
+        fetchingUsers
     } = useSiteReports();
 
     return (
@@ -47,6 +49,28 @@ const DailyReports = () => {
                             value={form.reportDate}
                             onChange={v => setForm(f => ({ ...f, reportDate: v }))}
                         />
+                    </div>
+
+                    <div className="site-form-row">
+                        <ShadSelect
+                            label="Send To Role"
+                            value={form.sendToRole}
+                            options={['Project Manager', 'Admin', 'Manager', 'Design Manager', 'Procurement Manager', 'Accounts Manager']}
+                            onChange={v => setForm(f => ({ ...f, sendToRole: v }))}
+                        />
+                        <div className="site-form-group">
+                            <label className="shad-form-label">Assigned Person</label>
+                            {fetchingUsers ? (
+                                <div style={{ fontSize: '13px', color: '#64748b', padding: '10px 0' }}>Loading users...</div>
+                            ) : (
+                                <ShadSelect
+                                    value={form.sendToUser}
+                                    options={roleUsers.map(u => ({ id: u._id, name: u.fullName || u.email }))}
+                                    onChange={v => setForm(f => ({ ...f, sendToUser: v }))}
+                                    placeholder={`Select ${form.sendToRole}...`}
+                                />
+                            )}
+                        </div>
                     </div>
 
                     <div className="site-form-row" style={{ gridTemplateColumns: '1.5fr 1fr' }}>

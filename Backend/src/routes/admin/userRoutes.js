@@ -14,7 +14,7 @@ import {  protect, authorize  } from '../../middleware/auth.js';
 router.use(protect);
 
 router.route('/')
-    .get(authorize('Super Admin', 'Admin', 'Design Manager', 'Procurement Manager', 'Project Manager', 'Accounts Manager', 'Manager'), getUsers)
+    .get(authorize('Super Admin', 'Admin', 'Design Manager', 'Procurement Manager', 'Project Manager', 'Accounts Manager', 'Manager', 'Site Supervisor', 'Site Engineer'), getUsers)
     .post(authorize('Super Admin', 'Admin'), createUser);
 
 router.get('/stats', authorize('Super Admin', 'Admin', 'Design Manager', 'Procurement Manager', 'Project Manager', 'Accounts Manager', 'Manager'), getUserStats);
