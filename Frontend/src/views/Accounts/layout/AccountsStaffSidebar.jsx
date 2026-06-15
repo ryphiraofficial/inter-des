@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut
+    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut, BarChart3
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
@@ -14,6 +14,8 @@ const NAV_ITEMS = [
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
     { tab: 'clients',    label: 'Clients',             icon: Users },
     { tab: 'vendors',    label: 'Vendors',             icon: ShoppingBag },
+    { tab: 'reports',    label: 'Reports',             icon: FileText },
+    { tab: 'performance',label: 'Performance Analytics',icon: BarChart3 },
     { tab: 'meetings',   label: 'Meetings',            icon: Video },
 ];
 

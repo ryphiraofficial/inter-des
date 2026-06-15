@@ -7,6 +7,7 @@ import { getRoleDepartment } from './hooks/useRoleDashboard';
 import './css/Layout.css';
 import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/slices/authSlice';
+import AIChat from './AIChat';
 
 const Layout = ({ onLogout }) => {
     const user = useAppSelector(selectUser);
@@ -15,6 +16,7 @@ const Layout = ({ onLogout }) => {
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
     const location = useLocation();
     const department = getRoleDepartment(user?.role);
+    const isGeneralAdmin = ['super admin', 'admin', 'manager', 'superadmin'].includes(user?.role?.toLowerCase());
 
     React.useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -63,6 +65,7 @@ const Layout = ({ onLogout }) => {
                     <Outlet />
                 </div>
             </main>
+            {/* {isGeneralAdmin && <AIChat />} */}
         </div>
     );
 };

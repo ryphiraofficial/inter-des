@@ -14,7 +14,9 @@ import ManagerVendors from './ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
 import AccountsProjects from '../common/AccountsProjects';
 import AccountsReports from '../common/AccountsReports';
+import AccountsPerformance from '../common/AccountsPerformance';
 import MeetingsPage from '../../common/MeetingsPage';
+import StaffReports from '../../common/StaffReports';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 
@@ -45,6 +47,8 @@ const ManagerDashboard = ({ onLogout }) => {
             case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
             case 'projects': return <AccountsProjects user={user} search={search} setSearch={setSearch} />;
             case 'reports': return <AccountsReports user={user} search={search} setSearch={setSearch} />;
+            case 'staff_reports': return <StaffReports />;
+            case 'performance': return <AccountsPerformance user={user} />;
             case 'meetings': return <MeetingsPage user={user} />;
             default: return <Overview user={user} />;
         }

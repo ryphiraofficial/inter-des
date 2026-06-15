@@ -3,7 +3,7 @@ import Staff from '../../models/admin/Staff.js';
 
 export const createStaff = async (req, res, next) => {
     try {
-        const { name, email, phone, role, joiningDate, status, password } = req.body;
+        const { name, email, phone, role, joiningDate, status, password, dob } = req.body;
 
         if (!name || name.trim().length < 2) return res.status(400).json({ success: false, message: 'Name must be at least 2 characters' });
         if (!phone || !/^[0-9]{10}$/.test(phone)) return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits' });
@@ -15,7 +15,7 @@ export const createStaff = async (req, res, next) => {
             if (existingUser) return res.status(400).json({ success: false, message: 'A user with this email already exists' });
         }
 
-        const staff = await Staff.create({ name, email, phone, role, joiningDate, status, createdBy: req.user.id });
+        const staff = await Staff.create({ name, email, phone, role, joiningDate, status, dob, createdBy: req.user.id });
 
         if (email && password) {
             let dept = 'Admin';
@@ -26,7 +26,7 @@ export const createStaff = async (req, res, next) => {
 
             await User.create({
                 fullName: name, email, phone, role: role, password, department: dept,
-                staffId: staff.staffId, status: 'Active'
+                staffId: staff.staffId, status: 'Active', dob
             });
         }
 
@@ -57,6 +57,7 @@ export const updateStaff = async (req, res, next) => {
             user.phone = staff.phone;
             user.role = staff.role;
             user.status = staff.status === 'Inactive' ? 'Inactive' : 'Active';
+            user.dob = staff.dob;
             if (req.body.password) user.password = req.body.password;
             await user.save();
         }

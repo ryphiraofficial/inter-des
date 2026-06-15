@@ -79,6 +79,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    dob: {
+        type: Date,
+        default: null
+    },
     lastLogin: {
         type: Date,
         default: null

@@ -80,6 +80,7 @@ const Staff = () => {
                             state.setFormData({
                                 name: staff.name || '', email: staff.email || '', phone: staff.phone || '',
                                 role: staff.role || '', joiningDate: staff.joiningDate ? staff.joiningDate.split('T')[0] : '',
+                                dob: staff.dob ? staff.dob.split('T')[0] : '',
                                 status: staff.status || 'Active'
                             });
                             state.setShowModal(true);

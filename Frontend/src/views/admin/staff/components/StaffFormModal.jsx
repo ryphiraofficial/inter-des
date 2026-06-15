@@ -57,6 +57,10 @@ const StaffFormModal = ({
                                 <label>Joining Date</label>
                                 <input type="date" name="joiningDate" value={formData.joiningDate} onChange={handleInputChange} />
                             </div>
+                            <div className="form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" name="dob" value={formData.dob} onChange={handleInputChange} />
+                            </div>
                         </div>
                     </div>
                     <div className="staff-drawer-footer">

@@ -6,8 +6,12 @@ import { getExpenses, createExpense, updateExpense, deleteExpense } from '../../
 import { getPayments, createPayment, getPendingAccountsProjects, assignAccountsStaff, clearProjectPayment, verifyPaymentAndRelease, submitPaymentCollection } from '../../controllers/accounts/accountsPaymentController.js';
 import { generateAdvanceInvoice } from '../../controllers/accounts/accountsInvoiceController.js';
 import { getProjectFinancials, getAccountsStats } from '../../controllers/accounts/accountsStatsController.js';
+import { getAccountsPerformance } from '../../controllers/accounts/accountsPerformanceController.js';
 
 router.use(protect);
+
+router.route('/performance')
+    .get(getAccountsPerformance);
 
 router.route('/projects/pending')
     .get(getPendingAccountsProjects);

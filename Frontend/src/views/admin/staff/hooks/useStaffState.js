@@ -28,6 +28,7 @@ export const useStaffState = () => {
     const initialFormData = {
         name: '', email: '', phone: '', role: '',
         joiningDate: new Date().toISOString().split('T')[0],
+        dob: '',
         status: 'Active', password: '', confirmPassword: ''
     };
 

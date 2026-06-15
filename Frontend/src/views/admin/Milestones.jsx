@@ -18,6 +18,7 @@ const Milestones = () => {
     const podium = data?.podium || [];
     const topManagers = data?.topManagers || [];
     const topSales = data?.topSales || [];
+    const birthdaysToday = data?.birthdaysToday || [];
 
     const formatCurrency = (amount) => {
         if (!amount) return '₹0';
@@ -64,6 +65,23 @@ const Milestones = () => {
 
     return (
         <div className="milestones-page fade-in">
+            {/* BIRTHDAY ANNOUNCEMENT BANNER */}
+            {birthdaysToday && birthdaysToday.length > 0 && (
+                <div className="birthday-announcement-banner fade-in">
+                    <div className="birthday-icon-wrapper">🎂</div>
+                    <div className="birthday-banner-content">
+                        <h4>Today's Birthday Celebrations! 🎉</h4>
+                        <p>
+                            Join us in wishing a very Happy Birthday to{' '}
+                            <strong>
+                                {birthdaysToday.map(b => `${b.name} (${b.role})`).join(', ')}
+                            </strong>
+                            ! 🎈✨
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* 1. HERO BANNER */}
             <div className="milestones-hero">
                 <div className="hero-content">

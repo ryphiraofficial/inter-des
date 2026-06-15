@@ -11,7 +11,9 @@ import ManagerExpenses from '../manager/ManagerExpenses';
 import ManagerVendors from '../manager/ManagerVendors';
 import AccountsInvoices from '../common/AccountsInvoices';
 import MyCollections from './components/MyCollections';
+import AccountsPerformance from '../common/AccountsPerformance';
 import MeetingsPage from '../../common/MeetingsPage';
+import StaffReports from '../../common/StaffReports';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 
@@ -39,6 +41,8 @@ const StaffDashboard = ({ onLogout }) => {
             case 'expenses': return <ManagerExpenses user={user} search={search} setSearch={setSearch} />;
             case 'vendors': return <ManagerVendors user={user} search={search} setSearch={setSearch} />;
             case 'clients': return <ManagerClients user={user} search={search} setSearch={setSearch} />;
+            case 'reports': return <StaffReports />;
+            case 'performance': return <AccountsPerformance user={user} />;
             case 'meetings': return <MeetingsPage user={user} />;
             default: return <Overview user={user} />;
         }

@@ -13,7 +13,7 @@ const staffReportSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['Issue', 'Feedback', 'Daily Update', 'Weekly Bundle', 'Other'],
+        enum: ['Issue', 'Feedback', 'Daily Update', 'Weekly Bundle', 'Other', 'Expense Report', 'Payment Update'],
         default: 'Daily Update'
     },
     priority: {

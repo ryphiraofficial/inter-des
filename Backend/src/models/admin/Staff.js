@@ -43,6 +43,9 @@ const StaffSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    dob: {
+        type: Date
+    },
     status: {
         type: String,
         enum: ['Active', 'On Leave', 'Inactive'],
