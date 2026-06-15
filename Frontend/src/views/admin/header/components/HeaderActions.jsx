@@ -60,6 +60,13 @@ const HeaderActions = ({ isHome, tab, location, user }) => {
                     <span>Add Vendor</span>
                 </button>
             )}
+
+            <ActionBtn 
+                show={(location.pathname.endsWith('/staff-reports') || location.pathname.endsWith('/reports')) && !['admin', 'super admin', 'superadmin', 'manager', 'design manager', 'procurement manager', 'project manager', 'accounts manager'].includes(user?.role?.toLowerCase() || '')} 
+                onClick={() => window.dispatchEvent(new CustomEvent('open-new-staff-report'))} 
+                label="New Report" 
+                variant="primary" 
+            />
         </>
     );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
     useGetStaffReportsQuery, 
@@ -39,6 +39,16 @@ const StaffReports = () => {
     const editId = searchParams.get('editId');
     const isEditMode = Boolean(editId);
     
+    useEffect(() => {
+        const handleOpenNewReport = () => {
+            const p = new URLSearchParams(searchParams);
+            p.set('action', 'new');
+            setSearchParams(p);
+        };
+        window.addEventListener('open-new-staff-report', handleOpenNewReport);
+        return () => window.removeEventListener('open-new-staff-report', handleOpenNewReport);
+    }, [searchParams, setSearchParams]);
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
     const [expandedReports, setExpandedReports] = useState({});
@@ -686,18 +696,7 @@ const StaffReports = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        {!isAdmin && (
-                            <button 
-                                onClick={() => {
-                                    const p = new URLSearchParams(searchParams);
-                                    p.set('action', 'new');
-                                    setSearchParams(p);
-                                }}
-                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}
-                            >
-                                <Plus size={16} /> New Report
-                            </button>
-                        )}
+
                         {isAdmin && (
                             <div style={{ display: 'flex', gap: '6px', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
                                 <button 
