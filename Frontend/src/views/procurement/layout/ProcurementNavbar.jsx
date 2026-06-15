@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { 
     RefreshCw, ShoppingCart, LayoutDashboard, Plus, 
     Package, CheckSquare, Building2, CheckCircle, Box, Menu, Bell, Video,
-    User, Settings, LogOut, ChevronDown
+    User, Settings, LogOut, ChevronDown, FileText
 } from 'lucide-react';
 
 import { useNotifications } from '../../sales/hooks/useNotifications';
@@ -14,7 +14,7 @@ import { selectUser } from '../../../store/slices/authSlice';
 
 const ProcurementNavbar = ({ role, onRefresh, isLoading, onMenuClick, onLogout }) => {
     const user = useAppSelector(selectUser);
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
@@ -49,15 +49,16 @@ const ProcurementNavbar = ({ role, onRefresh, isLoading, onMenuClick, onLogout }
         requests: { title: 'Material Requests', icon: Package, description: 'Manage and track material requests' },
         assignments: { title: 'Assignments', icon: CheckSquare, description: 'Assign tasks to procurement staff' },
         vendors: { title: 'Vendors', icon: Building2, description: 'Manage vendor relationships' },
-        completed: { title: 'Completed & Handoff', icon: CheckCircle, description: 'View completed procurement handoffs' },
-        meetings: { title: 'Meetings', icon: Video, description: 'Schedule and manage vendor meetings' }
+        meetings: { title: 'Meetings', icon: Video, description: 'Schedule and manage vendor meetings' },
+        reports: { title: 'Staff Reports', icon: FileText, description: 'Review and manage reports submitted by staff.' }
     } : {
         overview: { title: 'My Dashboard', icon: LayoutDashboard, description: 'Manage your assigned material requests, track incoming stock, and log your vendor interactions all in one place.' },
         sourcing: { title: 'Sourcing Hub', icon: ShoppingCart, description: 'Select a project to start curating materials.' },
         tasks: { title: 'My Tasks', icon: CheckSquare, description: 'Track your pending and in-progress material tasks.' },
         history: { title: 'Purchase History', icon: Package, description: 'View historical purchases and compare vendor prices.' },
         vendors: { title: 'Vendors', icon: Box, description: 'Browse active vendors and review purchase histories.' },
-        meetings: { title: 'Meetings', icon: Video, description: 'Schedule and manage your vendor or team meetings.' }
+        meetings: { title: 'Meetings', icon: Video, description: 'Schedule and manage your vendor or team meetings.' },
+        reports: { title: 'Staff Reports', icon: FileText, description: 'Track and review all your submitted reports and their status.' }
     };
 
     const { title, icon: Icon, description } = tabMeta[activeTab] || { title: 'Sourcing Hub', icon: ShoppingCart, description: 'Select a project to start curating materials.' };
@@ -84,7 +85,27 @@ const ProcurementNavbar = ({ role, onRefresh, isLoading, onMenuClick, onLogout }
             </div>
 
             <div className="procurement-navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div id="procurement-navbar-actions"></div>
+                <div id="procurement-navbar-actions">
+                    {activeTab === 'reports' && (
+                        <button 
+                            onClick={() => {
+                                const p = new URLSearchParams(searchParams);
+                                p.set('action', 'new');
+                                setSearchParams(p);
+                            }}
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                padding: '8px 16px', background: '#4f46e5', color: 'white',
+                                border: 'none', borderRadius: '6px', fontWeight: 600,
+                                fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.background = '#4338ca'}
+                            onMouseLeave={(e) => e.target.style.background = '#4f46e5'}
+                        >
+                            <Plus size={16} /> Create Report
+                        </button>
+                    )}
+                </div>
                 {onRefresh && (
                     <button className="procurement-navbar-refresh" onClick={onRefresh} disabled={isLoading} title="Refresh Data">
                         <RefreshCw size={16} className={isLoading ? 'spin' : ''} />

@@ -302,14 +302,16 @@ const StaffReports = () => {
         if (isAdmin) {
             if (viewTab === 'Staff Reports' && r.type === 'Weekly Bundle') return false;
             if (viewTab === 'Weekly Bundles' && r.type !== 'Weekly Bundle') return false;
-            
-            const role = user?.role?.toLowerCase() || '';
-            if (!['admin', 'super admin', 'superadmin'].includes(role)) {
-                const managerDept = getUserDepartment(user);
-                const reportDept = getUserDepartment(r.submittedBy);
-                if (managerDept && reportDept && managerDept !== reportDept) {
-                    return false;
-                }
+
+            const managerRole = user?.role?.toLowerCase() || '';
+            if (managerRole.includes('manager') && !managerRole.includes('super admin')) {
+                const subRole = r.submittedBy?.role?.toLowerCase() || '';
+                const subDept = r.submittedBy?.department?.toLowerCase() || '';
+                
+                if (managerRole.includes('procurement') && !subRole.includes('procurement') && !subDept.includes('procurement')) return false;
+                if (managerRole.includes('design') && !subRole.includes('design') && !subDept.includes('design')) return false;
+                if (managerRole.includes('accounts') && !subRole.includes('account') && !subDept.includes('account')) return false;
+                if (managerRole.includes('project') && !subRole.includes('production') && !subRole.includes('project') && !subRole.includes('site') && !subDept.includes('production')) return false;
             }
         }
         
@@ -487,55 +489,54 @@ const StaffReports = () => {
                                         </div>
                                     </div>
 
-                                    {!isAccounts && (
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                            <div className="report-form-group">
-                                                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project (Optional)</label>
-                                                <select 
-                                                    className="report-input"
-                                                    value={formData.project}
-                                                    onChange={(e) => handleProjectChange(e.target.value)}
-                                                >
-                                                    <option value="">Select a project...</option>
-                                                    {projects.map(p => (
-                                                        <option key={p._id} value={p._id}>
-                                                            {p.projectNumber} - {p.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="report-form-group" style={{ display: 'flex', alignItems: 'center', height: '100%', paddingTop: '28px' }}>
-                                                {formData.project && (() => {
-                                                    const selectedProjectObj = projects.find(p => p._id === formData.project);
-                                                    const userDept = getUserDepartment(user);
-                                                    const assignedManager = getAssignedManagerForDept(selectedProjectObj, userDept);
-                                                    return (
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    checked={formData.isAssignedToMe}
-                                                                    onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
-                                                                    style={{ cursor: 'pointer', width: '14px', height: '14px' }}
-                                                                />
-                                                                <span style={{ fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Assigned to me</span>
-                                                            </label>
-                                                            {assignedManager && (
-                                                                <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                    <Send size={12} />
-                                                                    Reporting to: <strong style={{ color: '#4f46e5' }}>{assignedManager.fullName || 'Manager'}</strong>
-                                                                </div>
-                                                            )}
-                                                            {!assignedManager && (
-                                                                <div style={{ fontSize: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                    <AlertCircle size={12} />
-                                                                    No manager assigned.
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })()}
-                                            </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div className="report-form-group">
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Project <span style={{ color: '#ef4444' }}>*</span></label>
+                                            <select 
+                                                className="report-input"
+                                                required
+                                                value={formData.project}
+                                                onChange={(e) => handleProjectChange(e.target.value)}
+                                            >
+                                                <option value="">Select a project...</option>
+                                                {projects.map(p => (
+                                                    <option key={p._id} value={p._id}>
+                                                        {p.projectNumber} - {p.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="report-form-group" style={{ display: 'flex', alignItems: 'center', height: '100%', paddingTop: '28px' }}>
+                                            {formData.project && (() => {
+                                                const selectedProjectObj = projects.find(p => p._id === formData.project);
+                                                const userDept = getUserDepartment(user);
+                                                const assignedManager = getAssignedManagerForDept(selectedProjectObj, userDept);
+                                                return (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={formData.isAssignedToMe}
+                                                                onChange={(e) => setFormData({ ...formData, isAssignedToMe: e.target.checked })}
+                                                                style={{ cursor: 'pointer', width: '14px', height: '14px' }}
+                                                            />
+                                                            <span style={{ fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Assigned to me</span>
+                                                        </label>
+                                                        {assignedManager && (
+                                                            <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <Send size={12} />
+                                                                Reporting to: <strong style={{ color: '#4f46e5' }}>{assignedManager.fullName || 'Manager'}</strong>
+                                                            </div>
+                                                        )}
+                                                        {!assignedManager && (
+                                                            <div style={{ fontSize: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <AlertCircle size={12} />
+                                                                No manager assigned.
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     )}
 
@@ -661,8 +662,8 @@ const StaffReports = () => {
                                 <button 
                                     type="submit" 
                                     className="btn-submit-report"
-                                    disabled={isSubmitting || isUpdating}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                                    disabled={isSubmitting || isUpdating || isUploading}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '6px', cursor: (isSubmitting || isUpdating || isUploading) ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '13px', opacity: (isSubmitting || isUpdating || isUploading) ? 0.7 : 1 }}
                                 >
                                     {isSubmitting || isUpdating ? 'Saving...' : <><Send size={14} /> {isEditMode ? 'Update Report' : 'Submit Report'}</>}
                                 </button>

@@ -103,7 +103,10 @@ const AdminStaffReports = () => {
                 content: e.content || e.description || '',
                 originalReportId: e.originalReportId,
                 status: e.status || 'Pending',
-                image: e.image || ''
+                image: e.image || '',
+                projectStr: e.projectStr || '',
+                type: e.type || '',
+                priority: e.priority || ''
             }));
         }
         return [{
@@ -113,7 +116,10 @@ const AdminStaffReports = () => {
             content: report.description || 'No details provided.',
             originalReportId: report._id,
             status: report.status || 'Pending',
-            image: report.image || ''
+            image: report.image || '',
+            projectStr: report.project ? `${report.project.projectNumber} - ${report.project.name}` : '',
+            type: report.type || '',
+            priority: report.priority || ''
         }];
     };
 

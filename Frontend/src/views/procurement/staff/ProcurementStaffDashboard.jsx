@@ -12,6 +12,7 @@ import { useProcurementStaffLogic } from '../hooks/useProcurementStaffLogic';
 import TaskDetailsModal from '../components/TaskDetailsModal';
 import TimeExtensionModal from '../components/TimeExtensionModal';
 import MeetingsPage from '../../common/MeetingsPage';
+import StaffReports from '../../common/StaffReports';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 
@@ -144,6 +145,9 @@ const ProcurementStaffDashboard = ({ onLogout }) => {
 
             case 'meetings':
                 return <MeetingsPage user={user} />;
+
+            case 'reports':
+                return <StaffReports />;
 
             default:
                 return null;
