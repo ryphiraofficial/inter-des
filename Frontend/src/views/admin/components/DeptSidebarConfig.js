@@ -2,7 +2,7 @@ import {
     LayoutDashboard, FileText, Users, CheckSquare, Package, Send,
     ShoppingCart, Building2, Box, ClipboardCheck, Target,
     Wrench, Clock, Image, LogOut, Menu, Plus, CheckCircle,
-    FolderOpen, CalendarOff, X, CreditCard, DollarSign, TrendingUp, BarChart2, Video
+    FolderOpen, CalendarOff, X, CreditCard, DollarSign, TrendingUp, BarChart2, Video, ClipboardList
 } from 'lucide-react';
 
 export const NAV_CONFIG = {

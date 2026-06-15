@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, FileText, Users, CheckSquare, Package,
     ShoppingCart, Building2, Box, ClipboardCheck, Target,
-    Wrench, Clock, Image, FolderOpen, CalendarOff, Video, CheckCircle
+    Wrench, Clock, Image, FolderOpen, CalendarOff, Video, CheckCircle, ClipboardList
 } from 'lucide-react';
 
 // Nav-item config map — keyed by role string
