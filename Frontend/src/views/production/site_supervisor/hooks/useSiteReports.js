@@ -35,7 +35,10 @@ export const useSiteReports = () => {
             setFetchingUsers(true);
             try {
                 const token = localStorage.getItem('token');
-                const res = await fetch(`http://localhost:5000/api/admin/users?role=${encodeURIComponent(form.sendToRole)}`, {
+                const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:5000/api' 
+                    : 'https://inter-des-backend.onrender.com/api';
+                const res = await fetch(`${API_BASE_URL}/users?role=${encodeURIComponent(form.sendToRole)}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
