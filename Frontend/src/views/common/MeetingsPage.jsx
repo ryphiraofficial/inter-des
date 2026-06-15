@@ -92,6 +92,8 @@ const MeetingsPage = () => {
     const user   = useAppSelector(selectUser);
     const userId = user?._id;
 
+    const [activeTab, setActiveTab] = useState('upcoming');
+
     useEffect(() => {
         if (!meetings.length) return;
         meetings.forEach(m => {
@@ -106,9 +108,9 @@ const MeetingsPage = () => {
     return (
         <div className="staff-meetings-page">
             {loading ? (
-                <div className="staff-meetings-split-layout">
+                <div className="staff-meetings-tab-layout">
+                    <div className="meetings-tabs-skeleton" style={{ height: '40px', width: '250px', background: '#f1f5f9', borderRadius: '12px', marginBottom: '24px' }} />
                     <MeetingsUpcomingSkeleton />
-                    <MeetingsHistorySkeleton />
                 </div>
             ) : meetings.length === 0 ? (
                 <div className="meetings-empty">
@@ -117,23 +119,43 @@ const MeetingsPage = () => {
                     <p>Your admin will notify you when a Google Meet session is planned for you.</p>
                 </div>
             ) : (
-                <div className="staff-meetings-split-layout">
-                    <div className="meetings-upcoming-section">
-                        <p className="staff-meetings-section-title" style={{ marginTop: 0 }}>Upcoming &amp; Live</p>
-                        {upcoming.length > 0 ? (
-                            <div className="meetings-list">
-                                {upcoming.map(m => <MeetingCard key={m._id} meeting={m} userId={userId} />)}
-                            </div>
-                        ) : <div className="meetings-empty-mini"><p>No upcoming meetings.</p></div>}
+                <div className="staff-meetings-tab-layout">
+                    <div className="meetings-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '24px', background: 'white', padding: '8px', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+                        <button 
+                            className={`meeting-tab-btn ${activeTab === 'upcoming' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('upcoming')}
+                            style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: activeTab === 'upcoming' ? '#eff6ff' : 'transparent', color: activeTab === 'upcoming' ? '#3b82f6' : '#64748b', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}
+                        >
+                            Upcoming & Live ({upcoming.length})
+                        </button>
+                        <button 
+                            className={`meeting-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('history')}
+                            style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: activeTab === 'history' ? '#f8fafc' : 'transparent', color: activeTab === 'history' ? '#475569' : '#64748b', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}
+                        >
+                            Meeting History ({past.length})
+                        </button>
                     </div>
-                    <div className="meetings-history-section">
-                        <p className="staff-meetings-section-title" style={{ marginTop: 0 }}>Meeting History</p>
-                        {past.length > 0 ? (
-                            <div className="meetings-list" style={{ gridTemplateColumns: '1fr' }}>
-                                {past.map(m => <MeetingCard key={m._id} meeting={m} userId={userId} />)}
-                            </div>
-                        ) : <div className="meetings-empty-mini"><p>No past meetings found.</p></div>}
-                    </div>
+
+                    {activeTab === 'upcoming' && (
+                        <div className="meetings-upcoming-section">
+                            {upcoming.length > 0 ? (
+                                <div className="meetings-list" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))' }}>
+                                    {upcoming.map(m => <MeetingCard key={m._id} meeting={m} userId={userId} />)}
+                                </div>
+                            ) : <div className="meetings-empty-mini"><p>No upcoming meetings.</p></div>}
+                        </div>
+                    )}
+
+                    {activeTab === 'history' && (
+                        <div className="meetings-history-section">
+                            {past.length > 0 ? (
+                                <div className="meetings-list" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))' }}>
+                                    {past.map(m => <MeetingCard key={m._id} meeting={m} userId={userId} />)}
+                                </div>
+                            ) : <div className="meetings-empty-mini"><p>No past meetings found.</p></div>}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

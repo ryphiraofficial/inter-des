@@ -38,6 +38,9 @@ const leaveRequestSchema = new mongoose.Schema({
     },
     managerComments: {
         type: String
+    },
+    attachment: {
+        type: String
     }
 }, { timestamps: true });
 

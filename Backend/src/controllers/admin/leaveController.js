@@ -3,7 +3,7 @@ import User from '../../models/admin/User.js';
 
 export const submitLeave = async (req, res) => {
     try {
-        const { leaveType, fromDate, toDate, days, reason } = req.body;
+        const { leaveType, fromDate, toDate, days, reason, attachment } = req.body;
         const newLeave = new LeaveRequest({
             user: req.user.id,
             leaveType,
@@ -11,6 +11,7 @@ export const submitLeave = async (req, res) => {
             toDate,
             days,
             reason,
+            attachment,
             status: 'Pending'
         });
         await newLeave.save();

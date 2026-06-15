@@ -159,6 +159,42 @@
     height: 100%;
 }
 
+.page-header-actions .btn-primary,
+.page-header-actions .btn-success,
+.page-header-actions .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+}
+
+.page-header-actions .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.page-header-actions .btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.page-header-actions .btn-success {
+    background-color: var(--accent-green);
+    color: white;
+}
+
+.page-header-actions .btn-success:hover {
+    background-color: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
 /* Notification Popup Styles */
 .header-notification-wrapper {
     position: relative;
