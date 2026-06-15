@@ -6,13 +6,14 @@ const STATUS_OPTIONS = ['All', 'Active', 'Planning', 'On Hold', 'Completed'];
 const ProjectsFilterPanel = ({ 
     filtersOpen, setFiltersOpen, 
     filterStatus, setFilterStatus, 
-    searchTerm, setSearchTerm 
+    searchTerm, setSearchTerm,
+    alignRight = false
 }) => {
     const activeFilterCount = (filterStatus !== 'All' ? 1 : 0) + (searchTerm ? 1 : 0);
 
     return (
         <>
-            <div className="pm-toolbar">
+            <div className="pm-toolbar" style={alignRight ? { justifyContent: 'flex-end' } : {}}>
                 <div className="pm-toolbar-left">
                     <button
                         onClick={() => setFiltersOpen(o => !o)}

@@ -14,7 +14,7 @@ const EngineerProjects = () => {
     const navigate  = useNavigate();
     
     // Split filter state to support ProjectsFilterPanel
-    const [filterStatus, setFilterStatus] = useState('All');
+    const [filterStatus, setFilterStatus] = useState('Active');
     const [searchTerm, setSearchTerm] = useState('');
     const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -52,6 +52,7 @@ const EngineerProjects = () => {
                     setFilterStatus={setFilterStatus}
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
+                    alignRight={true}
                 />
             </div>
 
