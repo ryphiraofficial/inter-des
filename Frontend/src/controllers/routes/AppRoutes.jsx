@@ -171,6 +171,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="site/transferred-tasks" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteTasks isTransferred={true} /> : <Navigate to="/" replace />} />
                     <Route path="site/tasks/:id" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <TaskDetail /> : <Navigate to="/" replace />} />
                     <Route path="site/reports" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteReports /> : userRole === 'Site Supervisor' ? <SSSiteReports /> : <Navigate to="/" replace />} />
+                    <Route path="site/staff-reports" element={(isGeneralAdmin || ['Site Engineer', 'Site Supervisor'].includes(userRole)) ? <StaffReports /> : <Navigate to="/" replace />} />
                     <Route path="site/leave" element={(isGeneralAdmin || userRole === 'Site Engineer') ? <SESiteLeave /> : userRole === 'Site Supervisor' ? <SSSiteLeave /> : <Navigate to="/" replace />} />
 
                     {/* Meetings — Admin manages, all production staff can view */}

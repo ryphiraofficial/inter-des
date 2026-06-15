@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard, CheckSquare, LogOut, Menu,
-    HardHat, ClipboardList, CalendarOff, Wrench, Users, Video
+    HardHat, ClipboardList, CalendarOff, Wrench, Users, Video, FileText
 } from 'lucide-react';
 import { BASE_IMAGE_URL } from '../../../config/constants';
 import '../../admin/css/Sidebar.css';
@@ -22,6 +22,7 @@ const SiteEngineerSidebar = ({ onLogout, isCollapsed, toggleSidebar }) => {
                 { name: 'My Tasks',     icon: CheckSquare,     path: '/site/tasks' },
                 ...(!isSupervisor ? [{ name: 'Transferred Tasks', icon: Users, path: '/site/transferred-tasks' }] : []),
                 { name: 'Site Reports', icon: ClipboardList,   path: '/site/reports' },
+                { name: 'Staff Reports',icon: FileText,        path: '/site/staff-reports' },
                 { name: 'Leave Request',icon: CalendarOff,     path: '/site/leave' },
                 { name: 'Meetings',   icon: Video,           path: '/meetings' },
             ]

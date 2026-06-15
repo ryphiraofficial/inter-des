@@ -78,6 +78,7 @@ const NAV_CONFIG = {
             { name: 'Projects',      icon: FolderOpen,      path: '/site/projects' },
             { name: 'Tasks',         icon: CheckSquare,     path: '/site/tasks' },
             { name: 'Reports',       icon: FileText,        path: '/site/reports' },
+            { name: 'Staff Reports', icon: ClipboardList,   path: '/site/staff-reports' },
             { name: 'Leave Request', icon: CalendarOff,     path: '/site/leave' },
             { name: 'Meetings',      icon: Video,           path: '/meetings' },
         ],
