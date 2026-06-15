@@ -18,9 +18,6 @@ export const useSiteReports = () => {
         sendToUser: '',
     });
 
-    const [roleUsers, setRoleUsers] = useState([]);
-    const [fetchingUsers, setFetchingUsers] = useState(false);
-
     const { data: projectsRes } = useGetEngineerProjectsQuery();
     const projects = useMemo(() => projectsRes?.success ? projectsRes.data : [], [projectsRes]);
 
@@ -29,35 +26,29 @@ export const useSiteReports = () => {
 
     const [submitDailyReport, { isLoading: submitting }] = useSubmitDailyReportMutation();
 
+    const selectedProject = useMemo(() => projects.find(p => p._id === form.projectId) || null, [projects, form.projectId]);
+
+    const roleUsers = useMemo(() => {
+        if (!selectedProject || !form.sendToRole) return [];
+        
+        let users = [];
+        if (form.sendToRole === 'Project Manager') {
+            if (selectedProject.projectManager) users = [selectedProject.projectManager];
+        } else if (form.sendToRole === 'Project Engineer') {
+            users = selectedProject.projectEngineer || [];
+        } else if (form.sendToRole === 'Site Engineer') {
+            users = selectedProject.siteEngineer || [];
+        }
+        return users;
+    }, [selectedProject, form.sendToRole]);
+
     useEffect(() => {
-        const fetchUsersByRole = async () => {
-            if (!form.sendToRole) return;
-            setFetchingUsers(true);
-            try {
-                const token = localStorage.getItem('token');
-                const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'http://localhost:5000/api' 
-                    : 'https://inter-des-backend.onrender.com/api';
-                const res = await fetch(`${API_BASE_URL}/users?role=${encodeURIComponent(form.sendToRole)}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    setRoleUsers(data.data || []);
-                    if (data.data && data.data.length > 0) {
-                        setForm(f => ({ ...f, sendToUser: data.data[0]._id }));
-                    } else {
-                        setForm(f => ({ ...f, sendToUser: '' }));
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to fetch users by role", err);
-            } finally {
-                setFetchingUsers(false);
-            }
-        };
-        fetchUsersByRole();
-    }, [form.sendToRole]);
+        if (roleUsers.length > 0 && !roleUsers.find(u => u._id === form.sendToUser)) {
+            setForm(f => ({ ...f, sendToUser: roleUsers[0]._id }));
+        } else if (roleUsers.length === 0 && form.sendToUser) {
+            setForm(f => ({ ...f, sendToUser: '' }));
+        }
+    }, [roleUsers, form.sendToUser]);
 
     useEffect(() => {
         let timer;
@@ -119,7 +110,6 @@ export const useSiteReports = () => {
         handleProjectChange,
         handleSubmit,
         loadingReports,
-        roleUsers,
-        fetchingUsers
+        roleUsers
     };
 };

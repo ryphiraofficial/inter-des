@@ -18,8 +18,7 @@ const DailyReports = () => {
         form, setForm,
         handleProjectChange,
         handleSubmit,
-        roleUsers,
-        fetchingUsers
+        roleUsers
     } = useSiteReports();
 
     return (
@@ -60,16 +59,12 @@ const DailyReports = () => {
                         />
                         <div className="site-form-group">
                             <label className="shad-form-label">Assigned Person</label>
-                            {fetchingUsers ? (
-                                <div style={{ fontSize: '13px', color: '#64748b', padding: '10px 0' }}>Loading users...</div>
-                            ) : (
-                                <ShadSelect
-                                    value={form.sendToUser}
-                                    options={roleUsers.map(u => ({ id: u._id, name: u.fullName || u.email }))}
-                                    onChange={v => setForm(f => ({ ...f, sendToUser: v }))}
-                                    placeholder={`Select ${form.sendToRole}...`}
-                                />
-                            )}
+                            <ShadSelect
+                                value={form.sendToUser}
+                                options={roleUsers.map(u => ({ id: u._id, name: u.fullName || u.email }))}
+                                onChange={v => setForm(f => ({ ...f, sendToUser: v }))}
+                                placeholder={`Select ${form.sendToRole}...`}
+                            />
                         </div>
                     </div>
 
