@@ -55,7 +55,7 @@ const DailyReports = () => {
                         <ShadSelect
                             label="Send To Role"
                             value={form.sendToRole}
-                            options={['Project Manager', 'Admin', 'Manager', 'Design Manager', 'Procurement Manager', 'Accounts Manager']}
+                            options={['Project Manager', 'Project Engineer', 'Site Engineer']}
                             onChange={v => setForm(f => ({ ...f, sendToRole: v }))}
                         />
                         <div className="site-form-group">

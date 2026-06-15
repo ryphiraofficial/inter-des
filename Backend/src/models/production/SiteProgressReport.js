@@ -40,7 +40,7 @@ const siteProgressReportSchema = new mongoose.Schema({
     },
     sendToRole: {
         type: String,
-        enum: ['Project Manager', 'Admin', 'Manager', 'Design Manager', 'Procurement Manager', 'Accounts Manager']
+        enum: ['Project Manager', 'Project Engineer', 'Site Engineer']
     },
     sendToUser: {
         type: mongoose.Schema.Types.ObjectId,
