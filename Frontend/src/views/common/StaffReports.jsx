@@ -463,7 +463,17 @@ const StaffReports = () => {
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 73px)' }}>
                             <div className="drawer-body" style={{ padding: '20px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px' }}>
+                                        <div className="report-form-group">
+                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Date</label>
+                                            <input 
+                                                type="date" 
+                                                className="report-input"
+                                                required
+                                                value={formData.reportDate}
+                                                onChange={(e) => setFormData({...formData, reportDate: e.target.value})}
+                                            />
+                                        </div>
                                         <div className="report-form-group">
                                             <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>
                                                 {isAccounts ? 'Report Title / Subject' : 'Title'}
@@ -475,16 +485,6 @@ const StaffReports = () => {
                                                 value={formData.title}
                                                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                                                 placeholder="Enter report title..."
-                                            />
-                                        </div>
-                                        <div className="report-form-group">
-                                            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>Date</label>
-                                            <input 
-                                                type="date" 
-                                                className="report-input"
-                                                required
-                                                value={formData.reportDate}
-                                                onChange={(e) => setFormData({...formData, reportDate: e.target.value})}
                                             />
                                         </div>
                                     </div>
