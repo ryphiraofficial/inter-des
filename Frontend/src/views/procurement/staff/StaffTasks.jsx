@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Package, Eye, Calendar, Clock, PlayCircle } from 'lucide-react';
 import Skeleton from '../../common/Skeleton';
 import '../css/ProcurementPremium.css';
@@ -11,6 +11,7 @@ const StaffTasks = ({
     setShowTimeExtension,
     loading 
 }) => {
+    const [activeTab, setActiveTab] = useState('pending');
     
     const renderTaskCard = (task) => (
         <div key={task._id} className="assigned-item-premium fade-in">
@@ -101,64 +102,75 @@ const StaffTasks = ({
 
     return (
         <div className="procurement-premium-wrapper fade-in" style={{ padding: 0 }}>
-            {/* Two-column Kanban-style layout */}
-            <div className="staff-tasks-kanban">
+            {/* Tabs */}
+            <div className="meetings-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '24px', background: 'white', padding: '8px', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+                <button 
+                    className={`meeting-tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('pending')}
+                    style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: activeTab === 'pending' ? '#fef3c7' : 'transparent', color: activeTab === 'pending' ? '#d97706' : '#64748b', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}
+                >
+                    Pending Action ({pendingTasks.length})
+                </button>
+                <button 
+                    className={`meeting-tab-btn ${activeTab === 'progress' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('progress')}
+                    style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: activeTab === 'progress' ? '#e0e7ff' : 'transparent', color: activeTab === 'progress' ? '#4f46e5' : '#64748b', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}
+                >
+                    In Progress ({inProgressTasks.length})
+                </button>
+            </div>
+
+            <div className="staff-tasks-tab-layout">
                 
                 {/* Pending Tasks Column */}
-                <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Clock size={16} strokeWidth={2.5} />
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Pending Action</h3>
-                        {!loading && (
-                            <span style={{ marginLeft: 'auto', background: '#e2e8f0', color: '#475569', padding: '2px 10px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 600 }}>
-                                {pendingTasks.length}
-                            </span>
-                        )}
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        {loading ? (
-                            [1, 2].map(renderSkeletonCard)
-                        ) : pendingTasks.length > 0 ? (
-                            pendingTasks.map(renderTaskCard)
-                        ) : (
-                            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8', background: 'white', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-                                <Package size={32} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
-                                <p style={{ margin: 0, fontSize: '0.9rem' }}>No pending tasks</p>
+                {activeTab === 'pending' && (
+                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Clock size={16} strokeWidth={2.5} />
                             </div>
-                        )}
+                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Pending Action</h3>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '1rem' }}>
+                            {loading ? (
+                                [1, 2].map(renderSkeletonCard)
+                            ) : pendingTasks.length > 0 ? (
+                                pendingTasks.map(renderTaskCard)
+                            ) : (
+                                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8', background: 'white', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                                    <Package size={32} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+                                    <p style={{ margin: 0, fontSize: '0.9rem' }}>No pending tasks</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* In Progress Tasks Column */}
-                <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <PlayCircle size={16} strokeWidth={2.5} />
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>In Progress</h3>
-                        {!loading && (
-                            <span style={{ marginLeft: 'auto', background: '#e2e8f0', color: '#475569', padding: '2px 10px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 600 }}>
-                                {inProgressTasks.length}
-                            </span>
-                        )}
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        {loading ? (
-                            [1, 2].map(renderSkeletonCard)
-                        ) : inProgressTasks.length > 0 ? (
-                            inProgressTasks.map(renderTaskCard)
-                        ) : (
-                            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8', background: 'white', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-                                <Package size={32} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
-                                <p style={{ margin: 0, fontSize: '0.9rem' }}>No tasks in progress</p>
+                {activeTab === 'progress' && (
+                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <PlayCircle size={16} strokeWidth={2.5} />
                             </div>
-                        )}
+                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>In Progress</h3>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '1rem' }}>
+                            {loading ? (
+                                [1, 2].map(renderSkeletonCard)
+                            ) : inProgressTasks.length > 0 ? (
+                                inProgressTasks.map(renderTaskCard)
+                            ) : (
+                                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8', background: 'white', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                                    <Package size={32} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+                                    <p style={{ margin: 0, fontSize: '0.9rem' }}>No tasks in progress</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
             </div>
         </div>
