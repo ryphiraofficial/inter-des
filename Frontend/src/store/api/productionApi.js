@@ -187,6 +187,10 @@ export const productionApi = createApi({
             query: (projectId) => `/production-management/site/reports/${projectId}`,
             providesTags: ['SiteReports']
         }),
+        getReceivedSiteReports: builder.query({
+            query: () => `/production-management/site/reports/received`,
+            providesTags: ['SiteReports']
+        }),
         submitSupervisorReport: builder.mutation({
             query: (body) => ({ url: '/production-management/site/supervisor-reports', method: 'POST', body }),
             invalidatesTags: ['SiteReports']
@@ -329,6 +333,7 @@ export const {
     useUpdateSafetyLogStatusMutation,
     useSubmitDailyReportMutation,
     useGetProjectReportsQuery,
+    useGetReceivedSiteReportsQuery,
     useSubmitSupervisorReportMutation,
     useGetSupervisorReportsQuery,
     useGetEngineerDashboardQuery,

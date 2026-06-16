@@ -12,7 +12,8 @@ import { getBudgetOverview, getEngineerDashboard, getEngineerTasks, getBudgetAna
 
 import { submitAttendance, getProjectAttendance } from '../../controllers/production/siteAttendanceController.js';
 import { reportSafetyIssue, getProjectSafetyLogs, updateSafetyLogStatus } from '../../controllers/production/siteSafetyController.js';
-import { submitDailyReport, getProjectReports, submitSupervisorReport, getSupervisorReports } from '../../controllers/production/siteReportController.js';
+import { submitDailyReport, getProjectReports, submitSupervisorReport, getSupervisorReports, getReceivedSiteReports } from '../../controllers/production/siteReportController.js';
+
 
 // All routes require authentication
 router.use(protect);
@@ -88,6 +89,7 @@ router.get('/site/safety/:projectId', getProjectSafetyLogs);
 router.patch('/site/safety/:logId', authorize('Site Engineer', 'Site Supervisor', 'Project Manager', 'Project Engineer'), updateSafetyLogStatus);
 
 router.post('/site/reports', authorize('Site Engineer', 'Site Supervisor', 'Project Manager', 'Project Engineer'), submitDailyReport);
+router.get('/site/reports/received', authorize('Project Manager', 'Project Engineer', 'Site Engineer'), getReceivedSiteReports);
 router.get('/site/reports/:projectId', getProjectReports);
 
 router.post('/site/supervisor-reports', authorize('Site Supervisor', 'Project Manager', 'Project Engineer'), submitSupervisorReport);

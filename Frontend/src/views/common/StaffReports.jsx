@@ -9,6 +9,7 @@ import {
     useForwardWeeklyReportsMutation
 } from '../../store/api/sharedApi';
 import { useGetProjectsQuery } from '../../store/api/designApi';
+import { useGetReceivedSiteReportsQuery } from '../../store/api/productionApi';
 import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/slices/authSlice';
 import { FileText, Send, Clock, CheckCircle, AlertCircle, Plus, X, MessageSquare, Image, Loader, ChevronDown, ChevronUp, Calendar, Briefcase, Pencil, Paperclip, Download } from 'lucide-react';
@@ -25,6 +26,12 @@ const StaffReports = () => {
     const { data: projectsRes } = useGetProjectsQuery();
     const projects = projectsRes?.data || [];
     const user = useAppSelector(selectUser);
+    
+    const { data: receivedReportsRes, isLoading: isReceivedLoading } = useGetReceivedSiteReportsQuery(undefined, {
+        skip: user?.role !== 'Site Engineer'
+    });
+    const receivedReports = receivedReportsRes?.data || [];
+    const isPageLoading = isLoading || (user?.role === 'Site Engineer' && isReceivedLoading);
     const isAdmin = ['admin', 'super admin', 'superadmin', 'manager', 'design manager', 'procurement manager', 'project manager', 'accounts manager'].includes(user?.role?.toLowerCase() || '');
     const isAccounts = user?.role?.toLowerCase().includes('accounts') || user?.department === 'Accounts';
 
@@ -308,31 +315,76 @@ const StaffReports = () => {
         }
     };
 
-    const filteredReports = reports.filter(r => {
-        if (isAdmin) {
-            if (viewTab === 'Staff Reports' && r.type === 'Weekly Bundle') return false;
-            if (viewTab === 'Weekly Bundles' && r.type !== 'Weekly Bundle') return false;
-
-            const managerRole = user?.role?.toLowerCase() || '';
-            if (managerRole.includes('manager') && !managerRole.includes('super admin')) {
-                const subRole = r.submittedBy?.role?.toLowerCase() || '';
-                const subDept = r.submittedBy?.department?.toLowerCase() || '';
-                
-                if (managerRole.includes('procurement') && !subRole.includes('procurement') && !subDept.includes('procurement')) return false;
-                if (managerRole.includes('design') && !subRole.includes('design') && !subDept.includes('design')) return false;
-                if (managerRole.includes('accounts') && !subRole.includes('account') && !subDept.includes('account')) return false;
-                if (managerRole.includes('project') && !subRole.includes('production') && !subRole.includes('project') && !subRole.includes('site') && !subDept.includes('production')) return false;
-            }
+    const displayReports = (() => {
+        if (viewTab === 'Received Supervisor Reports') {
+            if (!filterDate) return receivedReports;
+            return receivedReports.filter(r => {
+                const reportD = new Date(r.date || r.createdAt);
+                const rDate = `${reportD.getFullYear()}-${String(reportD.getMonth() + 1).padStart(2, '0')}-${String(reportD.getDate()).padStart(2, '0')}`;
+                return rDate === filterDate;
+            });
         }
-        
-        if (!isAdmin || !filterDate) return true;
-        const reportD = new Date(r.reportDate || r.createdAt);
-        const rDate = `${reportD.getFullYear()}-${String(reportD.getMonth() + 1).padStart(2, '0')}-${String(reportD.getDate()).padStart(2, '0')}`;
-        return rDate === filterDate;
-    });
+        return reports.filter(r => {
+            if (isAdmin) {
+                if (viewTab === 'Staff Reports' && r.type === 'Weekly Bundle') return false;
+                if (viewTab === 'Weekly Bundles' && r.type !== 'Weekly Bundle') return false;
 
-    const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
-    const paginatedReports = filteredReports.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+                const managerRole = user?.role?.toLowerCase() || '';
+                if (managerRole.includes('manager') && !managerRole.includes('super admin')) {
+                    const subRole = r.submittedBy?.role?.toLowerCase() || '';
+                    const subDept = r.submittedBy?.department?.toLowerCase() || '';
+                    
+                    if (managerRole.includes('procurement') && !subRole.includes('procurement') && !subDept.includes('procurement')) return false;
+                    if (managerRole.includes('design') && !subRole.includes('design') && !subDept.includes('design')) return false;
+                    if (managerRole.includes('accounts') && !subRole.includes('account') && !subDept.includes('account')) return false;
+                    if (managerRole.includes('project') && !subRole.includes('production') && !subRole.includes('project') && !subRole.includes('site') && !subDept.includes('production')) return false;
+                }
+            }
+            
+            if (!isAdmin || !filterDate) return true;
+            const reportD = new Date(r.reportDate || r.createdAt);
+            const rDate = `${reportD.getFullYear()}-${String(reportD.getMonth() + 1).padStart(2, '0')}-${String(reportD.getDate()).padStart(2, '0')}`;
+            return rDate === filterDate;
+        });
+    })();
+
+    const totalPages = Math.ceil(displayReports.length / itemsPerPage);
+    const paginatedReports = displayReports.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const renderReceivedReportBody = (report) => (
+        <div className="report-item-body" style={{ marginTop: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '16px' }}>
+                <div>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Work Done</h4>
+                    <p style={{ fontSize: '14px', color: '#1e293b', margin: 0 }}>{report.workDone || '-'}</p>
+                </div>
+                <div>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Next Day Plan</h4>
+                    <p style={{ fontSize: '14px', color: '#1e293b', margin: 0 }}>{report.nextDayPlan || '-'}</p>
+                </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '16px' }}>
+                <div>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Status</h4>
+                    <p style={{ fontSize: '14px', color: '#1e293b', margin: 0 }}>{report.workStatus || '-'}</p>
+                </div>
+                <div>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Weather</h4>
+                    <p style={{ fontSize: '14px', color: '#1e293b', margin: 0 }}>{report.weather || '-'}</p>
+                </div>
+                <div>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '4px' }}>Workers Present</h4>
+                    <p style={{ fontSize: '14px', color: '#1e293b', margin: 0 }}>{report.workersPresent || '-'}</p>
+                </div>
+            </div>
+            {report.issues && (
+                <div style={{ marginBottom: '16px' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#ef4444', marginBottom: '4px' }}>Issues</h4>
+                    <p style={{ fontSize: '14px', color: '#b91c1c', margin: 0 }}>{report.issues}</p>
+                </div>
+            )}
+        </div>
+    );
 
     const renderReportExpandedBody = (report) => (
         <div className="report-item-body" style={{ marginTop: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
@@ -697,7 +749,7 @@ const StaffReports = () => {
 
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
 
-                        {isAdmin && (
+                         {isAdmin && (
                             <div style={{ display: 'flex', gap: '6px', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
                                 <button 
                                     onClick={() => { setViewTab('Staff Reports'); setCurrentPage(1); }}
@@ -713,11 +765,27 @@ const StaffReports = () => {
                                 </button>
                             </div>
                         )}
+                        {user?.role === 'Site Engineer' && (
+                            <div style={{ display: 'flex', gap: '6px', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
+                                <button 
+                                    onClick={() => { setViewTab('Staff Reports'); setCurrentPage(1); }}
+                                    style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Staff Reports' ? 'white' : 'transparent', color: viewTab === 'Staff Reports' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Staff Reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    My Submissions
+                                </button>
+                                <button 
+                                    onClick={() => { setViewTab('Received Supervisor Reports'); setCurrentPage(1); }}
+                                    style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', background: viewTab === 'Received Supervisor Reports' ? 'white' : 'transparent', color: viewTab === 'Received Supervisor Reports' ? '#0f172a' : '#64748b', boxShadow: viewTab === 'Received Supervisor Reports' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    Supervisor Reports
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div style={{ padding: '24px' }}>
-                    {isLoading ? (
+                    {isPageLoading ? (
                         isAdmin ? (
                             <div className="manager-reports-table-container" style={{ opacity: 0.8, pointerEvents: 'none' }}>
                                 <div className="manager-filter-bar" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', position: 'relative', borderTopLeftRadius: '11px', borderTopRightRadius: '11px' }}>
@@ -772,10 +840,10 @@ const StaffReports = () => {
                                 ))}
                             </div>
                         )
-                    ) : reports.length === 0 ? (
+                    ) : displayReports.length === 0 ? (
                         <div className="empty-state">
                             <FileText size={48} />
-                            <p>No reports submitted yet.</p>
+                            <p>{viewTab === 'Received Supervisor Reports' ? 'No supervisor reports received yet.' : 'No reports submitted yet.'}</p>
                         </div>
                     ) : isAdmin ? (
                         <div className="manager-reports-table-container">
@@ -930,44 +998,69 @@ const StaffReports = () => {
                                         style={{ cursor: 'pointer', marginBottom: expandedReports[report._id] ? '12px' : '0', userSelect: 'none' }}
                                     >
                                         <div>
-                                            <h3 className="report-title">{report.title}</h3>
+                                            <h3 className="report-title">
+                                                {viewTab === 'Received Supervisor Reports' 
+                                                    ? `Daily Site Report - ${report.project?.projectName || 'Project'}` 
+                                                    : report.title}
+                                            </h3>
                                             <div className="report-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-                                                {isAdmin && report.submittedBy && (
-                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#0f172a', fontWeight: 700, fontSize: '12px' }}>
-                                                        {report.submittedBy.fullName || 'Unknown User'}
-                                                    </span>
-                                                )}
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#334155', fontWeight: 600, fontSize: '12px' }}>
-                                                    <Calendar size={14} color="#64748b" />
-                                                    {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                </span>
-                                                <span className="meta-type">
-                                                    <FileText size={14}/> {report.type}
-                                                </span>
-                                                <span className={`meta-priority priority-${report.priority}`}>
-                                                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>
-                                                    {report.priority} Priority
-                                                </span>
-                                                {report.project && (
-                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#4338ca', fontWeight: 700, background: '#e0e7ff', border: '1px solid #c7d2fe', padding: '4px 10px', borderRadius: '6px' }}>
-                                                        <Briefcase size={14} />
-                                                        {report.project.projectNumber} - {report.project.name}
-                                                        {report.isAssignedToMe && (
-                                                            <span style={{ fontSize: '10px', color: '#16a34a', background: '#dcfce7', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>
-                                                                Assigned
+                                                {viewTab === 'Received Supervisor Reports' ? (
+                                                    <>
+                                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#0f172a', fontWeight: 700, fontSize: '12px' }}>
+                                                            {report.submittedBy?.fullName || 'Supervisor'}
+                                                        </span>
+                                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#334155', fontWeight: 600, fontSize: '12px' }}>
+                                                            <Calendar size={14} color="#64748b" />
+                                                            {new Date(report.date || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                        <span className="meta-type" style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0' }}>
+                                                            <FileText size={14}/> {report.workStatus || 'Normal'}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {isAdmin && report.submittedBy && (
+                                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#0f172a', fontWeight: 700, fontSize: '12px' }}>
+                                                                {report.submittedBy.fullName || 'Unknown User'}
                                                             </span>
                                                         )}
-                                                    </span>
+                                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#334155', fontWeight: 600, fontSize: '12px' }}>
+                                                            <Calendar size={14} color="#64748b" />
+                                                            {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                        <span className="meta-type">
+                                                            <FileText size={14}/> {report.type}
+                                                        </span>
+                                                        <span className={`meta-priority priority-${report.priority}`}>
+                                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>
+                                                            {report.priority} Priority
+                                                        </span>
+                                                        {report.project && (
+                                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#4338ca', fontWeight: 700, background: '#e0e7ff', border: '1px solid #c7d2fe', padding: '4px 10px', borderRadius: '6px' }}>
+                                                                <Briefcase size={14} />
+                                                                {report.project.projectNumber} - {report.project.name}
+                                                                {report.isAssignedToMe && (
+                                                                    <span style={{ fontSize: '10px', color: '#16a34a', background: '#dcfce7', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>
+                                                                        Assigned
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                    </>
                                                 )}
                                             </div>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                            {getStatusBadge(report.status)}
+                                            {viewTab !== 'Received Supervisor Reports' && getStatusBadge(report.status)}
                                             {expandedReports[report._id] ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
                                         </div>
                                     </div>
                                     
-                                    {expandedReports[report._id] && renderReportExpandedBody(report)}
+                                    {expandedReports[report._id] && (
+                                        viewTab === 'Received Supervisor Reports' 
+                                            ? renderReceivedReportBody(report) 
+                                            : renderReportExpandedBody(report)
+                                    )}
                                 </div>
                             ))}
                             

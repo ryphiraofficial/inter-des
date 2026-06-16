@@ -42,6 +42,20 @@ export const submitDailyReport = async (req, res) => {
 // @desc    Get daily progress reports for a project
 // @route   GET /api/production/site/reports/:projectId
 // @access  Private
+export const getReceivedSiteReports = async (req, res) => {
+    try {
+        const reports = await SiteProgressReport.find({ sendToUser: req.user._id })
+            .populate('submittedBy', 'fullName role')
+            .populate('project', 'projectName')
+            .sort({ date: -1 });
+
+        res.status(200).json({ success: true, data: reports });
+    } catch (error) {
+        console.error('Error fetching received site reports:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 export const getProjectReports = async (req, res) => {
     try {
         const query = req.params.projectId === 'all' ? {} : { project: req.params.projectId };
