@@ -5,7 +5,6 @@ const ProjectTabs = ({ activeView, setActiveView }) => {
     const tabs = [
         { id: 'kanban', label: 'Kanban Board', icon: Tally4 },
         { id: 'table', label: 'Project List', icon: Table },
-        { id: 'timeline', label: 'Timeline View', icon: Calendar },
         { id: 'archive', label: 'Archived', icon: Archive }
     ];
 

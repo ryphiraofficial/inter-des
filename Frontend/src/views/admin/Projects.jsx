@@ -9,7 +9,6 @@ import ProjectWorkflow from './projects/components/ProjectWorkflow';
 import ProjectKPIs from './projects/components/ProjectKPIs';
 import ProjectTabs from './projects/components/ProjectTabs';
 import ProjectTable from './projects/components/ProjectTable';
-import ProjectTimeline from './projects/components/ProjectTimeline';
 import ProjectDetailModal from './projects/components/ProjectDetailModal';
 import ProjectEditModal from './projects/components/ProjectEditModal';
 import ProjectFocusedView from './projects/components/ProjectFocusedView';
@@ -100,8 +99,6 @@ const Projects = () => {
         switch (state.activeView) {
             case 'table':
                 return <ProjectTable projects={activeProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
-            case 'timeline':
-                return <ProjectTimeline projects={activeProjects} />;
             case 'archive': 
                 return <ProjectTable projects={archivedProjects} onProjectClick={state.setSelectedProject} onEditClick={setProjectToEdit} onDeleteClick={setProjectToDelete} />;
             case 'kanban':
