@@ -7,6 +7,7 @@ import InvoiceStats from './invoice/components/InvoiceStats';
 import InvoiceFilterBar from './invoice/components/InvoiceFilterBar';
 import InvoiceTable from './invoice/components/InvoiceTable';
 import InvoiceFormModal from './invoice/components/InvoiceFormModal';
+import InvoiceViewModal from '../Accounts/common/components/invoices/InvoiceViewModal';
 import InvoiceDocument from '../Accounts/common/components/invoices/InvoiceDocument';
 import { TableSkeleton, StatsSkeleton } from './components/Skeleton';
 
@@ -37,10 +38,15 @@ const Invoice = () => {
     });
 
     const [downloadingInvoice, setDownloadingInvoice] = useState(null);
+    const [viewingInvoice, setViewingInvoice] = useState(null);
     const invoiceRef = useRef(null);
 
     const handleDownload = (invoice) => {
         setDownloadingInvoice(invoice);
+    };
+
+    const handleView = (invoice) => {
+        setViewingInvoice(invoice);
     };
 
     useEffect(() => {
@@ -76,9 +82,12 @@ const Invoice = () => {
         const matchesStatus = state.statusFilter === 'All' || inv.status === state.statusFilter;
         return matchesSearch && matchesStatus;
     }).sort((a, b) => {
-        // "Unapproved" (Draft) first logic
-        if (a.status === 'Draft' && b.status !== 'Draft') return -1;
-        if (a.status !== 'Draft' && b.status === 'Draft') return 1;
+        // "Unapproved"/Unpaid first logic
+        const aIsUnpaid = a.status !== 'Paid';
+        const bIsUnpaid = b.status !== 'Paid';
+        if (aIsUnpaid && !bIsUnpaid) return -1;
+        if (!aIsUnpaid && bIsUnpaid) return 1;
+
         // Then sort by newest first
         return new Date(b.createdAt || b.invoiceDate) - new Date(a.createdAt || a.invoiceDate);
     });
@@ -110,6 +119,7 @@ const Invoice = () => {
                         handleUpdatePayment={actions.handleUpdatePayment}
                         handleDelete={actions.handleDelete}
                         onDownload={handleDownload}
+                        onView={handleView}
                     />
                 </div>
             </div>
@@ -122,6 +132,12 @@ const Invoice = () => {
                 clients={state.clients}
                 submitting={state.submitting}
                 handleCreateInvoice={actions.handleCreateInvoice}
+            />
+
+            <InvoiceViewModal 
+                invoice={viewingInvoice} 
+                onClose={() => setViewingInvoice(null)} 
+                onDownload={handleDownload}
             />
 
             {/* Hidden template for PDF generation */}

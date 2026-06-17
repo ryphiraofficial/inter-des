@@ -1,9 +1,9 @@
 import React from 'react';
-import { Download, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-react';
+import { Eye, Download, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-react';
 import { TableSkeleton } from '../../components/Skeleton';
 
 const InvoiceTable = ({ 
-    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload
+    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload, onView
 }) => {
     if (loading) {
         return <TableSkeleton rows={10} cols={6} />;
@@ -22,6 +22,7 @@ const InvoiceTable = ({
         <table className="invoice-table">
             <thead>
                 <tr>
+                    <th>No.</th>
                     <th>Invoice #</th>
                     <th>Client</th>
                     <th className="desktop-hide">Date</th>
@@ -34,12 +35,15 @@ const InvoiceTable = ({
                 </tr>
             </thead>
             <tbody>
-                {invoices.map((inv) => (
+                {invoices.map((inv, index) => (
                     <React.Fragment key={inv._id}>
                         <tr 
                             className={`inv-row ${expandedRow === inv._id ? 'expanded' : ''}`}
                             onClick={() => window.innerWidth <= 768 && toggleRow(inv._id)}
                         >
+                            <td className="row-number-cell" style={{ fontWeight: '600', color: '#64748b' }}>
+                                {index + 1}
+                            </td>
                             <td className="inv-id">{inv.invoiceNumber}</td>
                             <td className="client-name-cell">
                                 <div className="client-info">
@@ -60,6 +64,7 @@ const InvoiceTable = ({
                             </td>
                             <td className="desktop-hide">
                                 <div className="invoice-actions">
+                                    <button className="btn-inv-action view" title="View" onClick={(e) => { e.stopPropagation(); onView && onView(inv); }}><Eye size={16} /></button>
                                     <button className="btn-inv-action primary" title="Download" onClick={(e) => { e.stopPropagation(); onDownload && onDownload(inv); }}><Download size={16} /></button>
                                     {inv.status !== 'Paid' && (
                                         <button
@@ -86,7 +91,7 @@ const InvoiceTable = ({
                         </tr>
                         {expandedRow === inv._id && (
                             <tr className="mobile-expansion-row mobile-show">
-                                <td colSpan="4">
+                                <td colSpan="5">
                                     <div className="expansion-content">
                                         <div className="info-grid">
                                             <div className="info-item">
@@ -107,6 +112,7 @@ const InvoiceTable = ({
                                             </div>
                                         </div>
                                         <div className="expansion-actions">
+                                            <button className="btn-mobile-action view" onClick={() => onView && onView(inv)}><Eye size={16} /> View Details</button>
                                             <button className="btn-mobile-action primary" onClick={() => onDownload && onDownload(inv)}><Download size={16} /> Download PDF</button>
                                             {inv.status !== 'Paid' && (
                                                 <button className="btn-mobile-action success" onClick={() => handleUpdatePayment(inv._id, inv.grandTotal - (inv.amountPaid || 0))}>

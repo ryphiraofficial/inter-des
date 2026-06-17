@@ -1,10 +1,11 @@
-import { useCreatePOInventoryMutation } from '../../../../store/api/adminApi';
+import { useCreatePOInventoryMutation, useDeletePOInventoryMutation } from '../../../../store/api/adminApi';
 
 export const usePOInventoryActions = ({ 
     fetchInventory, setSubmitting, setShowAddModal, setFormData 
 }) => {
     
     const [createPOInventory] = useCreatePOInventoryMutation();
+    const [deletePOInventory] = useDeletePOInventoryMutation();
 
     const handleCreateItem = async (formData) => {
         if (!formData.itemName || !formData.supplier) {
@@ -25,5 +26,15 @@ export const usePOInventoryActions = ({
         }
     };
 
-    return { handleCreateItem };
+    const handleDeleteItem = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this item?')) return;
+        try {
+            await deletePOInventory(id).unwrap();
+            fetchInventory();
+        } catch (err) {
+            alert('Error deleting item: ' + (err.data?.message || err.message));
+        }
+    };
+
+    return { handleCreateItem, handleDeleteItem };
 };

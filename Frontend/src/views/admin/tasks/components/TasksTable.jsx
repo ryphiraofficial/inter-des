@@ -24,6 +24,7 @@ const TasksTable = ({
                 <table className="tasks-table">
                     <thead>
                         <tr>
+                            <th>No.</th>
                             <th>Task Details</th>
                             <th className="desktop-hide">Assigned To</th>
                             <th className="desktop-hide">Client & Project</th>
@@ -38,12 +39,15 @@ const TasksTable = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {tasks.map((task) => (
+                        {tasks.map((task, index) => (
                             <React.Fragment key={task._id}>
                                 <tr 
                                     className={`task-row ${expandedRow === task._id ? 'expanded' : ''}`}
                                     onClick={() => toggleRow(task._id)}
                                 >
+                                    <td className="row-number-cell" style={{ fontWeight: '600', color: '#64748b' }}>
+                                        {index + 1}
+                                    </td>
                                     <td className="task-details-cell">
                                         <div className="task-info-main">
                                             <span className="task-list-title">{task.title}</span>
@@ -170,7 +174,7 @@ const TasksTable = ({
                                 </tr>
                                 {expandedRow === task._id && (
                                     <tr className="mobile-expansion-row mobile-show">
-                                        <td colSpan="3">
+                                        <td colSpan="4">
                                             <div className="expansion-content">
                                                 <div className="info-grid">
                                                     <div className="info-item"><label>Assigned To</label><span>{task.assignedTo?.name || 'Unassigned'}</span></div>

@@ -208,6 +208,10 @@ export const adminApi = createApi({
             query: (body) => ({ url: `/po-inventory`, method: 'POST', body }),
             invalidatesTags: ['POInventory'],
         }),
+        deletePOInventory: builder.mutation({
+            query: (id) => ({ url: `/po-inventory/${id}`, method: 'DELETE' }),
+            invalidatesTags: ['POInventory'],
+        }),
 
         // ── Inventory ─────────────────────────────────────────────────────────
         getInventory: builder.query({
@@ -419,6 +423,7 @@ export const {
     useMarkPOReceivedMutation,
     useGetPOInventoryQuery,
     useCreatePOInventoryMutation,
+    useDeletePOInventoryMutation,
     useGetInventoryQuery,
     useCreateInventoryMutation,
     useUpdateInventoryMutation,

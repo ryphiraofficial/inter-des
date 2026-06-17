@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, ArrowUpRight } from 'lucide-react';
+import { Package, ArrowUpRight, Trash2 } from 'lucide-react';
 
 const getStatusInfo = (item) => {
     const stock = item.currentStock || 0;
@@ -14,18 +14,31 @@ const getStockPercentage = (current, reorder) => {
     return Math.min(perc, 100);
 };
 
-const POInventoryCard = ({ item, onViewHistory }) => {
+const POInventoryCard = ({ item, onViewHistory, onDelete }) => {
     const status = getStatusInfo(item);
     
     return (
-        <div className="po-inv-card">
+        <div className="po-inv-card" style={{ position: 'relative' }}>
             <div className="card-top">
                 <div className="item-icon-box">
                     <Package size={24} color="#3b82f6" />
                 </div>
-                <span className={`item-badge status-${status.class}`}>
-                    {status.label}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className={`item-badge status-${status.class}`}>
+                        {status.label}
+                    </span>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onDelete && onDelete(); }}
+                        style={{
+                            background: 'none', border: 'none', color: '#ef4444', 
+                            cursor: 'pointer', padding: '4px', borderRadius: '4px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}
+                        title="Delete Item"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                </div>
             </div>
 
             <div className="item-title">

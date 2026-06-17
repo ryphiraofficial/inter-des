@@ -30,6 +30,7 @@ const ProjectTable = ({ projects, onProjectClick, onEditClick, onDeleteClick }) 
             <table className="project-table">
                 <thead>
                     <tr>
+                        <th>No.</th>
                         <th>Project Details</th>
                         <th>Client</th>
                         <th>Stage</th>
@@ -41,8 +42,11 @@ const ProjectTable = ({ projects, onProjectClick, onEditClick, onDeleteClick }) 
                     </tr>
                 </thead>
                 <tbody>
-                    {currentProjects.map(project => (
+                    {currentProjects.map((project, index) => (
                         <tr key={project._id} onClick={() => onProjectClick(project)}>
+                            <td className="row-number-cell" style={{ fontWeight: '600', color: '#64748b' }}>
+                                {(currentPage - 1) * itemsPerPage + index + 1}
+                            </td>
                             <td>
                                 <div className="project-info-cell">
                                     <span className="p-name">{project.name}</span>

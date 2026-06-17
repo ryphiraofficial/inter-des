@@ -17,6 +17,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
             <table className="quotations-table">
                 <thead>
                     <tr>
+                        <th>No.</th>
                         <th>Quote #</th>
                         <th>Project & Client</th>
                         <th className="desktop-hide">Amount</th>
@@ -28,12 +29,15 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                     </tr>
                 </thead>
                 <tbody>
-                    {quotations.map((q) => (
+                    {quotations.map((q, index) => (
                         <React.Fragment key={q._id}>
                             <tr 
                                 className={`q-row ${expandedRow === q._id ? 'expanded' : ''}`}
                                 onClick={() => window.innerWidth <= 768 && toggleRow(q._id)}
                             >
+                                <td className="row-number-cell" style={{ fontWeight: '600', color: '#64748b' }}>
+                                    {index + 1}
+                                </td>
                                 <td className="quote-number-cell">#{q.quotationNumber}</td>
                                 <td>
                                     <div className="project-client-cell">
@@ -103,7 +107,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                             </tr>
                             {expandedRow === q._id && (
                                 <tr className="mobile-expansion-row mobile-show">
-                                    <td colSpan="8">
+                                    <td colSpan="9">
                                         <div className="expansion-content">
                                             <div className="info-grid">
                                                 <div className="info-item">

@@ -75,6 +75,7 @@ const POInventory = () => {
                                 key={item._id}
                                 item={item}
                                 onViewHistory={handleViewHistory}
+                                onDelete={() => actions.handleDeleteItem(item._id)}
                             />
                         ))}
                     </div>
