@@ -795,7 +795,7 @@
 
 /* Focused Project View Premium Styles */
 .focused-view {
-    padding: 2rem 2.5rem;
+    padding: 0.5rem 2.5rem 2rem 2.5rem;
     background: #ffffff;
     min-height: 100vh;
     margin: -24px -24px 0 -24px;
