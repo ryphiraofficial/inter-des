@@ -1,86 +1,59 @@
 import React from 'react';
 import { X, Send, Save, AlertTriangle, Loader, CheckCircle, Package, User, Printer } from 'lucide-react';
+import QuotationTemplateWrapper from '../../../admin/settings/components/templates/QuotationTemplateWrapper';
 
 export const BillPreviewModal = ({ 
     show, setShow, formData, clients, lineItems, subtotal, discount, 
     discountAmount, offerPrice, taxRate, taxAmount, total, grandTotal, 
-    handleFinalSave, isSaving, includeDiscount, includeTax 
+    handleFinalSave, isSaving, includeDiscount, includeTax, settings 
 }) => {
     const finalTotal = grandTotal ?? total;
     if (!show) return null;
     const clientData = clients.find(c => c._id === formData.client);
 
+    const quotation = {
+        documentType: formData.documentType || 'Quotation',
+        quotationNumber: formData.quoteNumber,
+        createdAt: formData.date || new Date(),
+        client: clientData || {},
+        projectName: formData.projectName,
+        projectDescription: formData.projectDescription,
+        projectStart: formData.projectStart,
+        projectEnd: formData.projectEnd,
+        items: lineItems.map((item, idx) => ({
+            itemName: item.name,
+            description: item.description,
+            measurements: item.measurements,
+            quantity: item.quantity,
+            unit: item.unit,
+            rate: item.rate,
+            amount: item.amount,
+            section: item.section || 'General',
+            image: item.image
+        })),
+        notes: formData.notes,
+        termsAndConditions: formData.termsConditions,
+        discount: includeDiscount ? discount : 0,
+        taxRate: includeTax ? taxRate : 0,
+        depositPercent: formData.depositPercent,
+        depositAmount: formData.depositAmount || 0,
+        subtotal: subtotal,
+        discountAmount: discountAmount || 0,
+        offerPrice: offerPrice || 0,
+        taxAmount: taxAmount || 0,
+        total: finalTotal || 0
+    };
+
     return (
         <div className="preview-overlay">
-            <div className="preview-modal">
+            <div className="preview-modal" style={{ maxWidth: '1000px', width: '95vw', height: '90vh', display: 'flex', flexDirection: 'column' }}>
                 <div className="preview-header">
                     <h3>Document Preview</h3>
                     <button onClick={() => setShow(false)}><X size={20} /></button>
                 </div>
-                <div className="preview-content">
-                    <div className="doc-preview-paper">
-                        <div className="preview-paper-header">
-                            <div className="company-logo-section">
-                                <h1 style={{ color: '#1e293b', margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>DESIGN STUDIO</h1>
-                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>INTERIOR & DESIGN SOLUTIONS</p>
-                            </div>
-                            <div className="doc-meta-section">
-                                <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#6366f1' }}>{formData.documentType.toUpperCase()}</h2>
-                                <p>No: {formData.quoteNumber}</p>
-                                <p>Date: {new Date(formData.date).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-
-                        <div className="preview-parties">
-                            <div className="party-box">
-                                <label>PREPARED FOR</label>
-                                <strong>{clientData?.name || 'Unknown Client'}</strong>
-                                <p>{clientData?.email}</p>
-                                <p>{clientData?.phone}</p>
-                            </div>
-                            <div className="party-box">
-                                <label>PROJECT NAME</label>
-                                <strong>{formData.projectName}</strong>
-                                <p>Duration: {new Date(formData.projectStart).toLocaleDateString()} - {new Date(formData.projectEnd).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-
-                        <table className="preview-table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>ITEM & DESCRIPTION</th>
-                                    <th>QTY</th>
-                                    <th>RATE</th>
-                                    <th>AMOUNT</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {lineItems.map((item, idx) => (
-                                    <tr key={item.id}>
-                                        <td>{idx + 1}</td>
-                                        <td>
-                                            <div style={{ fontWeight: 600 }}>{item.name}</div>
-                                            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{item.description}</div>
-                                            {item.measurements && <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>Measurements: {item.measurements}</div>}
-                                        </td>
-                                        <td>{item.quantity} {item.unit}</td>
-                                        <td>₹{item.rate?.toLocaleString()}</td>
-                                        <td>₹{item.amount?.toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        <div className="preview-summary-area">
-                            <div className="preview-summary-col">
-                                <div className="summary-row"><span>Subtotal</span><span>₹{(subtotal || 0).toLocaleString()}</span></div>
-                                {includeDiscount && <div className="summary-row"><span>Discount ({discount}%)</span><span>- ₹{(discountAmount || 0).toLocaleString()}</span></div>}
-                                <div className="summary-row highlight"><span>Offer Price</span><span>₹{(offerPrice || 0).toLocaleString()}</span></div>
-                                {includeTax && <div className="summary-row"><span>GST ({taxRate}%)</span><span>₹{(taxAmount || 0).toLocaleString()}</span></div>}
-                                <div className="summary-row grand-total"><span>Grand Total</span><span>₹{(finalTotal || 0).toLocaleString()}</span></div>
-                            </div>
-                        </div>
+                <div className="preview-content" style={{ flex: 1, padding: '2rem', background: '#f4f4f4', overflowY: 'auto', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ transformOrigin: 'top center', maxWidth: '100%' }}>
+                        <QuotationTemplateWrapper quotation={quotation} settings={settings} />
                     </div>
                 </div>
                 <div className="preview-footer">

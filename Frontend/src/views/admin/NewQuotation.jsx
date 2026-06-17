@@ -8,6 +8,7 @@ import { useQuotationData } from './quotation/hooks/useQuotationData';
 import { useQuotationSearch } from './quotation/hooks/useQuotationSearch';
 import { useQuotationCalculations } from './quotation/hooks/useQuotationCalculations';
 import { useQuotationActions } from './quotation/hooks/useQuotationActions';
+import { useGetSettingsQuery } from '../../store/api/adminApi';
 
 // Components
 import ProjectDetailsSection from './quotation/components/ProjectDetailsSection';
@@ -41,6 +42,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
 
     // Logic Hooks
     const state = useQuotationState();
+    const { data: settingsRes } = useGetSettingsQuery();
 
     const search = useQuotationSearch({
         clients, inventoryItems, setFormData: state.setFormData,
@@ -205,6 +207,7 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                 includeTax={state.includeTax} taxRate={state.taxRate}
                 handleFinalSave={() => actions.handleFinalSave(pendingStatus)}
                 isSaving={isSaving}
+                settings={settingsRes?.data}
             />
 
             <QuickAddClientModal

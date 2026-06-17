@@ -4,7 +4,6 @@ import Skeleton from '../../components/Skeleton';
 import AlertDialog from '../../components/AlertDialog';
 import { useUpdateProjectMutation, useGetTasksQuery } from '../../../../store/api/adminApi';
 import ProjectInfoCards from './ProjectInfoCards';
-import ProjectTimelineVis from './ProjectTimelineVis';
 
 const getStageColor = (stage) => {
     const colors = {
@@ -185,10 +184,6 @@ const ProjectFocusedView = ({ project, loading, handleClose, handleDeleteProject
                 </div>
 
                 <ProjectInfoCards project={project} getStageColor={getStageColor} />
-
-                {tasks.length > 0 && (
-                    <ProjectTimelineVis tasks={tasks} />
-                )}
             </div>
 
             <AlertDialog 
