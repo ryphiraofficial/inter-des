@@ -53,7 +53,8 @@ export const submitAttendance = async (req, res) => {
 // @access  Private
 export const getProjectAttendance = async (req, res) => {
     try {
-        const attendance = await SiteAttendance.find({ project: req.params.projectId })
+        const query = req.params.projectId === 'all' ? {} : { project: req.params.projectId };
+        const attendance = await SiteAttendance.find(query)
             .populate('submittedBy', 'fullName role')
             .sort({ date: -1 });
 

@@ -45,7 +45,12 @@ const siteProgressReportSchema = new mongoose.Schema({
     sendToUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    attachments: [{
+        url: String,
+        originalName: String,
+        resourceType: String
+    }]
 }, { timestamps: true });
 
 export default mongoose.model('SiteProgressReport', siteProgressReportSchema);

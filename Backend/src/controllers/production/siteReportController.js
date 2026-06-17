@@ -7,7 +7,7 @@ import ProductionProject from '../../models/production/ProductionProject.js';
 // @access  Private (SE, SS)
 export const submitDailyReport = async (req, res) => {
     try {
-        const { projectId, reportDate, workStatus, weather, workDone, workersPresent, issues, nextDayPlan, sendToRole, sendToUser } = req.body;
+        const { projectId, reportDate, workStatus, weather, workDone, workersPresent, issues, nextDayPlan, sendToRole, sendToUser, attachments } = req.body;
 
         const project = await ProductionProject.findById(projectId);
         if (!project) {
@@ -25,7 +25,8 @@ export const submitDailyReport = async (req, res) => {
             issues,
             nextDayPlan,
             sendToRole,
-            sendToUser
+            sendToUser,
+            attachments: attachments || []
         });
 
         const populatedReport = await SiteProgressReport.findById(report._id)

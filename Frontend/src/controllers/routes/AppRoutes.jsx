@@ -46,6 +46,7 @@ import EngineerProjects from '../../views/production/project_engineer/EngineerPr
 import ProjectDetail from '../../views/production/project_engineer/ProjectDetail';
 import TaskDetail from '../../views/production/project_engineer/TaskDetail';
 import EngineerReports from '../../views/production/project_engineer/EngineerReports';
+import EngineerStaffReports from '../../views/production/project_engineer/EngineerStaffReports';
 import LeaveRequest from '../../views/production/project_engineer/LeaveRequest';
 import EngineerApprovals from '../../views/production/project_engineer/EngineerApprovals';
 
@@ -160,6 +161,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="engineer/transferred-tasks" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerTasks isTransferred={true} /> : <Navigate to="/" replace />} />
                     <Route path="engineer/tasks/:id" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <TaskDetail /> : <Navigate to="/" replace />} />
                     <Route path="engineer/reports" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerReports /> : <Navigate to="/" replace />} />
+                    <Route path="engineer/staff-reports" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerStaffReports /> : <Navigate to="/" replace />} />
                     <Route path="engineer/leave" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <LeaveRequest /> : <Navigate to="/" replace />} />
                     <Route path="engineer/approvals" element={(isGeneralAdmin || userRole === 'Project Engineer') ? <EngineerApprovals /> : <Navigate to="/" replace />} />
 

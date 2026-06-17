@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 const STATUS_COLORS = { 'On Track': { color: '#065f46', bg: '#d1fae5' }, 'Delayed': { color: '#92400e', bg: '#fef3c7' }, 'Blocked': { color: '#991b1b', bg: '#fee2e2' }, 'Completed': { color: '#5b21b6', bg: '#ede9fe' } };
 
-const DailyReportsTab = ({ dailyReports }) => {
+const DailyReportsTab = ({ dailyReports, onCardClick }) => {
     if (dailyReports.length === 0) {
         return (
             <div className="eng-empty" style={{ gridColumn: '1 / -1' }}>
@@ -17,7 +17,7 @@ const DailyReportsTab = ({ dailyReports }) => {
     return dailyReports.map(r => {
         const sc = STATUS_COLORS[r.workStatus] || { color: '#374151', bg: '#f3f4f6' };
         return (
-            <div key={r._id} className="eng-report-card">
+            <div key={r._id} className="eng-report-card" onClick={() => onCardClick && onCardClick(r)} style={{ cursor: onCardClick ? 'pointer' : 'default', transition: 'all 0.2s' }}>
                 <div className="eng-report-header">
                     <span className="eng-report-title">{format(new Date(r.date), 'dd MMM yyyy')}</span>
                     <span className="eng-badge" style={{ background: sc.bg, color: sc.color }}>{r.workStatus}</span>

@@ -59,7 +59,8 @@ export const getPageDetails = (location, user) => {
         '/site/reports': { title: 'Site Reports', subtitle: 'Submit daily progress reports' },
         '/site/leave': { title: 'Leave Request', subtitle: 'Submit and track applications' },
         '/meetings': { title: 'Meetings', subtitle: 'Schedule and manage Google Meet sessions.' },
-        '/staff-reports': { title: 'Department Reports', subtitle: '' },
+        '/staff-reports': { title: 'Daily Reports', subtitle: 'Review daily reports submitted by staff' },
+        '/engineer/staff-reports': { title: 'Daily Reports', subtitle: 'Review site reports from your team' },
     };
 
     if (staticMap[path]) return staticMap[path];

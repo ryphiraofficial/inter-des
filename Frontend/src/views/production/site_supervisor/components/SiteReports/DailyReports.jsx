@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Loader2, ClipboardList, Target, CheckCircle2 } from 'lucide-react';
+import { Send, Loader2, ClipboardList, Target, CheckCircle2, UploadCloud, X, FileText, Image as ImageIcon, Video } from 'lucide-react';
 import { format } from 'date-fns';
 import { ShadSelect, ShadCalendar } from './SharedUI';
 import { useSiteReports } from '../../hooks/useSiteReports';
@@ -18,7 +18,11 @@ const DailyReports = () => {
         form, setForm,
         handleProjectChange,
         handleSubmit,
-        roleUsers
+        roleUsers,
+        uploadingFile,
+        handleFileUpload,
+        removeAttachment,
+        loadingReports
     } = useSiteReports();
 
     return (
@@ -58,28 +62,34 @@ const DailyReports = () => {
                             onChange={v => setForm(f => ({ ...f, sendToRole: v }))}
                         />
                         <div className="site-form-group">
-                            <label className="shad-form-label">Assigned Person</label>
-                            <ShadSelect
-                                value={form.sendToUser}
-                                options={roleUsers.map(u => ({ id: u._id, name: u.fullName || u.email }))}
-                                onChange={v => setForm(f => ({ ...f, sendToUser: v }))}
-                                placeholder={`Select ${form.sendToRole}...`}
-                            />
+                            <label className="site-label">Assigned Person</label>
+                            <select 
+                                className="site-input" 
+                                value={form.sendToUser} 
+                                onChange={e => setForm(f => ({ ...f, sendToUser: e.target.value }))}
+                                disabled={roleUsers.length === 0}
+                            >
+                                {roleUsers.map(u => (
+                                    <option key={u._id} value={u._id}>{u.fullName}</option>
+                                ))}
+                            </select>
+                            {errors.sendToUser && <div className="site-error">{errors.sendToUser}</div>}
                         </div>
                     </div>
 
-                    <div className="site-form-row" style={{ gridTemplateColumns: '1.5fr 1fr' }}>
+                    <div className="site-form-row" style={{ gridTemplateColumns: '2fr 1fr' }}>
                         <div className="site-form-group">
-                            <label className="shad-form-label">Work Status</label>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                {WORK_STATUS.map(s => (
-                                    <button
+                            <label className="site-label">Work Status</label>
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                {WORK_STATUS.map(st => (
+                                    <button 
                                         type="button"
-                                        key={s}
-                                        className={`site-status-chip ${form.workStatus === s ? 'active' : ''}`}
-                                        onClick={() => setForm(f => ({ ...f, workStatus: s }))}
+                                        key={st}
+                                        className={`site-status-chip ${form.workStatus === st ? 'active' : ''}`}
+                                        onClick={() => setForm(f => ({ ...f, workStatus: st }))}
+                                        style={form.workStatus === st ? { background: STATUS_COLORS[st].color, color: 'white', border: 'none' } : {}}
                                     >
-                                        {s}
+                                        {st}
                                     </button>
                                 ))}
                             </div>
@@ -93,17 +103,29 @@ const DailyReports = () => {
                     </div>
 
                     <div className="site-form-group">
-                        <label className="shad-form-label">Workers Present</label>
-                        <input type="number" min={0} className="site-input" placeholder="Number of workers on site"
-                            value={form.workersPresent} onChange={e => setForm(f => ({ ...f, workersPresent: e.target.value }))} />
+                        <label className="site-label">Workers Present</label>
+                        <input 
+                            type="number" 
+                            className="site-input" 
+                            placeholder="Number of workers on site"
+                            value={form.workersPresent}
+                            onChange={e => setForm(f => ({ ...f, workersPresent: e.target.value }))}
+                        />
                     </div>
 
                     <div className="site-form-group">
-                        <label className="shad-form-label">Work Done Today *</label>
-                        <textarea className={`site-input ${errors.workDone ? 'site-input-err' : ''}`} rows={4}
-                            placeholder="Describe the work completed today…"
-                            value={form.workDone} onChange={e => { setForm(f => ({ ...f, workDone: e.target.value })); setErrors(er => ({ ...er, workDone: undefined })); }} />
-                        {errors.workDone && <span className="site-field-err">{errors.workDone}</span>}
+                        <label className="site-label">Work Done Today *</label>
+                        <textarea 
+                            className={`site-input ${errors.workDone ? 'error' : ''}`}
+                            placeholder="Describe the work completed today..."
+                            rows={4}
+                            value={form.workDone}
+                            onChange={e => {
+                                setForm(f => ({ ...f, workDone: e.target.value }));
+                                if (errors.workDone) setErrors(e => ({ ...e, workDone: null }));
+                            }}
+                        />
+                        {errors.workDone && <div className="site-error">{errors.workDone}</div>}
                     </div>
 
                     <div className="site-form-row">
@@ -116,6 +138,39 @@ const DailyReports = () => {
                             <label className="shad-form-label">Next Day Plan</label>
                             <textarea className="site-input" rows={3} placeholder="Plan for tomorrow…"
                                 value={form.nextDayPlan} onChange={e => setForm(f => ({ ...f, nextDayPlan: e.target.value }))} />
+                        </div>
+                    </div>
+
+                    {/* ATTACHMENTS SECTION */}
+                    <div className="site-form-group" style={{ marginTop: 10 }}>
+                        <label className="shad-form-label">Attachments (Images, Videos, Docs)</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 12, marginBottom: form.attachments?.length ? 12 : 0 }}>
+                            {form.attachments && form.attachments.map((att, idx) => (
+                                <div key={idx} style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: 8, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6 }}>
+                                    <button type="button" onClick={() => removeAttachment(idx)} style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>
+                                        <X size={12} />
+                                    </button>
+                                    {att.resourceType === 'image' ? (
+                                        <img src={att.url} alt="attachment" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : att.resourceType === 'video' ? (
+                                        <>
+                                            <Video size={24} color="#64748b" />
+                                            <span style={{ fontSize: 10, color: '#64748b', textAlign: 'center', padding: '0 4px', wordBreak: 'break-all' }}>{att.originalName}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FileText size={24} color="#64748b" />
+                                            <span style={{ fontSize: 10, color: '#64748b', textAlign: 'center', padding: '0 4px', wordBreak: 'break-all' }}>{att.originalName}</span>
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                            
+                            <label style={{ width: '100%', aspectRatio: '1', borderRadius: 8, border: '2px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, cursor: uploadingFile ? 'default' : 'pointer', background: '#f8fafc', transition: 'all 0.2s', opacity: uploadingFile ? 0.7 : 1 }}>
+                                {uploadingFile ? <Loader2 size={24} className="site-spin" color="#64748b" /> : <UploadCloud size={24} color="#64748b" />}
+                                <span style={{ fontSize: 11, color: '#64748b', fontWeight: 500, textAlign: 'center', padding: '0 4px' }}>{uploadingFile ? 'Uploading...' : 'Upload File'}</span>
+                                <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} disabled={uploadingFile} accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx" />
+                            </label>
                         </div>
                     </div>
 
@@ -153,7 +208,10 @@ const DailyReports = () => {
                                     <p className="site-report-body">{r.workDone}</p>
                                     {r.issues && <p style={{fontSize:12,color:'#ef4444',margin:'2px 0 0'}}><strong>Issue:</strong> {r.issues}</p>}
                                     {r.nextDayPlan && <p style={{fontSize:12,color:'#6366f1',margin:'2px 0 0'}}><strong>Tomorrow:</strong> {r.nextDayPlan}</p>}
-                                    <span className="site-report-meta">Submitted by {r.submittedBy?.fullName || r.submittedBy} on {format(new Date(r.createdAt),'dd MMM yyyy, HH:mm')}</span>
+                                    <span className="site-report-meta">
+                                        Submitted by {r.submittedBy?.fullName || r.submittedBy} on {format(new Date(r.createdAt),'dd MMM yyyy, HH:mm')}
+                                        {r.attachments && r.attachments.length > 0 && <span style={{marginLeft: 8, color: '#64748b'}}>• {r.attachments.length} attachment(s)</span>}
+                                    </span>
                                 </div>
                             );
                         })}

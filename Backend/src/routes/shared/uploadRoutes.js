@@ -25,12 +25,19 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     // Check if the file is an image
     const isImage = file.mimetype.startsWith('image/') || file.originalname.match(/\.(jpeg|jpg|png|webp|gif|heic|heif|svg)$/i);
+    // Check if the file is a video
+    const isVideo = file.mimetype.startsWith('video/') || file.originalname.match(/\.(mp4|mov|avi|wmv|mkv|webm)$/i);
     
     if (isImage) {
         return {
             folder: 'interior-design',
             allowed_formats: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'heic', 'heif', 'svg'],
             resource_type: 'image'
+        };
+    } else if (isVideo) {
+        return {
+            folder: 'interior-design',
+            resource_type: 'video'
         };
     } else {
         // For PDFs, DOCs, ZIPs, etc., use 'raw' so Cloudinary doesn't process them as images

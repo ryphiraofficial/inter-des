@@ -36,7 +36,8 @@ export const reportSafetyIssue = async (req, res) => {
 // @access  Private
 export const getProjectSafetyLogs = async (req, res) => {
     try {
-        const logs = await SafetyLog.find({ project: req.params.projectId })
+        const query = req.params.projectId === 'all' ? {} : { project: req.params.projectId };
+        const logs = await SafetyLog.find(query)
             .populate('reportedBy', 'fullName role')
             .sort({ date: -1 });
 

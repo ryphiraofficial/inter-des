@@ -1073,8 +1073,26 @@ textarea.eng-input { resize:vertical; }
 /* ===== REPORTS SPECIFIC ===== */
 .eng-reports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+}
+
+.eng-reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .eng-reports-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .eng-reports-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .eng-report-card {
@@ -1086,6 +1104,12 @@ textarea.eng-input { resize:vertical; }
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.eng-report-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    border-color: #e2e8f0;
 }
 
 .eng-report-header {
