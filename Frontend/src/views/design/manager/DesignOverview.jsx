@@ -35,16 +35,35 @@ const DesignOverview = ({ stats, tasks, quotations, teamStats, materialRequests 
             {/* Stats Grid */}
             <div className="stats-grid" style={{ marginBottom: '2.5rem' }}>
                 {[
-                    { label: 'Active Designs',   value: tasks?.length || 0,  icon: Palette,      bg: '#f5f3ff', color: '#8b5cf6' },
+                    { label: 'Active Designs',   value: tasks?.length || 0,  icon: Palette,      bg: '#f0f3ff', color: '#4f46e5' },
                     { label: 'Pending Reviews',  value: pendingReviews.length, icon: Clock,       bg: '#fff7ed', color: '#f97316' },
                     { label: 'Active Redos',     value: redos.length,          icon: AlertCircle, bg: '#fef2f2', color: '#ef4444' },
-                    { label: 'Total Approved',   value: approved.length,       icon: CheckCircle, bg: '#ecfdf5', color: '#10b981' },
+                    { label: 'Total Approved',   value: approved.length,       icon: CheckCircle, bg: '#f0fdf4', color: '#10b981' },
                 ].map(({ label, value, icon: Icon, bg, color }) => (
-                    <div key={label} className="stat-card premium">
-                        <div className="stat-icon" style={{ background: bg, color }}><Icon size={24} /></div>
+                    <div key={label} className="stat-card" style={{
+                        background: 'white',
+                        padding: '1.25rem 1.5rem',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1.25rem',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: 'none'
+                    }}>
+                        <div className="stat-icon" style={{
+                            background: bg,
+                            color: color,
+                            width: '48px',
+                            height: '48px',
+                            borderRadius: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                        }}><Icon size={24} /></div>
                         <div className="stat-content">
-                            <span className="stat-label">{label}</span>
-                            <span className="stat-value">{value}</span>
+                            <span className="stat-value" style={{ display: 'block', fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{value}</span>
+                            <span className="stat-label" style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: '4px' }}>{label}</span>
                         </div>
                     </div>
                 ))}

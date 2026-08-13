@@ -5,6 +5,7 @@ import Quotation from '../../models/sales/Quotation.js';
 import MaterialRequest from '../../models/procurement/MaterialRequest.js';
 import Invoice from '../../models/sales/Invoice.js';
 import Checklist from '../../models/design/Checklist.js';
+import EdgeBandSelection from '../../models/design/EdgeBandSelection.js';
 import { createNotification, notifyStaffUser, notifyByRole as notifyDesign, notifyUser, notifyByRole } from '../../utils/notificationHelper.js';
 import { healTaskReferences } from './taskHelper.js';
 
@@ -46,6 +47,22 @@ export const reviewSubmission = async (reqData) => {
     } catch (error) { return { status: 500, success: false, message: error.message }; }
 };
 
+const fetchEdgeBandItemsForProject = async (projectId) => {
+    try {
+        const edgeBands = await EdgeBandSelection.find({ project: projectId }).lean();
+        return edgeBands.map(eb => ({
+            itemName: `Edge Band: ${eb.brand} — ${eb.matchedCode}`,
+            description: `Entered code: ${eb.enteredCode} (${eb.matchPercentage}% match)`,
+            quantity: eb.quantity,
+            unit: 'rolls',
+            specifications: `Dimension: ${eb.dimension.replace('x', ' × ')} mm`,
+            status: 'Pending'
+        }));
+    } catch {
+        return [];
+    }
+};
+
 export const pushToProcurement = async (reqData) => {
     try {
         const task = await Task.findById(reqData.params.id).populate('quotation');
@@ -62,7 +79,10 @@ export const pushToProcurement = async (reqData) => {
         task.status = 'Pushed to Procurement';
         task.timeline.push({ action: 'pushed', performedBy: reqData.user.id, details: 'Finalized design pushed to procurement team', timestamp: new Date() });
 
-        const materialRequestItems = (task.quotation && task.quotation.items) ? task.quotation.items.map(item => ({ itemName: item.itemName, description: item.description, quantity: item.quantity, unit: item.unit || 'SCM', specifications: item.material ? `${item.material} - ${item.finish || 'Standard'}` : null, status: 'Pending' })) : [];
+        const quotationItems = (task.quotation && task.quotation.items) ? task.quotation.items.map(item => ({ itemName: item.itemName, description: item.description, quantity: item.quantity, unit: item.unit || 'SCM', specifications: item.material ? `${item.material} - ${item.finish || 'Standard'}` : null, status: 'Pending' })) : [];
+        const edgeBandItems = await fetchEdgeBandItemsForProject(task.project);
+        const materialRequestItems = [...quotationItems, ...edgeBandItems];
+
         const materialRequest = await MaterialRequest.create({ project: task.project, quotation: task.quotation ? task.quotation._id : null, items: materialRequestItems, priority: 'Medium', status: 'Pending', requestedBy: reqData.user.id, createdBy: reqData.user.id, isPushedFromDesign: true, notes: `Design handoff from task: ${task.title}. ${materialRequestItems.length === 0 ? 'PLEASE REVIEW AND ADD MATERIALS.' : ''}` });
 
         await Project.findByIdAndUpdate(task.project, { stage: 'Procurement' });
@@ -240,8 +260,9 @@ export const adminClearPaymentToProcurement = async (reqData) => {
         let materialRequest = null;
         if (task) {
             const latestSubmission = task.submissions?.[task.submissions.length - 1];
-            const designItems = latestSubmission?.designItems || [];
-            const materialRequestItems = designItems.map(item => ({ itemName: item.name, description: `Size: ${item.size || 'N/A'}`, quantity: item.quantity || 1, unit: item.unit || 'pcs', status: 'Pending' }));
+            const designItems = (latestSubmission?.designItems || []).map(item => ({ itemName: item.name, description: `Size: ${item.size || 'N/A'}`, quantity: item.quantity || 1, unit: item.unit || 'pcs', status: 'Pending' }));
+            const edgeBandItems = await fetchEdgeBandItemsForProject(project._id);
+            const materialRequestItems = [...designItems, ...edgeBandItems];
 
             materialRequest = await MaterialRequest.create({ 
                 project: project._id, 

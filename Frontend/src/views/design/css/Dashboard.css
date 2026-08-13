@@ -119,8 +119,8 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .stat-icon {
@@ -376,8 +376,8 @@
 }
 
 .notification-item.unread {
-    background: #eff6ff;
-    border-left: 3px solid #667eea;
+    background: transparent;
+    border-left: none;
 }
 
 .notif-icon {

@@ -19,6 +19,7 @@ import StaffOverviewTab from './components/StaffOverviewTab';
 import ActivityFeed from './components/ActivityFeed';
 import DashboardLoading from './components/DashboardLoading';
 import MeetingsPage from '../../common/MeetingsPage';
+import EdgeBandPage from '../staff/components/EdgeBandPage';
 
 import { useManagerData } from './hooks/useManagerData';
 import { useTaskActions } from './hooks/useTaskActions';
@@ -140,6 +141,8 @@ const DesignManagerDashboard = ({}) => {
                 return (
                     <StaffReports />
                 );
+            case 'edge-bands':
+                return <EdgeBandPage user={user} />;
             default:
                 return (
                     <div style={{ display: 'grid', gap: '2rem' }}>

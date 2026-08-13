@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckSquare, RefreshCw,
-    CheckCircle, Package, LogOut, Video, FileText
+    CheckCircle, Package, LogOut, Video, FileText, Layers
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
     { tab: 'materials',    label: 'Material Requests', icon: Package },
     { tab: 'meetings',     label: 'Meetings',         icon: Video },
     { tab: 'reports',      label: 'Reports',          icon: FileText },
+    { tab: 'edge-bands',   label: 'Edge Bands',       icon: Layers },
 ];
 
 const DesignStaffSidebar = ({ onLogout }) => {

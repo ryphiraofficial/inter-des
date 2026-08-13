@@ -4,7 +4,7 @@ import { CheckSquare, Clock, Shield, Briefcase, Users } from 'lucide-react';
 const StaffSubmissionsColumn = ({ submissions, CardPreview, onReviewTask }) => {
     return (
         <div className="pipeline-column">
-            <div className="col-header" style={{ borderLeft: '4px solid #6366f1' }}>
+            <div className="col-header">
                 <div className="col-title-box"><CheckSquare size={18} /><span>Staff Submissions</span></div>
                 <span className="col-count">{submissions.length}</span>
             </div>

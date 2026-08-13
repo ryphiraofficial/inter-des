@@ -19,9 +19,8 @@ const TaskUpdatesModal = ({ show, onClose, selectedTask }) => {
                             [...selectedTask.dailyUpdates].reverse().map((upd, idx) => (
                                 <div key={idx} style={{
                                     background: upd.emergencies ? '#fff1f2' : '#f8fafc',
-                                    padding: '1.25rem', borderRadius: '16px', marginBottom: '1rem',
-                                    border: `1px solid ${upd.emergencies ? '#fecaca' : '#e2e8f0'}`,
-                                    borderLeft: `5px solid ${upd.emergencies ? '#ef4444' : '#6366f1'}`
+                                    padding: '1.25rem', borderRadius: '12px', marginBottom: '1rem',
+                                    border: `1px solid ${upd.emergencies ? '#fecaca' : '#e2e8f0'}`
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                         <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.9rem' }}>{upd.staff?.name || 'Assigned Staff'}</div>

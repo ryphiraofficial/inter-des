@@ -53,14 +53,25 @@
     margin-bottom: 2rem;
 }
 
-.stat-card {
+.stat-card,
+.stat-card.premium {
     background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    transition: none !important;
+}
+
+.stat-card:hover,
+.stat-card.premium:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    border-left: 1px solid #e2e8f0 !important;
 }
 
 .stat-icon {
@@ -503,14 +514,15 @@
 
 .tasks-layout-grid {
     display: grid;
-    grid-template-columns: 7fr 3fr;
-    gap: 1.5rem;
+    grid-template-columns: 1fr 280px;
+    gap: 1.25rem;
 }
 
 .task-card-grid {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 2rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .action-btn:hover {
@@ -618,7 +630,7 @@
     padding: 12px;
     background: #fef2f2;
     border-radius: 10px;
-    border-left: 3px solid #ef4444;
+    border: 1px solid #fee2e2;
 }
 
 .issue-icon {
@@ -1449,8 +1461,9 @@
     align-items: center;
     padding: 0.75rem 1rem;
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
 }
 
 .col-title-box {
@@ -1480,17 +1493,17 @@
 
 .pipeline-card {
     background: #fff;
-    border-radius: 20px;
-    padding: 1.25rem;
+    border-radius: 12px;
+    padding: 1.1rem;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    transition: none;
 }
 
 .pipeline-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
-    border-color: #cbd5e1;
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: #e2e8f0 !important;
 }
 
 .pipeline-card h4 {

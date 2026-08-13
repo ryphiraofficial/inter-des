@@ -37,9 +37,8 @@ const CommentModal = ({
                                     .map((item, i) => (
                                         <div key={i} style={{
                                             background: item.type === 'update' ? '#f8fafc' : 'white',
-                                            padding: '1.25rem', borderRadius: '20px',
-                                            border: '1px solid #f1f5f9',
-                                            borderLeft: item.type === 'update' ? '4px solid #6366f1' : '1px solid #f1f5f9'
+                                            padding: '1.25rem', borderRadius: '12px',
+                                            border: '1px solid #e2e8f0'
                                         }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                                 <span style={{ fontWeight: 800, fontSize: '0.75rem', color: item.type === 'update' ? '#6366f1' : '#1e293b' }}>

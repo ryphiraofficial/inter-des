@@ -4,7 +4,7 @@ import { Palette, Plus, Briefcase, Users, Clock } from 'lucide-react';
 const ActiveDesignColumn = ({ activeDesign, onOpenAssignModal }) => {
     return (
         <div className="pipeline-column">
-            <div className="col-header" style={{ borderLeft: '4px solid #3b82f6' }}>
+            <div className="col-header">
                 <div className="col-title-box"><Palette size={18} /><span>Active Design</span></div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span className="col-count" style={{ background: '#dbeafe', color: '#1d4ed8' }}>{activeDesign.length}</span>
@@ -16,7 +16,7 @@ const ActiveDesignColumn = ({ activeDesign, onOpenAssignModal }) => {
             </div>
             <div className="col-body">
                 {activeDesign.map(task => (
-                    <div key={task._id} className="pipeline-card staff-card" style={{ borderLeftColor: '#3b82f6' }}>
+                    <div key={task._id} className="pipeline-card staff-card">
                         <div className="card-header">
                             <h4>{task.title}</h4>
                             <span className="badge" style={{ background: '#eff6ff', color: '#2563eb' }}>{task.status}</span>

@@ -4,7 +4,7 @@ import { Shield, Clock, CheckCircle, Briefcase, ArrowRight } from 'lucide-react'
 const AdminApprovalColumn = ({ adminApproval, getApprovalTime, onSendToAdmin }) => {
     return (
         <div className="pipeline-column">
-            <div className="col-header" style={{ borderLeft: '4px solid #8b5cf6' }}>
+            <div className="col-header">
                 <div className="col-title-box"><Shield size={18} /><span>Admin Approval</span></div>
                 <span className="col-count" style={{ background: '#ede9fe', color: '#6d28d9' }}>{adminApproval.length}</span>
             </div>

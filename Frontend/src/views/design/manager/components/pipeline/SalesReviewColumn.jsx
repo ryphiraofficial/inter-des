@@ -4,7 +4,7 @@ import { Send, CheckCircle, Briefcase, Clock } from 'lucide-react';
 const SalesReviewColumn = ({ salesReview, getApprovalTime, CardPreview, onReviewTask }) => {
     return (
         <div className="pipeline-column">
-            <div className="col-header" style={{ borderLeft: '4px solid #10b981' }}>
+            <div className="col-header">
                 <div className="col-title-box"><Send size={18} /><span>Sales Review</span></div>
                 <span className="col-count" style={{ background: '#d1fae5', color: '#059669' }}>{salesReview.length}</span>
             </div>

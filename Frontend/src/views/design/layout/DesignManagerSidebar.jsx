@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, GitBranch, FileText, Briefcase,
-    CheckSquare, Users, Package, LogOut, Video
+    CheckSquare, Users, Package, LogOut, Video, Layers
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
     { tab: 'material_review',    label: 'Material Review',   icon: Package },
     { tab: 'meetings',           label: 'Meetings',          icon: Video },
     { tab: 'reports',            label: 'Reports',           icon: FileText },
+    { tab: 'edge-bands',         label: 'Edge Bands',        icon: Layers },
 ];
 
 const DesignManagerSidebar = ({ onLogout }) => {

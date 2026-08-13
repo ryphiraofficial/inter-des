@@ -46,14 +46,16 @@ const DesignNavbar = ({ onRefresh, isLoading, toggleSidebar }) => {
         tasks: { title: 'Task Management', description: 'Assign and track design tasks' },
         staff_overview: { title: 'Staff Overview', description: 'Monitor team workload and capacity' },
         material_review: { title: 'Material Review', description: 'Review and approve material selections' },
-        meetings: { title: 'Meetings', description: 'Schedule and manage team meetings' }
+        meetings: { title: 'Meetings', description: 'Schedule and manage team meetings' },
+        'edge-bands': { title: 'Edge Bands', description: 'Review and manage edge band selections for projects' }
     } : {
         overview: { title: 'My Overview', description: 'Your personal design dashboard and metrics' },
         tasks: { title: 'My Tasks', description: 'Manage your active design assignments' },
         revisions: { title: 'Revisions', description: 'Handle requested design modifications' },
         submissions: { title: 'Submissions', description: 'View your finalized and approved designs' },
         materials: { title: 'Material Requests', description: 'Submit and track your material selections' },
-        meetings: { title: 'Meetings', description: 'View your scheduled meetings' }
+        meetings: { title: 'Meetings', description: 'View your scheduled meetings' },
+        'edge-bands': { title: 'Edge Bands', description: 'Search and select edge bands for your project' }
     };
 
     const { title, description } = tabMeta[activeTab] || { title: 'Design Studio', description: 'Design management portal' };

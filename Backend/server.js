@@ -49,6 +49,7 @@ import projectRoutes from './src/routes/design/projectRoutes.js';
 import taskRoutes from './src/routes/design/taskRoutes.js';
 import kanbanTaskRoutes from './src/routes/design/kanbanTaskRoutes.js';
 import checklistRoutes from './src/routes/design/checklistRoutes.js';
+import edgeBandRoutes from './src/routes/design/edgeBandRoutes.js';
 
 // Procurement
 import procurementRoutes from './src/routes/procurement/procurementRoutes.js';
@@ -134,6 +135,7 @@ app.use('/api/design', designRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/kanban-tasks', kanbanTaskRoutes);
 app.use('/api/checklists', checklistRoutes);
+app.use('/api/design/edge-bands', edgeBandRoutes);
 
 // Procurement
 app.use('/api/procurement', procurementRoutes);
