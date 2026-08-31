@@ -83,8 +83,13 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: false
 }));
+const defaultOrigins = ['http://localhost:5173', 'https://www.mywoodaura.com', 'https://mywoodaura.com'];
+const corsOrigins = process.env.CORS_ORIGIN 
+    ? [...new Set([...defaultOrigins, ...process.env.CORS_ORIGIN.split(',').map(o => o.trim())])]
+    : defaultOrigins;
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: corsOrigins,
     credentials: true
 }));
 app.use(compression());
