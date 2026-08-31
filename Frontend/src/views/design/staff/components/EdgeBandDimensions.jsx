@@ -122,7 +122,7 @@ const EdgeBandDimensions = ({ selectedBands, quantities, setQuantities, onDesele
                                                                 type="number"
                                                                 min="1"
                                                                 step="1"
-                                                                value={bandQtys[dim] ?? ''}
+                                                                value={bandQtys[dim] ?? 0}
                                                                 onChange={e => handleQtyChange(band._id, dim, e.target.value)}
                                                                 placeholder="0"
                                                                 style={{

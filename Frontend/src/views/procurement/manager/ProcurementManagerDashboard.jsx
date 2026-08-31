@@ -46,7 +46,7 @@ const ProcurementManagerDashboard = ({ onLogout }) => {
             case 'vendors':     return <Vendors vendors={vendors} setShowAddVendorModal={setShowAddVendorModal} handleViewVendorDetails={handleViewVendorDetails} />;
             case 'edge_bands':
             case 'edge-bands':  return <EdgeBandRequestsTab userRole="procurement" />;
-            case 'eb_procurement': return <EdgeBandProcurementQueue />;
+            case 'eb_procurement': return <EdgeBandProcurementQueue userRole="manager" />;
             case 'meetings':    return <MeetingsPage />;
             case 'reports':     return <StaffReports />;
             default:            return null;

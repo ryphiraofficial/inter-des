@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock } from 'lucide-react';
+import { Image as ImageIcon, Package, Wrench, LockOpen, CreditCard, Layers } from 'lucide-react';
 import { useToast } from '../../models/context/ToastContext';
 
 // Hooks
@@ -25,7 +25,7 @@ import './css/Tasks.css';
 const DesignApprovals = () => {
     const { showToast } = useToast();
     const state = useApprovalsState();
-    
+
     // Fetch unlock requests for count
     const { data: unlockRes } = useGetUnlockRequestsQuery();
     const unlockCount = unlockRes?.data?.length || 0;
@@ -74,31 +74,31 @@ const DesignApprovals = () => {
         <div className="tasks-container">
             <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
 
-                <ApprovalTabs 
-                    activeTab={state.activeTab} 
-                    setActiveTab={state.setActiveTab} 
-                    counts={{ 
-                        design: state.tasks.length, 
+                <ApprovalTabs
+                    activeTab={state.activeTab}
+                    setActiveTab={state.setActiveTab}
+                    counts={{
+                        design: state.tasks.length,
                         accounts: state.accountsProjects.length,
                         procurement: state.procurementItems.length,
                         production: state.productionProjects.length,
                         edge_bands: state.edgeBandsCount,
                         unlocks: unlockCount
-                    }} 
+                    }}
                 />
 
                 {state.activeTab === 'design' && (
-                    <DesignPipeline 
-                        tasks={state.tasks} 
-                        setSelectedTask={state.setSelectedTask} 
-                        setShowDesignModal={state.setShowDesignModal} 
-                        openApproveModal={openApproveModal} 
+                    <DesignPipeline
+                        tasks={state.tasks}
+                        setSelectedTask={state.setSelectedTask}
+                        setShowDesignModal={state.setShowDesignModal}
+                        openApproveModal={openApproveModal}
                     />
                 )}
 
                 {state.activeTab === 'accounts' && (
-                    <AccountsPipeline 
-                        projects={state.accountsProjects} 
+                    <AccountsPipeline
+                        projects={state.accountsProjects}
                         procurementManagers={state.procurementManagers}
                         handleClearPayment={actions.handleClearPayment}
                         approving={state.approving}
@@ -106,7 +106,7 @@ const DesignApprovals = () => {
                 )}
 
                 {state.activeTab === 'procurement' && (
-                    <ProcurementPipeline 
+                    <ProcurementPipeline
                         procurementItems={state.procurementItems}
                         selectedPM={state.selectedPM}
                         setSelectedPM={state.setSelectedPM}
@@ -137,7 +137,7 @@ const DesignApprovals = () => {
             </div>
 
             {state.showDesignModal && state.selectedTask && (
-                <DesignPreviewModal 
+                <DesignPreviewModal
                     selectedTask={state.selectedTask}
                     setShowDesignModal={state.setShowDesignModal}
                     handleReject={actions.handleReject}
@@ -146,7 +146,7 @@ const DesignApprovals = () => {
             )}
 
             {state.showPaymentModal && state.paymentTask && (
-                <PaymentCollectionModal 
+                <PaymentCollectionModal
                     paymentTask={state.paymentTask}
                     setShowPaymentModal={state.setShowPaymentModal}
                     advancePct={state.advancePct}

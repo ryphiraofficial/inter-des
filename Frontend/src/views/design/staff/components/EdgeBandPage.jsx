@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Layers, CheckCircle2, Tag, Search, Plus, Trash2, Send, History, AlertCircle } from 'lucide-react';
+import { Layers, CheckCircle2, Tag, Search, Send, History, AlertCircle, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import EdgeBandDimensions from './EdgeBandDimensions';
 import * as api from './edgeBandApi';
 
 const EdgeBandPage = ({ user }) => {
@@ -24,12 +25,12 @@ const EdgeBandPage = ({ user }) => {
     const [resolvedLamination, setResolvedLamination] = useState(null);
     const [matchedEdgeBands, setMatchedEdgeBands] = useState([]);
 
-    // ── Selected Edge Bands & Dimension Breakdown ──
+    // ── Currently Selected Edge Bands & Quantities for active lookup ──
     const [selectedBandIds, setSelectedBandIds] = useState(new Set());
-    const [dimensionRows, setDimensionRows] = useState([
-        { id: 1, widthM: 0.8, lengthM: 22, quantityM: 17.6 },
-        { id: 2, widthM: 2, lengthM: 22, quantityM: 44 }
-    ]);
+    const [quantities, setQuantities] = useState({}); // { [bandId]: { [dim]: number } }
+
+    // ── ACCUMULATED / STAGED SELECTIONS (Cart for multi-lamination support) ──
+    const [stagedItems, setStagedItems] = useState([]);
 
     // ── Request & History State ──
     const [allRequests, setAllRequests] = useState([]);
@@ -141,6 +142,7 @@ const EdgeBandPage = ({ user }) => {
             setResolvedLamination(null);
             setMatchedEdgeBands([]);
             setSelectedBandIds(new Set());
+            setQuantities({});
 
             const res = await api.lookupLamination(selectedLamBrand, laminationCodeInput.trim());
             if (res.item) {
@@ -158,55 +160,150 @@ const EdgeBandPage = ({ user }) => {
         }
     };
 
-    // Dimension breakdown row handlers
-    const handleAddDimensionRow = () => {
-        setDimensionRows(prev => [
-            ...prev,
-            { id: Date.now(), widthM: 1, lengthM: 22, quantityM: 22 }
-        ]);
-    };
-
-    const handleUpdateDimensionRow = (id, field, val) => {
-        setDimensionRows(prev => prev.map(row => {
-            if (row.id !== id) return row;
-            const updated = { ...row, [field]: parseFloat(val) || 0 };
-            if (field === 'widthM' || field === 'lengthM') {
-                updated.quantityM = parseFloat((updated.widthM * updated.lengthM).toFixed(2));
-            }
-            return updated;
-        }));
-    };
-
-    const handleRemoveDimensionRow = (id) => {
-        setDimensionRows(prev => prev.filter(r => r.id !== id));
-    };
-
-    const totalCalculatedMeters = useMemo(() => {
-        return dimensionRows.reduce((sum, r) => sum + (r.quantityM || 0), 0);
-    }, [dimensionRows]);
-
     // Select/deselect Edge Band candidates
     const handleToggleBandSelect = (id) => {
         setSelectedBandIds(prev => {
             const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
+            if (next.has(id)) {
+                next.delete(id);
+                setQuantities(q => { const copy = { ...q }; delete copy[id]; return copy; });
+            } else {
+                next.add(id);
+            }
             return next;
         });
     };
 
-    // One-Click Save & Submit to Manager
+    // Prepare selected bands array for EdgeBandDimensions component
+    const selectedBandsArray = useMemo(() => {
+        return matchedEdgeBands
+            .filter(m => selectedBandIds.has(m.edgeBandItemId || m.matchId))
+            .map(m => {
+                const id = m.edgeBandItemId || m.matchId;
+                return {
+                    _id: id,
+                    code: m.code,
+                    name: m.name,
+                    brand: m.brand,
+                    finish: m.finish,
+                    color: m.color,
+                    matchPercent: m.matchPercent,
+                    edgeBandItemId: m.edgeBandItemId,
+                    inventoryId: m.inventoryId,
+                    dimensions: [
+                        { dimension: '22x0.8', available: true },
+                        { dimension: '22x2', available: true },
+                        { dimension: '45x0.8', available: true },
+                        { dimension: '45x2', available: true }
+                    ]
+                };
+            });
+    }, [matchedEdgeBands, selectedBandIds]);
+
+    // Add current selection to Staged List (Cart)
+    const handleAddCurrentToStaged = () => {
+        if (selectedBandsArray.length === 0) {
+            alert('Please select at least one matched Edge Band candidate.');
+            return;
+        }
+
+        const newStaged = [];
+        for (const band of selectedBandsArray) {
+            const bandQtys = quantities[band._id] || {};
+            const dims = Object.entries(bandQtys).filter(([, q]) => Number.isInteger(q) && q > 0);
+
+            if (dims.length === 0) {
+                newStaged.push({
+                    id: `${band._id}-22x0.8-${Date.now()}`,
+                    laminationBrand: resolvedLamination?.brandName || selectedLamBrand,
+                    laminationCode: laminationCodeInput.trim().toUpperCase(),
+                    brand: band.brand,
+                    enteredCode: laminationCodeInput.trim().toUpperCase(),
+                    matchedCode: band.code,
+                    matchedName: band.name,
+                    matchPercentage: band.matchPercent || 100,
+                    edgeBandId: band.edgeBandItemId || band.inventoryId || band._id,
+                    dimension: '22x0.8',
+                    quantity: 1
+                });
+            } else {
+                for (const [dim, qty] of dims) {
+                    newStaged.push({
+                        id: `${band._id}-${dim}-${Date.now()}`,
+                        laminationBrand: resolvedLamination?.brandName || selectedLamBrand,
+                        laminationCode: laminationCodeInput.trim().toUpperCase(),
+                        brand: band.brand,
+                        enteredCode: laminationCodeInput.trim().toUpperCase(),
+                        matchedCode: band.code,
+                        matchedName: band.name,
+                        matchPercentage: band.matchPercent || 100,
+                        edgeBandId: band.edgeBandItemId || band.inventoryId || band._id,
+                        dimension: dim,
+                        quantity: qty
+                    });
+                }
+            }
+        }
+
+        setStagedItems(prev => [...prev, ...newStaged]);
+
+        // Reset active lookup section so user can lookup another Lamination code!
+        setLaminationCodeInput('');
+        setResolvedLamination(null);
+        setMatchedEdgeBands([]);
+        setSelectedBandIds(new Set());
+        setQuantities({});
+        setLookupStatus('idle');
+
+        setSaveMsg(`✓ Added ${newStaged.length} item(s) to project selection list! You can now look up another Lamination brand/code.`);
+    };
+
+    const handleRemoveStagedItem = (id) => {
+        setStagedItems(prev => prev.filter(item => item.id !== id));
+    };
+
+    // One-Click Save & Submit All Staged Items to Manager
     const handleOneClickSubmit = async () => {
         if (!currentAssignment.projectId) {
             alert('Please select an assigned task/project.');
             return;
         }
-        if (selectedBandIds.size === 0) {
-            alert('Please select at least one matched Edge Band candidate.');
-            return;
+
+        // If user hasn't pushed to staged list yet but has active selections, auto-stage them!
+        let itemsToSubmit = [...stagedItems];
+        if (itemsToSubmit.length === 0 && selectedBandsArray.length > 0) {
+            for (const band of selectedBandsArray) {
+                const bandQtys = quantities[band._id] || {};
+                const dims = Object.entries(bandQtys).filter(([, q]) => Number.isInteger(q) && q > 0);
+
+                if (dims.length === 0) {
+                    itemsToSubmit.push({
+                        brand: band.brand,
+                        enteredCode: laminationCodeInput.trim().toUpperCase(),
+                        matchedCode: band.code,
+                        matchPercentage: band.matchPercent || 100,
+                        edgeBandId: band.edgeBandItemId || band.inventoryId || band._id,
+                        dimension: '22x0.8',
+                        quantity: 1
+                    });
+                } else {
+                    for (const [dim, qty] of dims) {
+                        itemsToSubmit.push({
+                            brand: band.brand,
+                            enteredCode: laminationCodeInput.trim().toUpperCase(),
+                            matchedCode: band.code,
+                            matchPercentage: band.matchPercent || 100,
+                            edgeBandId: band.edgeBandItemId || band.inventoryId || band._id,
+                            dimension: dim,
+                            quantity: qty
+                        });
+                    }
+                }
+            }
         }
-        if (totalCalculatedMeters <= 0) {
-            alert('Please enter valid panel dimensions with positive total quantity.');
+
+        if (itemsToSubmit.length === 0) {
+            alert('Please select at least one matched Edge Band candidate and add to selection list.');
             return;
         }
 
@@ -214,34 +311,24 @@ const EdgeBandPage = ({ user }) => {
             setSubmittingReq(true);
             setSaveMsg('');
 
-            const selectedBands = matchedEdgeBands.filter(b => selectedBandIds.has(b.edgeBandItemId || b.matchId));
-
-            const items = selectedBands.map(b => ({
-                brand: b.brand,
-                enteredCode: laminationCodeInput.trim().toUpperCase(),
-                matchedCode: b.code,
-                matchPercentage: b.matchPercent || 100,
-                edgeBandRef: b.edgeBandItemId || b.inventoryId || b.matchId,
-                dimension: '22x0.8',
-                quantity: Math.ceil(totalCalculatedMeters)
-            }));
-
             // Save & Submit directly
-            await api.saveSelections(currentAssignment.projectId, currentAssignment.taskId || null, items);
-            const res = await api.submitRequest(currentAssignment.projectId, currentAssignment.taskId || null, items);
+            await api.saveSelections(currentAssignment.projectId, currentAssignment.taskId || null, itemsToSubmit);
+            const res = await api.submitRequest(currentAssignment.projectId, currentAssignment.taskId || null, itemsToSubmit);
 
             setActiveRequest(res.request);
             setAllRequests(prev => [res.request, ...prev.filter(r => r._id !== res.request._id)]);
 
-            // Reset active selection workspace
+            // Reset active selection workspace & staged cart
+            setStagedItems([]);
             setSelectedLamBrand('');
             setLaminationCodeInput('');
             setResolvedLamination(null);
             setMatchedEdgeBands([]);
             setSelectedBandIds(new Set());
+            setQuantities({});
             setLookupStatus('idle');
 
-            setSaveMsg('✓ Edge Band request submitted successfully! Switched to Request History tab.');
+            setSaveMsg(`✓ Submitted ${itemsToSubmit.length} Edge Band selection(s) across lamination brands to Manager! Switched to Request History tab.`);
             setActiveTab('history'); // Switch to history tab cleanly
         } catch (err) {
             alert('Failed to submit request: ' + err.message);
@@ -268,7 +355,7 @@ const EdgeBandPage = ({ user }) => {
                         </div>
                         <div>
                             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>Edge Band Library & Selection</h2>
-                            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>Pick Lamination Code, match Edge Bands, and build panel dimension orders</p>
+                            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>Select multiple lamination brands/codes, match Edge Bands, and build project order</p>
                         </div>
                     </div>
 
@@ -312,7 +399,7 @@ const EdgeBandPage = ({ user }) => {
                             transition: 'all 0.2s'
                         }}
                     >
-                        <Layers size={16} /> Edge Band Selection (Active Workspace)
+                        <Layers size={16} /> Edge Band Selection Workspace ({stagedItems.length} staged)
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
@@ -351,7 +438,7 @@ const EdgeBandPage = ({ user }) => {
                         padding: '1.5rem 2rem', boxShadow: '0 4px 20px -8px rgba(0,0,0,0.06)'
                     }}>
                         <h3 style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
-                            Step 1: Select Lamination Code from Library
+                            Step 1: Lookup Lamination Code from Library
                         </h3>
 
                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -488,84 +575,103 @@ const EdgeBandPage = ({ user }) => {
                         </div>
                     )}
 
-                    {/* Step 3: Panel Dimensions & Quantity Breakdown */}
-                    {selectedBandIds.size > 0 && (
+                    {/* Step 3: Fixed Dimensions & Quantities Component */}
+                    {selectedBandsArray.length > 0 && (
                         <div style={{
                             background: 'white', border: '1px solid #e2e8f0', borderRadius: '20px',
                             padding: '1.5rem 2rem', boxShadow: '0 4px 20px -8px rgba(0,0,0,0.06)'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
-                                    Step 3: Enter Panel Dimensions & Calculate Quantities
-                                </h3>
+                            <h3 style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
+                                Step 3: Enter Dimension Quantities
+                            </h3>
+
+                            <EdgeBandDimensions
+                                selectedBands={selectedBandsArray}
+                                quantities={quantities}
+                                setQuantities={setQuantities}
+                                onDeselect={(id) => handleToggleBandSelect(id)}
+                            />
+
+                            {/* Add to Staged List button */}
+                            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
                                 <button
-                                    onClick={handleAddDimensionRow}
+                                    onClick={handleAddCurrentToStaged}
                                     style={{
-                                        background: '#f1f5f9', color: '#475569', border: 'none',
-                                        borderRadius: '8px', padding: '6px 14px', fontSize: '0.82rem',
-                                        fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
+                                        background: '#4f46e5', color: 'white', border: 'none',
+                                        borderRadius: '12px', padding: '10px 24px', fontSize: '0.88rem',
+                                        fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)'
                                     }}
                                 >
-                                    <Plus size={14} /> Add Dimension Row
+                                    <Plus size={18} /> Add Selection to Project List (Cart)
                                 </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 4: Staged Project Selections List (Cart) */}
+                    {stagedItems.length > 0 && (
+                        <div style={{
+                            background: 'white', border: '2px solid #6366f1', borderRadius: '20px',
+                            padding: '1.5rem 2rem', boxShadow: '0 8px 30px rgba(99, 102, 241, 0.12)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <ShoppingBag size={20} color="#4f46e5" />
+                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                                        Staged Project Selections ({stagedItems.length} items ready to submit)
+                                    </h3>
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
+                                    You can look up more lamination codes above and keep adding them here!
+                                </span>
                             </div>
 
                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                                 <thead>
-                                    <tr style={{ background: '#fafafa', fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b' }}>
-                                        <th style={{ padding: '8px 16px', textAlign: 'left' }}>Width (m)</th>
-                                        <th style={{ padding: '8px 16px', textAlign: 'left' }}>Length (m)</th>
-                                        <th style={{ padding: '8px 16px', textAlign: 'right' }}>Calculated Qty needed (m)</th>
-                                        <th style={{ padding: '8px 16px', width: '40px' }}></th>
+                                    <tr style={{ background: '#f8fafc', fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                                        <th style={{ padding: '10px 16px', textAlign: 'left' }}>Lamination Brand & Code</th>
+                                        <th style={{ padding: '10px 16px', textAlign: 'left' }}>Matched Edge Band</th>
+                                        <th style={{ padding: '10px 16px', textAlign: 'center' }}>Match %</th>
+                                        <th style={{ padding: '10px 16px', textAlign: 'left' }}>Dimension</th>
+                                        <th style={{ padding: '10px 16px', textAlign: 'right' }}>Qty</th>
+                                        <th style={{ padding: '10px 14px', width: '40px' }}></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {dimensionRows.map(row => (
-                                        <tr key={row.id} style={{ borderTop: '1px solid #f1f5f9' }}>
-                                            <td style={{ padding: '10px 16px' }}>
-                                                <input
-                                                    type="number"
-                                                    step="0.1"
-                                                    value={row.widthM}
-                                                    onChange={e => handleUpdateDimensionRow(row.id, 'widthM', e.target.value)}
-                                                    style={{ width: '100px', padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                                                />
+                                    {stagedItems.map((item) => (
+                                        <tr key={item.id} style={{ borderTop: '1px solid #f1f5f9' }}>
+                                            <td style={{ padding: '12px 16px', fontWeight: 700, color: '#1e293b' }}>
+                                                {item.laminationBrand} <span style={{ fontFamily: 'monospace', color: '#64748b' }}>({item.laminationCode})</span>
                                             </td>
-                                            <td style={{ padding: '10px 16px' }}>
-                                                <input
-                                                    type="number"
-                                                    step="1"
-                                                    value={row.lengthM}
-                                                    onChange={e => handleUpdateDimensionRow(row.id, 'lengthM', e.target.value)}
-                                                    style={{ width: '100px', padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                                                />
+                                            <td style={{ padding: '12px 16px', fontWeight: 800, color: '#4f46e5' }}>
+                                                {item.brand} <span style={{ fontFamily: 'monospace' }}>{item.matchedCode}</span>
                                             </td>
-                                            <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 800, color: '#4f46e5' }}>
-                                                {row.quantityM}m
+                                            <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                                                <span style={{ padding: '2px 8px', background: '#dcfce7', color: '#166534', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
+                                                    {item.matchPercentage}%
+                                                </span>
                                             </td>
-                                            <td style={{ padding: '10px 16px', textAlign: 'center' }}>
+                                            <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#475569' }}>
+                                                {item.dimension?.replace('x', ' × ') || '22 × 0.8'}
+                                            </td>
+                                            <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>
+                                                {item.quantity}
+                                            </td>
+                                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                                                 <button
-                                                    onClick={() => handleRemoveDimensionRow(row.id)}
-                                                    style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer' }}
+                                                    onClick={() => handleRemoveStagedItem(item.id)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}
                                                 >
-                                                    <Trash2 size={16} color="#ef4444" />
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
-                                <tfoot>
-                                    <tr style={{ borderTop: '2px solid #e2e8f0', background: '#f8fafc', fontWeight: 800 }}>
-                                        <td colSpan={2} style={{ padding: '12px 16px', color: '#0f172a' }}>Total Meters Needed Across Dimensions:</td>
-                                        <td style={{ padding: '12px 16px', textAlign: 'right', fontSize: '1rem', color: '#166534' }}>
-                                            {totalCalculatedMeters}m
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
                             </table>
 
-                            {/* One Click Submit Button */}
+                            {/* One Click Submit All Staged Button */}
                             <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
                                 <button
                                     onClick={handleOneClickSubmit}
@@ -577,7 +683,7 @@ const EdgeBandPage = ({ user }) => {
                                         boxShadow: '0 4px 12px rgba(5, 150, 105, 0.2)'
                                     }}
                                 >
-                                    <Send size={18} /> {submittingReq ? 'Submitting...' : '🚀 Submit to Manager for Approval'}
+                                    <Send size={18} /> {submittingReq ? 'Submitting All...' : `🚀 Submit All ${stagedItems.length} Selection(s) to Manager`}
                                 </button>
                             </div>
                         </div>
@@ -652,6 +758,7 @@ const EdgeBandPage = ({ user }) => {
                                                 <th style={{ padding: '8px 16px', textAlign: 'left' }}>Lamination Code</th>
                                                 <th style={{ padding: '8px 16px', textAlign: 'left' }}>Matched Edge Band Code</th>
                                                 <th style={{ padding: '8px 16px', textAlign: 'center' }}>Match</th>
+                                                <th style={{ padding: '8px 16px', textAlign: 'left' }}>Dimension</th>
                                                 <th style={{ padding: '8px 16px', textAlign: 'right' }}>Qty</th>
                                             </tr>
                                         </thead>
@@ -664,7 +771,8 @@ const EdgeBandPage = ({ user }) => {
                                                     <td style={{ padding: '8px 16px', textAlign: 'center' }}>
                                                         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981' }}>{item.matchPercentage}%</span>
                                                     </td>
-                                                    <td style={{ padding: '8px 16px', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>{item.quantity}m</td>
+                                                    <td style={{ padding: '8px 16px', fontFamily: 'monospace', color: '#475569' }}>{item.dimension?.replace('x', ' × ') || '22 × 0.8'}</td>
+                                                    <td style={{ padding: '8px 16px', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>{item.quantity}</td>
                                                 </tr>
                                             ))}
                                         </tbody>

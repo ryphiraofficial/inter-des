@@ -15,6 +15,7 @@ const CandidateSchema = new mongoose.Schema({
 const GroupSchema = new mongoose.Schema({
     requestedBrand: { type: String, default: '' },
     edgeBandCode: { type: String, required: true, uppercase: true, trim: true },
+    dimension: { type: String, default: '' },
     quantityNeededM: { type: Number, required: true, min: 0 },
     matchPercent: { type: Number, default: null },
     candidates: [CandidateSchema],

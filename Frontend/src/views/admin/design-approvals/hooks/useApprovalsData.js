@@ -57,7 +57,7 @@ export const useApprovalsData = ({
         if (accManagersRes?.data && setAccountsManagers) setAccountsManagers(accManagersRes.data);
         if (prodProjectsRes?.data) setProductionProjects(prodProjectsRes.data);
 
-        edgeBandApi.getRequests({ status: 'pending_admin' })
+        edgeBandApi.getRequests()
             .then(d => { if (setEdgeBandsCount) setEdgeBandsCount(d.requests?.length || 0); })
             .catch(() => { if (setEdgeBandsCount) setEdgeBandsCount(0); });
     }, [prodManagersRes, procManagersRes, accManagersRes, prodProjectsRes, setProductionManagers, setProcurementManagers, setAccountsManagers, setProductionProjects, setEdgeBandsCount]);

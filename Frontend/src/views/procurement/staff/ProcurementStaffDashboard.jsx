@@ -151,7 +151,7 @@ const ProcurementStaffDashboard = ({ onLogout }) => {
                 return <StaffReports />;
 
             case 'eb_procurement':
-                return <EdgeBandProcurementQueue />;
+                return <EdgeBandProcurementQueue userRole="staff" />;
 
             default:
                 return null;

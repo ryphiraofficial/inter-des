@@ -115,5 +115,5 @@ export const assignProcurementStaff = (id, assignedTo) =>
     }).then(handle);
 
 export const getProcurementStaff = () =>
-    fetch(`${API_BASE_URL}/users?role=Procurement%20Staff`, { headers: authHeaders() }).then(handle);
+    fetch(`${API_BASE_URL}/procurement/staff`, { headers: authHeaders() }).then(handle);
 

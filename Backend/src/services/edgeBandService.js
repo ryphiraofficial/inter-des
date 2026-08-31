@@ -245,36 +245,21 @@ export const createProcurementQueue = async (edgeBandRequestId, userId) => {
     if (!req) throw Object.assign(new Error('EdgeBandRequest not found'), { status: 404 });
     if (req.status !== 'approved') throw Object.assign(new Error('Only approved requests can be sent to procurement'), { status: 400 });
 
-    // Idempotent — if already queued, return existing
-    const existing = await EdgeBandProcurementRequest.findOne({ edgeBandRequestId });
-    if (existing) return existing;
+    // Delete any old queue request for this edgeBandRequestId so it refreshes cleanly
+    await EdgeBandProcurementRequest.deleteOne({ edgeBandRequestId });
 
-    // Group flat items by matchedCode
-    const codeMap = new Map();
-    for (const item of req.items) {
-        const code = item.matchedCode;
-        if (!codeMap.has(code)) {
-            codeMap.set(code, { 
-                code, 
-                requestedBrand: item.brand || '',
-                matchPercent: item.matchPercentage, 
-                totalQty: 0 
-            });
-        }
-        const g = codeMap.get(code);
-        g.totalQty += item.quantity;
-    }
-
-    // For each code, find matching InventoryEdgeBand rows
+    // Map every item directly 1:1 without any grouping or filtering
     const groups = [];
-    for (const [code, { requestedBrand, matchPercent, totalQty }] of codeMap) {
+    for (const item of req.items) {
+        const code = item.matchedCode || item.enteredCode;
         const invBands = await InventoryEdgeBand.find({ code }).lean();
         const candidateIds = new Set([...invBands.map(b => String(b._id))]);
         groups.push({
-            requestedBrand,
+            requestedBrand: item.brand || '',
             edgeBandCode: code,
-            quantityNeededM: totalQty,
-            matchPercent: matchPercent || null,
+            dimension: item.dimension || '',
+            quantityNeededM: item.quantity,
+            matchPercent: item.matchPercentage || null,
             candidates: [...candidateIds].map(id => ({ edgeBandId: id }))
         });
     }
@@ -303,12 +288,38 @@ export const getProcurementQueue = async (query = {}) => {
     const docs = await EdgeBandProcurementRequest.find(filter)
         .populate('requestedBy', 'fullName name email')
         .populate('assignedTo', 'fullName name email role')
-        .populate('edgeBandRequestId', 'project task status')
-        .sort({ createdAt: -1 })
-        .lean();
+        .populate('edgeBandRequestId')
+        .sort({ createdAt: -1 });
+
+    // Auto re-sync any pending request whose groups don't match 1:1 with req.items
+    for (const doc of docs) {
+        if (doc.edgeBandRequestId && Array.isArray(doc.edgeBandRequestId.items) && doc.status === 'pending') {
+            const reqItems = doc.edgeBandRequestId.items;
+            if (doc.groups.length !== reqItems.length) {
+                const newGroups = [];
+                for (const item of reqItems) {
+                    const code = item.matchedCode || item.enteredCode;
+                    const invBands = await InventoryEdgeBand.find({ code }).lean();
+                    const candidateIds = new Set([...invBands.map(b => String(b._id))]);
+                    newGroups.push({
+                        requestedBrand: item.brand || '',
+                        edgeBandCode: code,
+                        dimension: item.dimension || '',
+                        quantityNeededM: item.quantity,
+                        matchPercent: item.matchPercentage || null,
+                        candidates: [...candidateIds].map(id => ({ edgeBandId: id }))
+                    });
+                }
+                doc.groups = newGroups;
+                await doc.save();
+            }
+        }
+    }
+
+    const docsObj = docs.map(d => d.toObject());
 
     // Populate live stock for each candidate
-    for (const doc of docs) {
+    for (const doc of docsObj) {
         for (const group of doc.groups) {
             const ids = group.candidates.map(c => c.edgeBandId);
             const bands = await InventoryEdgeBand.find({ _id: { $in: ids } })
@@ -322,7 +333,7 @@ export const getProcurementQueue = async (query = {}) => {
         }
     }
 
-    return docs;
+    return docsObj;
 };
 
 /**

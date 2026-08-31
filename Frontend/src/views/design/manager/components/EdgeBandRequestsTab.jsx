@@ -10,6 +10,11 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
     const [managerNote, setManagerNote] = useState({});
     const [adminNote, setAdminNote] = useState({});
     const [actionLoading, setActionLoading] = useState(null);
+    const [expandedRequests, setExpandedRequests] = useState({});
+
+    const toggleExpand = (id) => {
+        setExpandedRequests(prev => ({ ...prev, [id]: !prev[id] }));
+    };
 
     const loadRequests = async () => {
         try {
@@ -27,15 +32,15 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
         loadRequests();
     }, []);
 
+    const [statusFilter, setStatusFilter] = useState('ALL');
+
     const filteredRequests = useMemo(() => {
-        if (userRole === 'admin') {
-            return requests.filter(r => r.status === 'pending_admin' || r.status === 'approved');
+        let list = requests;
+        if (statusFilter !== 'ALL') {
+            list = list.filter(r => r.status === statusFilter);
         }
-        if (userRole === 'procurement') {
-            return requests.filter(r => r.status === 'approved');
-        }
-        return requests;
-    }, [requests, userRole]);
+        return list;
+    }, [requests, statusFilter]);
 
     const handleStartEdit = (req) => {
         setEditingRequestId(req._id);
@@ -112,23 +117,61 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                     <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Edge Band Approval & Handoff</h2>
                     <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-                        {userRole === 'admin'
-                            ? 'Review manager-approved edge band requests and release to procurement.'
-                            : userRole === 'procurement'
-                            ? 'View approved edge band lists released for purchasing.'
-                            : 'Review staff edge band selections, edit quantities if needed, and approve for procurement.'}
+                        Review staff edge band selections, edit quantities, and approve for procurement release.
                     </p>
                 </div>
                 <button
                     onClick={loadRequests}
-                    style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '6px 14px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
+                    style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '8px 16px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
                 >
                     🔄 Refresh List
                 </button>
+            </div>
+
+            {/* Pill-Style Status Navigation Bar */}
+            <div style={{
+                background: '#f1f5f9', padding: '5px', borderRadius: '14px',
+                display: 'inline-flex', gap: '4px', border: '1px solid #e2e8f0', flexWrap: 'wrap'
+            }}>
+                {[
+                    { key: 'ALL', label: 'All Requests', count: requests.length },
+                    { key: 'pending_manager', label: '⏳ Pending Manager Review', count: requests.filter(r => r.status === 'pending_manager').length },
+                    { key: 'pending_admin', label: '🛡️ Pending Admin Release', count: requests.filter(r => r.status === 'pending_admin').length },
+                    { key: 'approved', label: '✅ Approved & Released', count: requests.filter(r => r.status === 'approved').length },
+                    { key: 'rejected', label: '❌ Recheck Requested', count: requests.filter(r => r.status === 'rejected').length }
+                ].map(tab => {
+                    const isActive = statusFilter === tab.key;
+                    return (
+                        <button
+                            key={tab.key}
+                            onClick={() => setStatusFilter(tab.key)}
+                            style={{
+                                padding: '8px 16px', borderRadius: '10px', border: 'none',
+                                background: isActive ? 'white' : 'transparent',
+                                color: isActive ? '#4f46e5' : '#64748b',
+                                fontWeight: isActive ? 800 : 600,
+                                fontSize: '0.85rem', cursor: 'pointer',
+                                boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                transition: 'all 0.15s ease'
+                            }}
+                        >
+                            <span>{tab.label}</span>
+                            <span style={{
+                                background: isActive ? '#e0e7ff' : '#e2e8f0',
+                                color: isActive ? '#4338ca' : '#64748b',
+                                fontSize: '0.75rem', fontWeight: 800,
+                                padding: '2px 7px', borderRadius: '10px'
+                            }}>
+                                {tab.count}
+                            </span>
+                        </button>
+                    );
+                })}
             </div>
 
             {filteredRequests.map((req) => {
@@ -141,14 +184,18 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                         overflow: 'hidden', boxShadow: '0 4px 12px -4px rgba(0,0,0,0.04)'
                     }}>
                         {/* Header */}
-                        <div style={{
-                            padding: '1.25rem 1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0',
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem'
-                        }}>
+                        <div 
+                            onClick={() => toggleExpand(req._id)}
+                            style={{
+                                padding: '1.25rem 1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0',
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
+                                cursor: 'pointer'
+                            }}
+                        >
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>
-                                        {req.project?.name || req.project?.projectNumber || 'Project Edge Bands'}
+                                        {expandedRequests[req._id] ? '▼' : '▶'} {req.project?.name || req.project?.projectNumber || 'Project Edge Bands'}
                                     </span>
                                     {req.task && (
                                         <span style={{ fontSize: '0.8rem', background: '#e0e7ff', color: '#4338ca', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
@@ -187,7 +234,24 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                             </div>
                         </div>
 
+                        {/* Manager & Admin Notes display */}
+                        {expandedRequests[req._id] && (
+                            <>
+                                {req.managerNote && (
+                                    <div style={{ background: '#fffbeb', padding: '10px 1.5rem', borderBottom: '1px solid #fde68a', fontSize: '0.85rem', color: '#92400e' }}>
+                                        <strong>📝 Manager Note:</strong> {req.managerNote}
+                                    </div>
+                                )}
+                                {req.adminNote && (
+                                    <div style={{ background: '#eff6ff', padding: '10px 1.5rem', borderBottom: '1px solid #bfdbfe', fontSize: '0.85rem', color: '#1e40af' }}>
+                                        <strong>🛡️ Admin Note:</strong> {req.adminNote}
+                                    </div>
+                                )}
+                            </>
+                        )}
+
                         {/* Items Table */}
+                        {expandedRequests[req._id] && (
                         <div style={{ padding: '1rem 1.5rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                                 <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#334155' }}>
@@ -242,62 +306,90 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                                 </tbody>
                             </table>
                         </div>
+                        )}
 
-                        {/* Manager Review Controls */}
-                        {req.status === 'pending_manager' && (
+                        {/* Review & Approve Controls (for any request not yet fully approved) */}
+                        {expandedRequests[req._id] && req.status !== 'approved' && (
                             <div style={{ padding: '1rem 1.5rem', background: '#fafafa', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <input
                                     type="text"
-                                    placeholder="Add feedback or recheck instructions for staff (optional for approval)..."
-                                    value={managerNote[req._id] || ''}
-                                    onChange={e => setManagerNote(prev => ({ ...prev, [req._id]: e.target.value }))}
+                                    placeholder={userRole === 'admin' ? "Add admin review notes / feedback..." : "Add manager review notes / feedback..."}
+                                    value={userRole === 'admin' ? (adminNote[req._id] || '') : (managerNote[req._id] || '')}
+                                    onChange={e => {
+                                        if (userRole === 'admin') {
+                                            setAdminNote(prev => ({ ...prev, [req._id]: e.target.value }));
+                                        } else {
+                                            setManagerNote(prev => ({ ...prev, [req._id]: e.target.value }));
+                                        }
+                                    }}
                                     style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.85rem', width: '100%' }}
                                 />
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-                                    <button
-                                        onClick={() => handleManagerReview(req._id, 'rejected')}
-                                        disabled={actionLoading === req._id}
-                                        style={{ background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', padding: '8px 16px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
-                                    >
-                                        ❌ Request Staff Recheck
-                                    </button>
-                                    <button
-                                        onClick={() => handleManagerReview(req._id, 'pending_admin')}
-                                        disabled={actionLoading === req._id}
-                                        style={{ background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
-                                    >
-                                        {actionLoading === req._id ? 'Saving...' : '✅ Approve & Send to Admin'}
-                                    </button>
+                                    {userRole === 'manager' && req.status === 'pending_manager' && (
+                                        <>
+                                            <button
+                                                onClick={() => handleManagerReview(req._id, 'rejected')}
+                                                disabled={actionLoading === req._id}
+                                                style={{ background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', padding: '8px 16px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                                            >
+                                                ❌ Reject / Recheck
+                                            </button>
+                                            <button
+                                                onClick={() => handleManagerReview(req._id, 'pending_admin')}
+                                                disabled={actionLoading === req._id}
+                                                style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 22px', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(59,130,246,0.2)' }}
+                                            >
+                                                {actionLoading === req._id ? 'Processing...' : '🛡️ Approve & Send to Admin'}
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {userRole === 'admin' && (req.status === 'pending_manager' || req.status === 'pending_admin') && (
+                                        <>
+                                            <button
+                                                onClick={() => handleAdminReview(req._id, 'rejected')}
+                                                disabled={actionLoading === req._id}
+                                                style={{ background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', padding: '8px 16px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                                            >
+                                                ❌ Reject / Recheck
+                                            </button>
+                                            <button
+                                                onClick={() => handleAdminReview(req._id, 'approved')}
+                                                disabled={actionLoading === req._id}
+                                                style={{ background: '#059669', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 22px', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(5,150,105,0.2)' }}
+                                            >
+                                                {actionLoading === req._id ? 'Processing...' : '✅ Approve & Ready to Push'}
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         )}
 
-                        {/* Admin Review Controls */}
-                        {req.status === 'pending_admin' && userRole === 'admin' && (
-                            <div style={{ padding: '1rem 1.5rem', background: '#eff6ff', borderTop: '1px solid #bfdbfe', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                <input
-                                    type="text"
-                                    placeholder="Admin review notes..."
-                                    value={adminNote[req._id] || ''}
-                                    onChange={e => setAdminNote(prev => ({ ...prev, [req._id]: e.target.value }))}
-                                    style={{ padding: '8px 12px', border: '1px solid #93c5fd', borderRadius: '8px', fontSize: '0.85rem', width: '100%' }}
-                                />
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-                                    <button
-                                        onClick={() => handleAdminReview(req._id, 'rejected')}
-                                        disabled={actionLoading === req._id}
-                                        style={{ background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '8px', padding: '8px 16px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
-                                    >
-                                        ❌ Reject
-                                    </button>
-                                    <button
-                                        onClick={() => handleAdminReview(req._id, 'approved')}
-                                        disabled={actionLoading === req._id}
-                                        style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
-                                    >
-                                        {actionLoading === req._id ? 'Processing...' : '🛡️ Approve & Release to Procurement'}
-                                    </button>
-                                </div>
+                        {/* Push to Procurement Queue control (for approved requests) */}
+                        {expandedRequests[req._id] && req.status === 'approved' && userRole === 'admin' && (
+                            <div style={{ padding: '1rem 1.5rem', background: '#f0fdf4', borderTop: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>
+                                    ✅ This request is approved. You can push it directly into the Procurement Queue.
+                                </span>
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            setActionLoading(req._id);
+                                            await api.sendToProcurementQueue(req._id);
+                                            alert('✓ Successfully pushed to Procurement Queue!');
+                                            loadRequests();
+                                        } catch (err) {
+                                            alert('Failed to send to procurement queue: ' + err.message);
+                                        } finally {
+                                            setActionLoading(null);
+                                        }
+                                    }}
+                                    disabled={actionLoading === req._id}
+                                    style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(22,163,74,0.2)' }}
+                                >
+                                    {actionLoading === req._id ? 'Pushing...' : '📦 Push to Procurement Queue'}
+                                </button>
                             </div>
                         )}
                     </div>
