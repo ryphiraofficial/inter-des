@@ -1,5 +1,6 @@
-import React from 'react';
-import { X, FileText, Package, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, FileText, Package, RefreshCw, Layers } from 'lucide-react';
+import * as edgeBandApi from '../../staff/components/edgeBandApi';
 
 const SubmissionReviewModal = ({
     show, onClose,
@@ -8,6 +9,20 @@ const SubmissionReviewModal = ({
     managerFeedback, setManagerFeedback,
     onSubmitReview
 }) => {
+    const [edgeBands, setEdgeBands] = useState([]);
+
+    const projId = selectedTask?.project?._id || selectedTask?.project || selectedTask?.quotation?._id || selectedTask?.quotation;
+
+    useEffect(() => {
+        if (!show || !projId) {
+            setEdgeBands([]);
+            return;
+        }
+        edgeBandApi.getProjectSelections(projId)
+            .then(d => setEdgeBands(d.selections || []))
+            .catch(() => setEdgeBands([]));
+    }, [show, projId]);
+
     if (!show || !selectedTask) return null;
 
     const latestSub = selectedTask.submissions?.[selectedTask.submissions.length - 1];
@@ -84,6 +99,36 @@ const SubmissionReviewModal = ({
                                 )}
                             </div>
                         </div>
+
+                        {/* Edge Bands Table */}
+                        {edgeBands.length > 0 && (
+                            <div className="edge-bands-section" style={{ marginBottom: '1.5rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
+                                <div style={{ background: '#f0f3ff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Layers size={18} color="#4f46e5" />
+                                    <h6 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#1e293b' }}>Attached Edge Bands ({edgeBands.length})</h6>
+                                </div>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                                    <thead>
+                                        <tr style={{ textAlign: 'left', background: '#fafafa', borderBottom: '1px solid #f1f5f9' }}>
+                                            <th style={{ padding: '10px 16px', color: '#64748b', fontWeight: 700 }}>Brand</th>
+                                            <th style={{ padding: '10px 16px', color: '#64748b', fontWeight: 700 }}>Code</th>
+                                            <th style={{ padding: '10px 16px', color: '#64748b', fontWeight: 700 }}>Dimension</th>
+                                            <th style={{ padding: '10px 16px', color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {edgeBands.map((eb, idx) => (
+                                            <tr key={eb._id || idx} style={{ borderBottom: idx < edgeBands.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                                                <td style={{ padding: '10px 16px', color: '#1e293b', fontWeight: 700 }}>{eb.brand}</td>
+                                                <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#4f46e5', fontWeight: 700 }}>{eb.matchedCode}</td>
+                                                <td style={{ padding: '10px 16px', color: '#475569' }}>{eb.dimension?.replace('x', ' × ')}</td>
+                                                <td style={{ padding: '10px 16px', color: '#1e293b', fontWeight: 800, textAlign: 'right' }}>{eb.quantity}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
                         {/* Staff Notes */}
                         <div className="staff-notes" style={{ marginBottom: '1.5rem', padding: '12px', background: '#f1f5f9', borderRadius: '8px' }}>

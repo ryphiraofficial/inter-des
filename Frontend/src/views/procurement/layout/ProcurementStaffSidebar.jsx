@@ -2,20 +2,21 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, ShoppingCart, CheckSquare, Package,
-    Box, LogOut, Video, FileText
+    Box, LogOut, Video, FileText, Layers
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 
 const NAV_ITEMS = [
-    { tab: 'overview',     label: 'My Dashboard',     icon: LayoutDashboard },
-    { tab: 'sourcing',     label: 'Sourcing Hub',     icon: ShoppingCart },
-    { tab: 'tasks',        label: 'My Tasks',         icon: CheckSquare },
-    { tab: 'history',      label: 'Purchase History', icon: Package },
-    { tab: 'vendors',      label: 'Vendors',          icon: Box },
-    { tab: 'meetings',     label: 'Meetings',         icon: Video },
-    { tab: 'reports',      label: 'Reports',          icon: FileText },
+    { tab: 'overview',         label: 'My Dashboard',     icon: LayoutDashboard },
+    { tab: 'sourcing',         label: 'Sourcing Hub',     icon: ShoppingCart },
+    { tab: 'eb_procurement',   label: 'Edge Band Queue',  icon: Layers },
+    { tab: 'tasks',            label: 'My Tasks',         icon: CheckSquare },
+    { tab: 'history',          label: 'Purchase History', icon: Package },
+    { tab: 'vendors',          label: 'Vendors',          icon: Box },
+    { tab: 'meetings',         label: 'Meetings',         icon: Video },
+    { tab: 'reports',          label: 'Reports',          icon: FileText },
 ];
 
 const ProcurementStaffSidebar = ({ onLogout, isMobileOpen, onCloseMobile }) => {

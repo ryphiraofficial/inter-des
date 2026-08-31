@@ -6,6 +6,7 @@ export const useApprovalsState = () => {
     const [accountsProjects, setAccountsProjects] = useState([]);
     const [procurementItems, setProcurementItems] = useState([]);
     const [productionProjects, setProductionProjects] = useState([]);
+    const [edgeBandsCount, setEdgeBandsCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [productionManagers, setProductionManagers] = useState([]);
     const [procurementManagers, setProcurementManagers] = useState([]);
@@ -39,6 +40,7 @@ export const useApprovalsState = () => {
         accountsProjects, setAccountsProjects,
         procurementItems, setProcurementItems,
         productionProjects, setProductionProjects,
+        edgeBandsCount, setEdgeBandsCount,
         loading, setLoading,
         productionManagers, setProductionManagers,
         procurementManagers, setProcurementManagers,

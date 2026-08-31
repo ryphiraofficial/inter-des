@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, Plus, Package, CheckSquare,
-    Building2, CheckCircle, LogOut, Video, FileText
+    Building2, CheckCircle, LogOut, Video, FileText, Layers, ShoppingCart
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 import { useAppSelector } from '../../../store/hooks';
@@ -14,6 +14,8 @@ const NAV_ITEMS = [
     { tab: 'requests',         label: 'Material Requests', icon: Package },
     { tab: 'assignments',      label: 'Approvals & Assignments', icon: CheckSquare },
     { tab: 'vendors',          label: 'Vendors',           icon: Building2 },
+    { tab: 'edge_bands',       label: 'Edge Bands (Approvals)', icon: Layers },
+    { tab: 'eb_procurement',   label: 'Edge Band Queue',        icon: ShoppingCart },
     { tab: 'meetings',         label: 'Meetings',          icon: Video },
     { tab: 'reports',          label: 'Reports',           icon: FileText },
 ];

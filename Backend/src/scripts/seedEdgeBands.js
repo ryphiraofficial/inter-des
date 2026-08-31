@@ -9,12 +9,15 @@ const rawEdgeBandData = [
     "name": "Walnut Natural",
     "finish": "Matt",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Merino",
+    "code": "EB-101",
+    "name": "Walnut Premium",
+    "finish": "Matt",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
   },
   {
     "brand": "Merino",
@@ -22,12 +25,7 @@ const rawEdgeBandData = [
     "name": "Walnut Dark",
     "finish": "Matt",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
   },
   {
     "brand": "Merino",
@@ -35,36 +33,7 @@ const rawEdgeBandData = [
     "name": "Oak Natural",
     "finish": "Wood Grain",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8"
-    ]
-  },
-  {
-    "brand": "Merino",
-    "code": "EB-MER-004",
-    "name": "Teak",
-    "finish": "Wood Grain",
-    "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
-  },
-  {
-    "brand": "Merino",
-    "code": "EB-MER-005",
-    "name": "Wenge",
-    "finish": "Matt",
-    "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8"]
   },
   {
     "brand": "Greenlam",
@@ -72,12 +41,15 @@ const rawEdgeBandData = [
     "name": "Classic White",
     "finish": "Matt",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Greenlam",
+    "code": "EB-101",
+    "name": "Pure White Premium",
+    "finish": "Gloss",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
   },
   {
     "brand": "Greenlam",
@@ -85,37 +57,7 @@ const rawEdgeBandData = [
     "name": "Pearl White",
     "finish": "Gloss",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8"
-    ]
-  },
-  {
-    "brand": "Greenlam",
-    "code": "EB-GRN-003",
-    "name": "Charcoal Grey",
-    "finish": "Matt",
-    "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
-  },
-  {
-    "brand": "Greenlam",
-    "code": "EB-GRN-004",
-    "name": "Jet Black",
-    "finish": "Matt",
-    "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8"]
   },
   {
     "brand": "Century",
@@ -123,12 +65,15 @@ const rawEdgeBandData = [
     "name": "Natural Teak",
     "finish": "Wood Grain",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Century",
+    "code": "EB-101",
+    "name": "Teak Elegance",
+    "finish": "Wood Grain",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
   },
   {
     "brand": "Century",
@@ -136,24 +81,55 @@ const rawEdgeBandData = [
     "name": "Royal Walnut",
     "finish": "Wood Grain",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8"]
   },
   {
-    "brand": "Century",
-    "code": "EB-CEN-003",
-    "name": "Light Oak",
-    "finish": "Wood Grain",
+    "brand": "Rehau",
+    "code": "EB-REH-001",
+    "name": "Rauwalon Silver",
+    "finish": "Metallic",
+    "material": "ABS",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Rehau",
+    "code": "EB-101",
+    "name": "Rauuklet White",
+    "finish": "High Gloss",
+    "material": "ABS",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Woodarua",
+    "code": "EB-WOO-001",
+    "name": "Nordic Birch",
+    "finish": "Textured",
     "material": "PVC",
-    "dimensions": [
-      "22x0.8",
-      "22x2",
-      "45x0.8",
-      "45x2"
-    ]
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Woodarua",
+    "code": "EB-101",
+    "name": "Nordic Oak",
+    "finish": "Textured",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Royale Touché",
+    "code": "EB-ROY-001",
+    "name": "Imperial Gold",
+    "finish": "Silk Finish",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
+  },
+  {
+    "brand": "Royale Touché",
+    "code": "EB-101",
+    "name": "Imperial Walnut",
+    "finish": "Matt",
+    "material": "PVC",
+    "dimensions": ["22x0.8", "22x2", "45x0.8", "45x2"]
   }
 ];
 

@@ -1,5 +1,58 @@
 import * as svc from '../../services/edgeBandService.js';
 
+export const createProcurementQueue = async (req, res) => {
+    const { edgeBandRequestId } = req.body;
+    if (!edgeBandRequestId) return res.status(400).json({ success: false, message: 'edgeBandRequestId is required' });
+    try {
+        const doc = await svc.createProcurementQueue(edgeBandRequestId, req.user._id);
+        res.status(201).json({ success: true, doc });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const getProcurementQueue = async (req, res) => {
+    try {
+        const docs = await svc.getProcurementQueue(req.query);
+        res.json({ success: true, docs });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const selectProcurementCandidate = async (req, res) => {
+    const { groupId } = req.params;
+    const { selectedEdgeBandId } = req.body;
+    if (!selectedEdgeBandId) return res.status(400).json({ success: false, message: 'selectedEdgeBandId is required' });
+    try {
+        const doc = await svc.selectProcurementCandidate(groupId, selectedEdgeBandId);
+        res.json({ success: true, doc });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const markGroupNeedsPurchase = async (req, res) => {
+    const { groupId } = req.params;
+    try {
+        const doc = await svc.markGroupNeedsPurchase(groupId);
+        res.json({ success: true, doc });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const assignProcurementStaff = async (req, res) => {
+    const { id } = req.params;
+    const { assignedTo } = req.body;
+    try {
+        const doc = await svc.assignProcurementStaff(id, assignedTo);
+        res.json({ success: true, doc });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
 export const getBrands = async (req, res) => {
     try {
         const brands = await svc.getBrands();
@@ -11,11 +64,8 @@ export const getBrands = async (req, res) => {
 
 export const searchEdgeBands = async (req, res) => {
     const { brand, code } = req.query;
-    if (!code || code.trim().length < 2) {
-        return res.json({ success: true, results: [] });
-    }
     try {
-        const results = await svc.searchEdgeBands(brand, code.trim());
+        const results = await svc.searchEdgeBands(brand, code ? code.trim() : '');
         res.json({ success: true, results });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -60,6 +110,44 @@ export const deleteSelection = async (req, res) => {
     try {
         await svc.deleteSelection(req.params.id, req.user._id);
         res.json({ success: true });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const submitRequest = async (req, res) => {
+    const { projectId, taskId, items } = req.body;
+    if (!projectId) return res.status(400).json({ success: false, message: 'projectId is required' });
+    try {
+        const request = await svc.submitRequest(projectId, taskId, items, req.user._id);
+        res.status(201).json({ success: true, request });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const getRequests = async (req, res) => {
+    try {
+        const requests = await svc.getRequests(req.query);
+        res.json({ success: true, requests });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const managerReviewRequest = async (req, res) => {
+    try {
+        const request = await svc.managerReviewRequest(req.params.id, req.body, req.user._id);
+        res.json({ success: true, request });
+    } catch (err) {
+        res.status(err.status || 500).json({ success: false, message: err.message });
+    }
+};
+
+export const adminReviewRequest = async (req, res) => {
+    try {
+        const request = await svc.adminReviewRequest(req.params.id, req.body, req.user._id);
+        res.json({ success: true, request });
     } catch (err) {
         res.status(err.status || 500).json({ success: false, message: err.message });
     }

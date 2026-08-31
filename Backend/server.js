@@ -11,6 +11,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import fs from 'fs';
 
 // Shared
@@ -57,6 +58,7 @@ import vendorRoutes from './src/routes/procurement/vendorRoutes.js';
 import purchaseOrderRoutes from './src/routes/procurement/purchaseOrderRoutes.js';
 import inventoryRoutes from './src/routes/procurement/inventoryRoutes.js';
 import poInventoryRoutes from './src/routes/procurement/poInventoryRoutes.js';
+import edgeBandInventoryRoutes from './src/routes/procurement/edgeBandInventoryRoutes.js';
 
 // Production
 import productionRoutes from './src/routes/production/productionRoutes.js';
@@ -69,6 +71,9 @@ import { checkTaskDeadlines } from './src/utils/notificationHelper.js';
 import Staff from './src/models/admin/Staff.js';
 
 const app = express();
+
+// Trust first proxy — required for express-rate-limit to see real client IP behind Nginx
+app.set('trust proxy', 1);
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -78,10 +83,41 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: false
 }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    credentials: true
+}));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Rate limiting — general API cap + tight auth cap
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min
+    max: 200,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many requests, please try again later.' }
+});
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many login attempts, please try again later.' }
+});
+// AI endpoints are slow & expensive — tighter cap to prevent abuse
+const aiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 min
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many AI requests, please slow down.' }
+});
+app.use('/api/', apiLimiter);
+app.use('/api/auth', authLimiter);
+app.use('/api/client-auth', authLimiter);
+app.use('/api/ai', aiLimiter);
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -92,9 +128,13 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/health', (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: 'Server is running',
+    const dbState = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    const dbStatus = mongoose.connection.readyState;
+    res.status(dbStatus === 1 ? 200 : 503).json({
+        success: dbStatus === 1,
+        server: 'running',
+        db: dbState[dbStatus] ?? 'unknown',
+        uptime: Math.floor(process.uptime()),
         timestamp: new Date().toISOString()
     });
 });
@@ -141,6 +181,7 @@ app.use('/api/design/edge-bands', edgeBandRoutes);
 app.use('/api/procurement', procurementRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/purchase-orders', purchaseOrderRoutes);
+app.use('/api/inventory', edgeBandInventoryRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/po-inventory', poInventoryRoutes);
 
@@ -158,7 +199,11 @@ app.use(errorHandler);
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI);
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 5000,  // fail fast if Atlas unreachable
+            socketTimeoutMS: 45000,
+            maxPoolSize: 10
+        });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error(`MongoDB Connection Error: ${error.message}`);
@@ -198,6 +243,13 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Graceful shutdown — PM2 / Docker sends SIGTERM before killing the process
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM received. Closing server gracefully...');
+    await mongoose.connection.close();
+    process.exit(0);
+});
 
 process.on('unhandledRejection', (err) => {
     console.error(`Unhandled Rejection: ${err.message}`);

@@ -20,6 +20,7 @@ import ActivityFeed from './components/ActivityFeed';
 import DashboardLoading from './components/DashboardLoading';
 import MeetingsPage from '../../common/MeetingsPage';
 import EdgeBandPage from '../staff/components/EdgeBandPage';
+import EdgeBandRequestsTab from './components/EdgeBandRequestsTab';
 
 import { useManagerData } from './hooks/useManagerData';
 import { useTaskActions } from './hooks/useTaskActions';
@@ -135,13 +136,18 @@ const DesignManagerDashboard = ({}) => {
                 );
             case 'material_review':
                 return <MaterialReviewHub materialRequests={materialRequests} onApprove={handleApproveMaterialRequest} />;
+            case 'edge_bands':
+            case 'edge-bands':
+            case 'edge-band-requests':
+                return <EdgeBandRequestsTab userRole="manager" />;
             case 'meetings':
                 return <MeetingsPage user={user} />;
             case 'reports':
                 return (
                     <StaffReports />
                 );
-            case 'edge-bands':
+            case 'edge-band-search':
+            case 'edge-band-matcher':
                 return <EdgeBandPage user={user} />;
             default:
                 return (

@@ -8,6 +8,8 @@ import Vendors from './Vendors';
 import ProcurementSkeleton from './ProcurementSkeleton';
 import MeetingsPage from '../../common/MeetingsPage';
 import StaffReports from '../../common/StaffReports';
+import EdgeBandRequestsTab from '../../design/manager/components/EdgeBandRequestsTab';
+import EdgeBandProcurementQueue from '../../design/manager/components/EdgeBandProcurementQueue';
 
 import { useProcurementManagerLogic } from '../hooks/useProcurementManagerLogic';
 import AssignStaffModal from '../components/AssignStaffModal';
@@ -42,6 +44,9 @@ const ProcurementManagerDashboard = ({ onLogout }) => {
             case 'requests':    return <MaterialRequests pendingRequests={pendingRequests} setSelectedRequest={setSelectedRequest} setShowAssignModal={setShowAssignModal} />;
             case 'assignments': return <Assignments assignedRequests={assignedRequests} pendingReviews={pendingReviews} handleApproveToAdmin={handleApproveToAdmin} />;
             case 'vendors':     return <Vendors vendors={vendors} setShowAddVendorModal={setShowAddVendorModal} handleViewVendorDetails={handleViewVendorDetails} />;
+            case 'edge_bands':
+            case 'edge-bands':  return <EdgeBandRequestsTab userRole="procurement" />;
+            case 'eb_procurement': return <EdgeBandProcurementQueue />;
             case 'meetings':    return <MeetingsPage />;
             case 'reports':     return <StaffReports />;
             default:            return null;

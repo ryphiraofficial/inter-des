@@ -43,3 +43,66 @@ export const deleteSelection = (id) =>
         method: 'DELETE',
         headers: authHeaders()
     }).then(handle);
+
+export const submitRequest = (projectId, taskId, items) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/requests`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ projectId, taskId, items })
+    }).then(handle);
+
+export const getRequests = (params = {}) => {
+    const qp = new URLSearchParams(params);
+    return fetch(`${API_BASE_URL}/design/edge-bands/requests?${qp}`, { headers: authHeaders() }).then(handle);
+};
+
+export const managerReviewRequest = (id, payload) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/requests/${id}/manager-review`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify(payload)
+    }).then(handle);
+
+export const adminReviewRequest = (id, payload) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/requests/${id}/admin-review`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify(payload)
+    }).then(handle);
+
+// ── Procurement Queue ──────────────────────────────────────────
+export const sendToProcurementQueue = (edgeBandRequestId) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/procurement-queue`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ edgeBandRequestId })
+    }).then(handle);
+
+export const getProcurementQueue = (params = {}) => {
+    const qp = new URLSearchParams(params);
+    return fetch(`${API_BASE_URL}/design/edge-bands/procurement-queue?${qp}`, { headers: authHeaders() }).then(handle);
+};
+
+export const selectProcurementCandidate = (groupId, selectedEdgeBandId) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/procurement-queue/${groupId}/select`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ selectedEdgeBandId })
+    }).then(handle);
+
+export const markGroupNeedsPurchase = (groupId) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/procurement-queue/${groupId}/needs-purchase`, {
+        method: 'PATCH',
+        headers: authHeaders()
+    }).then(handle);
+
+export const assignProcurementStaff = (id, assignedTo) =>
+    fetch(`${API_BASE_URL}/design/edge-bands/procurement-queue/${id}/assign`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ assignedTo })
+    }).then(handle);
+
+export const getProcurementStaff = () =>
+    fetch(`${API_BASE_URL}/users?role=Procurement%20Staff`, { headers: authHeaders() }).then(handle);
+

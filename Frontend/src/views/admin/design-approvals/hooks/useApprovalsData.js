@@ -9,8 +9,10 @@ import {
     useGetProcurementManagersQuery
 } from '../../../../store/api/adminApi';
 
+import * as edgeBandApi from '../../../design/staff/components/edgeBandApi';
+
 export const useApprovalsData = ({ 
-    setTasks, setAccountsProjects, setProcurementItems, setProductionProjects, setLoading, 
+    setTasks, setAccountsProjects, setProcurementItems, setProductionProjects, setEdgeBandsCount, setLoading, 
     setProductionManagers, setProcurementManagers, setAccountsManagers, showToast 
 }) => {
     const { data: designTasksRes, isLoading: designLoading, error: designError, refetch: refetchDesign } = useGetDesignApprovalsQuery();
@@ -54,7 +56,11 @@ export const useApprovalsData = ({
         if (procManagersRes?.data && setProcurementManagers) setProcurementManagers(procManagersRes.data);
         if (accManagersRes?.data && setAccountsManagers) setAccountsManagers(accManagersRes.data);
         if (prodProjectsRes?.data) setProductionProjects(prodProjectsRes.data);
-    }, [prodManagersRes, procManagersRes, accManagersRes, prodProjectsRes, setProductionManagers, setProcurementManagers, setAccountsManagers, setProductionProjects]);
+
+        edgeBandApi.getRequests({ status: 'pending_admin' })
+            .then(d => { if (setEdgeBandsCount) setEdgeBandsCount(d.requests?.length || 0); })
+            .catch(() => { if (setEdgeBandsCount) setEdgeBandsCount(0); });
+    }, [prodManagersRes, procManagersRes, accManagersRes, prodProjectsRes, setProductionManagers, setProcurementManagers, setAccountsManagers, setProductionProjects, setEdgeBandsCount]);
 
     const fetchPendingApprovals = () => {
         refetchDesign();

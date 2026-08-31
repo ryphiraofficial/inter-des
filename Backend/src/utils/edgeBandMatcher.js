@@ -1,15 +1,3 @@
-/**
- * Edge band code matching engine.
- *
- * Normalizes hyphens, spaces, and special characters to compare alphanumeric strings.
- * Scores:
- *   100% — Exact code match (with or without hyphens/spaces)
- *    90% — Very close match (prefix match or 1 character diff)
- *    80% — Close match (substring/number match or 2 character diff)
- *    70% — Partial match (3 character diff or segment match)
- *   <70% — Filtered out
- */
-
 function levenshtein(a, b) {
     const m = a.length, n = b.length;
     const dp = Array.from({ length: m + 1 }, (_, i) =>
@@ -31,14 +19,32 @@ function levenshtein(a, b) {
  * @returns {Array<{code, name, brand, finish, material, match, dimensions, _id}>} sorted desc by match, filtered ≥70
  */
 export function matchEdgeBands(input, candidates) {
-    const rawQuery = input.trim().toUpperCase();
-    if (!rawQuery) return [];
+    const rawQuery = (input || '').trim().toUpperCase();
+    
+    // Default listing when no query is provided
+    if (!rawQuery) {
+        const scores = [100, 90, 80, 70];
+        return candidates.map((band, idx) => ({
+            _id: band._id,
+            brand: band.brand,
+            code: band.code,
+            name: band.name,
+            finish: band.finish,
+            material: band.material,
+            match: scores[idx % scores.length],
+            dimensions: band.dimensions
+        }));
+    }
 
     const cleanQuery = rawQuery.replace(/[^A-Z0-9]/g, '');
+    const queryDigits = rawQuery.replace(/[^0-9]/g, '');
+    const queryTokens = rawQuery.split(/[^A-Z0-9]+/).filter(Boolean);
 
     const scored = candidates.map(band => {
         const target = band.code.toUpperCase();
         const cleanTarget = target.replace(/[^A-Z0-9]/g, '');
+        const targetDigits = target.replace(/[^0-9]/g, '');
+        const targetTokens = target.split(/[^A-Z0-9]+/).filter(Boolean);
 
         let match = 0;
 
@@ -46,23 +52,22 @@ export function matchEdgeBands(input, candidates) {
             match = 100;
         } else if (cleanTarget.startsWith(cleanQuery) || cleanQuery.startsWith(cleanTarget)) {
             const ratio = cleanQuery.length / cleanTarget.length;
-            if (ratio >= 0.7) {
-                match = 90;
-            } else {
-                match = 80;
-            }
-        } else if (cleanTarget.includes(cleanQuery) && cleanQuery.length >= 3) {
-            match = 80;
+            match = ratio >= 0.7 ? 90 : 80;
+        } else if (cleanTarget.includes(cleanQuery) && cleanQuery.length >= 2) {
+            match = 85;
         } else {
-            const dist = levenshtein(cleanQuery, cleanTarget);
-            if (dist <= 1) {
-                match = 90;
-            } else if (dist <= 2) {
+            // Check token overlap (e.g. sharing "EB" or "MER" or digit parts)
+            const sharedTokens = queryTokens.filter(t => targetTokens.includes(t) || cleanTarget.includes(t));
+            if (sharedTokens.length > 0) {
                 match = 80;
-            } else if (dist <= 3) {
-                match = 70;
+            } else if (queryDigits && targetDigits && (targetDigits.includes(queryDigits) || queryDigits.includes(targetDigits))) {
+                match = 75;
             } else {
-                match = 0;
+                const dist = levenshtein(cleanQuery, cleanTarget);
+                if (dist <= 1) match = 90;
+                else if (dist <= 2) match = 80;
+                else if (dist <= 4) match = 70;
+                else match = 0; // ponytail: truly unrelated — drop it
             }
         }
 
@@ -79,7 +84,7 @@ export function matchEdgeBands(input, candidates) {
     });
 
     return scored
-        .filter(r => r.match >= 70)
+        .filter(s => s.match >= 70)
         .sort((a, b) => b.match - a.match)
-        .slice(0, 10);
+        .slice(0, 50);
 }

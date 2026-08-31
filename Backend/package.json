@@ -6,6 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "prod": "pm2 start ecosystem.config.cjs --env production",
+    "prod:stop": "pm2 stop inter-des-api",
+    "prod:restart": "pm2 restart inter-des-api",
+    "prod:logs": "pm2 logs inter-des-api",
     "build": "echo \"Backend has no build step\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

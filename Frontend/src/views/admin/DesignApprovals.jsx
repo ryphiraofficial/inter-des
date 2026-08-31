@@ -17,6 +17,7 @@ import DesignPreviewModal from './design-approvals/components/DesignPreviewModal
 import PaymentCollectionModal from './design-approvals/components/PaymentCollectionModal';
 import ApprovalSkeleton from './design-approvals/components/ApprovalSkeleton';
 import UnlockRequestsTable from '../production/project_manager/components/Approvals/UnlockRequestsTable';
+import EdgeBandRequestsTab from '../design/manager/components/EdgeBandRequestsTab';
 import { useGetUnlockRequestsQuery } from '../../store/api/productionApi';
 
 import './css/Tasks.css';
@@ -34,6 +35,7 @@ const DesignApprovals = () => {
         setAccountsProjects: state.setAccountsProjects,
         setProcurementItems: state.setProcurementItems,
         setProductionProjects: state.setProductionProjects,
+        setEdgeBandsCount: state.setEdgeBandsCount,
         setLoading: state.setLoading,
         setProductionManagers: state.setProductionManagers,
         setProcurementManagers: state.setProcurementManagers,
@@ -80,6 +82,7 @@ const DesignApprovals = () => {
                         accounts: state.accountsProjects.length,
                         procurement: state.procurementItems.length,
                         production: state.productionProjects.length,
+                        edge_bands: state.edgeBandsCount,
                         unlocks: unlockCount
                     }} 
                 />
@@ -122,6 +125,10 @@ const DesignApprovals = () => {
                         onReject={actions.handleProductionReject}
                         approving={state.approvingProduction}
                     />
+                )}
+
+                {state.activeTab === 'edge_bands' && (
+                    <EdgeBandRequestsTab userRole="admin" />
                 )}
 
                 {state.activeTab === 'unlocks' && (
