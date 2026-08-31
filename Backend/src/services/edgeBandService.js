@@ -1,8 +1,11 @@
+import mongoose from 'mongoose';
 import EdgeBand from '../models/design/EdgeBand.js';
 import EdgeBandSelection from '../models/design/EdgeBandSelection.js';
 import EdgeBandRequest from '../models/design/EdgeBandRequest.js';
 import EdgeBandProcurementRequest from '../models/design/EdgeBandProcurementRequest.js';
 import InventoryEdgeBand from '../models/procurement/EdgeBand.js';
+import EdgeBandItem from '../models/library/EdgeBandItem.js';
+import LaminateEdgeBandMatch from '../models/procurement/LaminateEdgeBandMatch.js';
 import Notification from '../models/shared/Notification.js';
 import { matchEdgeBands } from '../utils/edgeBandMatcher.js';
 
@@ -30,36 +33,30 @@ export const saveSelections = async (projectId, taskId, items, userId) => {
     const saved = [];
 
     for (const item of items) {
-        const { brand, enteredCode, edgeBandId, dimension, quantity } = item;
+        const { brand, enteredCode, edgeBandId, dimension = '22x0.8', quantity, matchPercentage: clientMatch } = item;
 
-        // Server-side validation
-        const band = await EdgeBand.findById(edgeBandId).lean();
-        if (!band) throw Object.assign(new Error(`Edge band not found: ${edgeBandId}`), { status: 400 });
-        if (band.brand !== brand) throw Object.assign(new Error(`Brand mismatch for code ${band.code}`), { status: 400 });
+        // Multi-model lookup (EdgeBand, EdgeBandItem, InventoryEdgeBand, or LaminateEdgeBandMatch)
+        let band = await EdgeBand.findById(edgeBandId).lean();
+        if (!band) band = await EdgeBandItem.findById(edgeBandId).lean();
+        if (!band) band = await InventoryEdgeBand.findById(edgeBandId).lean();
+        if (!band) band = await LaminateEdgeBandMatch.findById(edgeBandId).lean();
 
-        const dimRecord = band.dimensions.find(d => d.dimension === dimension);
-        if (!dimRecord || !dimRecord.available) {
-            throw Object.assign(new Error(`Dimension ${dimension} not available for ${band.code}`), { status: 400 });
-        }
+        const bandCode = band?.code || item.matchedCode || enteredCode;
+        const bandBrand = band?.brand || band?.brandName || brand;
 
-        const qty = parseInt(quantity, 10);
-        if (!Number.isInteger(qty) || qty < 1) {
-            throw Object.assign(new Error(`Invalid quantity: ${quantity}`), { status: 400 });
-        }
-
-        // Recompute match on server
-        const [matchResult] = matchEdgeBands(enteredCode, [band]);
-        const matchPercentage = matchResult?.match ?? 100; // exact if not fuzzy
+        const qty = parseInt(quantity, 10) || 1;
+        const matchPercentage = clientMatch || 100;
+        const targetRefId = band?._id || (mongoose.Types.ObjectId.isValid(edgeBandId) ? edgeBandId : new mongoose.Types.ObjectId());
 
         // Upsert: merge quantity if same project+brand+matchedCode+dimension
         const result = await EdgeBandSelection.findOneAndUpdate(
-            { project: projectId, brand, matchedCode: band.code, dimension },
+            { project: projectId, brand: bandBrand, matchedCode: bandCode, dimension },
             {
                 $inc: { quantity: qty },
                 $setOnInsert: {
                     task: taskId || null,
-                    enteredCode: enteredCode.toUpperCase(),
-                    edgeBandRef: band._id,
+                    enteredCode: (enteredCode || bandCode).toUpperCase(),
+                    edgeBandRef: targetRefId,
                     matchPercentage,
                     createdBy: userId
                 }
