@@ -23,6 +23,7 @@ import aiRoutes from './src/routes/shared/aiRoutes.js';
 import uploadRoutes from './src/routes/shared/uploadRoutes.js';
 import pushRoutes from './src/routes/shared/pushRoutes.js';
 import clientPortalRoutes from './src/routes/shared/clientPortal.routes.js';
+import libraryRoutes from './src/routes/library/libraryRoutes.js';
 
 // Admin
 import userRoutes from './src/routes/admin/userRoutes.js';
@@ -154,6 +155,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/library', libraryRoutes);
 
 // Admin
 app.use('/api/users', userRoutes);

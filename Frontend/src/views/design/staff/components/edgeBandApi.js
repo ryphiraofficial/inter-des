@@ -14,6 +14,17 @@ const handle = async (res) => {
 export const getBrands = () =>
     fetch(`${API_BASE_URL}/design/edge-bands/brands`, { headers: authHeaders() }).then(handle);
 
+export const getLaminationBrands = () =>
+    fetch(`${API_BASE_URL}/library/brands?type=LAMINATION`, { headers: authHeaders() }).then(handle);
+
+export const lookupLamination = (brandId, code) => {
+    const params = new URLSearchParams({ brandId, code });
+    return fetch(`${API_BASE_URL}/library/lamination-items/lookup?${params}`, { headers: authHeaders() }).then(handle);
+};
+
+export const getMatchedEdgeBands = (laminationItemId) =>
+    fetch(`${API_BASE_URL}/library/lamination-items/${laminationItemId}/matches`, { headers: authHeaders() }).then(handle);
+
 export const getProjects = () =>
     fetch(`${API_BASE_URL}/projects`, { headers: authHeaders() }).then(handle);
 

@@ -7,6 +7,11 @@ const BrandSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
+    type: {
+        type: String,
+        enum: ['LAMINATION', 'EDGE_BAND', 'BOTH'],
+        default: 'BOTH'
+    },
     codeSeries: {
         type: String,
         trim: true
