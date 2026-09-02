@@ -161,7 +161,6 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                     padding: '4rem 2rem', textAlign: 'center', color: '#64748b',
                     boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
                 }}>
-<<<<<<< HEAD
                     <div style={{
                         width: '56px', height: '56px', background: '#eff6ff', color: '#2563eb',
                         borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem'
@@ -170,15 +169,7 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                     </div>
                     <h3 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em' }}>No Requests in this Filter</h3>
                     <p style={{ margin: 0, fontSize: '0.875rem', maxWidth: '440px', lineHeight: '1.5' }}>
-                        {statusFilter === 'pending_admin'
-                            ? 'There are currently no manager-approved edge band requests awaiting admin release.'
-                            : statusFilter === 'pending_manager'
-=======
-                    <Layers size={40} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-                    <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 800 }}>No Requests in this Filter</h3>
-                    <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
                         {statusFilter === 'pending_manager'
->>>>>>> origin/main
                             ? 'There are currently no pending edge band requests awaiting manager review.'
                             : statusFilter === 'approved'
                             ? 'No edge band requests have been approved & released yet.'
