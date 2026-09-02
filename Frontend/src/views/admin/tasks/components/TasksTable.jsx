@@ -73,16 +73,19 @@ const TasksTable = ({
                                     <td className="desktop-hide">
                                         <div className="task-project-cell">
                                             {task.client && (
-                                                <div className="project-item">
-                                                    <User size={12} />
-                                                    <span>{task.client.name}</span>
+                                                <div className="project-item" title={task.client.name}>
+                                                    <User size={12} style={{ flexShrink: 0 }} />
+                                                    <span style={{ whiteSpace: 'nowrap' }}>{task.client.name}</span>
                                                 </div>
                                             )}
                                             {task.quotation && (
-                                                <div className="project-item quotation">
-                                                    <Briefcase size={12} />
-                                                    <span>{task.quotation.projectName}</span>
+                                                <div className="project-item quotation" title={task.quotation.projectName}>
+                                                    <Briefcase size={12} style={{ flexShrink: 0 }} />
+                                                    <span style={{ whiteSpace: 'nowrap' }}>{task.quotation.projectName}</span>
                                                 </div>
+                                            )}
+                                            {!task.client && !task.quotation && (
+                                                <span className="no-data">—</span>
                                             )}
                                         </div>
                                     </td>

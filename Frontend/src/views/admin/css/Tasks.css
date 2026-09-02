@@ -482,20 +482,33 @@
 .task-project-cell {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
+    align-items: flex-start;
 }
 
 .project-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.8rem;
-    color: #64748b;
+    font-size: 0.78rem;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.project-item span {
+    white-space: nowrap;
 }
 
 .project-item.quotation {
-    color: #3b82f6;
-    font-weight: 500;
+    color: #2563eb;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .no-data {
