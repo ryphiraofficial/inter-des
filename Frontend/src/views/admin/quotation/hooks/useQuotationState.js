@@ -107,12 +107,32 @@ export const useQuotationState = () => {
         ...initialData
     });
 
-    const addLineItem = (section = 'Uncategorized', initialData = {}) => setLineItems(prev => [createNewItem(section, initialData), ...prev]);
-    const removeLineItem = (id) => setLineItems(prev => prev.filter(item => item.id !== id));
+    const renameCategory = (oldCategoryName, newCategoryName) => {
+        if (!newCategoryName || !newCategoryName.trim() || oldCategoryName === newCategoryName) return;
+        const trimmedNew = newCategoryName.trim();
+        setLineItems(prev => prev.map(item => {
+            if ((item.section || 'Uncategorized') === oldCategoryName) {
+                return { ...item, section: trimmedNew };
+            }
+            return item;
+        }));
+        setCategoryDiscounts(prev => {
+            const list = Array.isArray(prev) ? prev : [];
+            return list.map(cd => cd.category === oldCategoryName ? { ...cd, category: trimmedNew } : cd);
+        });
+    };
+
+    const deleteCategory = (categoryName) => {
+        setLineItems(prev => prev.filter(item => (item.section || 'Uncategorized') !== categoryName));
+        setCategoryDiscounts(prev => {
+            const list = Array.isArray(prev) ? prev : [];
+            return list.filter(cd => cd.category !== categoryName);
+        });
+    };
 
     return {
         lineItems, setLineItems,
-        categoryDiscounts, setCategoryDiscounts, updateCategoryDiscount,
+        categoryDiscounts, setCategoryDiscounts, updateCategoryDiscount, renameCategory, deleteCategory,
         taxRate, setTaxRate,
         includeTax, setIncludeTax,
         discount, setDiscount,

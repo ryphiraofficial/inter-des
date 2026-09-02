@@ -74,10 +74,14 @@ export const useQuotationSearch = ({
             setGlobalSearchResults([]);
             return;
         }
-        const filtered = inventoryItems.filter(p =>
-            p.itemName.toLowerCase().includes(query.toLowerCase()) ||
-            (p.section && p.section.toLowerCase().includes(query.toLowerCase()))
+        const defaultCategories = ['Kitchen', 'Living Room', 'Bedroom', 'Dining Room', 'Bathroom', 'Pooja Room', 'Foyer', 'Balcony', 'Ceiling', 'Flooring', 'Electrical'];
+        const inventorySections = Array.from(new Set(inventoryItems.map(p => p.section).filter(Boolean)));
+        const allCategories = Array.from(new Set([...defaultCategories, ...inventorySections]));
+
+        const filtered = allCategories.filter(cat =>
+            cat.toLowerCase().includes(query.toLowerCase())
         ).slice(0, 8);
+
         setGlobalSearchResults(filtered);
     };
 

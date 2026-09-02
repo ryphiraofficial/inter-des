@@ -144,6 +144,8 @@ const NewQuotation = ({ isEdit, isStaff }) => {
                         lineItems={state.lineItems}
                         categoryDiscounts={state.categoryDiscounts}
                         updateCategoryDiscount={state.updateCategoryDiscount}
+                        renameCategory={state.renameCategory}
+                        deleteCategory={state.deleteCategory}
                         addLineItem={state.addLineItem}
                         removeLineItem={state.removeLineItem}
                         updateLineItem={state.updateLineItem}
