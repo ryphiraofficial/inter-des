@@ -234,13 +234,12 @@ const LineItemsSection = ({
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                {items.map(item => {
-                                    const globalIndex = lineItems.findIndex(li => li.id === item.id);
+                                {items.map((item, categoryIndex) => {
                                     return (
                                         <LineItemCard
                                             key={item.id}
                                             item={item}
-                                            index={globalIndex}
+                                            index={categoryIndex}
                                             updateLineItem={updateLineItem}
                                             batchUpdateLineItem={batchUpdateLineItem}
                                             removeLineItem={removeLineItem}
