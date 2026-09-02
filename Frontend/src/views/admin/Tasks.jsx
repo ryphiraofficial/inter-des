@@ -98,32 +98,36 @@ const Tasks = ({ isStaff, user }) => {
             <div className="tasks-wrapper">
                 <TasksStatsGrid tasks={state.tasks} />
 
-                <div className="tasks-controls">
-                    <div className="tasks-filter-group" style={{ display: 'flex', gap: '0.75rem', width: '100%', flexWrap: 'wrap' }}>
-                        <CustomSelect
-                            options={[
-                                { value: 'All', label: 'All Statuses' },
-                                { value: 'To Do', label: 'To Do' },
-                                { value: 'In Progress', label: 'In Progress' },
-                                { value: 'Pending Admin Review', label: 'Design Approvals' },
-                                { value: 'Completed', label: 'Completed' }
-                            ]}
-                            value={state.filterStatus}
-                            onChange={(e) => state.setFilterStatus(e.target.value)}
-                            searchable={false}
-                        />
-                        <CustomSelect
-                            options={[
-                                { value: 'All', label: 'All Priority' },
-                                { value: 'Critical', label: 'Critical' },
-                                { value: 'High', label: 'High' },
-                                { value: 'Medium', label: 'Medium' },
-                                { value: 'Low', label: 'Low' }
-                            ]}
-                            value={state.filterPriority}
-                            onChange={(e) => state.setFilterPriority(e.target.value)}
-                            searchable={false}
-                        />
+                <div className="tasks-controls" style={{ background: '#ffffff', borderRadius: '14px', border: 'none', boxShadow: 'none', padding: '0.75rem 1.25rem' }}>
+                    <div className="tasks-filter-group" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                        <div style={{ width: '220px', minWidth: '180px' }}>
+                            <CustomSelect
+                                options={[
+                                    { value: 'All', label: 'All Statuses' },
+                                    { value: 'To Do', label: 'To Do' },
+                                    { value: 'In Progress', label: 'In Progress' },
+                                    { value: 'Pending Admin Review', label: 'Design Approvals' },
+                                    { value: 'Completed', label: 'Completed' }
+                                ]}
+                                value={state.filterStatus}
+                                onChange={(e) => state.setFilterStatus(e.target.value)}
+                                searchable={false}
+                            />
+                        </div>
+                        <div style={{ width: '220px', minWidth: '180px' }}>
+                            <CustomSelect
+                                options={[
+                                    { value: 'All', label: 'All Priority' },
+                                    { value: 'Critical', label: 'Critical' },
+                                    { value: 'High', label: 'High' },
+                                    { value: 'Medium', label: 'Medium' },
+                                    { value: 'Low', label: 'Low' }
+                                ]}
+                                value={state.filterPriority}
+                                onChange={(e) => state.setFilterPriority(e.target.value)}
+                                searchable={false}
+                            />
+                        </div>
                     </div>
                 </div>
 

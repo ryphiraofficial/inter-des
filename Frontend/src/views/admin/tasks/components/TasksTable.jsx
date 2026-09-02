@@ -43,7 +43,8 @@ const TasksTable = ({
                             <React.Fragment key={task._id}>
                                 <tr 
                                     className={`task-row ${expandedRow === task._id ? 'expanded' : ''}`}
-                                    onClick={() => toggleRow(task._id)}
+                                    onClick={() => handleViewDetails(task)}
+                                    style={{ cursor: 'pointer' }}
                                 >
                                     <td className="row-number-cell" style={{ fontWeight: '600', color: '#64748b' }}>
                                         {index + 1}
@@ -102,7 +103,7 @@ const TasksTable = ({
                                             {task.priority}
                                         </span>
                                     </td>
-                                    <td className="desktop-hide">
+                                    <td className="desktop-hide" onClick={(e) => e.stopPropagation()}>
                                         <CustomSelect
                                             variant="inline"
                                             options={[
@@ -121,7 +122,7 @@ const TasksTable = ({
                                             searchable={false}
                                         />
                                     </td>
-                                    <td className="desktop-hide">
+                                    <td className="desktop-hide" onClick={(e) => e.stopPropagation()}>
                                         <div className="task-progress-cell">
                                             <div className="progress-info">
                                                 <div className="progress-bar-bg">
@@ -145,7 +146,7 @@ const TasksTable = ({
                                             )}
                                         </div>
                                     </td>
-                                    <td className="desktop-hide task-actions-cell">
+                                    <td className="desktop-hide task-actions-cell" onClick={(e) => e.stopPropagation()}>
                                         <div className="task-actions">
                                             {task.status === 'Pending Sales Review' && (
                                                  <>
