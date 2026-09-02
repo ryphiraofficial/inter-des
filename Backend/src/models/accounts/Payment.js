@@ -9,13 +9,11 @@ const PaymentSchema = new mongoose.Schema({
     },
     project: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project',
-        required: [true, 'Please link a project']
+        ref: 'Project'
     },
     invoice: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Invoice',
-        required: [true, 'Please link an invoice']
+        ref: 'Invoice'
     },
     client: {
         type: mongoose.Schema.Types.ObjectId,

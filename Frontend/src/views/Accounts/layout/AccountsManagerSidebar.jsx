@@ -3,12 +3,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, CheckCircle, FileText, CreditCard,
     TrendingUp, Users, ShoppingBag, Briefcase, PieChart,
-    Video, ChevronDown, ChevronRight, X, LogOut, BarChart3
+    Video, ChevronDown, ChevronRight, X, LogOut, BarChart3,
+    BookOpen, Receipt, Building2, Wallet
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
+    { tab: 'vouchers',   label: 'Vouchers (V2)',       icon: Receipt },
+    { tab: 'ledgers',    label: 'Ledgers (V2)',        icon: BookOpen },
+    { tab: 'programs',   label: 'Programs (V2)',       icon: Building2 },
+    { tab: 'accounts_v2',label: 'Bank & Cash (V2)',    icon: Wallet },
     { tab: 'clearance',  label: 'Payment Clearance',   icon: CheckCircle },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },

@@ -16,6 +16,7 @@ export const useNavGroups = () => {
     const getGroups = () => {
         const mainItems = [
             { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
+            { name: 'Financial Analytics', icon: DollarSign, path: '/financial-analytics' },
             { name: 'Projects', icon: Target, path: '/projects' },
             { name: 'Meetings', icon: Video, path: '/meetings' },
         ];

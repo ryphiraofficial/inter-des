@@ -1,26 +1,28 @@
-// Tab metadata — label & description for each accounts tab
+import { LayoutDashboard, Wallet, CreditCard, Receipt, FileText, Building2, BookOpen, BarChart3, Clock, Users } from 'lucide-react';
+
+export const NAV_ITEMS = [
+    { tab: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['Admin', 'Accounts Manager', 'Accounts Staff'] },
+    { tab: 'vouchers', label: 'Vouchers', icon: Receipt, roles: ['Admin', 'Accounts Manager', 'Accounts Staff'] },
+    { tab: 'ledgers', label: 'Ledgers', icon: BookOpen, roles: ['Admin', 'Accounts Manager', 'Accounts Staff'] },
+    { tab: 'programs', label: 'Project Programs', icon: Building2, roles: ['Admin', 'Accounts Manager'] },
+    { tab: 'accounts', label: 'Bank & Cash', icon: Wallet, roles: ['Admin', 'Accounts Manager'] },
+    { tab: 'invoices', label: 'Invoices', icon: FileText, roles: ['Admin', 'Accounts Manager', 'Accounts Staff'] },
+    { tab: 'performance', label: 'Performance', icon: BarChart3, roles: ['Admin', 'Accounts Manager', 'Accounts Staff'] }
+];
+
 export const TAB_META = {
-    overview:          { label: 'Overview',               description: 'High-level financial performance and metrics' },
-    clearance:         { label: 'Payment Clearance Hub',  description: 'Review and approve pending project payments' },
-    collections:       { label: 'My Collections',         description: 'Track and manage your payment collections' },
+    dashboard:         { label: 'Overview',               description: 'High-level financial performance and metrics' },
+    vouchers:          { label: 'Vouchers',               description: 'Manage Payments, Receipts, Purchases, and Sales' },
+    ledgers:           { label: 'Ledgers',                description: 'Vendor and Customer running balances' },
+    programs:          { label: 'Project Programs',       description: 'Project financials and procurement clearance' },
+    accounts:          { label: 'Bank & Cash',            description: 'Company bank accounts and cash flow' },
     invoices:          { label: 'Invoices',               description: 'Manage billing and customer invoices' },
-    payments:          { label: 'Payments',               description: 'Track incoming and outgoing transactions' },
-    expenses:          { label: 'All Expenses',           description: 'Monitor and categorize all spending' },
-    company_expenses:  { label: 'Company Expenses',       description: 'Monitor internal overhead and operational expenses' },
-    clients:           { label: 'Clients',                description: 'Manage financial records for all clients' },
-    vendors:           { label: 'Vendors',                description: 'Manage supplier and vendor accounts' },
-    projects:          { label: 'Projects',               description: 'Financial overview of active projects' },
-    reports:           { label: 'Financial Reports',      description: 'Generate detailed financial analytics' },
-    staff_reports:     { label: 'Staff Reports',          description: 'Daily reports sent to manager' },
-    performance:       { label: 'Performance Analytics',  description: 'Monitor staff and manager KPIs and performance scores' },
-    meetings:          { label: 'Meetings',               description: 'Schedule and manage finance finance meetings' }
+    performance:       { label: 'Performance Analytics',  description: 'Monitor staff and manager KPIs and performance scores' }
 };
 
 export const SEARCH_CONFIGS = {
-    clearance:        { placeholder: 'Search projects...' },
-    collections:      { placeholder: 'Search project name, ID, or client...' },
-    clients:          { placeholder: 'Search by name, email or phone...' },
-    payments:         { placeholder: 'Search by client or reference...' },
-    company_expenses: { placeholder: 'Search company expenses...' },
-    vendors:          { placeholder: 'Search by name or category...' }
+    vouchers:         { placeholder: 'Search vouchers by ref or number...' },
+    ledgers:          { placeholder: 'Search ledgers by name...' },
+    programs:         { placeholder: 'Search projects or clients...' },
+    invoices:         { placeholder: 'Search by client or invoice number...' }
 };

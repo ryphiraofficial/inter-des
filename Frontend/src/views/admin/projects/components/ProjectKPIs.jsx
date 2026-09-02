@@ -30,13 +30,22 @@ const ProjectKPIs = ({ projects }) => {
     return (
         <div className="project-kpis">
             {kpis.map((kpi, index) => (
-                <div key={index} className="kpi-card">
-                    <div className="kpi-icon" style={{ backgroundColor: `${kpi.color}15`, color: kpi.color }}>
+                <div key={index} className="kpi-card" style={{
+                    background: '#ffffff',
+                    padding: '1.25rem 1.5rem',
+                    borderRadius: '14px',
+                    border: 'none',
+                    boxShadow: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px'
+                }}>
+                    <div className="kpi-icon" style={{ backgroundColor: `${kpi.color}12`, color: kpi.color, width: '42px', height: '42px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <kpi.icon size={20} />
                     </div>
-                    <div className="kpi-info">
-                        <span className="kpi-label">{kpi.label}</span>
-                        <h4 className="kpi-value">{kpi.value}</h4>
+                    <div className="kpi-info" style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span className="kpi-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{kpi.label}</span>
+                        <h4 className="kpi-value" style={{ margin: '2px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</h4>
                     </div>
                 </div>
             ))}

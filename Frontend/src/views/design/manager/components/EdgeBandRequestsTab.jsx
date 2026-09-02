@@ -96,25 +96,6 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
         );
     }
 
-    if (!filteredRequests.length) {
-        return (
-            <div style={{
-                background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px',
-                padding: '3rem', textAlign: 'center', color: '#64748b'
-            }}>
-                <Layers size={40} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-                <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 800 }}>No Edge Band Requests Found</h3>
-                <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
-                    {userRole === 'admin'
-                        ? 'Manager-approved edge band requests awaiting final superadmin sign-off will appear here.'
-                        : userRole === 'procurement'
-                        ? 'Approved edge band requests released to procurement will appear here.'
-                        : 'Edge band requests submitted by design staff will appear here for manager review.'}
-                </p>
-            </div>
-        );
-    }
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
@@ -174,9 +155,29 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                 })}
             </div>
 
-            {filteredRequests.map((req) => {
-                const isEditing = editingRequestId === req._id;
-                const itemsToDisplay = isEditing ? editItems : req.items;
+            {!filteredRequests.length ? (
+                <div style={{
+                    background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px',
+                    padding: '3rem', textAlign: 'center', color: '#64748b'
+                }}>
+                    <Layers size={40} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
+                    <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 800 }}>No Requests in this Filter</h3>
+                    <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
+                        {statusFilter === 'pending_admin'
+                            ? 'There are currently no manager-approved edge band requests awaiting admin release.'
+                            : statusFilter === 'pending_manager'
+                            ? 'There are currently no pending edge band requests awaiting manager review.'
+                            : statusFilter === 'approved'
+                            ? 'No edge band requests have been approved & released yet.'
+                            : statusFilter === 'rejected'
+                            ? 'No edge band requests have recheck requested.'
+                            : 'No edge band requests found.'}
+                    </p>
+                </div>
+            ) : (
+                filteredRequests.map((req) => {
+                    const isEditing = editingRequestId === req._id;
+                    const itemsToDisplay = isEditing ? editItems : req.items;
 
                 return (
                     <div key={req._id} style={{
@@ -394,7 +395,7 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                         )}
                     </div>
                 );
-            })}
+            }))}
         </div>
     );
 };

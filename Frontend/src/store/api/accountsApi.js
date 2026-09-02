@@ -161,6 +161,10 @@ export const accountsApi = createApi({
         getAccountsQuotations: builder.query({
             query: () => '/quotations',
             providesTags: ['Reports'],
+        }),
+        getAccountsPerformance: builder.query({
+            query: () => '/accounts/performance',
+            providesTags: ['Stats'],
         })
     }),
 });

@@ -3,7 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import AccountsLayout from '../layout/AccountsLayout';
 import '../css/ManagerDashboard.css';
 
-// Import Localized Sub-components
+// Import New V2 Components
+import AccountsDashboardV2 from '../common/AccountsDashboardV2';
+import VouchersView from '../common/VouchersView';
+import LedgersView from '../common/LedgersView';
+import ProgramsView from '../common/ProgramsView';
+import AccountsListView from '../common/AccountsListView';
+
+// Import V1 Components
 import Overview from '../common/Overview';
 import PaymentClearanceHub from './PaymentClearanceHub';
 import ManagerClients from './ManagerClients';
@@ -17,6 +24,7 @@ import AccountsReports from '../common/AccountsReports';
 import AccountsPerformance from '../common/AccountsPerformance';
 import MeetingsPage from '../../common/MeetingsPage';
 import StaffReports from '../../common/StaffReports';
+
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 
@@ -38,6 +46,10 @@ const ManagerDashboard = ({ onLogout }) => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview user={user} />;
+            case 'vouchers': return <VouchersView user={user} search={search} setSearch={setSearch} />;
+            case 'ledgers': return <LedgersView user={user} search={search} setSearch={setSearch} />;
+            case 'programs': return <ProgramsView user={user} search={search} setSearch={setSearch} />;
+            case 'accounts_v2': return <AccountsListView user={user} search={search} setSearch={setSearch} />;
             case 'clearance': return <PaymentClearanceHub user={user} search={search} setSearch={setSearch} />;
             case 'clients': return <ManagerClients user={user} search={search} setSearch={setSearch} />;
             case 'invoices': return <AccountsInvoices user={user} search={search} setSearch={setSearch} />;

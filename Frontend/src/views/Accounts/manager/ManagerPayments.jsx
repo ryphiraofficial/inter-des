@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Search, Filter, Wallet, Hash, CalendarDays, TrendingUp } from 'lucide-react';
+import { Search, Filter, Wallet, Hash, CalendarDays, TrendingUp, Plus } from 'lucide-react';
 import { usePaymentLogic } from '../hooks/usePaymentLogic';
 
 // Sub-components
@@ -100,7 +100,7 @@ const ManagerPayments = ({ search, setSearch }) => {
                 </div>
 
                 {/* Top Action Bar */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }} ref={dropdownRef}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', position: 'relative' }} ref={dropdownRef}>
                     <button 
                         className="btn-outline" 
                         onClick={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -108,6 +108,13 @@ const ManagerPayments = ({ search, setSearch }) => {
                     >
                         <Filter size={16} /> 
                         <span className="desktop-only">{filterMethod === 'All' ? 'Filter' : filterMethod}</span>
+                    </button>
+
+                    <button 
+                        onClick={() => setShowModal(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '10px', height: '42px', fontWeight: 700, background: '#2563eb', border: 'none', color: '#ffffff', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)' }}
+                    >
+                        <Plus size={16} /> Record Payment
                     </button>
                     
                     {showFilterDropdown && (

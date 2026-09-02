@@ -12,7 +12,15 @@ const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
     ];
 
     return (
-        <div className="approval-tabs-container" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '2px solid #e2e8f0' }}>
+        <div className="approval-tabs-container" style={{ 
+            display: 'flex', 
+            gap: '0.35rem', 
+            marginBottom: '1.5rem', 
+            borderBottom: '2px solid #e2e8f0',
+            overflowX: 'auto',
+            flexWrap: 'wrap',
+            scrollbarWidth: 'none'
+        }}>
             {tabs.map(({ key, label, icon: Icon, color, count }) => {
                 const isActive = activeTab === key;
                 return (
@@ -20,22 +28,23 @@ const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
                         key={key}
                         onClick={() => setActiveTab(key)}
                         style={{
-                            padding: '12px 20px',
+                            padding: '10px 14px',
                             background: 'none',
                             border: 'none',
                             borderBottom: isActive ? `3px solid ${color}` : '3px solid transparent',
                             color: isActive ? color : '#64748b',
                             fontWeight: 700,
-                            fontSize: '0.95rem',
+                            fontSize: '0.86rem',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                            whiteSpace: 'nowrap'
+                            gap: '6px',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0
                         }}
                     >
-                        <Icon size={17} />
+                        <Icon size={16} />
                         {label}
                         <span style={{
                             background: isActive ? color : '#f1f5f9',

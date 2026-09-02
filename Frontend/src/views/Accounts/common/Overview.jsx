@@ -6,6 +6,7 @@ import CollectionQueue from './components/CollectionQueue';
 import OverviewStats from './components/OverviewStats';
 import OverviewCharts from './components/OverviewCharts';
 import ActivityFeed from './components/ActivityFeed';
+import AccountsDashboardV2 from './AccountsDashboardV2';
 
 import '../css/ManagerDashboard.css';
 import { useAppSelector } from '../../../store/hooks';

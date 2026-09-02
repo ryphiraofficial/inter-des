@@ -6,14 +6,6 @@ import '../css/AccountsLayout.css';
 
 /**
  * AccountsLayout — shared wrapper for all Accounts module roles.
- * Renders the sidebar + navbar shell; page content goes in children.
- *
- * Props:
- *  - role: 'manager' | 'staff'
- *  - user: user object
- *  - onRefresh: optional callback for refresh button
- *  - isLoading: boolean for refresh spinner
- *  - children: page content
  */
 const AccountsLayout = ({ role, user, onRefresh, isLoading, onLogout, search, setSearch, onExport, children }) => {
     const Sidebar = role === 'staff' ? AccountsStaffSidebar : AccountsManagerSidebar;

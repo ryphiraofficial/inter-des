@@ -27,6 +27,11 @@ export const getExpenses = async (req, res) => {
     }
 };
 
+import { createVoucher } from '../../services/accounts/voucherService.js';
+import { resolveLedgerForVendor } from '../../services/accounts/ledgerService.js';
+import Account from '../../models/accounts/Account.js';
+import Program from '../../models/accounts/Program.js';
+
 export const createExpense = async (req, res) => {
     try {
         req.body.createdBy = req.user.id;
@@ -35,6 +40,43 @@ export const createExpense = async (req, res) => {
         await Project.findByIdAndUpdate(req.body.project, {
             $inc: { spent: req.body.amount }
         });
+
+        // Auto-create V2 Purchase Voucher for Double-Entry System
+        try {
+            if (req.body.vendor) {
+                const ledger = await resolveLedgerForVendor(req.body.vendor, req.user.id);
+                let defaultAccount = await Account.findOne({ status: 'Active' });
+                const program = req.body.project ? await Program.findOne({ project: req.body.project }) : null;
+
+                if (ledger) {
+                    await createVoucher({
+                        type: 'Purchase',
+                        ledger: ledger._id,
+                        program: program?._id,
+                        amount: req.body.amount,
+                        expenseCategory: req.body.type || 'Material',
+                        notes: req.body.description || 'Expense logged from Expenses page',
+                        date: req.body.expenseDate || new Date()
+                    }, req.user.id);
+
+                    if ((req.body.paymentStatus === 'Paid' || req.body.paidAmount > 0) && defaultAccount) {
+                        const paidAmt = req.body.paymentStatus === 'Paid' ? req.body.amount : req.body.paidAmount;
+                        await createVoucher({
+                            type: 'Payment',
+                            ledger: ledger._id,
+                            program: program?._id,
+                            account: defaultAccount._id,
+                            amount: paidAmt,
+                            paymentMode: 'Bank Transfer',
+                            notes: `Payment for expense: ${req.body.description || ''}`,
+                            date: req.body.paymentDate || req.body.expenseDate || new Date()
+                        }, req.user.id);
+                    }
+                }
+            }
+        } catch (vchErr) {
+            console.error('Failed auto-syncing V2 Purchase Voucher:', vchErr);
+        }
         
         res.status(201).json({ success: true, data: expense });
     } catch (error) {

@@ -6,7 +6,7 @@ import Skeleton from '../../components/Skeleton';
 const KPICard = ({ title, value, icon: Icon, color, bgColor, loading, details = [], trend = null, sparkData = [] }) => {
     if (loading) {
         return (
-            <div className="kpi-card loading">
+            <div className="kpi-card loading" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem' }}>
                 <div className="kpi-header">
                     <div className="kpi-info">
                         <Skeleton width="80px" height="14px" />
@@ -30,30 +30,51 @@ const KPICard = ({ title, value, icon: Icon, color, bgColor, loading, details = 
     const sparkId = `colorSpark-${title.replace(/\s+/g, '')}`;
 
     return (
-        <div className="kpi-card">
-            <div className="kpi-header">
+        <div className="kpi-card" style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: 'none',
+            padding: '1.25rem',
+            boxShadow: 'none',
+            transition: 'all 0.2s ease-out',
+            display: 'flex',
+            flexDirection: 'column',
+            justify: 'space-between'
+        }}>
+            <div className="kpi-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div className="kpi-info">
-                    <h3 className="kpi-title">{title}</h3>
-                    <div className="kpi-value-row">
-                        <span className="kpi-value">{value}</span>
+                    <h3 className="kpi-title" style={{ fontSize: '0.78rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>{title}</h3>
+                    <div className="kpi-value-row" style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+                        <span className="kpi-value" style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>{value}</span>
                         {trend && (
-                            <span className={`kpi-trend ${trend.type}`}>
-                                {trend.type === 'positive' && <ArrowUpRight size={14} />}
-                                {trend.type === 'negative' && <ArrowDownRight size={14} />}
-                                {trend.type === 'neutral' && <Minus size={14} />}
+                            <span className={`kpi-trend ${trend.type}`} style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '2px 7px',
+                                borderRadius: '12px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '2px',
+                                background: trend.type === 'positive' ? '#f0fdf4' : trend.type === 'negative' ? '#fef2f2' : '#f8fafc',
+                                color: trend.type === 'positive' ? '#15803d' : trend.type === 'negative' ? '#b91c1c' : '#64748b',
+                                border: `1px solid ${trend.type === 'positive' ? '#bbf7d0' : trend.type === 'negative' ? '#fecaca' : '#e2e8f0'}`
+                            }}>
+                                {trend.type === 'positive' && <ArrowUpRight size={13} />}
+                                {trend.type === 'negative' && <ArrowDownRight size={13} />}
+                                {trend.type === 'neutral' && <Minus size={13} />}
                                 {trend.value}
                             </span>
                         )}
                     </div>
                 </div>
-                <div className="kpi-icon-wrapper" style={{ backgroundColor: bgColor, color: color }}>
-                    <Icon size={18} />
+                <div className="kpi-icon-wrapper" style={{ backgroundColor: bgColor, color: color, width: '38px', height: '38px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={19} />
                 </div>
             </div>
 
-            <div className="kpi-sparkline" style={{ height: '40px', width: '100%', marginTop: '10px' }}>
+            <div className="kpi-sparkline" style={{ height: '36px', width: '100%', marginTop: '6px' }}>
                 {sparkData.length > 0 && (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                         <AreaChart data={sparkData}>
                             <defs>
                                 <linearGradient id={sparkId} x1="0" y1="0" x2="0" y2="1">

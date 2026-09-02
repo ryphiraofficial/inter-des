@@ -15,7 +15,7 @@ const OverviewCharts = ({ loading, cashFlowData, invoiceStatusData }) => {
                 </div>
                 <div style={{ width: '100%', height: '220px', position: 'relative' }}>
                     {loading ? <Skeleton width="100%" height="100%" /> : cashFlowData?.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <AreaChart data={cashFlowData}>
                                 <defs>
                                     <linearGradient id="colorInflow" x1="0" y1="0" x2="0" y2="1">
@@ -47,7 +47,7 @@ const OverviewCharts = ({ loading, cashFlowData, invoiceStatusData }) => {
                 <div style={{ height: '220px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {loading ? <Skeleton width="100%" height="100%" /> : invoiceStatusData.length > 0 ? (
                         <>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <PieChart>
                                     <Pie data={invoiceStatusData} innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}>
                                         {invoiceStatusData.map((e, i) => <Cell key={i} fill={e.color} />)}
@@ -62,7 +62,7 @@ const OverviewCharts = ({ loading, cashFlowData, invoiceStatusData }) => {
                         </>
                     ) : (
                         <div style={{ position: 'relative', width: '160px', height: '160px' }}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <PieChart>
                                     <Pie data={[{ value: 1 }]} innerRadius={60} outerRadius={80} dataKey="value" fill="#f1f5f9" stroke="none" />
                                 </PieChart>

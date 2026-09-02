@@ -82,6 +82,8 @@ import SalesApprovals from '../../views/sales/SalesApprovals';
 
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
+import FinancialAnalytics from '../../views/admin/FinancialAnalytics';
+import AccountsManagerDashboard from '../../views/Accounts/manager/ManagerDashboard';
 
 // Views — Procurement
 import ProcurementLayout from '../../views/procurement/layout/ProcurementLayout';
@@ -118,6 +120,7 @@ const AppRoutes = ({ onLogout }) => {
                     <Route index element={<RoleDashboard onLogout={onLogout} />} />
                     
                     {/* General Admin Only Routes */}
+                    <Route path="financial-analytics" element={isGeneralAdmin ? <FinancialAnalytics /> : <Navigate to="/" replace />} />
                     <Route path="projects" element={isGeneralAdmin ? <Projects /> : <Navigate to="/" replace />} />
                     <Route path="projects/:id" element={isGeneralAdmin ? <Projects /> : <Navigate to="/" replace />} />
                     <Route path="inventory" element={isGeneralAdmin ? <Inventory /> : <Navigate to="/" replace />} />

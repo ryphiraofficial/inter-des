@@ -2,13 +2,17 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut, BarChart3
+    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut, BarChart3,
+    BookOpen, Receipt, Building2, Wallet
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
-    { tab: 'collections', label: 'My Collections',      icon: ClipboardList },
+    { tab: 'vouchers',   label: 'Vouchers (V2)',       icon: Receipt },
+    { tab: 'ledgers',    label: 'Ledgers (V2)',        icon: BookOpen },
+    { tab: 'programs',   label: 'Programs (V2)',       icon: Building2 },
+    { tab: 'accounts_v2',label: 'Bank & Cash (V2)',    icon: Wallet },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },

@@ -32,6 +32,11 @@ export const getPayments = async (req, res) => {
     }
 };
 
+import { createVoucher } from '../../services/accounts/voucherService.js';
+import { resolveLedgerForClient } from '../../services/accounts/ledgerService.js';
+import Account from '../../models/accounts/Account.js';
+import Program from '../../models/accounts/Program.js';
+
 export const createPayment = async (req, res) => {
     try {
         req.body.receivedBy = req.user.id;
@@ -47,6 +52,31 @@ export const createPayment = async (req, res) => {
                 invoice.status = 'Partially Paid';
             }
             await invoice.save();
+        }
+
+        // Auto-create V2 Receipt Voucher for Double-Entry System
+        try {
+            if (req.body.client) {
+                const ledger = await resolveLedgerForClient(req.body.client, req.user.id);
+                let defaultAccount = await Account.findOne({ status: 'Active' });
+                const program = req.body.project ? await Program.findOne({ project: req.body.project }) : null;
+
+                if (ledger && defaultAccount) {
+                    await createVoucher({
+                        type: 'Receipt',
+                        ledger: ledger._id,
+                        program: program?._id,
+                        account: defaultAccount._id,
+                        amount: req.body.amount,
+                        paymentMode: req.body.paymentMethod || 'Bank Transfer',
+                        reference: req.body.reference || req.body.transactionId,
+                        notes: req.body.notes || `Payment for Invoice ${invoice?.invoiceNumber || ''}`,
+                        date: req.body.paymentDate || new Date()
+                    }, req.user.id);
+                }
+            }
+        } catch (vchErr) {
+            console.error('Failed auto-syncing V2 Receipt Voucher:', vchErr);
         }
         
         await createNotification({ title: 'Payment Received', description: `Payment of ₹${req.body.amount.toLocaleString('en-IN')} received.`, type: 'Invoice', relatedModel: 'Payment', relatedId: payment._id, createdBy: req.user.id });

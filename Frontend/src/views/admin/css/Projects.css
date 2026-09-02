@@ -284,13 +284,13 @@
 
 .kpi-card {
     background: white;
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid #f1f5f9;
+    padding: 1.25rem 1.5rem;
+    border-radius: 14px;
+    border: none !important;
+    box-shadow: none !important;
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s;
 }
 

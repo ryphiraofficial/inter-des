@@ -6,7 +6,6 @@ import { useToast } from '../../models/context/ToastContext';
 import { useApprovalsState } from './design-approvals/hooks/useApprovalsState';
 import { useApprovalsData } from './design-approvals/hooks/useApprovalsData';
 import { useApprovalsActions } from './design-approvals/hooks/useApprovalsActions';
-
 // Components
 import ApprovalTabs from './design-approvals/components/ApprovalTabs';
 import DesignPipeline from './design-approvals/components/DesignPipeline';
@@ -38,7 +37,7 @@ const DesignApprovals = () => {
         setEdgeBandsCount: state.setEdgeBandsCount,
         setLoading: state.setLoading,
         setProductionManagers: state.setProductionManagers,
-        setProcurementManagers: state.setProcurementManagers,
+        setProcurementManagers: state.setProcurementManagers, 
         setAccountsManagers: state.setAccountsManagers,
         showToast
     });

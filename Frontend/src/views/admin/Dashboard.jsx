@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, DollarSign, FileText, Package, ShoppingCart, Users } from 'lucide-react';
+import { TrendingUp, DollarSign, FileText, Package, ShoppingCart, Users, Calendar, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // Hooks
@@ -22,18 +22,11 @@ const Dashboard = ({}) => {
     const navigate = useNavigate();
     const state = useDashboardState();
     
-    useDashboardData({
+    const { fetchDashboardData } = useDashboardData({
         setStats: state.setStats, setPoStats: state.setPoStats,
         setRevenueData: state.setRevenueData, setQuotationData: state.setQuotationData,
         setLoading: state.setLoading, setError: state.setError
     });
-
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return "Good morning";
-        if (hour < 18) return "Good afternoon";
-        return "Good evening";
-    };
 
     const sparkData = [
         { value: 40 }, { value: 35 }, { value: 55 }, { value: 45 }, { value: 60 }, { value: 50 }, { value: 75 }
@@ -65,19 +58,46 @@ const Dashboard = ({}) => {
 
     return (
         <div className="dashboard-wrapper">
-            <div className="dashboard-content">
-                <div className="dashboard-greeting">
-                    {state.loading ? (
-                        <>
-                            <Skeleton width="280px" height="32px" />
-                            <div style={{ marginTop: '8px' }}><Skeleton width="340px" height="16px" /></div>
-                        </>
-                    ) : (
-                        <>
-                            <h1>{getGreeting()}, {user?.fullName?.split(' ')[0] || 'Admin'} 👋</h1>
-                            <p>Here's your comprehensive business overview.</p>
-                        </>
-                    )}
+            <div className="dashboard-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                
+                {/* Executive Clean Header Bar */}
+                <div style={{
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '14px',
+                    padding: '1.25rem 1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                }}>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ background: '#e0e7ff', color: '#4338ca', fontSize: '0.7rem', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Executive Control Panel
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ShieldCheck size={14} color="#10b981" /> System Operational
+                            </span>
+                        </div>
+                        <h1 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                            Business Performance & Operations Overview
+                        </h1>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Calendar size={14} color="#6366f1" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </div>
+                        <button
+                            onClick={fetchDashboardData}
+                            style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s' }}
+                        >
+                            <RefreshCw size={13} className={state.loading ? 'spin' : ''} /> Sync Data
+                        </button>
+                    </div>
                 </div>
 
                 {state.error && <div className="error-banner"><span>Failed to load data: {state.error}</span></div>}

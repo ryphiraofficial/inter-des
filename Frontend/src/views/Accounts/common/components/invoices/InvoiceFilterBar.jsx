@@ -1,9 +1,9 @@
 import React from 'react';
-import { SlidersHorizontal, ChevronDown, CheckCircle } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, CheckCircle, Plus } from 'lucide-react';
 
-const InvoiceFilterBar = ({ statusFilter, setStatusFilter, showFilterDropdown, setShowFilterDropdown }) => {
+const InvoiceFilterBar = ({ statusFilter, setStatusFilter, showFilterDropdown, setShowFilterDropdown, setShowCreateModal }) => {
     return (
-        <div className="invoice-filter-bar">
+        <div className="invoice-filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <div style={{ position: 'relative' }}>
                 <button
                     onClick={() => setShowFilterDropdown(p => !p)}
@@ -26,7 +26,7 @@ const InvoiceFilterBar = ({ statusFilter, setStatusFilter, showFilterDropdown, s
                     <>
                         <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setShowFilterDropdown(false)} />
                         <div style={{
-                            position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                            position: 'absolute', top: 'calc(100% + 6px)', left: 0,
                             background: '#fff', borderRadius: '10px',
                             border: '1px solid #e2e8f0',
                             boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
@@ -63,6 +63,21 @@ const InvoiceFilterBar = ({ statusFilter, setStatusFilter, showFilterDropdown, s
                     </>
                 )}
             </div>
+
+            {setShowCreateModal && (
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '9px 16px', borderRadius: '8px',
+                        border: 'none', background: '#2563eb', color: '#ffffff',
+                        fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
+                    }}
+                >
+                    <Plus size={16} /> Create Invoice
+                </button>
+            )}
         </div>
     );
 };
