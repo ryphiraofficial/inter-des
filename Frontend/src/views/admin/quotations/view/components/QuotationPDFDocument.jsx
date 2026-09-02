@@ -604,12 +604,12 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
               );
 
               // Add Item Rows
-              sectionItems.forEach((item, idx) => {
-                globalIdx++;
+              sectionItems.forEach((item, itemIdx) => {
+                const idx = itemIdx + 1;
                 const itemImgUrl = item.image ? itemImages[item.image] || null : null;
                 rows.push(
-                  <View key={`item-${item._id || globalIdx}`} style={styles.tableRow} wrap={false}>
-                    <Text style={styles.tableColIdx}>{String(globalIdx).padStart(2, '0')}.</Text>
+                  <View key={`item-${item._id || idx}`} style={styles.tableRow} wrap={false}>
+                    <Text style={styles.tableColIdx}>{String(idx).padStart(2, '0')}.</Text>
                     <View style={styles.tableColDesc}>
                       <Text style={styles.itemName}>{item.itemName || 'N/A'}</Text>
                       {item.description ? <Text style={styles.itemDesc}>{item.description}</Text> : null}

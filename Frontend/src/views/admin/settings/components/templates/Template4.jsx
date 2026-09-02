@@ -137,9 +137,8 @@ const Template4 = ({ quotation, calc, settings }) => {
                                         {sectionName}
                                     </td>
                                 </tr>,
-                                ...sectionItems.map((item) => {
-                                    globalIdx += 1;
-                                    const idx = globalIdx;
+                                ...sectionItems.map((item, itemIdx) => {
+                                    const idx = itemIdx + 1;
                                     return (
                                         <tr className="t4-item-row" key={item._id || idx}>
                                             <td>{String(idx).padStart(2, '0')}</td>
