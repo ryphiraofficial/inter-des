@@ -7,6 +7,7 @@ import POStats from './purchase-orders/components/POStats';
 import POFilterBar from './purchase-orders/components/POFilterBar';
 import POTable from './purchase-orders/components/POTable';
 import POFormModal from './purchase-orders/components/POFormModal';
+import PODetailsModal from './purchase-orders/components/PODetailsModal';
 
 import './css/PurchaseOrders.css';
 
@@ -41,6 +42,11 @@ const PurchaseOrders = () => {
         state.setExpandedRow(state.expandedRow === id ? null : id);
     };
 
+    const handleViewPO = (po) => {
+        state.setSelectedPO(po);
+        state.setShowViewModal(true);
+    };
+
     return (
         <div className="po-container">
             <div className="po-wrapper">
@@ -64,6 +70,7 @@ const PurchaseOrders = () => {
                         toggleRow={toggleRow}
                         handleMarkReceived={actions.handleMarkReceived}
                         handleDelete={actions.handleDelete}
+                        handleViewPO={handleViewPO}
                     />
                 </div>
             </div>
@@ -75,6 +82,13 @@ const PurchaseOrders = () => {
                 setFormData={state.setFormData}
                 submitting={state.submitting}
                 handleCreatePO={actions.handleCreatePO}
+            />
+
+            <PODetailsModal
+                showModal={state.showViewModal}
+                setShowModal={state.setShowViewModal}
+                po={state.selectedPO}
+                handleMarkReceived={actions.handleMarkReceived}
             />
         </div>
     );

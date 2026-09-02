@@ -13,7 +13,7 @@ const getStatusClass = (status) => {
 };
 
 const POTable = ({ 
-    purchaseOrders, loading, expandedRow, toggleRow, handleMarkReceived, handleDelete 
+    purchaseOrders, loading, expandedRow, toggleRow, handleMarkReceived, handleDelete, handleViewPO 
 }) => {
     if (loading) {
         return (
@@ -69,7 +69,14 @@ const POTable = ({
                     <React.Fragment key={po._id}>
                         <tr 
                             className={`po-row ${expandedRow === po._id ? 'expanded' : ''}`}
-                            onClick={() => window.innerWidth <= 768 && toggleRow(po._id)}
+                            onClick={() => {
+                                if (window.innerWidth <= 768) {
+                                    toggleRow(po._id);
+                                } else if (handleViewPO) {
+                                    handleViewPO(po);
+                                }
+                            }}
+                            style={{ cursor: 'pointer' }}
                         >
                             <td><div className="po-number-cell"><FileText size={18} className="po-icon" />{po.poNumber}</div></td>
                             <td>
@@ -87,7 +94,7 @@ const POTable = ({
                             <td className="desktop-hide"><div className={`status-badge ${getStatusClass(po.status)}`}>{po.status}</div></td>
                             <td className="desktop-hide">
                                 <div className="action-buttons">
-                                    <button className="btn-action" title="View"><Eye size={18} /></button>
+                                    <button className="btn-action" title="View" onClick={(e) => { e.stopPropagation(); handleViewPO && handleViewPO(po); }}><Eye size={18} /></button>
                                     {po.status === 'Ordered' && (
                                         <button className="btn-action done" title="Mark Received" onClick={(e) => { e.stopPropagation(); handleMarkReceived(po._id); }}><CheckCircle2 size={18} /></button>
                                     )}
@@ -108,7 +115,7 @@ const POTable = ({
                                             <div className="info-item"><label>Items Count</label><span>{po.items?.length || 0} items</span></div>
                                         </div>
                                         <div className="expansion-actions">
-                                            <button className="btn-mobile-action primary"><Eye size={16} /> View Details</button>
+                                            <button className="btn-mobile-action primary" onClick={() => handleViewPO && handleViewPO(po)}><Eye size={16} /> View Details</button>
                                             {po.status === 'Ordered' && <button className="btn-mobile-action success" onClick={() => handleMarkReceived(po._id)}><CheckCircle2 size={16} /> Mark Received</button>}
                                             <button className="btn-mobile-action danger" onClick={() => handleDelete(po._id)}><Trash2 size={16} /> Delete PO</button>
                                         </div>

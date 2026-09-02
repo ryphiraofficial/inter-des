@@ -22,6 +22,9 @@ export const usePOState = () => {
         items: []
     });
 
+    const [selectedPO, setSelectedPO] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
+
     return {
         purchaseOrders, setPurchaseOrders,
         loading, setLoading,
@@ -31,6 +34,8 @@ export const usePOState = () => {
         showCreateModal, setShowCreateModal,
         submitting, setSubmitting,
         expandedRow, setExpandedRow,
+        selectedPO, setSelectedPO,
+        showViewModal, setShowViewModal,
         formData, setFormData
     };
 };
