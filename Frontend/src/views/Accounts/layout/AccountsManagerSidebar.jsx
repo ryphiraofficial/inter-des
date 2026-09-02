@@ -7,13 +7,14 @@ import {
     BookOpen, Receipt, Building2, Wallet
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
+import { BASE_IMAGE_URL } from '../../../config/constants';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
-    { tab: 'vouchers',   label: 'Vouchers (V2)',       icon: Receipt },
-    { tab: 'ledgers',    label: 'Ledgers (V2)',        icon: BookOpen },
-    { tab: 'programs',   label: 'Programs (V2)',       icon: Building2 },
-    { tab: 'accounts_v2',label: 'Bank & Cash (V2)',    icon: Wallet },
+    { tab: 'vouchers',   label: 'Vouchers',            icon: Receipt },
+    { tab: 'ledgers',    label: 'Ledgers',             icon: BookOpen },
+    { tab: 'programs',   label: 'Programs',            icon: Building2 },
+    { tab: 'accounts_v2',label: 'Bank & Cash',         icon: Wallet },
     { tab: 'clearance',  label: 'Payment Clearance',   icon: CheckCircle },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },
@@ -42,33 +43,37 @@ const AccountsManagerSidebar = ({ isOpen, onClose, user, onLogout }) => {
 
     const handleNav = (tab) => {
         navigate(`?tab=${tab}`);
-        if (onClose) onClose(); // close sidebar on mobile after navigation
+        if (onClose) onClose();
     };
 
-    const getInitials = (u) => {
-        const name = u?.fullName || u?.name || '';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     };
+
+    const displayName = user?.fullName || user?.name || 'Accounts Manager';
+    const userInitials = displayName ? displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'AM';
 
     return (
-        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
-            {/* Sidebar header with close button on mobile */}
-            <div style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`}>
+            {/* Sidebar header */}
+            <div className="sidebar-header">
+                <div className="brand-wrapper">
+                    <h1 className="brand-title">
                         {companyName}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                    </h1>
+                    <p className="brand-subtitle">
                         Accounts Manager
-                    </span>
+                    </p>
                 </div>
-                {/* Close button — mobile only */}
-                <button className="accounts-sidebar-close" onClick={onClose} aria-label="Close menu">
+                <button className="btn-close-sidebar-mobile accounts-sidebar-close" onClick={onClose} aria-label="Close menu" title="Close Sidebar">
                     <X size={20} />
                 </button>
             </div>
 
-            <div className="accounts-sidebar-nav-container" style={{ flex: 1, overflowY: 'auto', paddingTop: '1rem' }}>
+            {/* Navigation container */}
+            <div className="accounts-sidebar-nav-container">
                 <nav className="accounts-sidebar-nav">
                     <div className="accounts-sidebar-section-label">FINANCE CONTROL</div>
                     {NAV_ITEMS.map(({ tab, label, icon: Icon, subItems }) => {
@@ -78,42 +83,23 @@ const AccountsManagerSidebar = ({ isOpen, onClose, user, onLogout }) => {
                                 <button
                                     className={`accounts-sidebar-item ${isMainActive ? 'active' : ''}`}
                                     onClick={() => handleNav(tab)}
-                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <Icon size={18} />
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Icon size={18} className="nav-icon" />
                                         <span>{label}</span>
                                     </div>
                                     {subItems && (
-                                        isMainActive ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                                        isMainActive ? <ChevronDown size={14} className="nav-chevron" /> : <ChevronRight size={14} className="nav-chevron" />
                                     )}
                                 </button>
                                 {subItems && isMainActive && subItems.map(sub => (
                                     <button
                                         key={sub.tab}
-                                        className="accounts-sidebar-item"
+                                        className={`accounts-sidebar-subitem ${activeTab === sub.tab ? 'active' : ''}`}
                                         onClick={() => handleNav(sub.tab)}
-                                        style={{ 
-                                            paddingLeft: '3rem', 
-                                            fontSize: '0.85rem', 
-                                            height: '38px',
-                                            marginTop: '2px',
-                                            color: activeTab === sub.tab ? '#4441cc' : '#64748b',
-                                            fontWeight: activeTab === sub.tab ? 600 : 500,
-                                            background: activeTab === sub.tab ? '#eff4ff' : 'transparent',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            boxShadow: 'none'
-                                        }}
                                     >
-                                        <div style={{ 
-                                            width: '5px', 
-                                            height: '5px', 
-                                            borderRadius: '50%', 
-                                            background: activeTab === sub.tab ? '#4441cc' : '#cbd5e1',
-                                            marginRight: '10px'
-                                        }} />
+                                        <span className="accounts-sidebar-subitem-dot" />
                                         <span>{sub.label}</span>
                                     </button>
                                 ))}
@@ -123,21 +109,24 @@ const AccountsManagerSidebar = ({ isOpen, onClose, user, onLogout }) => {
                 </nav>
             </div>
 
-            {/* Profile and Logout for Desktop Only */}
-            <div className="accounts-sidebar-footer accounts-hide-on-mobile" style={{ padding: '1.25rem', borderTop: '1px solid #e2e8f0', marginTop: 'auto', flexShrink: 0, background: '#f8fafc' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-                    <div className="accounts-mobile-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem', flexShrink: 0 }}>
-                        {getInitials(user)}
+            {/* Sidebar Footer with Admin styling */}
+            <div className="sidebar-footer">
+                <div className="footer-user-info">
+                    <div className="footer-avatar">
+                        {user?.avatar ? (
+                            <img src={getImageUrl(user.avatar)} alt="Avatar" />
+                        ) : (
+                            userInitials
+                        )}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                        <span className="accounts-sidebar-user-name">{user?.fullName || user?.name || 'User'}</span>
-                        <span className="accounts-sidebar-user-role">{user?.role?.replace(/_/g, ' ') || 'Accounts'}</span>
+                    <div className="footer-details">
+                        <p className="footer-name">{displayName}</p>
+                        <p className="footer-role">{user?.role ? user.role.replace(/_/g, ' ') : 'Accounts Manager'}</p>
                     </div>
                 </div>
                 {onLogout && (
-                    <button className="accounts-sidebar-logout-btn" onClick={onLogout}>
-                        <LogOut size={16} />
-                        <span>Log Out</span>
+                    <button className="btn-logout-icon" onClick={onLogout} title="Logout">
+                        <LogOut size={18} />
                     </button>
                 )}
             </div>

@@ -1,7 +1,6 @@
 /* Dashboard Main Wrapper */
 .dashboard-wrapper {
     width: 100%;
-    zoom: 0.9;
 }
 
 /* Dashboard Content Container */
@@ -9,8 +8,7 @@
     padding: 0;
     max-width: 1600px;
     margin: 0 auto;
-    background-color: #fbfbfb;
-    /* Elegant off-white */
+    background-color: transparent;
 }
 
 /* Greeting Header */
@@ -766,3 +764,23 @@
         font-size: 1.05rem;
     }
 }
+
+/* ─── Recharts Focus Outline Removal ─────────────────────────── */
+.kpi-sparkline,
+.kpi-sparkline *,
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface *,
+.recharts-responsive-container,
+.recharts-responsive-container * {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+svg:focus,
+path:focus {
+    outline: none !important;
+}

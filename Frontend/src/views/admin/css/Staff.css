@@ -942,9 +942,10 @@
 }
 
 .staff-drawer-header h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: #0f172a;
+    letter-spacing: -0.01em;
     margin: 0;
 }
 
@@ -1044,12 +1045,27 @@
     min-width: 0;
 }
 
-.form-group label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
+.form-group label,
+.staff-drawer-content label,
+.staff-drawer-content .form-group label,
+.staff-drawer-content .custom-select-label {
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    margin-bottom: 0.35rem !important;
+    display: block !important;
+}
+
+.staff-drawer-content label small,
+.staff-drawer-content .form-group label small {
+    font-size: 0.72rem !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    color: #94a3b8 !important;
+    letter-spacing: normal !important;
+    margin-left: 4px !important;
 }
 
 .form-group input,

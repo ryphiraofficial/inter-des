@@ -63,6 +63,8 @@ const AccountsInvoices = () => {
                     showFilterDropdown={state.showFilterDropdown}
                     setShowFilterDropdown={state.setShowFilterDropdown}
                     setShowCreateModal={state.setShowCreateModal}
+                    searchTerm={state.searchTerm}
+                    setSearchTerm={state.setSearchTerm}
                 />
 
                 {state.error && <div className="error-banner">{state.error}</div>}

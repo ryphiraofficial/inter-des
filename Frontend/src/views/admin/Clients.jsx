@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users } from 'lucide-react';
+import { Users, Plus } from 'lucide-react';
 import { useClientState } from './clients/hooks/useClientState';
 import { useClientData } from './clients/hooks/useClientData';
 import { useClientActions } from './clients/hooks/useClientActions';
@@ -57,21 +57,73 @@ const Clients = ({ isStaff }) => {
         state.setExpandedRow(state.expandedRow === id ? null : id);
     };
 
+    const handleOpenNewClientModal = () => {
+        state.setEditingClient(null);
+        state.setFormData(state.initialFormData);
+        state.setShowNewClientModal(true);
+    };
+
     return (
-        <div className={`clients-container ${isStaff ? 'staff-view' : ''}`}>
-            <div className="clients-wrapper">
+        <div className={`clients-container ${isStaff ? 'staff-view' : ''}`} style={{ width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+            <div className="clients-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <ClientHeader 
                     clients={state.clients}
                     activeTab={state.activeTab}
                     setActiveTab={state.setActiveTab}
                     sevenDaysAgo={SEVEN_DAYS_AGO}
+                    onAddClient={handleOpenNewClientModal}
                 />
 
                 {!state.loading && filteredClients.length === 0 ? (
-                    <div className="c-empty-state-card">
-                        <Users size={48} />
-                        <h4>No clients found</h4>
-                        <p>Try matching your search or filters to different criteria.</p>
+                    <div style={{
+                        background: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '4rem 2rem',
+                        textAlign: 'center',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <div style={{
+                            width: '56px',
+                            height: '56px',
+                            background: '#eff6ff',
+                            color: '#2563eb',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '1rem'
+                        }}>
+                            <Users size={28} />
+                        </div>
+                        <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0', letterSpacing: '-0.02em' }}>No Clients Found</h4>
+                        <p style={{ color: '#64748b', fontSize: '0.875rem', maxWidth: '420px', margin: '0 auto 1.25rem', lineHeight: '1.5' }}>
+                            {state.searchTerm ? 'No clients match your search criteria.' : 'Add your first client account to manage projects, invoices, and quotations.'}
+                        </p>
+                        <button
+                            type="button"
+                            onClick={handleOpenNewClientModal}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '9px 18px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: '#2563eb',
+                                color: '#ffffff',
+                                fontWeight: 700,
+                                fontSize: '0.84rem',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 6px rgba(37, 99, 235, 0.2)'
+                            }}
+                        >
+                            <Plus size={16} /> Add Client
+                        </button>
                     </div>
                 ) : (
                     <ClientTable 

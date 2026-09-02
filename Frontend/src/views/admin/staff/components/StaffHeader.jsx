@@ -1,8 +1,8 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 
-const ClientHeader = ({ clients = [], activeTab, setActiveTab, sevenDaysAgo, onAddClient }) => {
-    const tabs = ['All', 'New', 'Staff Added'];
+const StaffHeader = ({ staffList = [], activeTab = 'All', setActiveTab, onAddStaff }) => {
+    const tabs = ['All', 'Active', 'On Leave', 'Inactive'];
 
     return (
         <div style={{
@@ -25,10 +25,7 @@ const ClientHeader = ({ clients = [], activeTab, setActiveTab, sevenDaysAgo, onA
             }}>
                 {tabs.map(tab => {
                     const isActive = activeTab === tab;
-                    const count = tab === 'All' ? clients.length :
-                        tab === 'New' ? clients.filter(c => new Date(c.createdAt) >= sevenDaysAgo).length :
-                        clients.filter(c => c.createdBy?.role === 'Staff').length;
-                    const label = tab === 'New' ? 'New (Recent)' : tab;
+                    const count = tab === 'All' ? staffList.length : staffList.filter(s => s.status === tab).length;
 
                     return (
                         <button
@@ -50,7 +47,7 @@ const ClientHeader = ({ clients = [], activeTab, setActiveTab, sevenDaysAgo, onA
                                 transition: 'all 0.15s ease'
                             }}
                         >
-                            <span>{label}</span>
+                            <span>{tab}</span>
                             <span style={{
                                 background: isActive ? '#2563eb' : count > 0 ? '#f1f5f9' : '#f8fafc',
                                 color: isActive ? '#ffffff' : count > 0 ? '#0f172a' : '#94a3b8',
@@ -66,11 +63,11 @@ const ClientHeader = ({ clients = [], activeTab, setActiveTab, sevenDaysAgo, onA
                 })}
             </div>
 
-            {/* Add Client Button */}
-            {onAddClient && (
+            {/* Add Staff Button */}
+            {onAddStaff && (
                 <button
                     type="button"
-                    onClick={onAddClient}
+                    onClick={onAddStaff}
                     style={{
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -87,11 +84,11 @@ const ClientHeader = ({ clients = [], activeTab, setActiveTab, sevenDaysAgo, onA
                         transition: 'all 0.15s ease'
                     }}
                 >
-                    <Plus size={16} /> Add Client
+                    <Plus size={16} /> Add Staff
                 </button>
             )}
         </div>
     );
 };
 
-export default ClientHeader;
+export default StaffHeader;

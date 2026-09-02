@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { RefreshCw, Bell, Search, Download, Video, Menu, LogOut, User, Settings } from 'lucide-react';
+import { RefreshCw, Bell, Search, Video, Menu, LogOut, User, Settings } from 'lucide-react';
 import { useNotificationLogic } from '../../admin/header/hooks/useNotificationLogic';
 import NotificationPopup from '../../admin/header/components/NotificationPopup';
 import '../../admin/css/Header.css';
@@ -8,22 +8,22 @@ import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../store/slices/authSlice';
 import { TAB_META, SEARCH_CONFIGS } from './accountsNavConfig';
 
-const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onMenuToggle, onLogout }) => {
-    const user       = useAppSelector(selectUser);
-    const navigate   = useNavigate();
+const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onMenuToggle, onLogout }) => {
+    const user = useAppSelector(selectUser);
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const activeTab  = searchParams.get('tab') || 'overview';
+    const activeTab = searchParams.get('tab') || 'overview';
 
-    const currentTab   = TAB_META[activeTab] || { label: 'Overview' };
+    const currentTab = TAB_META[activeTab] || { label: 'Overview' };
     const searchConfig = SEARCH_CONFIGS[activeTab];
 
     const [showNotifications, setShowNotifications] = useState(false);
-    const [notifications, setNotifications]         = useState([]);
-    const [unreadCount, setUnreadCount]             = useState(0);
-    const [showProfile, setShowProfile]             = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showProfile, setShowProfile] = useState(false);
 
     const wrapperRef = useRef(null);
-    const popupRef   = useRef(null);
+    const popupRef = useRef(null);
     const profileRef = useRef(null);
 
     const getInitials = (user) => {
@@ -32,7 +32,11 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
     };
 
     const notificationLogic = useNotificationLogic({
-        setNotifications, setUnreadCount, showNotifications, setShowNotifications, notifications
+        setNotifications,
+        setUnreadCount,
+        showNotifications,
+        setShowNotifications,
+        notifications
     });
 
     /* Close notifications on outside click */
@@ -67,12 +71,6 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
         };
     }, [showProfile]);
 
-    const btnBase = {
-        height: '38px', padding: '0 16px', display: 'flex', alignItems: 'center',
-        gap: '8px', fontSize: '13px', border: 'none', borderRadius: '8px',
-        fontWeight: 600, cursor: 'pointer', outline: 'none', transition: 'all 0.2s'
-    };
-
     const handleProfileNav = (path) => {
         setShowProfile(false);
         navigate(path);
@@ -84,7 +82,7 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
     /* Close search on outside click */
     useEffect(() => {
         const handler = (e) => {
-            if (isSearchExpanded && !e.target.closest('.accounts-search-wrapper')) {
+            if (isSearchExpanded && !e.target.closest('.header-search-bar')) {
                 setIsSearchExpanded(false);
             }
         };
@@ -100,111 +98,135 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
         if (!isSearchExpanded) {
             setIsSearchExpanded(true);
             setTimeout(() => searchInputRef.current?.focus(), 100);
+        } else {
+            setIsSearchExpanded(false);
         }
     };
 
     return (
-        <header className={`accounts-navbar ${isSearchExpanded ? 'search-expanded' : ''}`} style={{ overflow: 'visible' }}>
-
-            {/* ── Left: Hamburger (mobile) + Page title ── */}
-            <div className="accounts-navbar-brand">
-                <button className="accounts-hamburger" onClick={onMenuToggle} aria-label="Open navigation menu">
-                    <Menu size={22} />
+        <header className="page-header accounts-navbar" style={{ overflow: 'visible' }}>
+            {/* ── Left: Mobile Menu button + Title / Description ── */}
+            <div className="header-left accounts-navbar-brand">
+                <button
+                    className="mobile-menu-btn accounts-hamburger"
+                    onClick={onMenuToggle}
+                    aria-label="Open navigation menu"
+                    title="Open Menu"
+                >
+                    <Menu size={22} strokeWidth={2.4} />
                 </button>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="accounts-navbar-title">{currentTab.label}</span>
-                    <span className="accounts-navbar-pagedesc">{currentTab.description}</span>
+                <div className="welcome-text">
+                    <h1>{currentTab.label}</h1>
+                    {currentTab.description && <p>{currentTab.description}</p>}
                 </div>
             </div>
 
-            {/* ── Right: Actions + Notifications + Profile ── */}
-            <div className="accounts-navbar-right" style={{ overflow: 'visible' }}>
+            {/* ── Right: Search + Refresh + Actions + Notifications + Mobile Profile ── */}
+            <div className="page-header-actions accounts-navbar-right" style={{ overflow: 'visible' }}>
+                {/* Search */}
+                {searchConfig && setSearch && (
+                    <div className={`header-search-bar ${isSearchExpanded ? 'expanded' : 'collapsed'}`}>
+                        <button
+                            className="search-toggle-btn"
+                            onClick={handleSearchClick}
+                            title={isSearchExpanded ? 'Close search' : 'Search'}
+                        >
+                            <Search size={18} />
+                        </button>
+                        {isSearchExpanded && (
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                placeholder={searchConfig.placeholder}
+                                value={search || ''}
+                                onChange={e => setSearch(e.target.value)}
+                            />
+                        )}
+                    </div>
+                )}
 
                 {/* Refresh */}
                 {onRefresh && (
                     <button className="accounts-navbar-refresh" onClick={onRefresh} disabled={isLoading} title="Refresh Data">
-                        <RefreshCw size={16} className={isLoading ? 'spin' : ''} />
+                        <RefreshCw size={15} className={isLoading ? 'spin' : ''} />
                         <span className="accounts-btn-label">{isLoading ? 'Updating...' : 'Refresh'}</span>
                     </button>
                 )}
 
-                {/* Search */}
-                {searchConfig && setSearch && (
-                    <div 
-                        className={`accounts-search-wrapper ${isSearchExpanded ? 'expanded' : ''}`} 
-                        onClick={handleSearchClick}
-                    >
-                        <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                        <input
-                            ref={searchInputRef}
-                            type="text"
-                            placeholder={searchConfig.placeholder}
-                            value={search || ''}
-                            onChange={e => setSearch(e.target.value)}
-                        />
-                    </div>
-                )}
-
-                {/* Export - Removed per user request */}
-
                 {/* Add Expense */}
                 {['expenses', 'company_expenses'].includes(activeTab) && (
-                    <button onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))}
-                        style={{ ...btnBase, background: '#0f172a', color: 'white' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#1e293b'}
-                        onMouseLeave={e => e.currentTarget.style.background = '#0f172a'}>
+                    <button
+                        className="btn-primary"
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-create-expense-modal'))}
+                    >
                         + <span className="accounts-btn-label">Add Expense</span>
                     </button>
                 )}
 
                 {/* Schedule Meeting */}
-                {activeTab === 'meetings' && ['admin', 'super admin', 'superadmin'].includes(user?.role?.toLowerCase()) && (
-                    <button onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))}
-                        style={{ ...btnBase, background: '#3b82f6', color: 'white' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#2563eb'}
-                        onMouseLeave={e => e.currentTarget.style.background = '#3b82f6'}>
+                {activeTab === 'meetings' && ['admin', 'super admin', 'superadmin', 'accounts manager'].includes(user?.role?.toLowerCase()) && (
+                    <button
+                        className="btn-primary"
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))}
+                    >
                         <Video size={16} />
                         <span className="accounts-btn-label">Schedule Meeting</span>
                     </button>
                 )}
 
-                {/* ── Notifications Bell (desktop) ── */}
+                {/* ── Notifications Bell ── */}
                 <div className="header-notification-wrapper accounts-hide-on-mobile" ref={wrapperRef} style={{ position: 'relative' }}>
                     <button
                         className={`header-notification-btn ${showNotifications ? 'active' : ''}`}
                         onClick={notificationLogic.toggleNotifications}
-                        style={{ background: '#f8fafc', border: '1px solid #e2e8f0', width: '38px', height: '38px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', outline: 'none' }}>
+                        title="Notifications"
+                    >
                         <Bell size={19} strokeWidth={2.2} />
                         {unreadCount > 0 && (
-                            <span className="header-notification-badge" style={{ top: '-2px', right: '-2px' }}>
+                            <span className="header-notification-badge">
                                 {unreadCount > 9 ? '9+' : unreadCount}
                             </span>
                         )}
                     </button>
                     <NotificationPopup
-                        showNotifications={showNotifications} notifications={notifications} unreadCount={unreadCount}
-                        handleMarkAsRead={notificationLogic.handleMarkAsRead} handleMarkAllRead={notificationLogic.handleMarkAllRead}
-                        handleDelete={notificationLogic.handleDelete} setShowNotifications={setShowNotifications} popupRef={popupRef}
+                        showNotifications={showNotifications}
+                        notifications={notifications}
+                        unreadCount={unreadCount}
+                        handleMarkAsRead={notificationLogic.handleMarkAsRead}
+                        handleMarkAllRead={notificationLogic.handleMarkAllRead}
+                        handleDelete={notificationLogic.handleDelete}
+                        setShowNotifications={setShowNotifications}
+                        popupRef={popupRef}
                     />
                 </div>
 
                 {/* ── Profile dropdown — mobile only ── */}
-                <div className="accounts-mobile-profile" ref={profileRef}>
-                    {/* Avatar trigger */}
+                <div className="mobile-profile-wrapper accounts-mobile-profile" ref={profileRef}>
                     <button
-                        className={`accounts-mobile-avatar-btn${showProfile ? ' open' : ''}`}
+                        className="header-profile-btn"
                         onClick={() => setShowProfile(v => !v)}
                         aria-label="Profile menu"
+                        style={{
+                            background: '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '36px',
+                            height: '36px',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            flexShrink: 0
+                        }}
                     >
-                        <div className="accounts-mobile-avatar">
-                            {getInitials(user)}
-                        </div>
+                        {getInitials(user)}
                     </button>
 
-                    {/* Dropdown panel */}
                     {showProfile && (
                         <div className="accounts-profile-dropdown">
-                            {/* ── User header ── */}
                             <div className="accounts-profile-dropdown-header">
                                 <div className="accounts-profile-dropdown-info">
                                     <span className="accounts-profile-dropdown-name">{user?.fullName || user?.name || 'User'}</span>
@@ -216,7 +238,6 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
 
                             <div className="accounts-profile-dropdown-divider" />
 
-                            {/* ── Menu items ── */}
                             <div className="accounts-profile-dropdown-menu">
                                 <button className="accounts-profile-menu-item" onClick={() => handleProfileNav('/accounts-manager/settings?tab=profile')}>
                                     <User size={17} className="accounts-profile-menu-icon" />
@@ -242,7 +263,6 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onExport, onM
 
                             <div className="accounts-profile-dropdown-divider" />
 
-                            {/* ── Logout ── */}
                             {onLogout && (
                                 <button className="accounts-profile-dropdown-logout" onClick={() => { setShowProfile(false); onLogout(); }}>
                                     <LogOut size={16} />

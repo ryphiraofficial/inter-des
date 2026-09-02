@@ -1,72 +1,39 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import DeptSidebar from './components/DeptSidebar';
-import Header from './Header';
-import { getRoleDepartment } from './hooks/useRoleDashboard';
-import './css/Layout.css';
+import AppLayout from '../../layouts/AppLayout/AppLayout';
+import DateFilterDropdown from '../../layouts/AppLayout/DateFilterDropdown';
+import { DateFilterProvider } from '../../context/DateFilterContext';
 import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/slices/authSlice';
-import AIChat from './AIChat';
 
+/**
+ * Admin / Global Executive Layout — delegates to universal AppLayout
+ */
 const Layout = ({ onLogout }) => {
     const user = useAppSelector(selectUser);
-    const [isCollapsed, setIsCollapsed] = React.useState(false);
-    const [isMobileOpen, setIsMobileOpen] = React.useState(false);
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
     const location = useLocation();
-    const department = getRoleDepartment(user?.role);
-    const isGeneralAdmin = ['super admin', 'admin', 'manager', 'superadmin'].includes(user?.role?.toLowerCase());
 
-    React.useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    // Conditionally render the date dropdown filter in the navbar for overview/analytical dashboards
+    const showDateFilter = location.pathname === '/' || location.pathname === '' || location.pathname === '/financial-analytics' || location.pathname === '/reports';
 
-    const toggleSidebar = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-
-    const toggleMobileSidebar = () => {
-        setIsMobileOpen(!isMobileOpen);
-    };
-
-    React.useEffect(() => {
-        setIsMobileOpen(false);
-    }, [location.pathname, location.search]);
-
-    const renderSidebar = () => {
-        const props = { user, onLogout, isCollapsed, toggleSidebar, isMobileOpen, toggleMobileSidebar };
-        if (department === 'Design' || department === 'Procurement' || department === 'Production' || department === 'Accounts') {
-            return <DeptSidebar role={user?.role} {...props} />;
+    const renderActions = () => {
+        if (showDateFilter) {
+            return <DateFilterDropdown />;
         }
-        return <Sidebar {...props} />;
+        return null;
     };
-
-
-    if (department === 'Design' || department === 'Accounts' || department === 'Procurement') {
-        return <Outlet />;
-    }
-
-    const isQuotationView = location.pathname.includes('/quotations/view/');
-
-    const mainContentStyle = isMobile
-        ? { marginLeft: 0, width: '100%', maxWidth: '100vw' }
-        : {};
 
     return (
-        <div className={`layout-container ${isCollapsed ? 'sidebar-collapsed' : ''} ${isMobileOpen ? 'mobile-sidebar-open' : ''} ${department?.toLowerCase()}-layout`}>
-            {isMobileOpen && <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}></div>}
-            {renderSidebar()}
-            <main className="main-content" style={mainContentStyle}>
-                {!isQuotationView && <Header toggleMobileSidebar={toggleMobileSidebar} onLogout={onLogout} />}
-                <div className={`page-wrapper ${isQuotationView ? 'full-height' : ''}`}>
-                    <Outlet />
-                </div>
-            </main>
-            {/* {isGeneralAdmin && <AIChat />} */}
-        </div>
+        <DateFilterProvider>
+            <AppLayout
+                department="admin"
+                user={user}
+                onLogout={onLogout}
+                actions={renderActions()}
+            >
+                <Outlet />
+            </AppLayout>
+        </DateFilterProvider>
     );
 };
 

@@ -34,6 +34,7 @@ const StaffReports = () => {
     const isPageLoading = isLoading || (user?.role === 'Site Engineer' && isReceivedLoading);
     const isAdmin = ['admin', 'super admin', 'superadmin', 'manager', 'design manager', 'procurement manager', 'project manager', 'accounts manager'].includes(user?.role?.toLowerCase() || '');
     const isAccounts = user?.role?.toLowerCase().includes('accounts') || user?.department === 'Accounts';
+    const isSales = user?.role?.toLowerCase().includes('sales') || user?.department === 'Sales';
 
     const [submitReport, { isLoading: isSubmitting }] = useSubmitStaffReportMutation();
     const [updateReport, { isLoading: isUpdating }] = useUpdateStaffReportMutation();
@@ -209,7 +210,7 @@ const StaffReports = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!formData.images || formData.images.length === 0) {
+        if (!isSales && (!formData.images || formData.images.length === 0)) {
             showToast('Please attach at least one file or document', 'error');
             return;
         }
@@ -649,7 +650,7 @@ const StaffReports = () => {
 
                                     <div className="report-form-group">
                                         <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, color: '#45464d', fontSize: '13px' }}>
-                                            Attachments <span style={{ color: '#ef4444' }}>*</span>
+                                            Attachments {!isSales && <span style={{ color: '#ef4444' }}>*</span>}
                                         </label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                             <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#475569', transition: 'all 0.2s' }} className="image-upload-label">

@@ -115,8 +115,9 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
 
             {/* Pill-Style Status Navigation Bar */}
             <div style={{
-                background: '#f1f5f9', padding: '5px', borderRadius: '14px',
-                display: 'inline-flex', gap: '4px', border: '1px solid #e2e8f0', flexWrap: 'wrap'
+                background: '#ffffff', padding: '6px', borderRadius: '12px',
+                display: 'inline-flex', gap: '6px', border: '1px solid #e2e8f0', flexWrap: 'wrap',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
             }}>
                 {[
                     { key: 'ALL', label: 'All Requests', count: requests.length },
@@ -131,22 +132,22 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                             key={tab.key}
                             onClick={() => setStatusFilter(tab.key)}
                             style={{
-                                padding: '8px 16px', borderRadius: '10px', border: 'none',
-                                background: isActive ? 'white' : 'transparent',
-                                color: isActive ? '#4f46e5' : '#64748b',
-                                fontWeight: isActive ? 800 : 600,
-                                fontSize: '0.85rem', cursor: 'pointer',
-                                boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                                padding: '8px 14px', borderRadius: '8px',
+                                border: isActive ? '1px solid #bfdbfe' : '1px solid transparent',
+                                background: isActive ? '#eff6ff' : 'transparent',
+                                color: isActive ? '#2563eb' : '#64748b',
+                                fontWeight: isActive ? 700 : 500,
+                                fontSize: '0.84rem', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', gap: '6px',
                                 transition: 'all 0.15s ease'
                             }}
                         >
                             <span>{tab.label}</span>
                             <span style={{
-                                background: isActive ? '#e0e7ff' : '#e2e8f0',
-                                color: isActive ? '#4338ca' : '#64748b',
-                                fontSize: '0.75rem', fontWeight: 800,
-                                padding: '2px 7px', borderRadius: '10px'
+                                background: isActive ? '#2563eb' : tab.count > 0 ? '#f1f5f9' : '#f8fafc',
+                                color: isActive ? '#ffffff' : tab.count > 0 ? '#0f172a' : '#94a3b8',
+                                fontSize: '0.7rem', fontWeight: 800,
+                                padding: '1px 7px', borderRadius: '10px'
                             }}>
                                 {tab.count}
                             </span>
@@ -157,12 +158,18 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
 
             {!filteredRequests.length ? (
                 <div style={{
-                    background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px',
-                    padding: '3rem', textAlign: 'center', color: '#64748b'
+                    background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px',
+                    padding: '4rem 2rem', textAlign: 'center', color: '#64748b',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
                 }}>
-                    <Layers size={40} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-                    <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 800 }}>No Requests in this Filter</h3>
-                    <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
+                    <div style={{
+                        width: '56px', height: '56px', background: '#eff6ff', color: '#2563eb',
+                        borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem'
+                    }}>
+                        <Layers size={28} />
+                    </div>
+                    <h3 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em' }}>No Requests in this Filter</h3>
+                    <p style={{ margin: 0, fontSize: '0.875rem', maxWidth: '440px', lineHeight: '1.5' }}>
                         {statusFilter === 'pending_admin'
                             ? 'There are currently no manager-approved edge band requests awaiting admin release.'
                             : statusFilter === 'pending_manager'

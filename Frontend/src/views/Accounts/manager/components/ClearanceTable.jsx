@@ -3,11 +3,13 @@ import { Shield, CheckCircle } from 'lucide-react';
 import { TableSkeleton } from '../../components/UI/Skeleton';
 import ClearanceConfirmDialog from './ClearanceConfirmDialog';
 import StaffAssignCell from './StaffAssignCell';
+import ClearanceEmptyState from './ClearanceEmptyState';
 import '../../css/ClearanceTable.css';
 
 const ClearanceTable = ({
     loading, filtered, staffList, assigningId, setAssigningId,
-    selectedStaff, setSelectedStaff, handleAssign, handleClear
+    selectedStaff, setSelectedStaff, handleAssign, handleClear,
+    search, setSearch
 }) => {
     const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, projectId: null, isVerified: false });
 
@@ -42,13 +44,9 @@ const ClearanceTable = ({
 
     if (loading) return <TableSkeleton rows={6} cols={7} />;
     if (filtered.length === 0) {
-        return (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
-                <Shield size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />
-                <p>No projects pending clearance.</p>
-            </div>
-        );
+        return <ClearanceEmptyState search={search} setSearch={setSearch} />;
     }
+
 
     return (
         <>

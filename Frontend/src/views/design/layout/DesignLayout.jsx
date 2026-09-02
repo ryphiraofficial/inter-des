@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
-import DesignNavbar from './DesignNavbar';
-import DesignManagerSidebar from './DesignManagerSidebar';
-import DesignStaffSidebar from './DesignStaffSidebar';
-import '../css/DesignLayout.css';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import AppLayout from '../../../layouts/AppLayout/AppLayout';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
-const DesignLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const Sidebar = role === 'staff' ? DesignStaffSidebar : DesignManagerSidebar;
-
-    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+/**
+ * DesignLayout — delegates to universal AppLayout
+ */
+const DesignLayout = ({ role, user: propUser, onRefresh, isLoading, onLogout, children }) => {
+    const reduxUser = useAppSelector(selectUser);
+    const user = propUser || reduxUser;
 
     return (
-        <div className={`design-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-            {isSidebarOpen && <div className="design-sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
-            <Sidebar user={user} onLogout={onLogout} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="design-layout-main">
-                <DesignNavbar user={user} onRefresh={onRefresh} isLoading={isLoading} toggleSidebar={toggleSidebar} />
-                <main className="design-layout-content">
-                    {children}
-                </main>
-            </div>
-        </div>
+        <AppLayout
+            department="design"
+            role={role}
+            user={user}
+            onRefresh={onRefresh}
+            isLoading={isLoading}
+            onLogout={onLogout}
+        >
+            {children || <Outlet />}
+        </AppLayout>
     );
 };
 

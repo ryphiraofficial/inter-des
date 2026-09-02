@@ -1,45 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
-import ProcurementNavbar from './ProcurementNavbar';
-import ProcurementManagerSidebar from './ProcurementManagerSidebar';
-import ProcurementStaffSidebar from './ProcurementStaffSidebar';
-import '../css/ProcurementLayout.css';
+import AppLayout from '../../../layouts/AppLayout/AppLayout';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
 /**
- * ProcurementLayout — shared wrapper for all Procurement module roles.
- * Renders the sidebar + navbar shell; page content goes in children.
- *
- * Props:
- *  - role: 'manager' | 'staff'
- *  - user: user object
- *  - onRefresh: optional callback for refresh button
- *  - isLoading: boolean for refresh spinner
- *  - children: page content
+ * ProcurementLayout — delegates to universal AppLayout
  */
-const ProcurementLayout = ({ role, user, onRefresh, isLoading, onLogout, children }) => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const Sidebar = role === 'staff' ? ProcurementStaffSidebar : ProcurementManagerSidebar;
+const ProcurementLayout = ({ role, user: propUser, onRefresh, isLoading, onLogout, children }) => {
+    const reduxUser = useAppSelector(selectUser);
+    const user = propUser || reduxUser;
 
     return (
-        <div className="procurement-layout">
-            <Sidebar 
-                onLogout={onLogout} 
-                isMobileOpen={isMobileMenuOpen} 
-                onCloseMobile={() => setIsMobileMenuOpen(false)} 
-            />
-            <div className="procurement-layout-main">
-                <ProcurementNavbar 
-                    role={role} 
-                    onRefresh={onRefresh} 
-                    isLoading={isLoading} 
-                    onMenuClick={() => setIsMobileMenuOpen(true)}
-                    onLogout={onLogout}
-                />
-                <main className="procurement-layout-content">
-                    {children || <Outlet />}
-                </main>
-            </div>
-        </div>
+        <AppLayout
+            department="procurement"
+            role={role}
+            user={user}
+            onRefresh={onRefresh}
+            isLoading={isLoading}
+            onLogout={onLogout}
+        >
+            {children || <Outlet />}
+        </AppLayout>
     );
 };
 

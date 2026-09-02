@@ -11,10 +11,16 @@ const PaymentClearanceHub = ({ search, setSearch }) => {
         selectedStaff, setSelectedStaff, filtered, handleAssign, handleClear
     } = usePaymentClearanceLogic(search, setSearch);
 
+    const hasItems = !loading && filtered && filtered.length > 0;
+
     return (
         <div className="accounts-manager-hub">
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
-
+            <div style={{
+                background: hasItems ? '#fff' : 'transparent',
+                border: hasItems ? '1px solid #e2e8f0' : 'none',
+                borderRadius: '12px',
+                overflow: 'hidden'
+            }}>
                 <ClearanceTable 
                     loading={loading}
                     filtered={filtered}
@@ -25,6 +31,8 @@ const PaymentClearanceHub = ({ search, setSearch }) => {
                     setSelectedStaff={setSelectedStaff}
                     handleAssign={handleAssign}
                     handleClear={handleClear}
+                    search={search}
+                    setSearch={setSearch}
                 />
             </div>
         </div>
@@ -32,3 +40,4 @@ const PaymentClearanceHub = ({ search, setSearch }) => {
 };
 
 export default PaymentClearanceHub;
+

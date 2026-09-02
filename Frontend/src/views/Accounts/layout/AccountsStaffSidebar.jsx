@@ -2,17 +2,18 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     LayoutDashboard, FileText, CreditCard,
-    TrendingUp, Users, ShoppingBag, ClipboardList, Video, X, LogOut, BarChart3,
+    TrendingUp, Users, ShoppingBag, Video, X, LogOut, BarChart3,
     BookOpen, Receipt, Building2, Wallet
 } from 'lucide-react';
 import { useCompanySettings } from '../../../hooks/useCompanySettings';
+import { BASE_IMAGE_URL } from '../../../config/constants';
 
 const NAV_ITEMS = [
     { tab: 'overview',   label: 'Overview',            icon: LayoutDashboard },
-    { tab: 'vouchers',   label: 'Vouchers (V2)',       icon: Receipt },
-    { tab: 'ledgers',    label: 'Ledgers (V2)',        icon: BookOpen },
-    { tab: 'programs',   label: 'Programs (V2)',       icon: Building2 },
-    { tab: 'accounts_v2',label: 'Bank & Cash (V2)',    icon: Wallet },
+    { tab: 'vouchers',   label: 'Vouchers',            icon: Receipt },
+    { tab: 'ledgers',    label: 'Ledgers',             icon: BookOpen },
+    { tab: 'programs',   label: 'Programs',            icon: Building2 },
+    { tab: 'accounts_v2',label: 'Bank & Cash',         icon: Wallet },
     { tab: 'invoices',   label: 'Invoices',            icon: FileText },
     { tab: 'payments',   label: 'Payments',            icon: CreditCard },
     { tab: 'expenses',   label: 'Expenses',            icon: TrendingUp },
@@ -34,30 +35,34 @@ const AccountsStaffSidebar = ({ isOpen, onClose, user, onLogout }) => {
         if (onClose) onClose();
     };
 
-    const getInitials = (u) => {
-        const name = u?.fullName || u?.name || '';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${BASE_IMAGE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
+    const displayName = user?.fullName || user?.name || 'Accounts Staff';
+    const userInitials = displayName ? displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'AS';
+
     return (
-        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
-            {/* Sidebar header with close button on mobile */}
-            <div style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.25rem', borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '20px', color: '#000000', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.2' }}>
+        <aside className={`accounts-sidebar${isOpen ? ' accounts-sidebar--open' : ''}`}>
+            {/* Sidebar header */}
+            <div className="sidebar-header">
+                <div className="brand-wrapper">
+                    <h1 className="brand-title">
                         {companyName}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                    </h1>
+                    <p className="brand-subtitle">
                         Accounts Staff
-                    </span>
+                    </p>
                 </div>
-                {/* Close button — mobile only */}
-                <button className="accounts-sidebar-close" onClick={onClose} aria-label="Close menu">
+                <button className="btn-close-sidebar-mobile accounts-sidebar-close" onClick={onClose} aria-label="Close menu" title="Close Sidebar">
                     <X size={20} />
                 </button>
             </div>
 
-            <div className="accounts-sidebar-nav-container" style={{ flex: 1, overflowY: 'auto', paddingTop: '1rem' }}>
+            {/* Navigation container */}
+            <div className="accounts-sidebar-nav-container">
                 <nav className="accounts-sidebar-nav">
                     <div className="accounts-sidebar-section-label">OPERATIONS</div>
                     {NAV_ITEMS.map(({ tab, label, icon: Icon }) => (
@@ -66,28 +71,31 @@ const AccountsStaffSidebar = ({ isOpen, onClose, user, onLogout }) => {
                             className={`accounts-sidebar-item ${activeTab === tab ? 'active' : ''}`}
                             onClick={() => handleNav(tab)}
                         >
-                            <Icon size={18} />
+                            <Icon size={18} className="nav-icon" />
                             <span>{label}</span>
                         </button>
                     ))}
                 </nav>
             </div>
 
-            {/* Profile and Logout for Desktop Only */}
-            <div className="accounts-sidebar-footer accounts-hide-on-mobile" style={{ padding: '1.25rem', borderTop: '1px solid #e2e8f0', marginTop: 'auto', flexShrink: 0, background: '#f8fafc' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-                    <div className="accounts-mobile-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem', flexShrink: 0 }}>
-                        {getInitials(user)}
+            {/* Sidebar Footer with Admin styling */}
+            <div className="sidebar-footer">
+                <div className="footer-user-info">
+                    <div className="footer-avatar">
+                        {user?.avatar ? (
+                            <img src={getImageUrl(user.avatar)} alt="Avatar" />
+                        ) : (
+                            userInitials
+                        )}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                        <span className="accounts-sidebar-user-name">{user?.fullName || user?.name || 'User'}</span>
-                        <span className="accounts-sidebar-user-role">{user?.role?.replace(/_/g, ' ') || 'Accounts'}</span>
+                    <div className="footer-details">
+                        <p className="footer-name">{displayName}</p>
+                        <p className="footer-role">{user?.role ? user.role.replace(/_/g, ' ') : 'Accounts Staff'}</p>
                     </div>
                 </div>
                 {onLogout && (
-                    <button className="accounts-sidebar-logout-btn" onClick={onLogout}>
-                        <LogOut size={16} />
-                        <span>Log Out</span>
+                    <button className="btn-logout-icon" onClick={onLogout} title="Logout">
+                        <LogOut size={18} />
                     </button>
                 )}
             </div>

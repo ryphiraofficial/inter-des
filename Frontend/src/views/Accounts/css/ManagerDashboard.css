@@ -704,13 +704,13 @@
 
 .accounts-manager-hub,
 .accounts-staff-hub {
-    padding: 24px;
+    padding: 0;
 }
 
 @media (max-width: 1024px) {
     .accounts-manager-hub,
     .accounts-staff-hub {
-        padding: 16px;
+        padding: 0;
     }
 }
 

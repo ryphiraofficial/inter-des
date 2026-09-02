@@ -7,7 +7,7 @@ const FinancialAnalytics = () => {
     const user = useAppSelector(selectUser);
 
     return (
-        <div style={{ padding: '1.5rem', width: '100%', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
             <AccountsDashboardV2 user={user} />
         </div>
     );

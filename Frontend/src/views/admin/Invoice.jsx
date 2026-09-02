@@ -197,8 +197,8 @@ const Invoice = () => {
     });
 
     return (
-        <div className="invoice-container">
-            <div className="invoice-wrapper">
+        <div className="invoice-container" style={{ width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+            <div className="invoice-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 {state.loading ? (
                     <StatsSkeleton count={4} />
                 ) : (
@@ -210,6 +210,7 @@ const Invoice = () => {
                     setStatusFilter={state.setStatusFilter}
                     showFilterDropdown={state.showFilterDropdown}
                     setShowFilterDropdown={state.setShowFilterDropdown}
+                    onCreateInvoice={() => state.setShowCreateModal(true)}
                 />
 
                 {state.error && <div className="error-banner">{state.error}</div>}

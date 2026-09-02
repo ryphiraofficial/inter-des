@@ -29,7 +29,7 @@ router.post('/calculate-totals', calculateTotals);
 router.route('/:id')
     .get(getQuotation)
     .put(updateQuotation)
-    .delete(authorize('Super Admin', 'Admin'), deleteQuotation);
+    .delete(authorize('Super Admin', 'Admin', 'Sales', 'Sales Staff', 'Sales Executive', 'Sales Manager'), deleteQuotation);
 
 router.put('/:id/approve', authorize('Super Admin', 'Admin', 'Manager', 'Design Manager', 'Procurement Manager', 'Project Manager', 'Accounts Manager'), approveQuotation);
 router.get('/:id/versions', getVersionHistory);

@@ -70,70 +70,67 @@ const DesignApprovals = () => {
     if (state.loading) return <ApprovalSkeleton />;
 
     return (
-        <div className="tasks-container">
-            <div className="tasks-wrapper" style={{ maxWidth: '1600px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+            <ApprovalTabs
+                activeTab={state.activeTab}
+                setActiveTab={state.setActiveTab}
+                counts={{
+                    design: state.tasks.length,
+                    accounts: state.accountsProjects.length,
+                    procurement: state.procurementItems.length,
+                    production: state.productionProjects.length,
+                    edge_bands: state.edgeBandsCount,
+                    unlocks: unlockCount
+                }}
+            />
 
-                <ApprovalTabs
-                    activeTab={state.activeTab}
-                    setActiveTab={state.setActiveTab}
-                    counts={{
-                        design: state.tasks.length,
-                        accounts: state.accountsProjects.length,
-                        procurement: state.procurementItems.length,
-                        production: state.productionProjects.length,
-                        edge_bands: state.edgeBandsCount,
-                        unlocks: unlockCount
-                    }}
+            {state.activeTab === 'design' && (
+                <DesignPipeline
+                    tasks={state.tasks}
+                    setSelectedTask={state.setSelectedTask}
+                    setShowDesignModal={state.setShowDesignModal}
+                    openApproveModal={openApproveModal}
                 />
+            )}
 
-                {state.activeTab === 'design' && (
-                    <DesignPipeline
-                        tasks={state.tasks}
-                        setSelectedTask={state.setSelectedTask}
-                        setShowDesignModal={state.setShowDesignModal}
-                        openApproveModal={openApproveModal}
-                    />
-                )}
+            {state.activeTab === 'accounts' && (
+                <AccountsPipeline
+                    projects={state.accountsProjects}
+                    procurementManagers={state.procurementManagers}
+                    handleClearPayment={actions.handleClearPayment}
+                    approving={state.approving}
+                />
+            )}
 
-                {state.activeTab === 'accounts' && (
-                    <AccountsPipeline
-                        projects={state.accountsProjects}
-                        procurementManagers={state.procurementManagers}
-                        handleClearPayment={actions.handleClearPayment}
-                        approving={state.approving}
-                    />
-                )}
+            {state.activeTab === 'procurement' && (
+                <ProcurementPipeline
+                    procurementItems={state.procurementItems}
+                    selectedPM={state.selectedPM}
+                    setSelectedPM={state.setSelectedPM}
+                    sentToAccounts={state.sentToAccounts}
+                    setSentToAccounts={state.setSentToAccounts}
+                    productionManagers={state.productionManagers}
+                    handleProcurementApprove={actions.handleProcurementApprove}
+                    approving={state.approving}
+                />
+            )}
 
-                {state.activeTab === 'procurement' && (
-                    <ProcurementPipeline
-                        procurementItems={state.procurementItems}
-                        selectedPM={state.selectedPM}
-                        setSelectedPM={state.setSelectedPM}
-                        sentToAccounts={state.sentToAccounts}
-                        setSentToAccounts={state.setSentToAccounts}
-                        productionManagers={state.productionManagers}
-                        handleProcurementApprove={actions.handleProcurementApprove}
-                        approving={state.approving}
-                    />
-                )}
+            {state.activeTab === 'production' && (
+                <ProductionPipeline
+                    productionProjects={state.productionProjects}
+                    onApprove={actions.handleProductionApprove}
+                    onReject={actions.handleProductionReject}
+                    approving={state.approvingProduction}
+                />
+            )}
 
-                {state.activeTab === 'production' && (
-                    <ProductionPipeline
-                        productionProjects={state.productionProjects}
-                        onApprove={actions.handleProductionApprove}
-                        onReject={actions.handleProductionReject}
-                        approving={state.approvingProduction}
-                    />
-                )}
+            {state.activeTab === 'edge_bands' && (
+                <EdgeBandRequestsTab userRole="admin" />
+            )}
 
-                {state.activeTab === 'edge_bands' && (
-                    <EdgeBandRequestsTab userRole="admin" />
-                )}
-
-                {state.activeTab === 'unlocks' && (
-                    <UnlockRequestsTable />
-                )}
-            </div>
+            {state.activeTab === 'unlocks' && (
+                <UnlockRequestsTable />
+            )}
 
             {state.showDesignModal && state.selectedTask && (
                 <DesignPreviewModal

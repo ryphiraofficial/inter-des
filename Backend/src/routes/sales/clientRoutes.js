@@ -24,6 +24,6 @@ router.get('/stats', getClientStats);
 router.route('/:id')
     .get(getClient)
     .put(updateClient)
-    .delete(authorize('Super Admin', 'Admin'), deleteClient);
+    .delete(authorize('Super Admin', 'Admin', 'Sales', 'Sales Staff', 'Sales Executive', 'Sales Manager'), deleteClient);
 
 export default router;

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowDownRight, ArrowUpRight, Wallet, DollarSign, TrendingUp, BookOpen, Building2, RefreshCw, Calendar, ArrowRight } from 'lucide-react';
 import { API_BASE_URL } from '../../../config/constants';
+import { useDateFilter } from '../../../context/DateFilterContext';
 
 const AccountsDashboardV2 = ({ user }) => {
+    const { isDateInRange } = useDateFilter();
     const [stats, setStats] = useState(null);
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -34,145 +36,114 @@ const AccountsDashboardV2 = ({ user }) => {
         fetchData();
     }, []);
 
+    const filteredVouchers = useMemo(() => {
+        return vouchers.filter(v => isDateInRange(v.date || v.createdAt));
+    }, [vouchers, isDateInRange]);
+
     const cashBalance = stats?.cashBalance || 0;
-    const incoming = vouchers.filter(v => v.type === 'Receipt' && v.status === 'Posted').reduce((sum, v) => sum + (v.amount || 0), 0);
-    const outgoing = vouchers.filter(v => (v.type === 'Payment' || v.type === 'Purchase') && v.status === 'Posted').reduce((sum, v) => sum + (v.amount || 0), 0);
+    const incoming = filteredVouchers.filter(v => v.type === 'Receipt' && v.status === 'Posted').reduce((sum, v) => sum + (v.amount || 0), 0);
+    const outgoing = filteredVouchers.filter(v => (v.type === 'Payment' || v.type === 'Purchase') && v.status === 'Posted').reduce((sum, v) => sum + (v.amount || 0), 0);
     const netFlow = incoming - outgoing;
     const receivables = stats?.accountsReceivable || 0;
     const payables = stats?.accountsPayable || 0;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Header Banner */}
-            <div style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '16px',
-                padding: '1.25rem 1.5rem',
-                color: '#0f172a',
-                display: 'flex',
-                alignItems: 'center',
-                justify: 'space-between',
-                flexWrap: 'wrap',
-                gap: '1rem',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
-            }}>
-                <div>
-                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#4338ca', textTransform: 'uppercase', letterSpacing: '0.5px', background: '#e0e7ff', padding: '3px 8px', borderRadius: '6px', display: 'inline-block' }}>
-                        Executive Financial Command Center
-                    </span>
-                    <h2 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Company Cash Flow & Ledger Summary</h2>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Real-time overview of incoming revenue, outgoing payments, and company liquidity</p>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Calendar size={14} color="#6366f1" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                    </div>
-                    <button
-                        onClick={fetchData}
-                        style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s' }}
-                    >
-                        <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh
-                    </button>
-                </div>
-            </div>
-
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* 4 Major Cash Flow KPI Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
                 {/* 1. Cash Incoming */}
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Cash Incoming (Receipts)</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cash Incoming (Receipts)</span>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <ArrowDownRight size={20} />
                         </div>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#16a34a' }}>₹{incoming.toLocaleString('en-IN')}</h2>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block', fontWeight: 600 }}>Total client payments collected</span>
+                    <h2 style={{ margin: '4px 0 0', fontSize: '1.65rem', fontWeight: 800, color: '#16a34a', letterSpacing: '-0.03em' }}>₹{incoming.toLocaleString('en-IN')}</h2>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: 500 }}>Total client payments collected</span>
                 </div>
 
                 {/* 2. Cash Outgoing */}
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Cash Outgoing (Payments & Expenses)</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cash Outgoing (Payments & Expenses)</span>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fef2f2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <ArrowUpRight size={20} />
                         </div>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#dc2626' }}>₹{outgoing.toLocaleString('en-IN')}</h2>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block', fontWeight: 600 }}>Total vendor & operational payouts</span>
+                    <h2 style={{ margin: '4px 0 0', fontSize: '1.65rem', fontWeight: 800, color: '#dc2626', letterSpacing: '-0.03em' }}>₹{outgoing.toLocaleString('en-IN')}</h2>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: 500 }}>Total vendor & operational payouts</span>
                 </div>
 
                 {/* 3. Net Cash Flow */}
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Net Cash Flow (Profit Margin)</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Net Cash Flow (Profit Margin)</span>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: netFlow >= 0 ? '#eff6ff' : '#fff7ed', color: netFlow >= 0 ? '#2563eb' : '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <TrendingUp size={20} />
                         </div>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: netFlow >= 0 ? '#2563eb' : '#ea580c' }}>₹{netFlow.toLocaleString('en-IN')}</h2>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block', fontWeight: 600 }}>Net Gain (Incoming - Outgoing)</span>
+                    <h2 style={{ margin: '4px 0 0', fontSize: '1.65rem', fontWeight: 800, color: netFlow >= 0 ? '#2563eb' : '#ea580c', letterSpacing: '-0.03em' }}>₹{netFlow.toLocaleString('en-IN')}</h2>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: 500 }}>Net Gain (Incoming - Outgoing)</span>
                 </div>
 
                 {/* 4. Bank & Cash Liquidity */}
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Company Bank & Cash Liquidity</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company Bank & Cash Liquidity</span>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Wallet size={20} />
                         </div>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#0f172a' }}>₹{cashBalance.toLocaleString('en-IN')}</h2>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block', fontWeight: 600 }}>Total available money across all accounts</span>
+                    <h2 style={{ margin: '4px 0 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>₹{cashBalance.toLocaleString('en-IN')}</h2>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: 500 }}>Total available money across all accounts</span>
                 </div>
             </div>
 
             {/* Receivables & Payables Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Accounts Receivable (From Clients)</span>
-                    <h3 style={{ margin: '4px 0 0', fontSize: '1.3rem', fontWeight: 800, color: '#2563eb' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Accounts Receivable (From Clients)</span>
+                    <h3 style={{ margin: '6px 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#2563eb', letterSpacing: '-0.02em' }}>
                         ₹{Math.abs(receivables).toLocaleString('en-IN')} {receivables > 0 ? 'Dr (Owed to company)' : 'Cr (Advance collected)'}
                     </h3>
                 </div>
 
-                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Accounts Payable (To Vendors)</span>
-                    <h3 style={{ margin: '4px 0 0', fontSize: '1.3rem', fontWeight: 800, color: '#ea580c' }}>
+                <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Accounts Payable (To Vendors)</span>
+                    <h3 style={{ margin: '6px 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#ea580c', letterSpacing: '-0.02em' }}>
                         ₹{Math.abs(payables).toLocaleString('en-IN')} Cr (Owed to suppliers)
                     </h3>
                 </div>
             </div>
 
             {/* Live Cash Flow Stream (Recent Vouchers Table) */}
-            <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+            <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
                     <div>
-                        <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>Live Cash Flow Transactions Stream</h3>
-                        <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#64748b' }}>Real-time feed of all incoming receipts, vendor payments, and purchases</p>
+                        <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Live Cash Flow Transactions Stream</h3>
+                        <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>Real-time feed of all incoming receipts, vendor payments, and purchases</p>
                     </div>
                 </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
                     <thead>
-                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            <th style={{ padding: '12px 16px' }}>Date</th>
-                            <th style={{ padding: '12px 16px' }}>Voucher #</th>
-                            <th style={{ padding: '12px 16px' }}>Cash Movement</th>
-                            <th style={{ padding: '12px 16px' }}>Party / Ledger</th>
-                            <th style={{ padding: '12px 16px' }}>Bank / Account</th>
-                            <th style={{ padding: '12px 16px', textAlign: 'right' }}>Amount</th>
+                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <th style={{ padding: '10px 16px' }}>Date</th>
+                            <th style={{ padding: '10px 16px' }}>Voucher #</th>
+                            <th style={{ padding: '10px 16px' }}>Cash Movement</th>
+                            <th style={{ padding: '10px 16px' }}>Party / Ledger</th>
+                            <th style={{ padding: '10px 16px' }}>Bank / Account</th>
+                            <th style={{ padding: '10px 16px', textAlign: 'right' }}>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Loading transaction feed...</td></tr>
-                        ) : vouchers.length === 0 ? (
-                            <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No financial transactions logged yet.</td></tr>
+                        ) : filteredVouchers.length === 0 ? (
+                            <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No financial transactions found for the selected date range.</td></tr>
                         ) : (
-                            vouchers.slice(0, 10).map(v => (
+                            filteredVouchers.slice(0, 10).map(v => (
                                 <tr key={v._id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                                     <td style={{ padding: '12px 16px', color: '#475569', fontWeight: 500 }}>
                                         {new Date(v.date || v.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -182,12 +153,12 @@ const AccountsDashboardV2 = ({ user }) => {
                                     </td>
                                     <td style={{ padding: '12px 16px' }}>
                                         {v.type === 'Receipt' ? (
-                                            <span style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '3px 9px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                                <ArrowDownRight size={14} /> INCOMING (Receipt)
+                                            <span style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '3px 9px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                                <ArrowDownRight size={13} /> INCOMING (Receipt)
                                             </span>
                                         ) : (
-                                            <span style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', padding: '3px 9px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                                <ArrowUpRight size={14} /> OUTGOING ({v.type})
+                                            <span style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', padding: '3px 9px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                                <ArrowUpRight size={13} /> OUTGOING ({v.type})
                                             </span>
                                         )}
                                     </td>

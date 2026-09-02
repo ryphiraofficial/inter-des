@@ -81,13 +81,13 @@ export const GraphicalAnalysis = ({ i, stats, financialPieData, quotationPieData
     return (
         <div className="analysis-card" style={{
             background: '#ffffff',
-            borderRadius: '14px',
-            border: 'none',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
             padding: '1.25rem',
-            boxShadow: 'none',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             display: 'flex',
             flexDirection: 'column',
-            justify: 'space-between'
+            justifyContent: 'space-between'
         }}>
             <div className="analysis-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <div className="analysis-icon" style={{ backgroundColor: iconBg, color: iconColor, width: '38px', height: '38px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

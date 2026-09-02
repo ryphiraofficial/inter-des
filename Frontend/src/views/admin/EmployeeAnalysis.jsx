@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Award, BarChart2, Eye, ShieldCheck, TrendingUp, Users, Calculator } from 'lucide-react';
+import { Award, BarChart2, Eye, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { adminApi, useGetStaffAnalyticsOverviewQuery } from '../../store/api/adminApi';
 import { useToast } from '../../models/context/ToastContext';
 import StaffRewardOverview from './staff/components/StaffRewardOverview';
 import StaffAnalyticsModal from './staff/components/StaffAnalyticsModal';
-import AccountsPerformance from '../Accounts/common/AccountsPerformance';
 import './css/Staff.css';
 import './css/EmployeeAnalysis.css';
 
@@ -15,9 +14,6 @@ const EmployeeAnalysis = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
     const { data: analyticsOverview, isLoading, error } = useGetStaffAnalyticsOverviewQuery();
-    
-    // Tab State: general (Design/Production/Sales) vs accounts
-    const [departmentTab, setDepartmentTab] = useState('general');
     
     const [roleFilter, setRoleFilter] = useState('all');
     const [bandFilter, setBandFilter] = useState('all');
@@ -31,21 +27,31 @@ const EmployeeAnalysis = () => {
     }, [analytics]);
 
     const filteredAnalytics = useMemo(() => {
-        return analytics
-            .filter((staff) => roleFilter === 'all' || staff.role === roleFilter)
-            .filter((staff) => bandFilter === 'all' || staff.eligibilityBand === bandFilter)
-            .sort((a, b) => Number(b.rewardScore || 0) - Number(a.rewardScore || 0));
+        return analytics.filter((staff) => {
+            const matchesRole = roleFilter === 'all' || staff.role === roleFilter;
+            const matchesBand = bandFilter === 'all' || staff.performanceBand === bandFilter;
+            return matchesRole && matchesBand;
+        });
     }, [analytics, roleFilter, bandFilter]);
 
     const handleViewBreakdown = async (staff) => {
-        setSelectedAnalytics(null);
-        setAnalyticsLoading(true);
+        setSelectedAnalytics({
+            staffId: staff.staffId,
+            name: staff.name,
+            role: staff.role,
+            performanceBand: staff.performanceBand,
+            rewardScore: staff.rewardScore,
+            hikeRecommendation: staff.hikeRecommendation,
+            rewardRecommendation: staff.rewardRecommendation,
+        });
         setShowAnalytics(true);
+        setAnalyticsLoading(true);
+
         try {
-            const response = await dispatch(adminApi.endpoints.getStaffAnalytics.initiate(staff._id)).unwrap();
-            if (response.success) setSelectedAnalytics(response.data);
-        } catch (err) {
-            showToast('Failed to load employee analysis', 'error');
+            const result = await dispatch(adminApi.endpoints.getStaffDetailedAnalytics.initiate(staff.staffId, { forceRefetch: true })).unwrap();
+            setSelectedAnalytics(result?.data || null);
+        } catch (fetchError) {
+            showToast(fetchError?.data?.message || 'Failed to fetch detailed analytics', 'error');
         } finally {
             setAnalyticsLoading(false);
         }
@@ -61,36 +67,6 @@ const EmployeeAnalysis = () => {
 
     return (
         <div className="employee-analysis-page">
-            <div className="perf-tabs-container" style={{ marginBottom: '24px' }}>
-                <button 
-                    className={`perf-tab-btn ${departmentTab === 'general' ? 'active' : ''}`}
-                    onClick={() => setDepartmentTab('general')}
-                >
-                    <Users size={18} /> General Staff Performance
-                </button>
-                <button 
-                    className={`perf-tab-btn ${departmentTab === 'accounts' ? 'active' : ''}`}
-                    onClick={() => setDepartmentTab('accounts')}
-                >
-                    <Calculator size={18} /> Accounts Department Performance
-                </button>
-            </div>
-
-            {departmentTab === 'general' ? (
-                <>
-            <div className="employee-analysis-hero">
-                <div>
-                    <span className="employee-analysis-kicker"><ShieldCheck size={16} /> Fair Reward System</span>
-                    <h2>Employee Analysis</h2>
-                    <p>Monitor hike and reward eligibility with role-wise comparison, weighted scores, and visible evidence.</p>
-                </div>
-                <div className="employee-analysis-hero-score">
-                    <Award size={22} />
-                    <strong>{analytics.filter((staff) => Number(staff.rewardScore || 0) >= 80).length}</strong>
-                    <span>reward eligible</span>
-                </div>
-            </div>
-
             <StaffRewardOverview analytics={analytics} loading={isLoading} />
 
             <div className="analysis-rules-grid">
@@ -129,57 +105,60 @@ const EmployeeAnalysis = () => {
                     </div>
                 </div>
 
-                {error ? (
-                    <div className="employee-analysis-empty">Unable to load employee analysis right now.</div>
-                ) : isLoading ? (
-                    <div className="employee-analysis-empty">Loading employee analysis...</div>
-                ) : filteredAnalytics.length === 0 ? (
-                    <div className="employee-analysis-empty">No employees match the selected filters.</div>
+                {isLoading ? (
+                    <div className="analysis-loading-state">Loading staff performance data...</div>
+                ) : error ? (
+                    <div className="analysis-error-state">Failed to load staff performance analysis.</div>
                 ) : (
-                    <div className="employee-analysis-table-wrap">
-                        <table className="employee-analysis-table">
+                    <div className="analysis-table-wrapper">
+                        <table className="analysis-table">
                             <thead>
                                 <tr>
-                                    <th>Employee</th>
+                                    <th>Staff Member</th>
                                     <th>Role</th>
-                                    <th>Score</th>
-                                    <th>Band</th>
-                                    <th>Hike</th>
-                                    <th>Evidence</th>
-                                    <th>Action</th>
+                                    <th>Weighted Score</th>
+                                    <th>Performance Band</th>
+                                    <th>Hike Recommendation</th>
+                                    <th>Reward Action</th>
+                                    <th>Key Evidence</th>
+                                    <th className="action-col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredAnalytics.map((staff) => (
-                                    <tr key={staff._id}>
+                                    <tr key={staff.staffId}>
                                         <td>
-                                            <div className="analysis-employee-cell">
-                                                <div className="analysis-avatar">{(staff.name || staff.staffName || 'E').charAt(0).toUpperCase()}</div>
+                                            <div className="staff-cell">
+                                                <div className="staff-cell-avatar">
+                                                    {staff.name?.charAt(0)?.toUpperCase() || 'S'}
+                                                </div>
                                                 <div>
-                                                    <strong>{staff.name || staff.staffName}</strong>
-                                                    <span>{staff.status || 'Active'}</span>
+                                                    <div className="staff-cell-name">{staff.name}</div>
+                                                    <div className="staff-cell-sub">ID: {String(staff.staffId).slice(-6)}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{staff.role}</td>
+                                        <td><span className="role-tag">{staff.role || 'Staff'}</span></td>
                                         <td>
-                                            <span className={`analysis-score ${getScoreClass(Number(staff.rewardScore || 0))}`}>
+                                            <span className={`score-badge ${getScoreClass(Number(staff.rewardScore || 0))}`}>
                                                 {staff.rewardScore || 0}/100
                                             </span>
                                         </td>
                                         <td>
-                                            <span className={`analysis-band ${staff.eligibilityTone || 'watch'}`}>
-                                                {staff.eligibilityBand || 'Not Rated'}
+                                            <span className={`band-pill band-${(staff.performanceBand || 'Good').toLowerCase().replace(/\s+/g, '-')}`}>
+                                                {staff.performanceBand || 'Good'}
                                             </span>
                                         </td>
-                                        <td>{staff.hikeRecommendation || 'Review'}</td>
+                                        <td><div className="hike-val">{staff.hikeRecommendation || 'Standard (5-7%)'}</div></td>
+                                        <td><div className="reward-val">{staff.rewardRecommendation || 'None'}</div></td>
                                         <td>
-                                            <div className="analysis-evidence-mini">
-                                                <span>{staff.tasksCompleted || 0}/{staff.totalTasksAssigned || 0} tasks</span>
-                                                <span>{staff.onTimeCompletionRate || 0}% on time</span>
+                                            <div className="evidence-summary">
+                                                <span>{staff.taskSummary?.completed || 0} tasks done</span>
+                                                <span>{staff.taskSummary?.overdue || 0} overdue</span>
+                                                <span>{staff.taskSummary?.revisions || 0} revisions</span>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className="action-col">
                                             <button className="analysis-view-btn" onClick={() => handleViewBreakdown(staff)}>
                                                 <Eye size={15} />
                                                 <span>View Breakdown</span>
@@ -199,10 +178,6 @@ const EmployeeAnalysis = () => {
                 analyticsLoading={analyticsLoading}
                 selectedAnalytics={selectedAnalytics}
             />
-                </>
-            ) : (
-                <AccountsPerformance />
-            )}
         </div>
     );
 };

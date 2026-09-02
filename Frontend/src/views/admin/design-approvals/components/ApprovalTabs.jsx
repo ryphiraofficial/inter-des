@@ -3,58 +3,62 @@ import { Image as ImageIcon, Package, Wrench, LockOpen, CreditCard, Layers } fro
 
 const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
     const tabs = [
-        { key: 'design',      label: 'Design Pipeline',      icon: ImageIcon, color: '#6366f1', count: counts.design },
-        { key: 'accounts',    label: 'Accounts Pipeline',    icon: CreditCard, color: '#10b981', count: counts.accounts },
-        { key: 'procurement', label: 'Procurement Pipeline',  icon: Package,   color: '#0ea5e9', count: counts.procurement },
-        { key: 'production',  label: 'Production Pipeline',   icon: Wrench,    color: '#f59e0b', count: counts.production },
-        { key: 'edge_bands',  label: 'Edge Band Approvals',  icon: Layers,    color: '#8b5cf6', count: counts.edge_bands || 0 },
-        { key: 'unlocks',     label: 'Unlock Requests',       icon: LockOpen,  color: '#dc2626', count: counts.unlocks },
+        { key: 'design',      label: 'Design Pipeline',      icon: ImageIcon,  count: counts.design },
+        { key: 'accounts',    label: 'Accounts Pipeline',    icon: CreditCard, count: counts.accounts },
+        { key: 'procurement', label: 'Procurement Pipeline',  icon: Package,    count: counts.procurement },
+        { key: 'production',  label: 'Production Pipeline',   icon: Wrench,     count: counts.production },
+        { key: 'edge_bands',  label: 'Edge Band Approvals',  icon: Layers,     count: counts.edge_bands || 0 },
+        { key: 'unlocks',     label: 'Unlock Requests',       icon: LockOpen,   count: counts.unlocks },
     ];
 
     return (
-        <div className="approval-tabs-container" style={{ 
-            display: 'flex', 
-            gap: '0.35rem', 
-            marginBottom: '1.5rem', 
-            borderBottom: '2px solid #e2e8f0',
+        <div style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '12px',
+            padding: '6px',
+            display: 'flex',
+            gap: '6px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
             overflowX: 'auto',
-            flexWrap: 'wrap',
-            scrollbarWidth: 'none'
+            scrollbarWidth: 'none',
+            flexWrap: 'nowrap'
         }}>
-            {tabs.map(({ key, label, icon: Icon, color, count }) => {
+            {tabs.map(({ key, label, icon: Icon, count }) => {
                 const isActive = activeTab === key;
                 return (
                     <button
                         key={key}
                         onClick={() => setActiveTab(key)}
                         style={{
-                            padding: '10px 14px',
-                            background: 'none',
-                            border: 'none',
-                            borderBottom: isActive ? `3px solid ${color}` : '3px solid transparent',
-                            color: isActive ? color : '#64748b',
-                            fontWeight: 700,
-                            fontSize: '0.86rem',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '6px',
+                            gap: '8px',
+                            padding: '8px 14px',
+                            borderRadius: '8px',
+                            border: isActive ? '1px solid #bfdbfe' : '1px solid transparent',
+                            background: isActive ? '#eff6ff' : 'transparent',
+                            color: isActive ? '#2563eb' : '#64748b',
+                            fontWeight: isActive ? 700 : 500,
+                            fontSize: '0.84rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
                             whiteSpace: 'nowrap',
                             flexShrink: 0
                         }}
                     >
-                        <Icon size={16} />
-                        {label}
+                        <Icon size={16} color={isActive ? '#2563eb' : '#64748b'} />
+                        <span>{label}</span>
                         <span style={{
-                            background: isActive ? color : '#f1f5f9',
-                            color: isActive ? '#fff' : '#64748b',
-                            fontSize: '0.72rem',
+                            background: isActive ? '#2563eb' : count > 0 ? '#f1f5f9' : '#f8fafc',
+                            color: isActive ? '#ffffff' : count > 0 ? '#0f172a' : '#94a3b8',
+                            fontSize: '0.7rem',
                             fontWeight: 800,
-                            padding: '2px 7px',
+                            padding: '1px 7px',
                             borderRadius: '10px',
                             minWidth: '20px',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            lineHeight: '1.4'
                         }}>
                             {count}
                         </span>

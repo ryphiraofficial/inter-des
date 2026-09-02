@@ -39,12 +39,37 @@ const ProductionPipeline = ({ productionProjects, onApprove, onReject, approving
 
     if (productionProjects.length === 0) {
         return (
-            <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#94a3b8' }}>
-                <div style={{ width: '72px', height: '72px', background: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: '#22c55e' }}>
-                    <CheckCircle size={36} />
+            <div style={{
+                background: '#ffffff',
+                borderRadius: '12px',
+                border: '1px solid #e2e8f0',
+                padding: '4rem 2rem',
+                textAlign: 'center',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <div style={{
+                    width: '56px',
+                    height: '56px',
+                    background: '#eff6ff',
+                    color: '#2563eb',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '1rem'
+                }}>
+                    <Wrench size={28} />
                 </div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1e293b', margin: '0 0 0.5rem' }}>All Caught Up!</h3>
-                <p style={{ fontSize: '0.95rem' }}>No production projects are currently awaiting your review.</p>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0', letterSpacing: '-0.02em' }}>
+                    All Caught Up!
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '0.875rem', maxWidth: '420px', margin: '0 auto', lineHeight: '1.5' }}>
+                    No production projects are currently awaiting your review.
+                </p>
             </div>
         );
     }

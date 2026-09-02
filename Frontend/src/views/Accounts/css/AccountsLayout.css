@@ -1,6 +1,16 @@
 /* ================================================================
-   Accounts Module — Dedicated Premium Layout CSS
+   Accounts Module — Admin Unified Theme with Original Spacing
    ================================================================ */
+
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --sidebar-width: 240px;
+}
 
 /* ── Layout Shell ── */
 .accounts-layout {
@@ -8,7 +18,7 @@
     height: 100vh;
     overflow: hidden;
     background: #f8fafc;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .accounts-layout-main {
@@ -17,24 +27,97 @@
     flex-direction: column;
     overflow: hidden;
     min-width: 0;
+    height: 100vh;
 }
 
 .accounts-layout-content {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 1.5rem;
+    background-color: #f8fafc;
 }
 
-/* ── Sidebar ── */
+/* ── Sidebar Container ── */
 .accounts-sidebar {
     width: 240px;
+    height: 100vh;
     flex-shrink: 0;
-    background: #ffffff; /* Bright, clean white background */
-    border-right: 1px solid #e2e8f0; /* Soft gray border line */
+    background: #ffffff;
+    border-right: 1px solid #e8edf2;
     display: flex;
     flex-direction: column;
     padding: 0;
     overflow: hidden;
+    z-index: 1000;
+    user-select: none;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Sidebar Header ── */
+.accounts-sidebar .sidebar-header {
+    padding: 0 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    border-bottom: 1px solid #e8edf2;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.accounts-sidebar .brand-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.accounts-sidebar .brand-title {
+    font-size: 20px;
+    color: #000000;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accounts-sidebar .brand-subtitle {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin: 2px 0 0 0;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Sidebar Nav Container ── */
+.accounts-sidebar-nav-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+.accounts-sidebar-nav-container::-webkit-scrollbar {
+    width: 4px;
+}
+.accounts-sidebar-nav-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.accounts-sidebar-nav-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 
 .accounts-sidebar-nav {
@@ -48,12 +131,13 @@
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 1.5px;
-    color: #94a3b8; /* Muted gray for clean labeling */
+    color: #94a3b8;
     text-transform: uppercase;
     padding: 0.5rem 0.85rem 0.85rem;
     margin-top: 0.5rem;
 }
 
+/* ── Sidebar Nav Items (Admin Theme Colors + Previous Spacing) ── */
 .accounts-sidebar-item {
     display: flex;
     align-items: center;
@@ -63,27 +147,184 @@
     border: none;
     border-radius: 12px;
     background: transparent;
-    color: #64748b; /* Soft dark text for legibility */
+    color: #64748b;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
+    outline: none;
+    position: relative;
 }
 
-.accounts-sidebar-item:hover {
-    background: #f1f5f9; /* Soft light gray hover */
-    color: #0f172a;
+.accounts-sidebar-item:hover:not(.active) {
+    background-color: #f8fafc;
+    color: #334155;
 }
 
 .accounts-sidebar-item.active {
-    background: #eff4ff;
-    color: #4441cc;
-    font-weight: 700;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
 }
 
-.accounts-sidebar-item.active svg {
-    color: #4441cc;
+.accounts-sidebar-item.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3.5px;
+    background-color: #3b82f6;
+    border-radius: 0 4px 4px 0;
+}
+
+.accounts-sidebar-item .nav-icon,
+.accounts-sidebar-item svg:not(.nav-chevron) {
+    transition: all 0.2s;
+    flex-shrink: 0;
+    opacity: 0.8;
+    color: #64748b;
+}
+
+.accounts-sidebar-item.active .nav-icon,
+.accounts-sidebar-item.active svg:not(.nav-chevron) {
+    color: #3b82f6;
+    opacity: 1;
+}
+
+.accounts-sidebar-item .nav-chevron {
+    color: #94a3b8;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+/* Subitems (e.g. nested expenses) */
+.accounts-sidebar-subitem {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.95rem 0.55rem 2.25rem;
+    margin-top: 2px;
+    border-radius: 10px;
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.accounts-sidebar-subitem:hover:not(.active) {
+    background-color: #f8fafc;
+    color: #334155;
+}
+
+.accounts-sidebar-subitem.active {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.accounts-sidebar-subitem-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    margin-right: 10px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.accounts-sidebar-subitem.active .accounts-sidebar-subitem-dot {
+    background: #3b82f6;
+}
+
+/* ── Sidebar Footer ── */
+.accounts-sidebar .sidebar-footer {
+    padding: 1.25rem 1rem;
+    border-top: 1px solid #e8edf2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.accounts-sidebar .footer-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.accounts-sidebar .footer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #4338ca;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.accounts-sidebar .footer-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.accounts-sidebar .footer-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.accounts-sidebar .footer-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.accounts-sidebar .footer-role {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 2px 0 0 0;
+    text-transform: capitalize;
+}
+
+.accounts-sidebar .btn-logout-icon {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.accounts-sidebar .btn-logout-icon:hover {
+    background: #fee2e2;
+    color: #ef4444;
 }
 
 /* ── Top Navbar ── */
@@ -92,10 +333,18 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1.75rem;
-    height: 64px;
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e8edf2;
     flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Poppins', 'Inter', sans-serif;
     gap: 1rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
@@ -103,102 +352,61 @@
 .accounts-navbar-brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
+    height: 100%;
 }
 
-.accounts-navbar-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6); /* Blue representation */
-    color: white;
+.accounts-navbar .welcome-text {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    height: 100%;
 }
 
 .accounts-navbar-title {
-    font-size: 1rem;
-    font-weight: 800;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
     color: #1e293b;
-    display: block;
+    margin: 0;
     line-height: 1.2;
+    letter-spacing: -0.01em;
 }
 
 .accounts-navbar-pagedesc {
-    font-size: 11px;
-    color: #64748b;
-    display: block;
-    margin-top: 2px;
-    font-weight: 500;
-}
-
-/* Default Desktop Search Bar */
-.accounts-search-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 280px;
-    min-width: 180px;
-}
-.accounts-search-wrapper input {
-    width: 100%;
-    height: 38px;
-    padding: 0 16px 0 36px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 13px;
-    outline: none;
-    background: #f8fafc;
-    transition: all 0.2s;
-}
-.accounts-search-wrapper input:focus {
-    background: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-@media (max-width: 480px) {
-    .accounts-navbar-pagedesc {
-        display: none;
-    }
-    .accounts-navbar-title {
-        font-size: 0.9rem;
-    }
-}
-
-.accounts-navbar-subtitle {
-    font-size: 0.7rem;
     color: #94a3b8;
-    font-weight: 500;
-    display: block;
+    font-size: 0.7rem !important;
+    font-weight: 500 !important;
+    margin: 2px 0 0;
+    line-height: 1.4;
 }
 
 .accounts-navbar-right {
     display: flex;
     align-items: center;
     gap: 1rem;
+    height: 100%;
 }
 
 .accounts-navbar-refresh {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 0.5rem;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     color: #475569;
-    padding: 7px 15px;
-    border-radius: 9px;
-    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    height: 38px;
 }
 
 .accounts-navbar-refresh:hover {
-    background: #e2e8f0;
+    background: #f1f5f9;
     color: #0f172a;
+    border-color: #cbd5e1;
 }
 
 .accounts-navbar-refresh:disabled {
@@ -206,46 +414,87 @@
     cursor: not-allowed;
 }
 
-.accounts-navbar-user {
-    display: flex;
+.accounts-navbar .btn-primary {
+    display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+    background-color: var(--primary-color);
+    color: white;
+    height: 38px;
 }
 
-.accounts-navbar-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 800;
+.accounts-navbar .btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+/* ── Header Search Bar ── */
+.accounts-navbar .header-search-bar {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    height: 40px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.accounts-navbar .header-search-bar.collapsed {
+    width: 40px;
+    background: #f1f5f9;
+    border: 1.5px solid transparent;
+}
+
+.accounts-navbar .header-search-bar.expanded {
+    width: 260px;
+    background: white;
+    border: 1.5px solid #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.accounts-navbar .search-toggle-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    border: 2px solid #e2e8f0;
-}
-
-.accounts-navbar-userinfo {
-    display: flex;
-    flex-direction: column;
-}
-
-.accounts-navbar-name {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.2;
-}
-
-.accounts-navbar-role {
-    font-size: 0.7rem;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    background: none;
+    border: none;
+    cursor: pointer;
     color: #64748b;
-    text-transform: capitalize;
+    border-radius: 10px;
+    transition: color 0.2s;
+    flex-shrink: 0;
 }
 
-/* ── Spin animation for refresh icon ── */
+.accounts-navbar .header-search-bar.expanded .search-toggle-btn {
+    color: #6366f1;
+}
+
+.accounts-navbar .header-search-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding-right: 0.75rem;
+    font-size: 0.875rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.accounts-navbar .header-search-bar input::placeholder {
+    color: #94a3b8;
+}
+
+/* Spin animation for refresh icon */
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -254,85 +503,54 @@
     animation: spin 1s linear infinite;
 }
 
-/* ── Hamburger button — mobile only ── */
+/* ── Hamburger button (Mobile) ── */
 .accounts-hamburger {
     display: none;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    margin: 0;
+    border: none;
     border-radius: 10px;
-    color: #334155;
+    background: transparent;
+    color: #0f172a;
     cursor: pointer;
-    transition: background 0.2s;
-}
-.accounts-hamburger:hover {
-    background: #e2e8f0;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
 }
 
-/* ── Sidebar close button — mobile only ── */
+.accounts-hamburger:hover {
+    background-color: #f1f5f9;
+}
+
+/* ── Sidebar close button (Mobile) ── */
 .accounts-sidebar-close {
     display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 8px;
+    border-radius: 8px;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    color: #334155;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.accounts-sidebar-close:hover {
-    background: #e2e8f0;
+    transition: all 0.2s;
 }
 
-/* ── Mobile profile wrapper in navbar ── */
+.accounts-sidebar-close:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* ── Profile dropdown for mobile ── */
 .accounts-mobile-profile {
     display: none;
     position: relative;
 }
 
-/* Avatar trigger button */
-.accounts-mobile-avatar-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    padding: 2px;
-    cursor: pointer;
-    border-radius: 22px;
-    transition: background 0.15s;
-    outline: none;
-}
-.accounts-mobile-avatar-btn:hover,
-.accounts-mobile-avatar-btn.open {
-    background: #f1f5f9;
-}
-
-.accounts-mobile-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #e2e8f0;
-    flex-shrink: 0;
-    letter-spacing: 0.5px;
-}
-
-/* ── Dropdown panel ── */
 .accounts-profile-dropdown {
     position: absolute;
     top: calc(100% + 8px);
@@ -351,7 +569,6 @@
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* User header — name + role only, no avatar */
 .accounts-profile-dropdown-header {
     padding: 16px 18px 14px;
 }
@@ -377,19 +594,16 @@
     font-weight: 500;
 }
 
-/* Divider */
 .accounts-profile-dropdown-divider {
     height: 1px;
     background: #f1f5f9;
     margin: 0;
 }
 
-/* Menu items container */
 .accounts-profile-dropdown-menu {
     padding: 6px 0;
 }
 
-/* Individual menu item */
 .accounts-profile-menu-item {
     display: flex;
     align-items: center;
@@ -413,7 +627,6 @@
     flex-shrink: 0;
 }
 
-/* Notification count badge inside menu item */
 .accounts-profile-notif-badge {
     margin-left: auto;
     background: #3b82f6;
@@ -430,7 +643,6 @@
     line-height: 1;
 }
 
-/* Logout button */
 .accounts-profile-dropdown-logout {
     display: flex;
     align-items: center;
@@ -450,12 +662,11 @@
     background: #fef2f2;
 }
 
-/* Hide desktop bell on mobile (bell is inside profile dropdown) */
 .accounts-hide-on-mobile {
     display: flex;
 }
 
-/* ── Sidebar backdrop overlay ── */
+/* ── Sidebar Backdrop Overlay ── */
 .accounts-sidebar-overlay {
     display: none;
     position: fixed;
@@ -470,107 +681,89 @@
     to   { opacity: 1; }
 }
 
-/* ── Responsive breakpoints ── */
+/* ── Mobile Responsive Breakpoints ── */
 @media (max-width: 768px) {
-    /* Sidebar: hidden by default, slides in when open */
     .accounts-sidebar {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100dvh;
-        z-index: 999;
+        height: 100vh;
+        z-index: 1000;
         transform: translateX(-100%);
-        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: none;
-        width: 260px;
+        width: min(82vw, 320px) !important;
+        border-right: 1px solid #e2e8f0 !important;
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .accounts-sidebar--open {
+    
+    .accounts-sidebar.accounts-sidebar--open,
+    .accounts-sidebar.open {
         transform: translateX(0);
-        box-shadow: 4px 0 24px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.2);
     }
 
-    /* Show overlay on mobile */
     .accounts-sidebar-overlay {
         display: block;
     }
 
-    /* Show hamburger & close btn on mobile */
+    .accounts-sidebar .sidebar-header {
+        height: 72px !important;
+        min-height: 72px !important;
+        padding: 0 1rem;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .accounts-sidebar-item {
+        margin: 0;
+        padding: 0.78rem 0.9rem;
+        border-radius: 12px;
+        font-size: 0.92rem;
+    }
+
+    .accounts-sidebar-item.active {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        color: #1e3a8a;
+        box-shadow: 0 6px 14px rgba(59, 130, 246, 0.16);
+    }
+
+    .accounts-sidebar-item.active::after {
+        left: 0;
+        top: 20%;
+        height: 60%;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+    }
+
+    .accounts-sidebar .sidebar-footer {
+        padding: 1rem;
+        border-top: 1px solid #edf2f7;
+        background: #fcfdff;
+    }
+
     .accounts-hamburger {
-        display: flex;
+        display: flex !important;
     }
     .accounts-sidebar-close {
-        display: flex;
+        display: flex !important;
     }
-
-    /* Show profile dropdown in navbar on mobile */
     .accounts-mobile-profile {
-        display: flex;
+        display: flex !important;
         align-items: center;
     }
-
-    /* Hide desktop notification bell on mobile (it's inside the profile dropdown) */
     .accounts-hide-on-mobile {
         display: none !important;
     }
 
-    /* Navbar: tighter padding on mobile */
     .accounts-navbar {
-        padding: 0 1rem;
-        gap: 0.5rem;
+        padding: 0 14px !important;
+        height: 64px !important;
+        min-height: 64px !important;
     }
 
-    /* Click-to-expand search bar on mobile screens */
-    .accounts-search-wrapper {
-        display: flex;
-        min-width: 0;
-        width: 38px; /* Just enough for the icon */
-        height: 38px;
-        background: transparent;
-        border-radius: 20px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-        cursor: pointer;
-    }
-
-    .accounts-search-wrapper.expanded {
-        flex-grow: 1; /* Expands to fill available space */
-        width: auto;
-        background: #f8fafc;
-        cursor: text;
-    }
-
-    .accounts-search-wrapper input {
-        opacity: 0;
-        padding-left: 36px !important; /* Keep space for absolute icon */
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        transition: opacity 0.2s;
-        width: 100%;
-    }
-
-    .accounts-search-wrapper.expanded input {
-        opacity: 1;
-    }
-
-    /* When search is expanded on mobile, hide the brand (hamburger + title) so search can fill space */
-    .accounts-navbar.search-expanded .accounts-navbar-brand {
-        display: none;
-    }
-
-    .accounts-navbar.search-expanded .accounts-navbar-right {
-        width: 100%;
-        justify-content: flex-end;
-    }
-
-    /* Hide export label text on mobile */
     .accounts-btn-label {
         display: none;
-    }
-
-    /* Make main content fill full width */
-    .accounts-layout-main {
-        width: 100%;
     }
 
     .accounts-layout-content {
@@ -578,15 +771,6 @@
     }
 }
 
-/* Make search bar slightly larger on medium screens */
-@media (min-width: 480px) and (max-width: 768px) {
-    .accounts-search-wrapper.expanded {
-        width: auto;
-        flex-grow: 1;
-    }
-}
-
-/* Show button labels on desktop */
 @media (min-width: 769px) {
     .accounts-hamburger {
         display: none !important;
@@ -602,90 +786,7 @@
     }
 }
 
-/* ── Sidebar Sticky Footer & Logout blocks ── */
-.accounts-sidebar-nav-container {
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 1.5rem;
-}
-
-.accounts-sidebar-footer {
-    border-top: 1px solid #e2e8f0;
-    padding: 1.25rem 1rem;
-    background: #f8fafc; /* Subtle contrast background for profile section */
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-
-.accounts-sidebar-user-block {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.accounts-sidebar-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.accounts-sidebar-user-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.accounts-sidebar-user-name {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.accounts-sidebar-user-role {
-    font-size: 0.65rem;
-    color: #64748b;
-    text-transform: capitalize;
-}
-
-.accounts-sidebar-logout-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.65rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #ffffff;
-    color: #ef4444; /* Clean premium warning red */
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.accounts-sidebar-logout-btn:hover {
-    background: #fef2f2;
-    border-color: #fca5a5;
-    color: #b91c1c;
-}
-
-/* ── Premium Buttons & Dropdowns in Tables ── */
+/* ── Common Helper Utilities for Tables & Forms ── */
 .btn-outline-sm {
     display: inline-flex;
     align-items: center;
@@ -771,4 +872,3 @@
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-
