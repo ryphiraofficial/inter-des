@@ -253,17 +253,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tableColIdxHeader: { width: '6%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
-  tableColDescHeader: { width: '36%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
+  tableColDescHeader: { width: '34%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
   tableColDimHeader: { width: '18%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
   tableColRateHeader: { width: '14%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'right' },
-  tableColQtyHeader: { width: '10%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
+  tableColQtyHeader: { width: '12%', padding: 6, fontSize: 8.5, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
   tableColTotalHeader: { width: '16%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'right' },
 
   tableColIdx: { width: '6%', padding: 6, fontSize: 8.5, textAlign: 'left' },
-  tableColDesc: { width: '36%', padding: 6 },
+  tableColDesc: { width: '34%', padding: 6 },
   tableColDim: { width: '18%', padding: 6, fontSize: 8, textAlign: 'center', color: '#4f46e5' },
   tableColRate: { width: '14%', padding: 6, fontSize: 8.5, textAlign: 'right' },
-  tableColQty: { width: '10%', padding: 6, fontSize: 8.5, textAlign: 'center' },
+  tableColQty: { width: '12%', padding: 6, fontSize: 8.5, textAlign: 'center' },
   tableColTotal: { width: '16%', padding: 6, fontSize: 8.5, textAlign: 'right' },
 
   tableSectionText: {
@@ -593,7 +593,7 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
               <Text style={styles.tableColDescHeader}>Item Description</Text>
               <Text style={styles.tableColDimHeader}>Dimensions</Text>
               <Text style={styles.tableColRateHeader}>Price</Text>
-              <Text style={styles.tableColQtyHeader}>Qty</Text>
+              <Text style={styles.tableColQtyHeader}>SQFT/Qty</Text>
               <Text style={styles.tableColTotalHeader}>Total</Text>
             </View>
 

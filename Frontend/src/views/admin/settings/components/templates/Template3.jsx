@@ -136,7 +136,7 @@ const Template3 = ({ quotation, calc, settings }) => {
                             <th>No</th>
                             <th>Description</th>
                             <th>Dimensions</th>
-                            <th>Qty</th>
+                            <th>SQFT/Qty</th>
                             <th>Rate</th>
                             <th>Amount</th>
                         </tr>

@@ -118,7 +118,7 @@ const Template4 = ({ quotation, calc, settings }) => {
                             <th className="green-th">Product Description</th>
                             <th className="green-th">Dimensions</th>
                             <th className="navy-th">Rate</th>
-                            <th className="navy-th">Qty.</th>
+                            <th className="navy-th">SQFT/Qty</th>
                             <th className="navy-th">Total</th>
                         </tr>
                     </thead>
