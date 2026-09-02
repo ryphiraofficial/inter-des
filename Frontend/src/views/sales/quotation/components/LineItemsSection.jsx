@@ -179,6 +179,17 @@ const LineItemsSection = ({
                                         />
                                     );
                                 })}
+                                <div style={{ padding: '0.75rem 1.25rem', background: '#fcfcfd', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => addLineItem(section)}
+                                        style={{ background: 'transparent', border: '1px dashed #cbd5e1', padding: '6px 16px', borderRadius: '6px', color: '#64748b', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#475569'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#64748b'; }}
+                                    >
+                                        <Plus size={14} /> Add Item to {section}
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{

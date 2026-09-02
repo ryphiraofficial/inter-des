@@ -34,12 +34,12 @@ export const useQuotationState = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const addLineItem = () => {
+    const addLineItem = (section = 'Uncategorized') => {
         const newItem = {
             id: Date.now() + Math.random(),
             name: '',
             description: '',
-            section: 'Uncategorized',
+            section: section,
             finishBrand: '',
             materialOrigin: '',
             size: '',
