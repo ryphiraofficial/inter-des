@@ -45,26 +45,27 @@ const AccountsDashboardV2 = ({ user }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* Header Banner */}
             <div style={{
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 80%, #3b82f6 100%)',
                 borderRadius: '16px', padding: '1.5rem 1.75rem', color: '#ffffff',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
-                boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)'
+                boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.15)'
             }}>
                 <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#bfdbfe', textTransform: 'uppercase', letterSpacing: '1px', background: 'rgba(255, 255, 255, 0.15)', padding: '3px 8px', borderRadius: '6px', display: 'inline-block' }}>
                         Executive Financial Command Center
                     </span>
-                    <h2 style={{ margin: '4px 0 0', fontSize: '1.5rem', fontWeight: 800 }}>Company Cash Flow & Ledger Summary</h2>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.825rem', color: '#94a3b8' }}>Real-time overview of incoming revenue, outgoing payments, and company liquidity</p>
+                    <h2 style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#ffffff' }}>Company Cash Flow & Ledger Summary</h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#e0f2fe', fontWeight: 500 }}>Real-time overview of incoming revenue, outgoing payments, and company liquidity</p>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Calendar size={14} color="#38bdf8" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    <div style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(4px)', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.25)' }}>
+                        <Calendar size={14} color="#bfdbfe" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </div>
                     <button
                         onClick={fetchData}
-                        style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}
+                        style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.2)', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, backdropFilter: 'blur(4px)', transition: 'all 0.15s' }}
                     >
                         <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh
                     </button>
