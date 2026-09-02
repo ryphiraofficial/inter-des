@@ -36,7 +36,7 @@ const ClientTable = ({
                                     <td className="client-name-cell">
                                         <div className="client-profile">
                                             <div className="client-avatar">{client.name.charAt(0)}</div>
-                                            <span>{client.name}</span>
+                                            <span className="client-name-text">{client.name}</span>
                                         </div>
                                     </td>
                                     <td className="client-project-name">{client.projectName || '—'}</td>
