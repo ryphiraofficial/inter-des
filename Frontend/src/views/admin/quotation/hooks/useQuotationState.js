@@ -88,11 +88,11 @@ export const useQuotationState = () => {
         });
     };
 
-    const createNewItem = () => ({
+    const createNewItem = (section = 'Uncategorized') => ({
         id: Date.now() + Math.random(),
         name: '',
         description: '',
-        section: 'Uncategorized',
+        section: section,
         finishBrand: '',
         materialOrigin: '',
         size: '',
@@ -106,7 +106,7 @@ export const useQuotationState = () => {
         image: null
     });
 
-    const addLineItem = () => setLineItems(prev => [createNewItem(), ...prev]);
+    const addLineItem = (section = 'Uncategorized') => setLineItems(prev => [createNewItem(section), ...prev]);
     const removeLineItem = (id) => setLineItems(prev => prev.filter(item => item.id !== id));
 
     return {
