@@ -96,14 +96,22 @@ const Tasks = ({ isStaff, user }) => {
     return (
         <div className={`tasks-container ${isStaff ? 'staff-view' : ''}`}>
             <div className="tasks-wrapper">
-                <TasksStatsGrid 
-                    tasks={state.tasks} 
-                    filterStatus={state.filterStatus} 
-                    setFilterStatus={state.setFilterStatus} 
-                />
+                <TasksStatsGrid tasks={state.tasks} />
 
                 <div className="tasks-controls">
-                    <div className="tasks-filter-group">
+                    <div className="tasks-filter-group" style={{ display: 'flex', gap: '0.75rem', width: '100%', flexWrap: 'wrap' }}>
+                        <CustomSelect
+                            options={[
+                                { value: 'All', label: 'All Statuses' },
+                                { value: 'To Do', label: 'To Do' },
+                                { value: 'In Progress', label: 'In Progress' },
+                                { value: 'Pending Admin Review', label: 'Design Approvals' },
+                                { value: 'Completed', label: 'Completed' }
+                            ]}
+                            value={state.filterStatus}
+                            onChange={(e) => state.setFilterStatus(e.target.value)}
+                            searchable={false}
+                        />
                         <CustomSelect
                             options={[
                                 { value: 'All', label: 'All Priority' },

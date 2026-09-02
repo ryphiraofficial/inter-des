@@ -1,13 +1,13 @@
 import React from 'react';
 import { Loader, Plus, Calendar, Image as ImageIcon, CheckCircle } from 'lucide-react';
 
-const TasksStatsGrid = ({ tasks, filterStatus, setFilterStatus }) => {
+const TasksStatsGrid = ({ tasks }) => {
     const statsCards = [
-        { label: 'Total Tasks', value: tasks.length, color: 'purple', icon: <Loader size={20} />, status: 'All' },
-        { label: 'To Do', value: tasks.filter(t => t.status === 'To Do').length, color: 'orange', icon: <Plus size={20} />, status: 'To Do' },
-        { label: 'In Progress', value: tasks.filter(t => t.status === 'In Progress').length, color: 'blue', icon: <Calendar size={20} />, status: 'In Progress' },
-        { label: 'Design Approvals', value: tasks.filter(t => t.status === 'Pending Admin Review').length, color: 'indigo', icon: <ImageIcon size={20} />, status: 'Pending Admin Review' },
-        { label: 'Completed', value: tasks.filter(t => t.status === 'Completed').length, color: 'green', icon: <CheckCircle size={20} />, status: 'Completed' },
+        { label: 'Total Tasks', value: tasks.length, color: '#a855f7', bg: '#faf5ff', icon: <Loader size={18} /> },
+        { label: 'To Do', value: tasks.filter(t => t.status === 'To Do').length, color: '#f97316', bg: '#fff7ed', icon: <Plus size={18} /> },
+        { label: 'In Progress', value: tasks.filter(t => t.status === 'In Progress').length, color: '#3b82f6', bg: '#eff6ff', icon: <Calendar size={18} /> },
+        { label: 'Design Approvals', value: tasks.filter(t => t.status === 'Pending Admin Review').length, color: '#6366f1', bg: '#eef2ff', icon: <ImageIcon size={18} /> },
+        { label: 'Completed', value: tasks.filter(t => t.status === 'Completed').length, color: '#16a34a', bg: '#f0fdf4', icon: <CheckCircle size={18} /> },
     ];
 
     return (
@@ -15,17 +15,28 @@ const TasksStatsGrid = ({ tasks, filterStatus, setFilterStatus }) => {
             {statsCards.map((stat, i) => (
                 <div
                     key={i}
-                    className={`tasks-stat-card stat-${stat.color} ${filterStatus === stat.status ? 'selected' : ''}`}
-                    onClick={() => setFilterStatus(stat.status)}
-                    style={{ cursor: 'pointer' }}
+                    style={{
+                        background: '#ffffff',
+                        borderRadius: '14px',
+                        border: 'none',
+                        boxShadow: 'none',
+                        padding: '1.25rem 1.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justify: 'space-between'
+                    }}
                 >
-                    <div className="stat-content">
-                        <span className="stat-value">{stat.value}</span>
-                        <span className="stat-label">{stat.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <h3 style={{ fontSize: '0.78rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
+                            {stat.label}
+                        </h3>
+                        <div style={{ backgroundColor: stat.bg, color: stat.color, width: '38px', height: '38px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            {stat.icon}
+                        </div>
                     </div>
-                    <div className="stat-icon-box">
-                        {stat.icon}
-                    </div>
+                    <span style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em', marginTop: '2px' }}>
+                        {stat.value}
+                    </span>
                 </div>
             ))}
         </div>
