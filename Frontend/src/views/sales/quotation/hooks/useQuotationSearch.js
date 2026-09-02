@@ -52,7 +52,7 @@ export const useQuotationSearch = ({
                 ...li,
                 name: item.itemName,
                 description: item.description || '',
-                section: item.section || li.section || 'Uncategorized',
+                section: (li.section && li.section !== 'Uncategorized') ? li.section : (item.section || 'Uncategorized'),
                 finishBrand: item.finish || '',
                 materialOrigin: item.material || '',
                 size: item.size || '',

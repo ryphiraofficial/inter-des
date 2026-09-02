@@ -49,9 +49,11 @@ const Template2 = ({ quotation, calc, settings }) => {
                 <div>
                     <div className="address-block-title">Invoice To</div>
                     <div className="client-name">{q.client?.name || 'N/A'}</div>
-                    <div className="address-details" style={{ whiteSpace: 'pre-line' }}>
-                        {q.client?.address || 'N/A'}
-                    </div>
+                    {(q.client?.address || q.client?.siteAddress || q.client?.billingAddress) && (
+                        <div className="address-details" style={{ whiteSpace: 'pre-line' }}>
+                            {q.client?.address || q.client?.siteAddress || q.client?.billingAddress}
+                        </div>
+                    )}
                     {q.client?.phone && <div className="address-phone">{q.client.phone}</div>}
                 </div>
                 

@@ -37,7 +37,7 @@ export const getQuotations = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const quotations = await Quotation.find(query)
-            .populate('client', 'name email phone')
+            .populate('client', 'name email phone address siteAddress billingAddress')
             .populate('createdBy', 'fullName email')
             .populate('approvedBy', 'fullName')
             .sort({ createdAt: -1 })

@@ -57,9 +57,11 @@ const Template1 = ({ quotation, calc, settings }) => {
                     <div className="address-text" style={{ fontWeight: 700 }}>
                         {q.client?.name || 'N/A'}
                     </div>
-                    <div className="address-text" style={{ whiteSpace: 'pre-line' }}>
-                        {q.client?.address || 'N/A'}
-                    </div>
+                    {(q.client?.address || q.client?.siteAddress || q.client?.billingAddress) && (
+                        <div className="address-text" style={{ whiteSpace: 'pre-line' }}>
+                            {q.client?.address || q.client?.siteAddress || q.client?.billingAddress}
+                        </div>
+                    )}
                 </div>
             </div>
 

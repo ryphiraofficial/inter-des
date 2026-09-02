@@ -91,10 +91,10 @@ const Template4 = ({ quotation, calc, settings }) => {
                         <div className="address-header">Quotation To:</div>
                         <div className="address-name">{q.client?.name || 'N/A'}</div>
                         <div className="address-details">
-                            {q.client?.address && <>{q.client.address}<br/></>}
+                            {(q.client?.address || q.client?.siteAddress || q.client?.billingAddress) && <>{q.client.address || q.client.siteAddress || q.client.billingAddress}<br/></>}
                             {q.client?.phone && <>Phone: {q.client.phone}<br/></>}
                             {q.client?.email && <>Email: {q.client.email}</>}
-                            {!q.client?.address && !q.client?.phone && !q.client?.email && <>N/A</>}
+                            {!q.client?.address && !q.client?.siteAddress && !q.client?.billingAddress && !q.client?.phone && !q.client?.email && <>N/A</>}
                         </div>
                     </div>
 

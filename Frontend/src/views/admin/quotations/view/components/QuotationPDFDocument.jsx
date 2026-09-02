@@ -453,7 +453,7 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
   const clientName = q.client?.name || 'N/A';
   const clientPhone = q.client?.phone || '';
   const clientEmail = q.client?.email || '';
-  const clientAddress = q.client?.address || 'N/A';
+  const clientAddress = q.client?.address || q.client?.siteAddress || q.client?.billingAddress || '';
   const qNum = q.quotationNumber || 'N/A';
   const projectName = q.projectName || 'Interior Design Project';
 

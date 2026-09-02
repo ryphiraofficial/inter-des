@@ -80,7 +80,7 @@ const Template3 = ({ quotation, calc, settings }) => {
                             </div>
                         )}
 
-                        {q.client?.address && (
+                        {(q.client?.address || q.client?.siteAddress || q.client?.billingAddress) && (
                             <div className="contact-item">
                                 <span className="contact-icon">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -88,7 +88,7 @@ const Template3 = ({ quotation, calc, settings }) => {
                                         <circle cx="12" cy="10" r="3"/>
                                     </svg>
                                 </span>
-                                <span>{q.client.address}</span>
+                                <span>{q.client.address || q.client.siteAddress || q.client.billingAddress}</span>
                             </div>
                         )}
 
