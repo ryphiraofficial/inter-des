@@ -8,6 +8,8 @@ import { getRolePermissions } from './hooks/useRoleDashboard';
 import { useAppSelector } from '../../store/hooks';
 import { selectUser } from '../../store/slices/authSlice';
 
+import { useGetSettingsQuery } from '../../store/api/adminApi';
+import { downloadQuotationPDF } from '../../utils/quotationPdfDownload';
 import QuotationTabs from './quotations/list/components/QuotationTabs';
 import QuotationTable from './quotations/list/components/QuotationTable';
 import ApproveQuotationModal from './quotations/list/components/ApproveQuotationModal';
@@ -19,10 +21,12 @@ import './css/Quotations.css';
 const Quotations = ({ isStaff }) => {
     const user = useAppSelector(selectUser);
     const state = useQuotationListState();
+    const { data: settingsRes } = useGetSettingsQuery();
     const [selectedQuotation, setSelectedQuotation] = useState(null);
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [quotationToDelete, setQuotationToDelete] = useState(null);
+    const [downloadingId, setDownloadingId] = useState(null);
     
     const { fetchQuotations } = useQuotationListData({
         setQuotations: state.setQuotations,
@@ -38,6 +42,17 @@ const Quotations = ({ isStaff }) => {
         setExpandedRow: state.setExpandedRow,
         expandedRow: state.expandedRow
     });
+
+    const handleDownloadQuotation = async (quotation) => {
+        try {
+            setDownloadingId(quotation._id);
+            await downloadQuotationPDF(quotation, settingsRes?.data);
+        } catch (err) {
+            console.error('Download quotation PDF error:', err);
+        } finally {
+            setDownloadingId(null);
+        }
+    };
 
     const triggerApprovalModal = (quotation) => {
         setSelectedQuotation(quotation);
@@ -151,6 +166,8 @@ const Quotations = ({ isStaff }) => {
                         toggleRow={actions.toggleRow}
                         handleApprove={triggerApprovalModal}
                         handleDelete={triggerDeleteModal}
+                        handleDownload={handleDownloadQuotation}
+                        downloadingId={downloadingId}
                         isStaff={isStaff}
                         canApprove={canApprove}
                         submitting={state.submitting}

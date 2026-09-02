@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Edit, CheckCircle, Trash2, ChevronDown } from 'lucide-react';
+import { Eye, Edit, Download, CheckCircle, Trash2, ChevronDown, Loader } from 'lucide-react';
 
 const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
@@ -11,7 +11,18 @@ const getStatusClass = (status) => {
     }
 };
 
-const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, handleDelete, isStaff, canApprove, submitting }) => {
+const QuotationTable = ({ 
+    quotations, 
+    expandedRow, 
+    toggleRow, 
+    handleApprove, 
+    handleDelete, 
+    handleDownload,
+    downloadingId,
+    isStaff, 
+    canApprove, 
+    submitting 
+}) => {
     return (
         <div className="quotations-table-container">
             <table className="quotations-table">
@@ -32,6 +43,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                     {quotations.map((q, index) => {
                         const viewUrl = isStaff ? `/staff/quotations/view/${q._id}` : `/quotations/view/${q._id}`;
                         const editUrl = isStaff ? `/staff/quotations/edit/${q._id}` : `/quotations/edit/${q._id}`;
+                        const isDownloading = downloadingId === q._id;
 
                         return (
                             <React.Fragment key={q._id}>
@@ -73,8 +85,23 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                                             <Link to={editUrl} className="btn-icon edit" title="Edit" style={{ color: '#0ea5e9' }}>
                                                 <Edit size={18} />
                                             </Link>
+                                            <button
+                                                type="button"
+                                                className="btn-icon download"
+                                                onClick={(e) => { e.stopPropagation(); handleDownload && handleDownload(q); }}
+                                                disabled={isDownloading}
+                                                title="Download PDF"
+                                                style={{ color: '#2563eb' }}
+                                            >
+                                                {isDownloading ? (
+                                                    <Loader size={18} className="spin-animate" />
+                                                ) : (
+                                                    <Download size={18} />
+                                                )}
+                                            </button>
                                             {!isStaff && canApprove && q.status === 'Under Review' && (
                                                 <button
+                                                    type="button"
                                                     className="btn-icon approve"
                                                     onClick={(e) => { e.stopPropagation(); handleApprove(q); }}
                                                     disabled={submitting}
@@ -84,6 +111,7 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                                                 </button>
                                             )}
                                             <button
+                                                type="button"
                                                 className="btn-icon delete"
                                                 onClick={(e) => { e.stopPropagation(); handleDelete(q._id); }}
                                                 disabled={submitting}
@@ -144,12 +172,22 @@ const QuotationTable = ({ quotations, expandedRow, toggleRow, handleApprove, han
                                                         <Edit size={16} />
                                                         Edit Quotation
                                                     </Link>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-mobile-action"
+                                                        style={{ background: '#eff6ff', color: '#2563eb' }}
+                                                        onClick={() => handleDownload && handleDownload(q)}
+                                                        disabled={isDownloading}
+                                                    >
+                                                        <Download size={16} />
+                                                        {isDownloading ? 'Generating PDF...' : 'Download PDF'}
+                                                    </button>
                                                     {!isStaff && canApprove && q.status === 'Under Review' && (
-                                                        <button className="btn-mobile-action success" onClick={() => handleApprove(q)} disabled={submitting}>
+                                                        <button type="button" className="btn-mobile-action success" onClick={() => handleApprove(q)} disabled={submitting}>
                                                             <CheckCircle size={16} /> Approve Quotation
                                                         </button>
                                                     )}
-                                                    <button className="btn-mobile-action danger" onClick={() => handleDelete(q._id)} disabled={submitting}>
+                                                    <button type="button" className="btn-mobile-action danger" onClick={() => handleDelete(q._id)} disabled={submitting}>
                                                         <Trash2 size={16} /> Delete Quotation
                                                     </button>
                                                 </div>

@@ -276,6 +276,16 @@
     border-color: #6366f1;
 }
 
+.btn-icon.edit:hover {
+    color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+.btn-icon.download:hover {
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
 .btn-icon.approve:hover {
     color: #10b981;
     border-color: #10b981;
@@ -284,6 +294,15 @@
 .btn-icon.delete:hover {
     color: #ef4444;
     border-color: #ef4444;
+}
+
+.spin-animate {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Empty State */
