@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Download, CheckCircle, Trash2, ChevronDown, FileText, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Download, CheckCircle, Trash2, ChevronDown, FileText, ChevronLeft, ChevronRight, Eye, Printer } from 'lucide-react';
 import { TableSkeleton } from '../../../components/UI/Skeleton';
 
 const InvoiceTable = ({ 
-    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload, onView 
+    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload, onView, onPrint 
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
@@ -67,6 +67,7 @@ const InvoiceTable = ({
                                 <td className="desktop-hide">
                                     <div className="invoice-actions">
                                         <button className="btn-inv-action primary" title="View" onClick={(e) => { e.stopPropagation(); onView && onView(inv); }}><Eye size={16} /></button>
+                                        <button className="btn-inv-action primary" title="Print" onClick={(e) => { e.stopPropagation(); onPrint ? onPrint(inv) : (onView && onView(inv)); }}><Printer size={16} /></button>
                                         <button className="btn-inv-action primary" title="Download" onClick={(e) => { e.stopPropagation(); onDownload && onDownload(inv); }}><Download size={16} /></button>
                                         {inv.status !== 'Paid' && (
                                             <button className="btn-inv-action success" title="Mark Paid" onClick={(e) => { e.stopPropagation(); handleUpdatePayment(inv._id, inv.grandTotal - (inv.amountPaid || 0)); }}><CheckCircle size={16} /></button>

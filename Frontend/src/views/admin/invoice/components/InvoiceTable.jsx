@@ -1,9 +1,9 @@
 import React from 'react';
-import { Eye, Download, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-react';
+import { Eye, Download, Printer, CheckCircle, Trash2, ChevronDown, FileText } from 'lucide-react';
 import { TableSkeleton } from '../../components/Skeleton';
 
 const InvoiceTable = ({ 
-    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload, onView
+    invoices, loading, expandedRow, toggleRow, handleUpdatePayment, handleDelete, onDownload, onView, onPrint
 }) => {
     if (loading) {
         return <TableSkeleton rows={10} cols={6} />;
@@ -65,6 +65,7 @@ const InvoiceTable = ({
                             <td className="desktop-hide">
                                 <div className="invoice-actions">
                                     <button className="btn-inv-action view" title="View" onClick={(e) => { e.stopPropagation(); onView && onView(inv); }}><Eye size={16} /></button>
+                                    <button className="btn-inv-action primary" title="Print" onClick={(e) => { e.stopPropagation(); onPrint ? onPrint(inv) : (onView && onView(inv)); }}><Printer size={16} /></button>
                                     <button className="btn-inv-action primary" title="Download" onClick={(e) => { e.stopPropagation(); onDownload && onDownload(inv); }}><Download size={16} /></button>
                                     {inv.status !== 'Paid' && (
                                         <button

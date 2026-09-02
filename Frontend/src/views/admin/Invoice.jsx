@@ -49,6 +49,13 @@ const Invoice = () => {
         setViewingInvoice(invoice);
     };
 
+    const handlePrint = (invoice) => {
+        setViewingInvoice(invoice);
+        setTimeout(() => {
+            window.print();
+        }, 200);
+    };
+
     useEffect(() => {
         if (downloadingInvoice && invoiceRef.current) {
             const generatePdf = async () => {
@@ -120,6 +127,7 @@ const Invoice = () => {
                         handleDelete={actions.handleDelete}
                         onDownload={handleDownload}
                         onView={handleView}
+                        onPrint={handlePrint}
                     />
                 </div>
             </div>
@@ -138,6 +146,7 @@ const Invoice = () => {
                 invoice={viewingInvoice} 
                 onClose={() => setViewingInvoice(null)} 
                 onDownload={handleDownload}
+                onPrint={handlePrint}
             />
 
             {/* Hidden template for PDF generation */}
