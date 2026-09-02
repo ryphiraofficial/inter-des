@@ -1,47 +1,48 @@
 import React from 'react';
+import { TrendingUp, DollarSign, FileText, Package, ShoppingCart, Users, Calendar, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    FileText, Package, Users, TrendingUp, DollarSign, 
-    ShoppingCart, RefreshCw, Calendar, ShieldCheck
-} from 'lucide-react';
 
+// Hooks
 import { useDashboardState } from './dashboard/hooks/useDashboardState';
 import { useDashboardData } from './dashboard/hooks/useDashboardData';
 
+// Components
 import KPICard from './dashboard/components/KPICard';
 import RevenueCard from './dashboard/components/RevenueCard';
-import { GraphicalAnalysis, TrendCharts } from './dashboard/components/DashboardCharts';
 import ApprovalAlert from './dashboard/components/ApprovalAlert';
-import { StatsSkeleton } from './components/Skeleton';
+import { GraphicalAnalysis, TrendCharts } from './dashboard/components/DashboardCharts';
+import Skeleton from './components/Skeleton';
 
 import './css/Dashboard.css';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../store/slices/authSlice';
 
-const Dashboard = () => {
+const Dashboard = ({ }) => {
+    const user = useAppSelector(selectUser);
     const navigate = useNavigate();
     const state = useDashboardState();
-    
+
     const { fetchDashboardData } = useDashboardData({
-        setStats: state.setStats,
-        setRevenueData: state.setRevenueData,
-        setQuotationData: state.setQuotationData,
-        setPoStats: state.setPoStats,
-        setLoading: state.setLoading,
-        setError: state.setError
+        setStats: state.setStats, setPoStats: state.setPoStats,
+        setRevenueData: state.setRevenueData, setQuotationData: state.setQuotationData,
+        setLoading: state.setLoading, setError: state.setError
     });
 
-    const sparkData = [20, 35, 25, 45, 30, 55, 40, 60, 50, 75];
+    const sparkData = [
+        { value: 40 }, { value: 35 }, { value: 55 }, { value: 45 }, { value: 60 }, { value: 50 }, { value: 75 }
+    ];
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            maximumFractionDigits: 0
-        }).format(amount || 0);
+        if (!amount) return '₹0';
+        if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)}L`;
+        if (amount >= 1000) return `₹${(amount / 1000).toFixed(1)}K`;
+        return `₹${amount.toLocaleString()}`;
     };
 
+    // Prepare Pie Data
     const financialPieData = state.stats ? [
-        { name: 'Collected (Realized)', value: state.stats.revenue.approved || 0, color: '#10b981' },
-        { name: 'Pending Collection', value: state.stats.revenue.pending || 0, color: '#f59e0b' }
+        { name: 'Generated (Approved)', value: state.stats.revenue.approved || 0, color: '#10b981' },
+        { name: 'Pending (Potential)', value: state.stats.revenue.potential || 0, color: '#3b82f6' }
     ] : [];
 
     const quotationPieData = state.stats ? [
@@ -58,7 +59,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard-wrapper">
             <div className="dashboard-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                
+
                 {/* Executive Clean Header Bar */}
                 <div style={{
                     background: '#ffffff',
@@ -73,16 +74,8 @@ const Dashboard = () => {
                     boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
                 }}>
                     <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ background: '#e0e7ff', color: '#4338ca', fontSize: '0.7rem', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Executive Control Panel
-                            </span>
-                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <ShieldCheck size={14} color="#10b981" /> System Operational
-                            </span>
-                        </div>
-                        <h1 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-                            Business Performance & Operations Overview
+                        <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                            Dashboard Overview
                         </h1>
                     </div>
 
@@ -101,10 +94,10 @@ const Dashboard = () => {
 
                 {state.error && <div className="error-banner"><span>Failed to load data: {state.error}</span></div>}
 
-                <ApprovalAlert 
-                    count={state.stats?.tasks?.pendingAdmin} 
-                    loading={state.loading} 
-                    onClick={() => navigate('/approvals')} 
+                <ApprovalAlert
+                    count={state.stats?.tasks?.pendingAdmin}
+                    loading={state.loading}
+                    onClick={() => navigate('/approvals')}
                 />
 
                 <div className="stats-grid">
