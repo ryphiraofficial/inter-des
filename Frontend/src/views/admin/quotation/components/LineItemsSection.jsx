@@ -42,7 +42,7 @@ const LineItemsSection = ({
                     <Layers className="section-icon" size={18} />
                     <h3>Line Items</h3>
                 </div>
-                <button type="button" onClick={addLineItem} className="btn-add-item">
+                <button type="button" onClick={() => addLineItem()} className="btn-add-item">
                     <Plus size={14} /> Add Item
                 </button>
             </div>
@@ -84,9 +84,9 @@ const LineItemsSection = ({
                     )}
                 </div>
 
-                {globalSearchResults.length > 0 && (
+                {globalSearchQuery.trim() && (
                     <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
-                        {Object.entries(
+                        {globalSearchResults.length > 0 && Object.entries(
                             globalSearchResults.reduce((groups, res) => {
                                 const section = res.section || 'General';
                                 if (!groups[section]) groups[section] = [];
@@ -110,6 +110,19 @@ const LineItemsSection = ({
                                 ))}
                             </div>
                         ))}
+                        
+                        <div 
+                            className="search-result-item" 
+                            style={{ background: '#f0f9ff', borderTop: '1px solid #e0f2fe' }}
+                            onClick={() => {
+                                addLineItem('Uncategorized', { name: globalSearchQuery.trim() });
+                                handleGlobalSearch(''); // Clear search
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0369a1', fontWeight: 600 }}>
+                                <Plus size={16} /> Add "{globalSearchQuery}" as custom item
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
