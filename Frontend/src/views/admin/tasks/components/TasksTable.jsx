@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Briefcase, Calendar, Clock, CheckCircle, X, Eye, Edit, Trash2, AlertTriangle, ChevronDown } from 'lucide-react';
+import { User, Briefcase, Calendar, Clock, CheckCircle, X, Eye, Edit, Trash2, AlertTriangle, ChevronDown, Palette } from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
 
 const TasksTable = ({ 
@@ -156,9 +156,9 @@ const TasksTable = ({
                                              )}
                                              {task.status === 'Pending Admin Review' && (
                                                  <>
-                                                     <button className="btn-icon approve" onClick={() => { setSelectedTask(task); setShowDesignModal(true); }} style={{ color: '#6366f1' }}><Eye size={16} /></button>
-                                                     <button className="btn-icon approve" onClick={() => handleAdminReview(task._id, true)} style={{ color: '#10b981' }}><CheckCircle size={16} /></button>
-                                                     <button className="btn-icon reject" onClick={() => handleAdminReview(task._id, false)} style={{ color: '#ef4444' }}><AlertTriangle size={16} /></button>
+                                                     <button className="btn-icon approve" onClick={() => { setSelectedTask(task); setShowDesignModal(true); }} title="Review Design Files" style={{ color: '#6366f1' }}><Palette size={16} /></button>
+                                                     <button className="btn-icon approve" onClick={() => handleAdminReview(task._id, true)} title="Approve Task" style={{ color: '#10b981' }}><CheckCircle size={16} /></button>
+                                                     <button className="btn-icon reject" onClick={() => handleAdminReview(task._id, false)} title="Reject Task" style={{ color: '#ef4444' }}><AlertTriangle size={16} /></button>
                                                  </>
                                              )}
                                             <button className="btn-icon" onClick={() => handleViewDetails(task)} title="View Details"><Eye size={16} /></button>
