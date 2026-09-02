@@ -107,6 +107,9 @@ export const useQuotationState = () => {
         ...initialData
     });
 
+    const addLineItem = (section = 'Uncategorized', initialData = {}) => setLineItems(prev => [createNewItem(section, initialData), ...prev]);
+    const removeLineItem = (id) => setLineItems(prev => prev.filter(item => item.id !== id));
+
     const renameCategory = (oldCategoryName, newCategoryName) => {
         if (!newCategoryName || !newCategoryName.trim() || oldCategoryName === newCategoryName) return;
         const trimmedNew = newCategoryName.trim();
