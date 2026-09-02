@@ -202,18 +202,6 @@ const Template2 = ({ quotation, calc, settings }) => {
                         </div>
                     </div>
                 </div>
-                
-                {/* Signature Hand-Written Mock Block */}
-                <div className="signature-container">
-                    <div className="details-title">Account Manager</div>
-                    <div className="signature-font">
-                        {company.companyName?.split(' ')[0] || 'Manager'}
-                    </div>
-                    <div className="signature-line"></div>
-                    <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-dark)' }}>
-                        Authorized Signatory
-                    </div>
-                </div>
             </div>
 
             {/* Direct Help Box */}
