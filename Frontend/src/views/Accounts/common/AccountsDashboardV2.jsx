@@ -45,29 +45,35 @@ const AccountsDashboardV2 = ({ user }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* Header Banner */}
             <div style={{
-                background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 80%, #3b82f6 100%)',
-                borderRadius: '16px', padding: '1.5rem 1.75rem', color: '#ffffff',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
-                boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.35)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '16px',
+                padding: '1.25rem 1.5rem',
+                color: '#0f172a',
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'space-between',
+                flexWrap: 'wrap',
+                gap: '1rem',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
             }}>
                 <div>
-                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#bfdbfe', textTransform: 'uppercase', letterSpacing: '1px', background: 'rgba(255, 255, 255, 0.15)', padding: '3px 8px', borderRadius: '6px', display: 'inline-block' }}>
+                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#4338ca', textTransform: 'uppercase', letterSpacing: '0.5px', background: '#e0e7ff', padding: '3px 8px', borderRadius: '6px', display: 'inline-block' }}>
                         Executive Financial Command Center
                     </span>
-                    <h2 style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#ffffff' }}>Company Cash Flow & Ledger Summary</h2>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#e0f2fe', fontWeight: 500 }}>Real-time overview of incoming revenue, outgoing payments, and company liquidity</p>
+                    <h2 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Company Cash Flow & Ledger Summary</h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Real-time overview of incoming revenue, outgoing payments, and company liquidity</p>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(4px)', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.25)' }}>
-                        <Calendar size={14} color="#bfdbfe" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Calendar size={14} color="#6366f1" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </div>
                     <button
                         onClick={fetchData}
-                        style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.2)', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, backdropFilter: 'blur(4px)', transition: 'all 0.15s' }}
+                        style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s' }}
                     >
-                        <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh
+                        <RefreshCw size={13} className={loading ? 'spin' : ''} /> Refresh
                     </button>
                 </div>
             </div>
