@@ -49,11 +49,108 @@ const Invoice = () => {
         setViewingInvoice(invoice);
     };
 
-    const handlePrint = (invoice) => {
-        setViewingInvoice(invoice);
+    const directPrintInvoice = (invoice) => {
+        if (!invoice) return;
+        const printWindow = window.open('', '_blank', 'width=850,height=900');
+        if (!printWindow) return;
+
+        const itemsRows = (invoice.items || []).map(item => `
+            <tr>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px;">${item.description || item.itemName || 'Item'}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center; font-size: 13px;">${item.quantity || 1}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 13px;">₹${Number(item.rate || item.unitPrice || 0).toLocaleString('en-IN')}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold; font-size: 13px;">₹${Number(item.amount || ((item.quantity || 1) * (item.rate || item.unitPrice || 0))).toLocaleString('en-IN')}</td>
+            </tr>
+        `).join('');
+
+        const subtotal = invoice.subtotal || invoice.items?.reduce((s, i) => s + ((i.quantity || 1) * (i.rate || i.unitPrice || 0)), 0) || invoice.grandTotal || 0;
+        const tax = invoice.totalTax || invoice.taxAmount || 0;
+        const grandTotal = invoice.grandTotal || invoice.totalAmount || (subtotal + tax);
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Invoice #${invoice.invoiceNumber}</title>
+                <style>
+                    body { font-family: 'Inter', Arial, sans-serif; margin: 30px; color: #0f172a; }
+                    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
+                    .header h1 { margin: 0; font-size: 26px; color: #0f172a; letter-spacing: -0.5px; }
+                    .header h2 { margin: 0; font-size: 22px; color: #2563eb; }
+                    .details { display: flex; justify-content: space-between; margin-bottom: 30px; }
+                    .details-box { font-size: 13px; line-height: 1.6; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                    th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
+                    .summary { display: flex; justify-content: flex-end; }
+                    .summary-table { width: 260px; font-size: 13px; background: #f8fafc; padding: 12px; border-radius: 8px; }
+                    .summary-table div { display: flex; justify-content: space-between; padding: 4px 0; color: #475569; }
+                    .total-row { border-top: 1.5px solid #cbd5e1; font-weight: bold; font-size: 15px; color: #0f172a !important; margin-top: 6px; padding-top: 8px !important; }
+                    @media print {
+                        @page { margin: 15mm; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h1>WOODAURA</h1>
+                        <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px; font-weight: 500;">Interior Design Studio</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2>INVOICE</h2>
+                        <p style="margin: 4px 0 0 0; font-weight: bold;">#${invoice.invoiceNumber}</p>
+                    </div>
+                </div>
+
+                <div class="details">
+                    <div class="details-box">
+                        <span style="color: #94a3b8; text-transform: uppercase; font-size: 11px; font-weight: bold;">Bill To</span><br/>
+                        <strong style="font-size: 15px; color: #0f172a;">${invoice.client?.name || 'Client Name'}</strong><br/>
+                        ${invoice.client?.email ? `<span style="color: #475569;">${invoice.client.email}</span><br/>` : ''}
+                        ${invoice.client?.phone ? `<span style="color: #475569;">${invoice.client.phone}</span>` : ''}
+                    </div>
+                    <div class="details-box" style="text-align: right;">
+                        <span style="color: #94a3b8; text-transform: uppercase; font-size: 11px; font-weight: bold;">Date:</span> <strong>${new Date(invoice.invoiceDate || invoice.createdAt || Date.now()).toLocaleDateString()}</strong><br/>
+                        <span style="color: #94a3b8; text-transform: uppercase; font-size: 11px; font-weight: bold;">Due Date:</span> <strong>${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'N/A'}</strong>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align: center;">Qty</th>
+                            <th style="text-align: right;">Rate</th>
+                            <th style="text-align: right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsRows.length > 0 ? itemsRows : '<tr><td colspan="4" style="padding: 15px; text-align: center; color: #94a3b8;">Invoice details</td></tr>'}
+                    </tbody>
+                </table>
+
+                <div class="summary">
+                    <div class="summary-table">
+                        <div><span>Subtotal:</span> <span>₹${Number(subtotal).toLocaleString('en-IN')}</span></div>
+                        ${tax > 0 ? `<div><span>Tax:</span> <span>₹${Number(tax).toLocaleString('en-IN')}</span></div>` : ''}
+                        <div class="total-row"><span>Total Amount:</span> <span>₹${Number(grandTotal).toLocaleString('en-IN')}</span></div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
         setTimeout(() => {
-            window.print();
-        }, 200);
+            printWindow.print();
+            printWindow.close();
+        }, 350);
+    };
+
+    const handlePrint = (invoice) => {
+        directPrintInvoice(invoice);
     };
 
     useEffect(() => {
