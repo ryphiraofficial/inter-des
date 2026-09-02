@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     FileText, Package, Users, TrendingUp, DollarSign, 
-    ShoppingCart, RefreshCw, Calendar 
+    ShoppingCart, RefreshCw, Calendar, ShieldCheck
 } from 'lucide-react';
 
 import { useDashboardState } from './dashboard/hooks/useDashboardState';
@@ -59,19 +59,35 @@ const Dashboard = () => {
         <div className="dashboard-wrapper">
             <div className="dashboard-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 
-                {/* Minimalist Header Bar */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', padding: '0 4px', marginBottom: '0.25rem' }}>
+                {/* Executive Clean Header Bar */}
+                <div style={{
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '14px',
+                    padding: '1.25rem 1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                }}>
                     <div>
-                        <h1 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-                            Dashboard Overview
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ background: '#e0e7ff', color: '#4338ca', fontSize: '0.7rem', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Executive Control Panel
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ShieldCheck size={14} color="#10b981" /> System Operational
+                            </span>
+                        </div>
+                        <h1 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                            Business Performance & Operations Overview
                         </h1>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
-                            Real-time operations, inventory metrics, and financial performance
-                        </p>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <Calendar size={14} color="#6366f1" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
                         <button
