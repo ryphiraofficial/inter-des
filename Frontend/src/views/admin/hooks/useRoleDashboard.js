@@ -209,9 +209,15 @@ export const isSuperAdmin = (role) => {
 export const isAdminLayout = (role) => {
     if (!role) return false;
     const roleLower = role.toLowerCase();
-    // Super Admin, Admin, and any Manager role (except Sales Manager) → Admin layout
-    if (roleLower.includes('sales')) return false; // all Sales roles go to Staff layout
-    return isSuperAdmin(role) || (roleLower.includes('manager') && roleLower !== 'design staff');
+    // Sales roles always go to Staff layout
+    if (roleLower.includes('sales')) return false;
+    // Department-specific roles use their own dedicated layouts
+    if (
+        roleLower.includes('accounts') ||
+        roleLower.includes('procurement') ||
+        roleLower.includes('design')
+    ) return false;
+    return isSuperAdmin(role) || roleLower === 'admin' || roleLower === 'manager' || roleLower === 'project manager' || roleLower.includes('project');
 };
 
 // Check for Staff layout access
@@ -220,7 +226,14 @@ export const isStaffLayout = (role) => {
     const roleLower = role.toLowerCase();
     // Sales (all variants) always use Staff layout
     if (roleLower.includes('sales')) return true;
+    // Department-specific staff roles are excluded — they use their own dedicated layouts
+    if (
+        roleLower.includes('accounts') ||
+        roleLower.includes('design') ||
+        roleLower.includes('procurement')
+    ) return false;
     // Standard staff roles
     return (roleLower.includes('staff') || roleLower.includes('designer')) && !roleLower.includes('manager');
 };
+
 

@@ -82,7 +82,13 @@ import SalesApprovals from '../../views/sales/SalesApprovals';
 // Views — Design
 import MaterialReviewHub from '../../views/design/manager/MaterialReviewHub';
 import FinancialAnalytics from '../../views/admin/FinancialAnalytics';
+import DesignLayout from '../../views/design/layout/DesignLayout';
+import DesignManagerDashboard from '../../views/design/manager/DesignManagerDashboard';
+import DesignStaffDashboard from '../../views/design/staff/DesignStaffDashboard';
+
+// Views — Accounts
 import AccountsManagerDashboard from '../../views/Accounts/manager/ManagerDashboard';
+import AccountsStaffDashboard from '../../views/Accounts/staff/StaffDashboard';
 
 // Views — Procurement
 import ProcurementLayout from '../../views/procurement/layout/ProcurementLayout';
@@ -97,8 +103,10 @@ const AppRoutes = ({ onLogout }) => {
     const userRole = user?.role;
     const isProductionEngineer = ['Project Engineer', 'Site Engineer', 'Site Supervisor'].includes(userRole);
     const isProcurementRole = userRole === 'Procurement Manager' || userRole === 'Procurement Staff';
-    const shouldUseAdminLayout = (isAdminLayout(userRole) || isProductionEngineer) && !isProcurementRole;
-    const shouldUseSalesLayout = isStaffLayout(userRole) && !isProductionEngineer;
+    const isAccountsRole = userRole === 'Accounts Manager' || userRole === 'Accounts Staff';
+    const isDesignRole = userRole === 'Design Manager' || userRole === 'Design Staff';
+    const shouldUseAdminLayout = (isAdminLayout(userRole) || isProductionEngineer) && !isProcurementRole && !isAccountsRole && !isDesignRole;
+    const shouldUseSalesLayout = isStaffLayout(userRole) && !isProductionEngineer && !isProcurementRole && !isAccountsRole && !isDesignRole;
 
     const isGeneralAdmin = ['super admin', 'admin', 'manager', 'superadmin'].includes(userRole?.toLowerCase());
     const isDesignManager = userRole === 'Design Manager';
@@ -109,6 +117,26 @@ const AppRoutes = ({ onLogout }) => {
             {isProcurementRole && (
                 <Route path="/" element={<ProcurementLayout role={userRole === 'Procurement Staff' ? 'staff' : 'manager'} onLogout={onLogout} />}>
                     <Route index element={userRole === 'Procurement Staff' ? <ProcurementStaffDashboard onLogout={onLogout} /> : <ProcurementManagerDashboard onLogout={onLogout} />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+            )}
+
+            {/* Dedicated Accounts Layout Route */}
+            {isAccountsRole && (
+                <Route path="/" element={userRole === 'Accounts Staff' ? <AccountsStaffDashboard onLogout={onLogout} /> : <AccountsManagerDashboard onLogout={onLogout} />}>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+            )}
+
+            {/* Dedicated Design Layout Route */}
+            {isDesignRole && (
+                <Route path="/" element={<DesignLayout role={userRole === 'Design Staff' ? 'staff' : 'manager'} onLogout={onLogout} />}>
+                    <Route index element={userRole === 'Design Staff' ? <DesignStaffDashboard onLogout={onLogout} /> : <DesignManagerDashboard onLogout={onLogout} />} />
+                    <Route path="quotations" element={<Quotations />} />
+                    <Route path="quotations/new" element={<NewQuotation />} />
+                    <Route path="quotations/edit/:id" element={<NewQuotation isEdit={true} />} />
+                    <Route path="quotations/view/:id" element={<QuotationView />} />
+                    <Route path="material-review" element={<MaterialReviewHub />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
             )}
@@ -210,7 +238,9 @@ const AppRoutes = ({ onLogout }) => {
 
             {/* Fallback routing */}
             <Route path="*" element={
-                isProductionEngineer ? (
+                isAccountsRole || isDesignRole || isProcurementRole ? (
+                    <Navigate to="/" replace />
+                ) : isProductionEngineer ? (
                     <Navigate to="/engineer/dashboard" replace />
                 ) : shouldUseAdminLayout ? (
                     <Navigate to="/" replace />

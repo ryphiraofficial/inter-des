@@ -164,7 +164,7 @@ const AccountsNavbar = ({ onRefresh, isLoading, search, setSearch, onMenuToggle,
                 )}
 
                 {/* Schedule Meeting */}
-                {activeTab === 'meetings' && ['admin', 'super admin', 'superadmin', 'accounts manager'].includes(user?.role?.toLowerCase()) && (
+                {activeTab === 'meetings' && ['admin', 'super admin', 'superadmin'].includes(user?.role?.toLowerCase()) && (
                     <button
                         className="btn-primary"
                         onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))}

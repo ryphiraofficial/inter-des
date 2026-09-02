@@ -211,13 +211,13 @@ export const isAdminLayout = (role) => {
     const roleLower = role.toLowerCase();
     // Sales roles always go to Staff layout
     if (roleLower.includes('sales')) return false;
-    // Department staff (accounts, design, procurement) use Admin layout so their module sidebar works
+    // Department-specific roles use their own dedicated layouts
     if (
-        roleLower === 'accounts staff' ||
-        roleLower === 'design staff' ||
-        roleLower === 'procurement staff'
-    ) return true;
-    return isSuperAdmin(role) || (roleLower.includes('manager') && roleLower !== 'design staff');
+        roleLower.includes('accounts') ||
+        roleLower.includes('procurement') ||
+        roleLower.includes('design')
+    ) return false;
+    return isSuperAdmin(role) || roleLower === 'admin' || roleLower === 'manager' || roleLower === 'project manager' || roleLower.includes('project');
 };
 
 // Check for Staff layout access (Sales roles only)
@@ -226,13 +226,14 @@ export const isStaffLayout = (role) => {
     const roleLower = role.toLowerCase();
     // Sales (all variants) always use Staff layout
     if (roleLower.includes('sales')) return true;
-    // Department-specific staff roles are excluded — they use Admin layout with their own sidebar
+    // Department-specific staff roles are excluded — they use their own dedicated layouts
     if (
-        roleLower === 'accounts staff' ||
-        roleLower === 'design staff' ||
-        roleLower === 'procurement staff'
+        roleLower.includes('accounts') ||
+        roleLower.includes('design') ||
+        roleLower.includes('procurement')
     ) return false;
     // Generic 'staff' or 'designer' roles
     return (roleLower.includes('staff') || roleLower.includes('designer')) && !roleLower.includes('manager');
 };
+
 

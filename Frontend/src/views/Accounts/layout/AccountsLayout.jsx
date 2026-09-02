@@ -12,7 +12,7 @@ const AccountsLayout = ({ role, user, onRefresh, isLoading, onLogout, search, se
 
     // Department-specific contextual actions for the Navbar
     const renderActions = () => {
-        const isManager = ['admin', 'super admin', 'superadmin', 'accounts manager'].includes(user?.role?.toLowerCase());
+        const isAdmin = ['admin', 'super admin', 'superadmin'].includes(user?.role?.toLowerCase());
 
         return (
             <>
@@ -26,7 +26,7 @@ const AccountsLayout = ({ role, user, onRefresh, isLoading, onLogout, search, se
                     </button>
                 )}
 
-                {activeTab === 'meetings' && isManager && (
+                {activeTab === 'meetings' && isAdmin && (
                     <button
                         className="app-navbar-btn-action app-navbar-btn-primary"
                         onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))}

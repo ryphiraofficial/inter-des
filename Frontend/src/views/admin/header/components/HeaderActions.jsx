@@ -47,7 +47,7 @@ const HeaderActions = ({ isHome, tab, location, user }) => {
             <ActionBtn show={location.pathname === '/staff'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-staff-modal'))} label="Add New Staff" variant="primary" />
             <ActionBtn show={location.pathname === '/clients'} onClick={() => window.dispatchEvent(new CustomEvent('open-create-client-modal'))} label="Add New Client" variant="primary" />
             <ActionBtn show={location.pathname === '/inventory'} onClick={() => window.dispatchEvent(new CustomEvent('open-inventory-modal'))} label="Add New Item" variant="primary" />
-            <ActionBtn show={location.pathname === '/meetings' && ['super admin', 'admin', 'manager', 'superadmin'].includes(user?.role?.toLowerCase())} onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))} label="Schedule Meeting" variant="primary" />
+            <ActionBtn show={location.pathname === '/meetings' && ['super admin', 'admin', 'superadmin'].includes(user?.role?.toLowerCase())} onClick={() => window.dispatchEvent(new CustomEvent('open-schedule-meeting-modal'))} label="Schedule Meeting" variant="primary" />
 
             
             {isHome && tab === 'vendors' && user?.role?.toLowerCase() === 'procurement manager' && (
