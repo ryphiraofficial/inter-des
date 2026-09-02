@@ -132,22 +132,6 @@ const ProjectDetailsSection = ({
                 </div>
                 <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2" style={{ borderRadius: '4px' }}></textarea>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
-                <div className="form-group">
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> Project Start</label>
-                    <DatePicker
-                        value={formData.projectStart}
-                        onChange={(val) => handleInputChange({ target: { name: 'projectStart', value: val } })}
-                    />
-                </div>
-                <div className="form-group">
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> Project End</label>
-                    <DatePicker
-                        value={formData.projectEnd}
-                        onChange={(val) => handleInputChange({ target: { name: 'projectEnd', value: val } })}
-                    />
-                </div>
-            </div>
             <div className="form-group" style={{ marginTop: '1.25rem' }}>
                 <label>Scope of Work</label>
                 <textarea name="scopeOfWork" className="textarea-styled" placeholder="Define what is included in this project..." value={formData.scopeOfWork} onChange={handleInputChange} rows="2"></textarea>
