@@ -179,7 +179,8 @@ const TaskSchema = new mongoose.Schema({
             type: String,
             enum: ['created', 'started', 'reassigned', 'completed', 'reopened', 'updated',
                    'commented', 'submitted', 'revisionRequested', 'approved', 'pushed',
-                   'salesApproved', 'adminReviewed', 'sentToAdmin'],
+                   'salesApproved', 'adminReviewed', 'sentToAdmin', 'paymentCleared',
+                   'paymentOverride', 'sentToProcurement'],
             required: true
         },
         performedBy: {
