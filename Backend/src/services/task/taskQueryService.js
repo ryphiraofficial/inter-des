@@ -50,7 +50,7 @@ export const getTasks = async (reqData) => {
             .populate('team', 'name')
             .populate('createdBy', 'fullName')
             .populate('comments.user', 'fullName email role')
-            .sort({ isOverdue: -1, dueDate: 1, createdAt: -1 })
+            .sort({ createdAt: -1, _id: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 

@@ -59,15 +59,22 @@ const Tasks = ({ isStaff, user }) => {
         }
     };
 
-    // Filter Logic
-    const filteredTasks = state.tasks.filter(task => {
-        if (isStaff && task.assignedTo?.email !== user?.email) return false;
-        const matchesSearch = task.title?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
-            task.description?.toLowerCase().includes(state.searchTerm.toLowerCase());
-        const matchesStatus = state.filterStatus === 'All' || task.status === state.filterStatus;
-        const matchesPriority = state.filterPriority === 'All' || task.priority === state.filterPriority;
-        return matchesSearch && matchesStatus && matchesPriority;
-    });
+    // Filter & Sort Logic (Newest created tasks stacked at the top)
+    const filteredTasks = state.tasks
+        .filter(task => {
+            if (isStaff && task.assignedTo?.email !== user?.email) return false;
+            const matchesSearch = task.title?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+                task.description?.toLowerCase().includes(state.searchTerm.toLowerCase());
+            const matchesStatus = state.filterStatus === 'All' || task.status === state.filterStatus;
+            const matchesPriority = state.filterPriority === 'All' || task.priority === state.filterPriority;
+            return matchesSearch && matchesStatus && matchesPriority;
+        })
+        .sort((a, b) => {
+            const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+            const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+            if (timeA !== timeB) return timeB - timeA;
+            return (b._id || '').localeCompare(a._id || '');
+        });
 
     const filteredQuotationsForForm = state.formData.client
         ? state.quotations.filter(q => (q.client?._id === state.formData.client || q.client === state.formData.client))
