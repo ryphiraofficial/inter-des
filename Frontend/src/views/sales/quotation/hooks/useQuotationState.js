@@ -34,12 +34,12 @@ export const useQuotationState = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const addLineItem = () => {
+    const addLineItem = (section = 'Uncategorized', initialData = {}) => {
         const newItem = {
             id: Date.now() + Math.random(),
             name: '',
             description: '',
-            section: 'Uncategorized',
+            section: section,
             finishBrand: '',
             materialOrigin: '',
             size: '',
@@ -51,7 +51,8 @@ export const useQuotationState = () => {
             discountType: 'percentage',
             discountValue: 0,
             discountAmount: 0,
-            image: null
+            image: null,
+            ...initialData
         };
         setLineItems(prev => [newItem, ...prev]);
     };
@@ -114,10 +115,33 @@ export const useQuotationState = () => {
         });
     };
 
+    const renameCategory = (oldCategoryName, newCategoryName) => {
+        if (!newCategoryName || !newCategoryName.trim() || oldCategoryName === newCategoryName) return;
+        const trimmedNew = newCategoryName.trim();
+        setLineItems(prev => prev.map(item => {
+            if ((item.section || 'Uncategorized') === oldCategoryName) {
+                return { ...item, section: trimmedNew };
+            }
+            return item;
+        }));
+        setCategoryDiscounts(prev => {
+            const list = Array.isArray(prev) ? prev : [];
+            return list.map(cd => cd.category === oldCategoryName ? { ...cd, category: trimmedNew } : cd);
+        });
+    };
+
+    const deleteCategory = (categoryName) => {
+        setLineItems(prev => prev.filter(item => (item.section || 'Uncategorized') !== categoryName));
+        setCategoryDiscounts(prev => {
+            const list = Array.isArray(prev) ? prev : [];
+            return list.filter(cd => cd.category !== categoryName);
+        });
+    };
+
     return {
         formData, setFormData, handleInputChange,
         lineItems, setLineItems, addLineItem, removeLineItem, updateLineItem, batchUpdateLineItem,
-        categoryDiscounts, setCategoryDiscounts, updateCategoryDiscount,
+        categoryDiscounts, setCategoryDiscounts, updateCategoryDiscount, renameCategory, deleteCategory,
         taxRate, setTaxRate, includeTax, setIncludeTax,
         discount, setDiscount, includeDiscount, setIncludeDiscount,
         expandedItems, setExpandedItems, initialFormData

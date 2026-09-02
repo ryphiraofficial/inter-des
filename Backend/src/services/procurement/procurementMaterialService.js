@@ -9,17 +9,19 @@ export const getMaterialRequests = async (reqData) => {
         let query = {};
         const role = reqData.user.role;
 
-        if (role === 'Procurement Manager' || role === 'Procurement Staff') {
-            query.status = status || { $nin: ['Design Review'] };
+        if (status) {
+            if (status.includes(',')) {
+                query.status = { $in: status.split(',').map(s => s.trim()) };
+            } else {
+                query.status = status;
+            }
+        } else if (role === 'Procurement Manager' || role === 'Procurement Staff') {
+            query.status = { $nin: ['Design Review'] };
         } else if (role === 'Staff') {
             query.requestedBy = reqData.user.id;
         }
 
         if (project) query.project = project;
-        if (status && !query.status) {
-            if (status.includes(',')) query.status = { $in: status.split(',').map(s => s.trim()) };
-            else query.status = status;
-        }
         if (priority) query.priority = priority;
 
         const skip = (page - 1) * limit;
@@ -32,9 +34,8 @@ export const getMaterialRequests = async (reqData) => {
             .limit(parseInt(limit));
 
         const total = await MaterialRequest.countDocuments(query);
-        const filteredRequests = requests.filter(r => r.project !== null);
 
-        return { status: 200, success: true, count: filteredRequests.length, total: filteredRequests.length, page: parseInt(page), pages: Math.ceil(filteredRequests.length / limit), data: filteredRequests };
+        return { status: 200, success: true, count: requests.length, total: requests.length, page: parseInt(page), pages: Math.ceil(requests.length / limit), data: requests };
     } catch (error) { return { status: 500, success: false, message: error.message }; }
 };
 

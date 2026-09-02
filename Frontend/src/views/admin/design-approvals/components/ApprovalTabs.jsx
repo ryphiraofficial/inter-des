@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image as ImageIcon, Package, Wrench, LockOpen, CreditCard, Layers } from 'lucide-react';
+import { Image as ImageIcon, Package, Wrench, LockOpen, CreditCard } from 'lucide-react';
 
 const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
     const tabs = [
@@ -7,7 +7,6 @@ const ApprovalTabs = ({ activeTab, setActiveTab, counts }) => {
         { key: 'accounts',    label: 'Accounts Pipeline',    icon: CreditCard, count: counts.accounts },
         { key: 'procurement', label: 'Procurement Pipeline',  icon: Package,    count: counts.procurement },
         { key: 'production',  label: 'Production Pipeline',   icon: Wrench,     count: counts.production },
-        { key: 'edge_bands',  label: 'Edge Band Approvals',  icon: Layers,     count: counts.edge_bands || 0 },
         { key: 'unlocks',     label: 'Unlock Requests',       icon: LockOpen,   count: counts.unlocks },
     ];
 

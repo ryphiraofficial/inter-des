@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Plus, Search, X, Trash2, ChevronUp, ChevronDown, Upload } from 'lucide-react';
+import { Layers, Plus, Search, X, Trash2, ChevronUp, ChevronDown, Upload, Folder, Edit2 } from 'lucide-react';
 import AISuggestButton from '../../components/AISuggestButton';
 import LineItemCard from './LineItemCard';
 
@@ -7,6 +7,8 @@ const LineItemsSection = ({
     lineItems,
     categoryDiscounts = [],
     updateCategoryDiscount,
+    renameCategory,
+    deleteCategory,
     addLineItem,
     removeLineItem,
     updateLineItem,
@@ -25,6 +27,9 @@ const LineItemsSection = ({
     handleImageUpload,
     fieldErrors
 }) => {
+    const [editingCatName, setEditingCatName] = React.useState(null);
+    const [tempCatName, setTempCatName] = React.useState('');
+
     const groupedItems = React.useMemo(() => {
         const groups = {};
         lineItems.forEach(item => {
@@ -42,7 +47,7 @@ const LineItemsSection = ({
                     <Layers className="section-icon" size={18} />
                     <h3>Line Items</h3>
                 </div>
-                <button type="button" onClick={addLineItem} className="btn-add-item">
+                <button type="button" onClick={() => addLineItem()} className="btn-add-item">
                     <Plus size={14} /> Add Item
                 </button>
             </div>
@@ -67,43 +72,58 @@ const LineItemsSection = ({
                     <Search size={20} color="#94a3b8" />
                     <input
                         type="text"
-                        placeholder="Search inventory to quick-add..."
-                        className="input-styled"
-                        style={{ border: 'none', background: 'transparent', boxShadow: 'none', padding: '0.6rem 0' }}
+                        placeholder="Search categories (e.g., Kitchen, Bedroom) or type a new category and press Enter..."
+                        style={{ border: 'none', background: 'transparent', width: '100%', padding: '0.6rem 0', fontSize: '0.95rem', outline: 'none' }}
                         value={globalSearchQuery}
                         onChange={(e) => handleGlobalSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && globalSearchQuery.trim()) {
+                                e.preventDefault();
+                                addLineItem(globalSearchQuery.trim(), { name: '' });
+                                handleGlobalSearch(''); // Clear search
+                            }
+                        }}
                     />
                     {globalSearchQuery && (
                         <X size={18} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setGlobalSearchQuery('')} />
                     )}
                 </div>
 
-                {globalSearchResults.length > 0 && (
-                    <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0 }}>
-                        {Object.entries(
-                            globalSearchResults.reduce((groups, res) => {
-                                const section = res.section || 'General';
-                                if (!groups[section]) groups[section] = [];
-                                groups[section].push(res);
-                                return groups;
-                            }, {})
-                        ).map(([section, items]) => (
-                            <div key={section}>
-                                <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b', padding: '0.5rem 0.75rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>{section}</div>
-                                {items.map(res => (
-                                    <div key={res._id} className="search-result-item" onClick={() => addFromInventorySelect(res)}>
-                                        <div className="res-info">
-                                            <span className="res-name">{res.itemName}</span>
-                                            <span className="res-cat">{res.section || 'General'}</span>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <span className="res-price">₹{res.price}</span>
-                                            <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>Click to Add</div>
-                                        </div>
-                                    </div>
-                                ))}
+                {globalSearchQuery.trim() && (
+                    <div className="product-search-dropdown" style={{ width: '100%', top: '100%', left: 0, marginTop: '4px', zIndex: 100 }}>
+                        {globalSearchResults.map(catName => (
+                            <div 
+                                key={catName} 
+                                className="search-result-item" 
+                                onClick={() => {
+                                    addLineItem(catName, { name: '' });
+                                    handleGlobalSearch('');
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#1e293b', fontWeight: 600 }}>
+                                    <Folder size={18} color="#4f46e5" />
+                                    <span>{catName}</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#6366f1', background: '#e0e7ff', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
+                                    + Add Category
+                                </span>
                             </div>
                         ))}
+
+                        {!globalSearchResults.includes(globalSearchQuery.trim()) && (
+                            <div 
+                                className="search-result-item" 
+                                style={{ background: '#f0f9ff', borderTop: '1px solid #e0f2fe' }}
+                                onClick={() => {
+                                    addLineItem(globalSearchQuery.trim(), { name: '' });
+                                    handleGlobalSearch(''); // Clear search
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0369a1', fontWeight: 600 }}>
+                                    <Plus size={16} /> Add Category "{globalSearchQuery}"
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -144,42 +164,102 @@ const LineItemsSection = ({
                                 borderLeft: '4px solid #2563eb'
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '1.05rem', letterSpacing: '-0.02em' }}>{section}</span>
-                                    <span style={{ fontSize: '0.75rem', background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: '12px', fontWeight: 700 }}>
-                                        {items.length} {items.length === 1 ? 'item' : 'items'}
-                                    </span>
+                                    {editingCatName === section ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <input 
+                                                type="text" 
+                                                value={tempCatName} 
+                                                onChange={(e) => setTempCatName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        renameCategory && renameCategory(section, tempCatName);
+                                                        setEditingCatName(null);
+                                                    } else if (e.key === 'Escape') {
+                                                        setEditingCatName(null);
+                                                    }
+                                                }}
+                                                autoFocus
+                                                style={{ padding: '2px 8px', fontSize: '0.95rem', fontWeight: 700, borderRadius: '4px', border: '1.5px solid #3b82f6', outline: 'none' }}
+                                            />
+                                            <button 
+                                                type="button" 
+                                                onClick={() => { renameCategory && renameCategory(section, tempCatName); setEditingCatName(null); }}
+                                                style={{ padding: '3px 8px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                            >
+                                                Save
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setEditingCatName(null)}
+                                                style={{ padding: '3px 8px', background: '#cbd5e1', color: '#334155', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '1.05rem', letterSpacing: '-0.02em' }}>{section}</span>
+                                            <span style={{ fontSize: '0.75rem', background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                                                {items.length} {items.length === 1 ? 'item' : 'items'}
+                                            </span>
+                                            {section !== 'Uncategorized' && (
+                                                <button 
+                                                    type="button" 
+                                                    title="Rename Category"
+                                                    onClick={() => { setEditingCatName(section); setTempCatName(section); }}
+                                                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748b', display: 'inline-flex', alignItems: 'center' }}
+                                                >
+                                                    <Edit2 size={15} />
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                                 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>Category Discount:</span>
-                                    <select
-                                        className="select-styled"
-                                        style={{ width: 'auto', padding: '0.35rem 0.5rem', fontSize: '0.8rem', outline: 'none' }}
-                                        value={categoryDiscount?.discountType || 'percentage'}
-                                        onChange={(e) => updateCategoryDiscount(section, 'discountType', e.target.value)}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>Category Discount:</span>
+                                        <select
+                                            className="select-styled"
+                                            style={{ width: 'auto', padding: '0.35rem 0.5rem', fontSize: '0.8rem', outline: 'none' }}
+                                            value={categoryDiscount?.discountType || 'percentage'}
+                                            onChange={(e) => updateCategoryDiscount(section, 'discountType', e.target.value)}
+                                        >
+                                            <option value="percentage">%</option>
+                                            <option value="amount">Fixed (₹)</option>
+                                        </select>
+                                        <input
+                                            type="number"
+                                            className="input-styled"
+                                            placeholder="0"
+                                            style={{ width: '80px', padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                                            value={categoryDiscount?.discountValue || ''}
+                                            onChange={(e) => updateCategoryDiscount(section, 'discountValue', parseFloat(e.target.value) || 0)}
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        title="Delete Category"
+                                        onClick={() => {
+                                            if (window.confirm(`Delete category "${section}" and all its items?`)) {
+                                                deleteCategory && deleteCategory(section);
+                                            }
+                                        }}
+                                        style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600 }}
                                     >
-                                        <option value="percentage">%</option>
-                                        <option value="amount">Fixed (₹)</option>
-                                    </select>
-                                    <input
-                                        type="number"
-                                        className="input-styled"
-                                        placeholder="0"
-                                        style={{ width: '80px', padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
-                                        value={categoryDiscount?.discountValue || ''}
-                                        onChange={(e) => updateCategoryDiscount(section, 'discountValue', parseFloat(e.target.value) || 0)}
-                                    />
+                                        <Trash2 size={14} /> Delete Category
+                                    </button>
                                 </div>
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                {items.map(item => {
-                                    const globalIndex = lineItems.findIndex(li => li.id === item.id);
+                                {items.map((item, categoryIndex) => {
                                     return (
                                         <LineItemCard
                                             key={item.id}
                                             item={item}
-                                            index={globalIndex}
+                                            index={categoryIndex}
                                             updateLineItem={updateLineItem}
                                             batchUpdateLineItem={batchUpdateLineItem}
                                             removeLineItem={removeLineItem}
@@ -193,6 +273,17 @@ const LineItemsSection = ({
                                         />
                                     );
                                 })}
+                                <div style={{ padding: '0.75rem 1.25rem', background: '#fcfcfd', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => addLineItem(section)}
+                                        style={{ background: 'transparent', border: '1px dashed #cbd5e1', padding: '6px 16px', borderRadius: '6px', color: '#64748b', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#475569'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#64748b'; }}
+                                    >
+                                        <Plus size={14} /> Add Item to {section}
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{

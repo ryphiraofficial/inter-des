@@ -57,9 +57,11 @@ const Template1 = ({ quotation, calc, settings }) => {
                     <div className="address-text" style={{ fontWeight: 700 }}>
                         {q.client?.name || 'N/A'}
                     </div>
-                    <div className="address-text" style={{ whiteSpace: 'pre-line' }}>
-                        {q.client?.address || 'N/A'}
-                    </div>
+                    {(q.client?.address || q.client?.siteAddress || q.client?.billingAddress) && (
+                        <div className="address-text" style={{ whiteSpace: 'pre-line' }}>
+                            {q.client?.address || q.client?.siteAddress || q.client?.billingAddress}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -68,8 +70,9 @@ const Template1 = ({ quotation, calc, settings }) => {
                     <thead className="table-header">
                         <tr>
                             <th>Items Description</th>
+                            <th>Dimensions</th>
                             <th>Unit Price</th>
-                            <th>Qnt</th>
+                            <th>SQFT/Qty</th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -85,13 +88,13 @@ const Template1 = ({ quotation, calc, settings }) => {
                             let globalIdx = 0;
                             return Object.entries(grouped).flatMap(([sectionName, sectionItems]) => [
                                 <tr key={`cat-${sectionName}`} style={{ background: '#1E1A3A' }}>
-                                    <td colSpan="4" style={{ padding: '7px 14px', color: '#ffffff', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', lineHeight: '1.5' }}>
+                                    <td colSpan="5" style={{ padding: '7px 14px', color: '#ffffff', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', lineHeight: '1.5' }}>
                                         {sectionName}
                                     </td>
                                 </tr>,
-                                ...sectionItems.map((item) => {
-                                    globalIdx += 1;
-                                    const idx = globalIdx;
+                                ...sectionItems.map((item, itemIdx) => {
+                                    const idx = itemIdx + 1;
+                                    const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0}×${item.cmD || 0}×${item.cmH || 0} cm` : (item.size || '-'));
                                     return (
                                         <tr className="t1-item-row" key={item._id || idx}>
                                             <td>
@@ -106,6 +109,9 @@ const Template1 = ({ quotation, calc, settings }) => {
                                                         />
                                                     </div>
                                                 )}
+                                            </td>
+                                            <td style={{ textAlign: 'center', fontSize: '0.8rem', color: '#4f46e5', fontWeight: 600 }}>
+                                                {dimStr}
                                             </td>
                                             <td className="t1-item-price">
                                                 {s.documents?.currencySymbol || '₹'} {item.rate?.toLocaleString() || 0}

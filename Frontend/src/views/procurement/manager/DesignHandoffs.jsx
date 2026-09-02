@@ -14,9 +14,8 @@ const DesignHandoffs = ({
     return (
         <div className="fade-in">
             <div className="section-card">
-                <div className="section-header priority-header">
+                <div className="section-header">
                     <h3><Plus size={18} color="#6366f1" /> Pushed Designs from Design Manager</h3>
-                    <span className="badge badge-priority">Priority Action</span>
                 </div>
                 <div className="requests-list">
                     {designHandoffs.length > 0 ? designHandoffs.map(item => (

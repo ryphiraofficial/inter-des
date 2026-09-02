@@ -158,7 +158,7 @@ export const managerReviewRequest = async (requestId, { status, managerNote, ite
     const reqDoc = await EdgeBandRequest.findById(requestId).populate('project', 'name projectNumber');
     if (!reqDoc) throw Object.assign(new Error('Request not found'), { status: 404 });
 
-    if (!['pending_admin', 'rejected'].includes(status)) {
+    if (!['approved', 'rejected'].includes(status)) {
         throw Object.assign(new Error('Invalid status for manager review'), { status: 400 });
     }
 
@@ -169,6 +169,15 @@ export const managerReviewRequest = async (requestId, { status, managerNote, ite
     reqDoc.reviewedAt = new Date();
 
     await reqDoc.save();
+
+    // Auto-create procurement queue entry when Manager approves directly
+    if (status === 'approved') {
+        try {
+            await createProcurementQueue(requestId, reviewerId);
+        } catch (procErr) {
+            console.error('Failed auto-creating procurement queue entry:', procErr.message);
+        }
+    }
 
     // Send Notification to staff member
     try {
@@ -184,10 +193,10 @@ export const managerReviewRequest = async (requestId, { status, managerNote, ite
                     relatedId: reqDoc.project?._id || reqDoc.project,
                     createdBy: reviewerId
                 });
-            } else if (status === 'pending_admin') {
+            } else if (status === 'approved') {
                 await Notification.create({
                     title: 'Edge Bands Approved by Manager ✅',
-                    description: `Your edge band selections for ${projName} were approved by the Manager and forwarded for Admin release.`,
+                    description: `Your edge band selections for ${projName} were approved by the Manager and forwarded to Procurement.`,
                     type: 'Success',
                     recipient: reqDoc.submittedBy,
                     relatedModel: 'Project',
