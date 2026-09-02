@@ -727,11 +727,7 @@ const EdgeBandPage = ({ user }) => {
                                                     ⏳ Pending Manager Review
                                                 </span>
                                             )}
-                                            {req.status === 'pending_admin' && (
-                                                <span style={{ padding: '4px 12px', background: '#e0e7ff', color: '#3730a3', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
-                                                    🛡️ Manager Approved — Pending Admin
-                                                </span>
-                                            )}
+
                                             {req.status === 'approved' && (
                                                 <span style={{ padding: '4px 12px', background: '#dcfce7', color: '#166534', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
                                                     ✅ Approved & Released to Procurement

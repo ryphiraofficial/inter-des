@@ -121,7 +121,6 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                 {[
                     { key: 'ALL', label: 'All Requests', count: requests.length },
                     { key: 'pending_manager', label: '⏳ Pending Manager Review', count: requests.filter(r => r.status === 'pending_manager').length },
-                    { key: 'pending_admin', label: '🛡️ Pending Admin Release', count: requests.filter(r => r.status === 'pending_admin').length },
                     { key: 'approved', label: '✅ Approved & Released', count: requests.filter(r => r.status === 'approved').length },
                     { key: 'rejected', label: '❌ Recheck Requested', count: requests.filter(r => r.status === 'rejected').length }
                 ].map(tab => {
@@ -163,9 +162,7 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                     <Layers size={40} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
                     <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 800 }}>No Requests in this Filter</h3>
                     <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
-                        {statusFilter === 'pending_admin'
-                            ? 'There are currently no manager-approved edge band requests awaiting admin release.'
-                            : statusFilter === 'pending_manager'
+                        {statusFilter === 'pending_manager'
                             ? 'There are currently no pending edge band requests awaiting manager review.'
                             : statusFilter === 'approved'
                             ? 'No edge band requests have been approved & released yet.'
@@ -336,11 +333,11 @@ const EdgeBandRequestsTab = ({ userRole = 'manager' }) => {
                                                 ❌ Reject / Recheck
                                             </button>
                                             <button
-                                                onClick={() => handleManagerReview(req._id, 'pending_admin')}
+                                                onClick={() => handleManagerReview(req._id, 'approved')}
                                                 disabled={actionLoading === req._id}
-                                                style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 22px', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(59,130,246,0.2)' }}
+                                                style={{ background: '#059669', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 22px', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(5,150,105,0.2)' }}
                                             >
-                                                {actionLoading === req._id ? 'Processing...' : '🛡️ Approve & Send to Admin'}
+                                                {actionLoading === req._id ? 'Processing...' : '✅ Approve & Push to Procurement'}
                                             </button>
                                         </>
                                     )}
