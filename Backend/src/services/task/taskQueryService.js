@@ -24,17 +24,35 @@ export const getTasks = async (reqData) => {
         if (assignedTo) query.assignedTo = assignedTo;
         if (includeOverdue === 'true') query.isOverdue = true;
 
-        const roleLower = reqData.user.role.toLowerCase();
+        const roleLower = (reqData.user?.role || '').toLowerCase();
+        const isAdmin = roleLower.includes('admin') || roleLower.includes('superadmin') || roleLower.includes('super admin');
+        const isManager = roleLower.includes('manager');
         const isSales = roleLower.includes('sales');
-        const isStaff = (roleLower.includes('staff') || roleLower.includes('designer') || isSales) && !roleLower.includes('manager') && !roleLower.includes('admin');
+        const isStaff = !isAdmin && !isManager;
 
         if (isStaff) {
-            const staffMember = await Staff.findOne({ email: reqData.user.email });
+            const possibleStaffIds = [];
+            if (reqData.user._id) possibleStaffIds.push(reqData.user._id);
+
+            const staffMember = await Staff.findOne({
+                $or: [
+                    { email: reqData.user.email ? reqData.user.email.toLowerCase() : '' },
+                    { staffId: reqData.user.staffId ? reqData.user.staffId : '' }
+                ].filter(c => Object.values(c)[0] !== '')
+            });
+
             if (staffMember) {
+                possibleStaffIds.push(staffMember._id);
+            }
+
+            if (possibleStaffIds.length > 0) {
                 if (isSales) {
-                    query.$or = [ { assignedTo: staffMember._id }, { status: 'Pending Sales Review' } ];
+                    query.$or = [
+                        { assignedTo: { $in: possibleStaffIds } },
+                        { status: 'Pending Sales Review' }
+                    ];
                 } else {
-                    query.assignedTo = staffMember._id;
+                    query.assignedTo = { $in: possibleStaffIds };
                 }
             } else if (!isSales) {
                 return { status: 200, success: true, count: 0, data: [] };
@@ -63,13 +81,7 @@ export const getTasks = async (reqData) => {
             }
         }
 
-        const filteredTasks = tasks.filter(t => {
-            const rawObj = t.toObject();
-            const hasProjectRef = rawObj.hasOwnProperty('project') && rawObj.project !== undefined;
-            return !(hasProjectRef && t.project === null);
-        });
-
-        return { status: 200, success: true, count: filteredTasks.length, total: filteredTasks.length, page: parseInt(page), pages: Math.ceil(filteredTasks.length / limit), data: filteredTasks };
+        return { status: 200, success: true, count: tasks.length, total: tasks.length, page: parseInt(page), pages: Math.ceil(tasks.length / limit), data: tasks };
     } catch (error) {
         return { status: 500, success: false, message: error.message };
     }
