@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, Trash2, Upload, X } from 'lucide-react';
-import AISuggestButton from '../../components/AISuggestButton';
 
 const LineItemCard = ({
     item,
@@ -215,14 +214,7 @@ const LineItemCard = ({
                                 </div>
                             </div>
                             <div className="form-group">
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <label style={{ fontSize: '0.75rem' }}>Item Description</label>
-                                    <AISuggestButton
-                                        field="itemDescription"
-                                        value={item.name}
-                                        onSuggest={(v) => updateLineItem(item.id, 'description', v)}
-                                    />
-                                </div>
+                                <label style={{ fontSize: '0.75rem' }}>Item Description</label>
                                 <textarea
                                     className="textarea-styled"
                                     placeholder="Detailed specifications..."

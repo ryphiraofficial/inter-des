@@ -1,8 +1,6 @@
 import React from 'react';
-import { Briefcase, Calendar, Plus } from 'lucide-react';
+import { Briefcase, Plus } from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
-import DatePicker from '../../components/DatePicker';
-import AISuggestButton from '../../../common/AISuggestButton';
 
 const ProjectDetailsSection = ({ 
     formData, handleInputChange, clientSearchQuery, handleClientSearch, 
@@ -79,14 +77,7 @@ const ProjectDetailsSection = ({
                 </div>
             </div>
             <div className="form-group" id="projectName-field-group" style={{ marginTop: '1.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label>Project Name *</label>
-                    <AISuggestButton
-                        field="projectName"
-                        value={formData.projectName}
-                        onSuggest={(v) => setFormData(prev => ({ ...prev, projectName: v }))}
-                    />
-                </div>
+                <label>Project Name *</label>
                 <input
                     type="text"
                     name="projectName"
@@ -104,14 +95,7 @@ const ProjectDetailsSection = ({
                 )}
             </div>
             <div className="form-group" style={{ marginTop: '1.25rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label>Description</label>
-                    <AISuggestButton
-                        field="projectDescription"
-                        value={formData.projectDescription}
-                        onSuggest={(v) => setFormData(prev => ({ ...prev, projectDescription: v }))}
-                    />
-                </div>
+                <label>Description</label>
                 <textarea name="projectDescription" className="textarea-styled" placeholder="Brief description of the project scope..." value={formData.projectDescription} onChange={handleInputChange} rows="2" style={{ borderRadius: '4px' }}></textarea>
             </div>
             <div className="form-group" style={{ marginTop: '1.25rem' }}>

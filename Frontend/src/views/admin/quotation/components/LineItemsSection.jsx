@@ -1,6 +1,5 @@
 import React from 'react';
 import { Layers, Plus, Search, X, Trash2, ChevronUp, ChevronDown, Upload, Folder, Edit2 } from 'lucide-react';
-import AISuggestButton from '../../components/AISuggestButton';
 import LineItemCard from './LineItemCard';
 
 const LineItemsSection = ({
