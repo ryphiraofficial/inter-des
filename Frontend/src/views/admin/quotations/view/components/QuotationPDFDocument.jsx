@@ -613,6 +613,14 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
                     <View style={styles.tableColDesc}>
                       <Text style={styles.itemName}>{item.itemName || 'N/A'}</Text>
                       {item.description ? <Text style={styles.itemDesc}>{item.description}</Text> : null}
+                      {(() => {
+                        const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0} × ${item.cmD || 0} × ${item.cmH || 0} cm ${item.size ? `(${item.size})` : ''}` : (item.size || ''));
+                        return dimStr ? (
+                          <Text style={[styles.itemDesc, { color: '#4f46e5', marginTop: 2 }]}>
+                            Dim: {dimStr}
+                          </Text>
+                        ) : null;
+                      })()}
                       {itemImgUrl ? <Image src={itemImgUrl} style={styles.itemImage} /> : null}
                     </View>
                     <Text style={styles.tableColRate}>{currencySymbol} {item.rate?.toLocaleString() || 0}</Text>

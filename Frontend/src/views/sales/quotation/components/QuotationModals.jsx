@@ -23,7 +23,12 @@ export const BillPreviewModal = ({
         items: lineItems.map((item, idx) => ({
             itemName: item.name,
             description: item.description,
-            measurements: item.measurements,
+            measurements: item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0} × ${item.cmD || 0} × ${item.cmH || 0} cm ${item.size ? `(${item.size})` : ''}` : (item.size || '')),
+            size: item.size,
+            cmL: item.cmL,
+            cmD: item.cmD,
+            cmH: item.cmH,
+            sqft: item.sqft,
             quantity: item.quantity,
             unit: item.unit,
             rate: item.rate,

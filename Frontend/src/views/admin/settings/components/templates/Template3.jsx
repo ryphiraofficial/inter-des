@@ -164,6 +164,14 @@ const Template3 = ({ quotation, calc, settings }) => {
                                             <td>
                                                 <div className="item-name">{item.itemName || 'N/A'}</div>
                                                 <div className="item-desc">{item.description || ''}</div>
+                                                {(() => {
+                                                    const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0} × ${item.cmD || 0} × ${item.cmH || 0} cm ${item.size ? `(${item.size})` : ''}` : (item.size || ''));
+                                                    return dimStr ? (
+                                                        <div className="item-dim" style={{ fontSize: '0.75rem', color: '#4f46e5', fontWeight: 600, marginTop: '3px' }}>
+                                                            Dim: {dimStr}
+                                                        </div>
+                                                    ) : null;
+                                                })()}
                                                 {item.image && (
                                                     <div className="item-image" style={{ marginTop: '8px' }}>
                                                         <img
