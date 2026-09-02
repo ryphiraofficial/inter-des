@@ -39,7 +39,6 @@ export const getPageDetails = (location, user) => {
         '/tasks': { title: 'Tasks Hub', subtitle: 'Keep track of project milestones.' },
         '/reports': { title: 'Analytics', subtitle: 'Deep dive into your revenue metrics.' },
         '/settings': { title: 'System Controls', subtitle: 'Configure your preferences.' },
-        '/users': { title: 'Team Access', subtitle: 'Manage staff accounts.' },
         '/invoice': { title: 'Invoices', subtitle: 'Generate and track professional client invoices.' },
         '/projects': { title: 'Projects', subtitle: 'Detailed overview of all ongoing projects.' },
         '/staff': { title: 'Staff', subtitle: 'Manage your team members and roles.' },

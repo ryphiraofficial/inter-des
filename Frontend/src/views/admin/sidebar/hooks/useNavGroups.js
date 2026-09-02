@@ -41,7 +41,6 @@ export const useNavGroups = () => {
             { name: 'Milestones', icon: Trophy, path: '/milestones' },
             { name: 'Reports', icon: BarChart, path: '/reports' },
             { name: 'Staff Reports', icon: MessageSquare, path: '/staff-reports' },
-            { name: 'Users', icon: Shield, path: '/users' },
             { name: 'Settings', icon: Settings, path: '/settings' },
         ];
 

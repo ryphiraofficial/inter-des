@@ -38,17 +38,16 @@ const StaffFormModal = ({
                                 <label>Email Address *</label>
                                 <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Enter email address" required />
                             </div>
-                            {!editingStaff && (
-                                <>
-                                    <div className="form-group">
-                                        <label>Password * <small>(min 6 chars)</small></label>
-                                        <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Set password" required minLength={6} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Confirm Password *</label>
-                                        <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} placeholder="Confirm password" required />
-                                    </div>
-                                </>
+                            {editingStaff ? (
+                                <div className="form-group full-width">
+                                    <label>New Password <small style={{ color: '#64748b', fontWeight: 500 }}>(leave blank to keep current password)</small></label>
+                                    <input type="password" name="password" value={formData.password || ''} onChange={handleInputChange} placeholder="Enter new password" minLength={6} />
+                                </div>
+                            ) : (
+                                <div className="form-group full-width">
+                                    <label>Password * <small style={{ color: '#64748b', fontWeight: 500 }}>(min 6 characters)</small></label>
+                                    <input type="password" name="password" value={formData.password || ''} onChange={handleInputChange} placeholder="Set password for staff account" required minLength={6} />
+                                </div>
                             )}
                             <div className="form-group">
                                 <CustomSelect label="Status" name="status" options={[{ value: 'Active', label: 'Active' }, { value: 'On Leave', label: 'On Leave' }, { value: 'Inactive', label: 'Inactive' }]} value={formData.status} onChange={handleInputChange} searchable={false} />

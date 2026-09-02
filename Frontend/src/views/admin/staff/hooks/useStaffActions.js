@@ -26,6 +26,10 @@ export const useStaffActions = ({
         // Validation logic
         if (!formData.name || formData.name.trim().length < 2) { showToast('Name too short', 'error'); return; }
         if (!/^[0-9]{10}$/.test(formData.phone)) { showToast('Phone must be 10 digits', 'error'); return; }
+        if (formData.password && formData.password.length < 6) {
+            showToast('Password must be at least 6 characters', 'error');
+            return;
+        }
         
         setSubmitting(true);
         try {

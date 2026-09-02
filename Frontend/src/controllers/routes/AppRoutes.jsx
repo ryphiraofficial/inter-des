@@ -21,7 +21,6 @@ import Tasks from '../../views/admin/Tasks';
 import Reports from '../../views/admin/Reports';
 import AdminStaffReports from '../../views/admin/AdminStaffReports';
 import Settings from '../../views/admin/Settings';
-import Users from '../../views/admin/Users';
 import Invoice from '../../views/admin/Invoice';
 import QuotationView from '../../views/admin/QuotationView';
 import Projects from '../../views/admin/Projects';
@@ -134,7 +133,6 @@ const AppRoutes = ({ onLogout }) => {
                     <Route path="reports" element={isGeneralAdmin ? <Reports /> : <Navigate to="/" replace />} />
                     <Route path="staff-reports" element={isGeneralAdmin ? <AdminStaffReports /> : <Navigate to="/" replace />} />
                     <Route path="settings" element={isGeneralAdmin ? <Settings /> : <Navigate to="/" replace />} />
-                    <Route path="users" element={isGeneralAdmin ? <Users /> : <Navigate to="/" replace />} />
                     <Route path="invoice" element={isGeneralAdmin ? <Invoice /> : <Navigate to="/" replace />} />
                     <Route path="approvals" element={isGeneralAdmin ? <DesignApprovals /> : <Navigate to="/" replace />} />
 

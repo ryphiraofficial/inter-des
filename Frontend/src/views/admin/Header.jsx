@@ -75,7 +75,7 @@ const Header = ({ toggleMobileSidebar, onLogout }) => {
     const tab = new URLSearchParams(location.search).get('tab')?.toLowerCase();
     const isDashboard = location.pathname === '/' && (!tab || tab === 'overview' || tab === 'dashboard');
     
-    const searchablePaths = ['/', '/users', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team', '/engineer/projects', '/site/projects', '/staff-reports'];
+    const searchablePaths = ['/', '/tasks', '/clients', '/inventory', '/invoice', '/quotations', '/staff', '/purchase-orders', '/po-inventory', '/projects', '/production-management/team', '/engineer/projects', '/site/projects', '/staff-reports'];
     const isSearchable = searchablePaths.includes(location.pathname) && !isDashboard;
 
     return (
