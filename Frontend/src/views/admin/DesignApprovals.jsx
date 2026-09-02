@@ -81,7 +81,6 @@ const DesignApprovals = () => {
                         accounts: state.accountsProjects.length,
                         procurement: state.procurementItems.length,
                         production: state.productionProjects.length,
-                        edge_bands: state.edgeBandsCount,
                         unlocks: unlockCount
                     }}
                 />
@@ -126,9 +125,6 @@ const DesignApprovals = () => {
                     />
                 )}
 
-                {state.activeTab === 'edge_bands' && (
-                    <EdgeBandRequestsTab userRole="admin" />
-                )}
 
                 {state.activeTab === 'unlocks' && (
                     <UnlockRequestsTable />
