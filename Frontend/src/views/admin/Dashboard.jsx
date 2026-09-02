@@ -83,12 +83,12 @@ const Dashboard = ({ }) => {
                         <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <Calendar size={14} color="#6366f1" /> {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
-                        <button
+                        {/* <button
                             onClick={fetchDashboardData}
                             style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s' }}
                         >
                             <RefreshCw size={13} className={state.loading ? 'spin' : ''} /> Sync Data
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 
