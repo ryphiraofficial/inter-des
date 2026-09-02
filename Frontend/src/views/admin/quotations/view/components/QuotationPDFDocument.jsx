@@ -472,7 +472,7 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
 
   const dateStr = formatDate(q.createdAt);
   const validUntilStr = q.validUntil ? formatDate(q.validUntil) : '';
-  const currencySymbol = docs.currencySymbol || '₹';
+  const currencySymbol = (!docs.currencySymbol || docs.currencySymbol === '₹') ? 'Rs.' : docs.currencySymbol;
 
   const items = q.items || [];
   const groupedItems = items.reduce((acc, item) => {
