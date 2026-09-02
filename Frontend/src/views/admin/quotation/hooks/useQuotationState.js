@@ -88,7 +88,7 @@ export const useQuotationState = () => {
         });
     };
 
-    const createNewItem = (section = 'Uncategorized') => ({
+    const createNewItem = (section = 'Uncategorized', initialData = {}) => ({
         id: Date.now() + Math.random(),
         name: '',
         description: '',
@@ -103,10 +103,11 @@ export const useQuotationState = () => {
         discountType: 'percentage',
         discountValue: 0,
         discountAmount: 0,
-        image: null
+        image: null,
+        ...initialData
     });
 
-    const addLineItem = (section = 'Uncategorized') => setLineItems(prev => [createNewItem(section), ...prev]);
+    const addLineItem = (section = 'Uncategorized', initialData = {}) => setLineItems(prev => [createNewItem(section, initialData), ...prev]);
     const removeLineItem = (id) => setLineItems(prev => prev.filter(item => item.id !== id));
 
     return {

@@ -67,11 +67,17 @@ const LineItemsSection = ({
                     <Search size={20} color="#94a3b8" />
                     <input
                         type="text"
-                        placeholder="Search inventory to quick-add..."
-                        className="input-styled"
-                        style={{ border: 'none', background: 'transparent', boxShadow: 'none', padding: '0.6rem 0' }}
+                        placeholder="Search inventory to quick-add or type a custom item and press Enter..."
+                        style={{ border: 'none', background: 'transparent', width: '100%', padding: '0.6rem 0', fontSize: '0.95rem', outline: 'none' }}
                         value={globalSearchQuery}
                         onChange={(e) => handleGlobalSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && globalSearchQuery.trim()) {
+                                e.preventDefault();
+                                addLineItem('Uncategorized', { name: globalSearchQuery.trim() });
+                                handleGlobalSearch(''); // Clear search
+                            }
+                        }}
                     />
                     {globalSearchQuery && (
                         <X size={18} color="#94a3b8" style={{ cursor: 'pointer' }} onClick={() => setGlobalSearchQuery('')} />

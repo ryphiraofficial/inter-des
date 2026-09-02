@@ -34,7 +34,7 @@ export const useQuotationState = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const addLineItem = (section = 'Uncategorized') => {
+    const addLineItem = (section = 'Uncategorized', initialData = {}) => {
         const newItem = {
             id: Date.now() + Math.random(),
             name: '',
@@ -51,7 +51,8 @@ export const useQuotationState = () => {
             discountType: 'percentage',
             discountValue: 0,
             discountAmount: 0,
-            image: null
+            image: null,
+            ...initialData
         };
         setLineItems(prev => [newItem, ...prev]);
     };
