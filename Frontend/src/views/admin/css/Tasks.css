@@ -95,20 +95,33 @@
 /* Stats Cards */
 .tasks-stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
     margin-bottom: 0.5rem;
 }
 
+@media (max-width: 1024px) {
+    .tasks-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .tasks-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .tasks-stat-card {
     background: white;
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+    border: none !important;
+    box-shadow: none !important;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -336,22 +349,24 @@
 /* Tasks List View - Table Styling */
 .tasks-list-card {
     background: white;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-radius: 14px;
+    border: none !important;
+    box-shadow: none !important;
     margin-bottom: 2rem;
+    overflow: hidden;
 }
 
 .tasks-table-container {
+    width: 100%;
     overflow-x: auto;
     min-height: 400px;
-    /* Ensure space for dropdowns */
 }
 
 .tasks-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    table-layout: auto;
 }
 
 /* ── Ensure all columns visible on desktop ── */
@@ -365,19 +380,21 @@
 
 .tasks-table th {
     background: #f8fafc;
-    padding: 1rem 1rem;
-    font-size: 0.8rem;
-    font-weight: 700;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 800;
     color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .tasks-table td {
-    padding: 1rem 1rem;
+    padding: 0.75rem 0.5rem;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
+    font-size: 0.83rem;
 }
 
 .tasks-table tr:last-child td {
