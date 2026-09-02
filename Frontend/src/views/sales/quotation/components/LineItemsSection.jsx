@@ -53,14 +53,14 @@ const LineItemsSection = ({
                     <Search size={20} color="#94a3b8" />
                     <input
                         type="text"
-                        placeholder="Search inventory to quick-add or type a custom item and press Enter..."
+                        placeholder="Search inventory or type a custom category name and press Enter..."
                         style={{ border: 'none', background: 'transparent', width: '100%', padding: '0.6rem 0', fontSize: '0.95rem', outline: 'none' }}
                         value={globalSearchQuery}
                         onChange={(e) => handleGlobalSearch(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && globalSearchQuery.trim()) {
                                 e.preventDefault();
-                                addLineItem('Uncategorized', { name: globalSearchQuery.trim() });
+                                addLineItem(globalSearchQuery.trim(), { name: '' });
                                 handleGlobalSearch(''); // Clear search
                             }
                         }}
@@ -102,12 +102,12 @@ const LineItemsSection = ({
                             className="search-result-item" 
                             style={{ background: '#f0f9ff', borderTop: '1px solid #e0f2fe' }}
                             onClick={() => {
-                                addLineItem('Uncategorized', { name: globalSearchQuery.trim() });
+                                addLineItem(globalSearchQuery.trim(), { name: '' });
                                 handleGlobalSearch(''); // Clear search
                             }}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0369a1', fontWeight: 600 }}>
-                                <Plus size={16} /> Add "{globalSearchQuery}" as custom item
+                                <Plus size={16} /> Add Category "{globalSearchQuery}"
                             </div>
                         </div>
                     </div>
