@@ -74,7 +74,26 @@ export const pushToProcurement = async (reqData) => {
             if (project) task.project = project._id;
         }
         if (!task.project) return { status: 400, success: false, message: 'Task is not associated with a project. Please link a project before pushing to procurement.' };
-        if (task.status !== 'Approved') return { status: 400, success: false, message: 'Only approved designs can be pushed to procurement' };
+        if (task.status !== 'Approved' && task.status !== 'Pending Payment') return { status: 400, success: false, message: 'Only approved designs can be pushed to procurement' };
+
+        // Verify project advance payment in Accounts before pushing to procurement
+        const projectDoc = await Project.findById(task.project);
+        if (projectDoc) {
+            const collected = projectDoc.collectedAmount || 0;
+            const required = projectDoc.advanceAmount || 0;
+            const isPaymentVerified = projectDoc.paymentStatus === 'Cleared' || 
+                                     projectDoc.paymentStatus === 'Paid' || 
+                                     projectDoc.paymentCollectionStatus === 'Verified' ||
+                                     (required > 0 && collected >= required);
+
+            if (!isPaymentVerified && !reqData.body?.forceOverride) {
+                return { 
+                    status: 400, 
+                    success: false, 
+                    message: `Cannot push to procurement: Project advance payment has not been received or verified in Accounts yet. Collected ₹${collected.toLocaleString('en-IN')} of ₹${required.toLocaleString('en-IN')}. Please verify advance payment in Accounts first.` 
+                };
+            }
+        }
 
         task.status = 'Pushed to Procurement';
         task.timeline.push({ action: 'pushed', performedBy: reqData.user.id, details: 'Finalized design pushed to procurement team', timestamp: new Date() });

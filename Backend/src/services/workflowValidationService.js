@@ -135,6 +135,17 @@ const validateHandoff = async (projectId) => {
             errors.push('No approved quotation found for this project');
         }
 
+        const collected = project.collectedAmount || 0;
+        const required = project.advanceAmount || 0;
+        const isPaymentVerified = project.paymentStatus === 'Cleared' || 
+                                 project.paymentStatus === 'Paid' || 
+                                 project.paymentCollectionStatus === 'Verified' ||
+                                 (required > 0 && collected >= required);
+
+        if (!isPaymentVerified) {
+            errors.push(`Project advance payment (₹${required.toLocaleString('en-IN')}) has not been received or verified in Accounts yet. Collected: ₹${collected.toLocaleString('en-IN')}`);
+        }
+
         return {
             valid: errors.length === 0,
             errors,

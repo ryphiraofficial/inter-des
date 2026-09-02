@@ -43,6 +43,33 @@ export const updateTask = async (reqData) => {
 
         const timelineUpdates = [];
         if (reqData.body.status && reqData.body.status !== oldStatus) {
+            if (reqData.body.status === 'Pushed to Procurement') {
+                let projId = task.project;
+                if (!projId && task.quotation) {
+                    const foundProj = await Project.findOne({ quotation: task.quotation });
+                    if (foundProj) projId = foundProj._id;
+                }
+                if (projId) {
+                    const projectDoc = await Project.findById(projId);
+                    if (projectDoc) {
+                        const collected = projectDoc.collectedAmount || 0;
+                        const required = projectDoc.advanceAmount || 0;
+                        const isPaymentVerified = projectDoc.paymentStatus === 'Cleared' || 
+                                                 projectDoc.paymentStatus === 'Paid' || 
+                                                 projectDoc.paymentCollectionStatus === 'Verified' ||
+                                                 (required > 0 && collected >= required);
+
+                        if (!isPaymentVerified && !reqData.body.forceOverride) {
+                            return {
+                                status: 400,
+                                success: false,
+                                message: `Cannot push to procurement: Project advance payment has not been received or verified in Accounts yet. Collected ₹${collected.toLocaleString('en-IN')} of ₹${required.toLocaleString('en-IN')}. Please verify advance payment in Accounts first.`
+                            };
+                        }
+                    }
+                }
+            }
+
             let action = 'updated';
             if (reqData.body.status === 'In Progress') action = 'started';
             else if (reqData.body.status === 'Completed') action = 'completed';
