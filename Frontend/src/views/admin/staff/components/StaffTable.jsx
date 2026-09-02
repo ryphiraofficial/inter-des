@@ -21,7 +21,7 @@ const StaffTable = ({
                         <th className="desktop-hide">Contact</th>
                         <th className="desktop-hide">Joining Date</th>
                         <th className="desktop-hide">Status</th>
-                        <th className="desktop-hide">Actions</th>
+                        <th className="desktop-hide" style={{ textAlign: 'right', paddingRight: '1.25rem' }}>Actions</th>
                         <th className="mobile-show">Status</th>
                         <th className="mobile-show"></th>
                     </tr>
@@ -59,8 +59,8 @@ const StaffTable = ({
                                 <td className="desktop-hide">
                                     <span className={`status-badge ${staff.status?.toLowerCase().replace(' ', '-')}`}>{staff.status}</span>
                                 </td>
-                                <td className="desktop-hide">
-                                    <div className="actions-cell">
+                                <td className="desktop-hide" style={{ textAlign: 'right', paddingRight: '1.25rem', minWidth: '150px' }}>
+                                    <div className="actions-cell" style={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                                         <button className="btn-icon salary" onClick={() => handleViewSalary(staff)} title="Salary"><IndianRupee size={16} /></button>
                                         <button className="btn-icon analytics" onClick={() => handleViewAnalytics(staff)} title="Analytics"><BarChart2 size={16} /></button>
                                         <button className="btn-icon edit" onClick={() => handleEdit(staff)} title="Edit"><Edit size={16} /></button>
