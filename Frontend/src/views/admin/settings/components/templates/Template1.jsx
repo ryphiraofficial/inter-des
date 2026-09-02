@@ -70,8 +70,9 @@ const Template1 = ({ quotation, calc, settings }) => {
                     <thead className="table-header">
                         <tr>
                             <th>Items Description</th>
+                            <th>Dimensions</th>
                             <th>Unit Price</th>
-                            <th>Qnt</th>
+                            <th>SQFT/Quantity</th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -87,25 +88,18 @@ const Template1 = ({ quotation, calc, settings }) => {
                             let globalIdx = 0;
                             return Object.entries(grouped).flatMap(([sectionName, sectionItems]) => [
                                 <tr key={`cat-${sectionName}`} style={{ background: '#1E1A3A' }}>
-                                    <td colSpan="4" style={{ padding: '7px 14px', color: '#ffffff', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', lineHeight: '1.5' }}>
+                                    <td colSpan="5" style={{ padding: '7px 14px', color: '#ffffff', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', lineHeight: '1.5' }}>
                                         {sectionName}
                                     </td>
                                 </tr>,
                                 ...sectionItems.map((item, itemIdx) => {
                                     const idx = itemIdx + 1;
+                                    const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0}×${item.cmD || 0}×${item.cmH || 0} cm` : (item.size || '-'));
                                     return (
                                         <tr className="t1-item-row" key={item._id || idx}>
                                             <td>
                                                 <div className="t1-item-name">{item.itemName || 'N/A'}</div>
                                                 <div className="t1-item-desc">{item.description || ''}</div>
-                                                {(() => {
-                                                    const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0} × ${item.cmD || 0} × ${item.cmH || 0} cm ${item.size ? `(${item.size})` : ''}` : (item.size || ''));
-                                                    return dimStr ? (
-                                                        <div className="t1-item-dim" style={{ fontSize: '0.75rem', color: '#4f46e5', fontWeight: 600, marginTop: '3px' }}>
-                                                            Dim: {dimStr}
-                                                        </div>
-                                                    ) : null;
-                                                })()}
                                                 {item.image && (
                                                     <div className="t1-item-image" style={{ marginTop: '8px' }}>
                                                         <img
@@ -115,6 +109,9 @@ const Template1 = ({ quotation, calc, settings }) => {
                                                         />
                                                     </div>
                                                 )}
+                                            </td>
+                                            <td style={{ textAlign: 'center', fontSize: '0.8rem', color: '#4f46e5', fontWeight: 600 }}>
+                                                {dimStr}
                                             </td>
                                             <td className="t1-item-price">
                                                 {s.documents?.currencySymbol || '₹'} {item.rate?.toLocaleString() || 0}

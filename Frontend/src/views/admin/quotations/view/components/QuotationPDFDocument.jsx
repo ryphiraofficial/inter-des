@@ -252,17 +252,19 @@ const styles = StyleSheet.create({
     minHeight: 24,
     alignItems: 'center',
   },
-  tableColIdxHeader: { width: '8%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
-  tableColDescHeader: { width: '48%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
+  tableColIdxHeader: { width: '6%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
+  tableColDescHeader: { width: '36%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold' },
+  tableColDimHeader: { width: '18%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
   tableColRateHeader: { width: '14%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'right' },
-  tableColQtyHeader: { width: '12%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
-  tableColTotalHeader: { width: '18%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'right' },
+  tableColQtyHeader: { width: '10%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'center' },
+  tableColTotalHeader: { width: '16%', padding: 6, fontSize: 9, color: '#ffffff', fontWeight: 'bold', textAlign: 'right' },
 
-  tableColIdx: { width: '8%', padding: 6, fontSize: 9, textAlign: 'left' },
-  tableColDesc: { width: '48%', padding: 6 },
-  tableColRate: { width: '14%', padding: 6, fontSize: 9, textAlign: 'right' },
-  tableColQty: { width: '12%', padding: 6, fontSize: 9, textAlign: 'center' },
-  tableColTotal: { width: '18%', padding: 6, fontSize: 9, textAlign: 'right' },
+  tableColIdx: { width: '6%', padding: 6, fontSize: 8.5, textAlign: 'left' },
+  tableColDesc: { width: '36%', padding: 6 },
+  tableColDim: { width: '18%', padding: 6, fontSize: 8, textAlign: 'center', color: '#4f46e5' },
+  tableColRate: { width: '14%', padding: 6, fontSize: 8.5, textAlign: 'right' },
+  tableColQty: { width: '10%', padding: 6, fontSize: 8.5, textAlign: 'center' },
+  tableColTotal: { width: '16%', padding: 6, fontSize: 8.5, textAlign: 'right' },
 
   tableSectionText: {
     paddingLeft: 12,
@@ -589,6 +591,7 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
             <View style={styles.tableRowHeader}>
               <Text style={styles.tableColIdxHeader}>No</Text>
               <Text style={styles.tableColDescHeader}>Item Description</Text>
+              <Text style={styles.tableColDimHeader}>Dimensions</Text>
               <Text style={styles.tableColRateHeader}>Price</Text>
               <Text style={styles.tableColQtyHeader}>Qty</Text>
               <Text style={styles.tableColTotalHeader}>Total</Text>
@@ -607,22 +610,16 @@ export const QuotationPDFDocument = ({ quotation, calc, settings, companyLogoUrl
               sectionItems.forEach((item, itemIdx) => {
                 const idx = itemIdx + 1;
                 const itemImgUrl = item.image ? itemImages[item.image] || null : null;
+                const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0}×${item.cmD || 0}×${item.cmH || 0} cm` : (item.size || '-'));
                 rows.push(
                   <View key={`item-${item._id || idx}`} style={styles.tableRow} wrap={false}>
                     <Text style={styles.tableColIdx}>{String(idx).padStart(2, '0')}.</Text>
                     <View style={styles.tableColDesc}>
                       <Text style={styles.itemName}>{item.itemName || 'N/A'}</Text>
                       {item.description ? <Text style={styles.itemDesc}>{item.description}</Text> : null}
-                      {(() => {
-                        const dimStr = item.measurements || ((item.cmL || item.cmH) ? `${item.cmL || 0} × ${item.cmD || 0} × ${item.cmH || 0} cm ${item.size ? `(${item.size})` : ''}` : (item.size || ''));
-                        return dimStr ? (
-                          <Text style={[styles.itemDesc, { color: '#4f46e5', marginTop: 2 }]}>
-                            Dim: {dimStr}
-                          </Text>
-                        ) : null;
-                      })()}
                       {itemImgUrl ? <Image src={itemImgUrl} style={styles.itemImage} /> : null}
                     </View>
+                    <Text style={styles.tableColDim}>{dimStr}</Text>
                     <Text style={styles.tableColRate}>{currencySymbol} {item.rate?.toLocaleString() || 0}</Text>
                     <Text style={styles.tableColQty}>{item.quantity || 0}</Text>
                     <Text style={styles.tableColTotal}>{currencySymbol} {item.amount?.toLocaleString() || 0}</Text>
